@@ -1,0 +1,159 @@
+@use "./mixins.scss" as mixins;
+
+:root {
+  --color-blue: #2d364f;
+  --color-blue-accent: #27314a;
+  --color-blue-cta: #2893fa;
+  --color-nude: #dec2ba;
+  --color-light: #dde2ee;
+
+  --font-main: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-secondary: "Merriweather", "ui-serif", "Georgia", "serif";
+
+  --font-sm: 0.875rem; /* 14px */
+  --font-md: 1rem; /* 16px */
+  --font-lg: 1.25rem; /* 20px */
+  --font-xl: 1.5rem; /* 24px */
+  --font-2xl: 2rem; /* 32px */
+  --font-3xl: 3rem; /* 48px */
+  --font-4xl: 4rem; /* 64px */
+
+  --font-weight-thin: 100;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --spacer-sm: 0.25rem; /* 4px */
+  --spacer-base: 0.5rem; /* 8px */
+  --spacer-md: 1rem; /* 16px */
+  --spacer-lg: 1.5rem; /* 24px */
+  --spacer-xl: 2rem; /* 32px */
+  --spacer-2xl: 3rem; /* 48px */
+  --spacer-3xl: 4rem; /* 64px */
+
+  color-scheme: dark;
+
+  --bg-primary: var(--color-blue);
+  --bg-secondary: var(--color-blue-nude);
+  --text-primary: var(--color-light);
+  --text-secondary: var(--color-blue);
+  --text-accent: var(--color-nude);
+}
+
+[data-theme="light"] {
+  @include mixins.light-theme;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    @include mixins.light-theme;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: all none !important;
+  }
+}
+
+.secondary-font {
+  font-family: var(--font-secondary);
+}
+
+.bg-gradient {
+  background: #2d364f;
+  background: linear-gradient(
+    180deg,
+    rgba(45, 54, 79, 1) 0%,
+    rgba(55, 62, 85, 1) 7%,
+    rgba(68, 72, 93, 1) 19%,
+    rgba(77, 79, 98, 1) 29%,
+    rgba(89, 88, 105, 1) 36%,
+    rgba(100, 97, 112, 1) 48%,
+    rgba(110, 105, 118, 1) 59%,
+    rgba(126, 118, 128, 1) 69%,
+    rgba(149, 136, 142, 1) 77%,
+    rgba(165, 149, 152, 1) 82%,
+    rgba(175, 157, 158, 1) 88%,
+    rgba(186, 165, 164, 1) 93%,
+    rgba(222, 194, 186, 1) 100%
+  );
+}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .bg-gradient {
+    animation: none;
+  }
+}
+
+/* 1. Global settings */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-main);
+}
+
+body {
+  font-family: Montserrat, ui-sans-serif, system-ui, sans-serif;
+  /* 3. Add accessible line-height */
+  line-height: 1.5;
+  /* 4. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 5. Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 6. Inherit fonts for form controls */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* 7. Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* 8. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+/*
+  9. Create a root stacking context
+*/
+#root,
+#__next {
+  isolation: isolate;
+}

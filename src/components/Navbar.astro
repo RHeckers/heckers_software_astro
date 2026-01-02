@@ -1,0 +1,89 @@
+---
+import { Image } from "astro:assets";
+// import Logo from "../assets/logo.png";
+import Logo from "../assets/html-logo.svg";
+---
+
+<nav id="site-nav" class="site-nav nav--hidden">
+  <div class="nav-content">
+    <div></div>
+    <Image
+      src={Logo}
+      alt="Heckers Software Logo"
+      height={64}
+      densities={[1, 2]}
+    />
+    <div></div>
+  </div>
+</nav>
+
+<script>
+  (() => {
+    if (typeof window === "undefined") return;
+    const nav = document.getElementById("site-nav");
+    if (!nav) return;
+
+    let lastScrollY = window.scrollY;
+    let hasMoved = false;
+
+    const setNavVisibility = (shouldShow: boolean) => {
+      nav.classList.toggle("nav--visible", shouldShow);
+      nav.classList.toggle("nav--hidden", !shouldShow);
+    };
+
+    // Show the nav while scrolling down, hide again when the user reverses direction.
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY === lastScrollY) return;
+
+      if (!hasMoved && currentScrollY > 0) {
+        hasMoved = true;
+        setNavVisibility(true);
+      } else if (hasMoved) {
+        const isScrollingDown = currentScrollY > lastScrollY;
+        setNavVisibility(isScrollingDown);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+  })();
+</script>
+
+<style>
+  .site-nav {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 80px;
+    z-index: 1000;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition:
+      transform 0.4s ease,
+      opacity 0.4s ease;
+    background: #27314a3f;
+    border-bottom: 1px solid rgb(221, 226, 238, 0.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  .site-nav.nav--visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .site-nav.nav--hidden {
+    transform: translateY(-110%);
+    opacity: 0;
+  }
+
+  .nav-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
