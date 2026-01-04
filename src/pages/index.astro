@@ -1,10 +1,24 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
 import HeroSection from "../components/HeroSection.astro";
+import LogoBanner from "../components/LogoBanner.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import PageLayout from "../layouts/PageLayout.astro";
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
+  <section class="section-1">
+    <LogoBanner />
+  </section>
 </PageLayout>
+
+<style>
+  .section-1 {
+    height: 100vh;
+    background-color: var(--color-nude);
+  }
+
+  h1 {
+    font-weight: var(--font-weight-light);
+  }
+</style>

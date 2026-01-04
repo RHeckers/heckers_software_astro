@@ -19,7 +19,6 @@
     Built With Simplicity
   </h1>
 </section>
-<section class="nd"></section>
 
 <script>
   import { gsap } from "gsap";
@@ -119,7 +118,7 @@
 
 <style>
   .hero {
-    height: 100dvh;
+    height: calc(100dvh + 80px);
     display: grid;
     margin-top: -80px;
     grid-template-columns:
@@ -139,11 +138,6 @@
 
   svg {
     z-index: 2;
-  }
-
-  .nd {
-    background-color: var(--color-nude);
-    height: 100dvh;
   }
 
   h1 {

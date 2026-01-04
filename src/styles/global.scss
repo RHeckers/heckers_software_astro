@@ -2,13 +2,16 @@
 
 :root {
   --color-blue: #2d364f;
+  --color-blue-15: rgba(45, 53, 78, 0.15);
   --color-blue-accent: #27314a;
   --color-blue-light: #b7c2dd;
   --color-blue-cta: #2893fa;
   --color-nude: #dec2ba;
   --color-light: #dde2ee;
-  --color-brown: #280c13;
   --color-earth: #665a56;
+  --color-brown: #280c13;
+  --color-bordaux: #2c1017;
+  --color-bordaux-light: #43272c;
   --color-grey: #707788;
   --color-gold: #cf8225;
 
@@ -71,7 +74,7 @@
 }
 
 .bg-gradient {
-  background: linear-gradient(to bottom, #280c13 0%, #dec2ba 95%);
+  background: linear-gradient(to bottom, #280c13 0%, #dec2ba 90%);
 }
 
 /* accessibility */

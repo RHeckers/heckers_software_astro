@@ -1,0 +1,140 @@
+---
+import { Image } from "astro:assets";
+import vattenfall from "../assets/logos/vattenfall_logo.svg";
+import marel from "../assets/logos/marel_logo.svg";
+import wgka from "../assets/logos/wgk-antwerpen.svg";
+import spacewell from "../assets/logos/spacewell_logo.svg";
+import phitaal from "../assets/logos/phitaal_logo.svg";
+import yunify from "../assets/logos/yunify_logo.png";
+import dh_automation from "../assets/logos/dh_automation_logo.svg";
+import ministerie_van_defensie from "../assets/logos/ministerie_van_defensie_logo.png";
+
+const logosBase = [
+  {
+    src: vattenfall,
+    id: "Vattenfall",
+  },
+  {
+    src: marel,
+    id: "Marel",
+  },
+  {
+    src: spacewell,
+    id: "Spacewell",
+  },
+  {
+    src: phitaal,
+    id: "Phitaal",
+  },
+  {
+    src: ministerie_van_defensie,
+    id: "Ministerie van Defensie",
+  },
+  {
+    src: yunify,
+    id: "Yunify",
+  },
+  {
+    src: wgka,
+    id: "Wit-Gele Kruis Antwerpen",
+  },
+  {
+    src: dh_automation,
+    id: "DH Automation",
+  },
+];
+
+const logos = [...logosBase, ...logosBase];
+---
+
+<section>
+  <h2>Companies we worked for</h2>
+  <div
+    class="reel reel--reverse"
+    aria-label="Trusted clients marquee moving left to right"
+  >
+    <div class="track">
+      {
+        logos.map((client, index) => (
+          <div
+            class="logo-container"
+            data-index={index}
+            aria-hidden={index >= logos.length ? "true" : undefined}
+          >
+            <Image
+              src={client.src}
+              alt={`Client Logo ${client.id}`}
+              width={150}
+              densities={[1, 2]}
+            />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  :root {
+    --border: 0.5px solid var(--color-blue-15);
+  }
+
+  section {
+    max-width: 100%;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  h2 {
+    color: var(--color-blue);
+    font-weight: var(--font-weight-semi-bold);
+    margin-bottom: var(--spacer-xl);
+  }
+
+  .reel {
+    --marquee-duration: 90s;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+  }
+
+  .track {
+    display: flex;
+    gap: 0;
+    width: max-content;
+    animation: marquee var(--marquee-duration) linear infinite;
+    will-change: transform;
+  }
+
+  .reel--reverse .track {
+    animation-direction: reverse;
+  }
+
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    border: var(--border);
+    border-left: none;
+    width: 250px;
+    flex: 0 0 auto;
+    border-top: var(--border);
+    border-bottom: var(--border);
+
+    &:first-child {
+      border-left: var(--border);
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+</style>
