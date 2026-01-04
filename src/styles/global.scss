@@ -3,13 +3,19 @@
 :root {
   --color-blue: #2d364f;
   --color-blue-accent: #27314a;
+  --color-blue-light: #b7c2dd;
   --color-blue-cta: #2893fa;
   --color-nude: #dec2ba;
   --color-light: #dde2ee;
+  --color-brown: #280c13;
+  --color-earth: #665a56;
+  --color-grey: #707788;
+  --color-gold: #cf8225;
 
   --font-main: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-secondary: "Merriweather", "ui-serif", "Georgia", "serif";
 
+  --font-xs: 0.75rem; /* 12px */
   --font-sm: 0.875rem; /* 14px */
   --font-md: 1rem; /* 16px */
   --font-lg: 1.25rem; /* 20px */
@@ -22,7 +28,9 @@
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
+  --font-weight-semi-bold: 500;
   --font-weight-bold: 700;
+  --font-weight-fat: 900;
 
   --spacer-sm: 0.25rem; /* 4px */
   --spacer-base: 0.5rem; /* 8px */
@@ -63,28 +71,12 @@
 }
 
 .bg-gradient {
-  background: #2d364f;
-  background: linear-gradient(
-    180deg,
-    rgba(45, 54, 79, 1) 0%,
-    rgba(55, 62, 85, 1) 7%,
-    rgba(68, 72, 93, 1) 19%,
-    rgba(77, 79, 98, 1) 29%,
-    rgba(89, 88, 105, 1) 36%,
-    rgba(100, 97, 112, 1) 48%,
-    rgba(110, 105, 118, 1) 59%,
-    rgba(126, 118, 128, 1) 69%,
-    rgba(149, 136, 142, 1) 77%,
-    rgba(165, 149, 152, 1) 82%,
-    rgba(175, 157, 158, 1) 88%,
-    rgba(186, 165, 164, 1) 93%,
-    rgba(222, 194, 186, 1) 100%
-  );
+  background: linear-gradient(to bottom, #280c13 0%, #dec2ba 95%);
 }
 
 /* accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .bg-gradient {
+  .bg-gradient-animation {
     animation: none;
   }
 }

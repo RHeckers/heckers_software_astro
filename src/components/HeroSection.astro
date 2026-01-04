@@ -121,19 +121,24 @@
   .hero {
     height: 100dvh;
     display: grid;
+    margin-top: -80px;
     grid-template-columns:
-      calc(33.5vw - var(--spacer-xl) - var(--spacer-lg))
-      33vw calc(33.5vw - var(--spacer-xl) - var(--spacer-lg));
+      calc(35vw - var(--spacer-xl) - var(--spacer-lg))
+      30vw calc(35vw - var(--spacer-xl) - var(--spacer-lg));
     align-items: center;
     justify-content: center;
     background-color: var(--bg-primary);
-    padding: 0 var(--spacer-xl);
+    padding: var(--spacer-xl) var(--spacer-xl);
     gap: var(--spacer-xl);
     --stroke-primary: var(--color-light);
     --stroke-secondary: var(--color-blue-cta);
     --stroke-tertiary: var(--color-nude);
-    --draw-pass-gap: 5s;
+    --draw-pass-gap: 7s;
     --draw-pass-duration: calc(var(--draw-pass-gap) * 3);
+  }
+
+  svg {
+    z-index: 2;
   }
 
   .nd {
@@ -163,7 +168,7 @@
     stroke: var(--stroke-primary);
     animation:
       draw-initial 3s cubic-bezier(0.99, 0, 1, 1) forwards,
-      draw-pass var(--draw-pass-duration) cubic-bezier(0.85, 0.01, 0.25, 1)
+      draw-pass var(--draw-pass-duration) cubic-bezier(0.99, 0.01, 0.25, 1)
         infinite;
     animation-delay: var(--draw-pass-duration), 0s;
     animation-fill-mode: forwards, both;
@@ -172,7 +177,7 @@
   .draw-secondary {
     stroke: var(--stroke-secondary);
     animation: draw-pass var(--draw-pass-duration)
-      cubic-bezier(0.85, 0.01, 0.25, 1) infinite;
+      cubic-bezier(0.99, 0.01, 0.25, 1) infinite;
     animation-delay: var(--draw-pass-gap);
     animation-fill-mode: both;
   }
@@ -180,7 +185,7 @@
   .draw-tertiary {
     stroke: var(--stroke-tertiary);
     animation: draw-pass var(--draw-pass-duration)
-      cubic-bezier(0.85, 0.01, 0.25, 1) infinite;
+      cubic-bezier(0.99, 0.01, 0.25, 1) infinite;
     animation-delay: calc(var(--draw-pass-gap) * 2);
     animation-fill-mode: both;
   }

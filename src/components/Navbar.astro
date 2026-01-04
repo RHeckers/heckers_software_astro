@@ -1,89 +1,120 @@
----
-import { Image } from "astro:assets";
-// import Logo from "../assets/logo.png";
-import Logo from "../assets/html-logo.svg";
----
+<nav>
+  <div class="content">
+    <div class="links">
+      <p>service</p>
+    </div>
+    <h3>Heckers Software</h3>
+    <div class="links">
+      <p>blog</p>
+      <p>about</p>
+      <p>contact</p>
+    </div>
+  </div>
 
-<nav id="site-nav" class="site-nav nav--hidden">
-  <div class="nav-content">
-    <div></div>
-    <Image
-      src={Logo}
-      alt="Heckers Software Logo"
-      height={64}
-      densities={[1, 2]}
-    />
-    <div></div>
+  <div class="divider-bar">
+    <span>+</span>
+    <div class="divider"></div>
+    <span>+</span>
   </div>
 </nav>
 
-<script>
-  (() => {
-    if (typeof window === "undefined") return;
-    const nav = document.getElementById("site-nav");
-    if (!nav) return;
-
-    let lastScrollY = window.scrollY;
-    let hasMoved = false;
-
-    const setNavVisibility = (shouldShow: boolean) => {
-      nav.classList.toggle("nav--visible", shouldShow);
-      nav.classList.toggle("nav--hidden", !shouldShow);
-    };
-
-    // Show the nav while scrolling down, hide again when the user reverses direction.
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY === lastScrollY) return;
-
-      if (!hasMoved && currentScrollY > 0) {
-        hasMoved = true;
-        setNavVisibility(true);
-      } else if (hasMoved) {
-        const isScrollingDown = currentScrollY > lastScrollY;
-        setNavVisibility(isScrollingDown);
-      }
-
-      lastScrollY = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-  })();
-</script>
-
 <style>
-  .site-nav {
-    position: fixed;
-    top: 0px;
-    width: 100%;
+  nav {
+    position: sticky;
+    top: 0;
+    margin-left: var(--spacer-xl);
+    width: calc(100% - 2 * var(--spacer-xl));
     height: 80px;
-    z-index: 1000;
-    transform: translateY(-100%);
-    opacity: 0;
-    transition:
-      transform 0.4s ease,
-      opacity 0.4s ease;
-    background: #27314a3f;
-    border-bottom: 1px solid rgb(221, 226, 238, 0.08);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    background-color: transparent;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    mix-blend-mode: difference;
+    overflow: hidden;
+    color: var(--color-nude);
+    text-transform: uppercase;
   }
 
-  .site-nav.nav--visible {
-    transform: translateY(0);
-    opacity: 1;
+  h3,
+  p {
+    mix-blend-mode: difference;
+    cursor: pointer;
   }
 
-  .site-nav.nav--hidden {
-    transform: translateY(-110%);
-    opacity: 0;
+  h3 {
+    letter-spacing: 4px;
+    font-weight: var(--font-weight-semi-bold);
   }
 
-  .nav-content {
-    height: 100%;
+  .content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    padding: var(--spacer-md);
+
+    p {
+      font-weight: var(--font-weight-normal);
+      font-size: var(--font-sm);
+    }
+
+    .links {
+      display: flex;
+      gap: var(--spacer-md);
+      margin-top: -150px;
+      animation: slide-down 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      animation-delay: 1s;
+
+      &:last-child {
+        justify-content: flex-end;
+      }
+    }
+  }
+
+  .divider-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: absolute;
+    bottom: -14.5px;
+    width: 100%;
+    gap: var(--spacer-base);
+    mix-blend-mode: difference;
+
+    span {
+      font-weight: var(--font-weight-light);
+      font-size: var(--font-lg);
+      mix-blend-mode: difference;
+      pointer-events: none;
+    }
+
+    .divider {
+      height: 0.1px;
+      width: 0%;
+      background-color: var(--color-nude);
+      mix-blend-mode: difference;
+      animation: divider-grow 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+  }
+
+  @keyframes divider-grow {
+    from {
+      width: 0%;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      margin-top: -150px;
+    }
+    to {
+      margin-top: 0;
+    }
   }
 </style>
