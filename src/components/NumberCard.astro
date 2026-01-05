@@ -1,27 +1,28 @@
 ---
+import { Image } from "astro:assets";
 interface Props {
-  number: string;
   title: string;
+  image: ImageMetadata;
   subtitle?: string;
   description?: string;
 }
 
-const { number, title, subtitle, description } = Astro.props as Props;
+const { title, image, subtitle, description } = Astro.props as Props;
 ---
 
 <div class="card">
   <header>
     <div class="header-text">
-      {
-        (
-          <h3>
-            <slot name="subtitle">{subtitle}</slot>
-          </h3>
-        )
-      }
+      <slot name="subtitle">{subtitle}</slot>
       <h2>{title}</h2>
     </div>
-    <span class="number">{number}</span>
+    <!-- <span class="number">{number}</span> -->
+    <Image
+      src={image}
+      width={200}
+      height={200}
+      alt="Decorative architecture image"
+    />
   </header>
   {
     (
@@ -35,25 +36,17 @@ const { number, title, subtitle, description } = Astro.props as Props;
 <style>
   .card {
     border-radius: 10px;
-    padding: 24px;
-    background: linear-gradient(var(--color-nude), var(--color-accent))
-      padding-box;
   }
 
   .card header {
     display: flex;
-    align-items: end;
-    margin-bottom: var(--spacer-lg);
+    align-items: anchor-center;
   }
 
   .card header h2 {
+    color: var(--color-text);
     font-size: var(--font-2xl);
     font-weight: var(--font-weight-bold);
-  }
-
-  .card header h3 {
-    font-size: var(--font-lg);
-    font-weight: var(--font-weight-semi-bold);
   }
 
   .card header .header-text span {
@@ -61,12 +54,11 @@ const { number, title, subtitle, description } = Astro.props as Props;
   }
 
   .card .number {
-    line-height: 1;
+    line-height: 1.1;
     font-size: 10rem;
     font-weight: var(--font-weight-bold);
     color: var(--color-stone);
-    transform: rotate(-90deg);
-    opacity: 0.5;
+    opacity: 0.3;
   }
 
   p {

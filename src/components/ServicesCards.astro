@@ -1,9 +1,13 @@
 ---
 import NumberCard from "./NumberCard.astro";
+
+import architecture from "../assets/architecture.svg";
+import app_development from "../assets/app_development.svg";
+import workshop from "../assets/workshop.svg";
 ---
 
 <div class="card-container">
-  <NumberCard number="01" title="Development & Maintenance">
+  <NumberCard image={app_development} title="Development & Maintenance">
     <h3 slot="subtitle">
       <span class="accent">Built</span> with <span class="accent">quality</span>
     </h3>
@@ -24,7 +28,7 @@ import NumberCard from "./NumberCard.astro";
       budget, and to your exact specifications.
     </span>
   </NumberCard>
-  <NumberCard number="02" title="Angular & Nx Architecture Plan">
+  <NumberCard image={architecture} title="Angular & Nx Architecture Plan">
     <h3 slot="subtitle">
       <span class="accent">Improve</span> code <span class="accent"
         >structure</span
@@ -45,7 +49,7 @@ import NumberCard from "./NumberCard.astro";
       enhance code quality, maintainability, and scalability.
     </span>
   </NumberCard>
-  <NumberCard number="03" title="Front-end Workshops">
+  <NumberCard image={workshop} title="Front-end Workshops">
     <h3 slot="subtitle">
       <span class="accent">Improve</span> team's <span class="accent"
         >velocity</span
@@ -81,6 +85,12 @@ import NumberCard from "./NumberCard.astro";
     gap: var(--spacer-2xl);
     justify-content: space-between;
     color: var(--color-text);
+  }
+
+  h3 {
+    color: var(--color-text);
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-normal);
   }
 
   .card-container :global(.card) {
