@@ -8,6 +8,7 @@ import phitaal from "../assets/logos/phitaal_logo.svg";
 import yunify from "../assets/logos/yunify_logo.png";
 import dh_automation from "../assets/logos/dh_automation_logo.svg";
 import ministerie_van_defensie from "../assets/logos/ministerie_van_defensie_logo.png";
+import lamp from "../assets//lamp.svg";
 
 const logosBase = [
   {
@@ -48,11 +49,18 @@ const logos = [...logosBase, ...logosBase];
 ---
 
 <section>
-  <h2>Companies we worked for</h2>
-  <div
-    class="reel reel--reverse"
-    aria-label="Trusted clients marquee moving left to right"
-  >
+  <h2>We Made Their Vision Come Alive</h2>
+  <div class="lamp-frame">
+    <Image
+      src={lamp}
+      width={300}
+      height={300}
+      alt="Logo spotlight"
+      class="lamp-img"
+    />
+  </div>
+  <div class="reel" aria-label="Trusted clients marquee moving left to right">
+    <div class="overlay"></div>
     <div class="track">
       {
         logos.map((client, index) => (
@@ -64,32 +72,48 @@ const logos = [...logosBase, ...logosBase];
             <Image
               src={client.src}
               alt={`Client Logo ${client.id}`}
-              width={150}
+              width={135}
               densities={[1, 2]}
+              loading="lazy"
             />
           </div>
         ))
       }
     </div>
+    <div class="overlay"></div>
   </div>
 </section>
 
 <style>
-  :root {
-    --border: 0.5px solid var(--color-blue-15);
-  }
-
   section {
     max-width: 100%;
     width: 100%;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
 
   h2 {
-    color: var(--color-blue);
+    color: var(--color-text);
+    font-size: var(--font-2xl);
     font-weight: var(--font-weight-semi-bold);
     margin-bottom: var(--spacer-xl);
+  }
+
+  .lamp-frame {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .lamp-frame :global(img.lamp-img) {
+    height: 200px;
+    object-fit: cover;
+    object-position: top center;
   }
 
   .reel {
@@ -97,6 +121,7 @@ const logos = [...logosBase, ...logosBase];
     overflow: hidden;
     width: 100%;
     position: relative;
+    margin-top: -75px;
   }
 
   .track {
@@ -107,34 +132,43 @@ const logos = [...logosBase, ...logosBase];
     will-change: transform;
   }
 
-  .reel--reverse .track {
-    animation-direction: reverse;
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: -20px;
+    height: 100px;
+    width: calc(50% - 59px);
+    transform: skewX(341deg);
+    z-index: 2;
+    background: rgb(255 189 170 / 40%);
+    opacity: 1;
+    -webkit-backdrop-filter: grayscale(1);
+    backdrop-filter: grayscale(1);
+
+    &:last-of-type {
+      right: -20px;
+      left: auto;
+      width: calc(50% - 53px);
+      transform: skewX(20deg);
+    }
   }
 
   .logo-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px;
-    border: var(--border);
-    border-left: none;
-    width: 250px;
+    height: 85px;
+    width: 225px;
     flex: 0 0 auto;
-    border-top: var(--border);
-    border-bottom: var(--border);
-
-    &:first-child {
-      border-left: var(--border);
-    }
   }
 
   @keyframes marquee {
     0% {
-      transform: translateX(0);
+      transform: translateX(-50%);
     }
 
     100% {
-      transform: translateX(-50%);
+      transform: translateX(0);
     }
   }
 </style>

@@ -1,19 +1,40 @@
 @use "./mixins.scss" as mixins;
 
 :root {
-  --color-blue: #2d364f;
-  --color-blue-15: rgba(45, 53, 78, 0.15);
-  --color-blue-accent: #27314a;
-  --color-blue-light: #b7c2dd;
-  --color-blue-cta: #2893fa;
-  --color-nude: #dec2ba;
-  --color-light: #dde2ee;
-  --color-earth: #665a56;
-  --color-brown: #280c13;
-  --color-bordaux: #2c1017;
-  --color-bordaux-light: #43272c;
-  --color-grey: #707788;
-  --color-gold: #cf8225;
+  /* Brand gradient anchors */
+  --color-brown: #280c13; /* gradient top / deep brand */
+  --color-bordaux: #2c1017; /* slightly lifted deep */
+  --color-bordaux-light: #43272c; /* panels on dark / subtle contrast */
+
+  /* Core backgrounds (warm, enterprise-clean) */
+  --color-nude: #dec2ba; /* your main background */
+  --color-sand: #f3ebe8; /* cards / sections on nude */
+  --color-sand-2: #f7f4f2; /* elevated surfaces / modals */
+  --color-light: #dde2ee; /* text on dark / primary surface on light */
+
+  /* Text (high contrast on nude) */
+  --color-text: #2a0e15; /* primary text on nude */
+  --color-text-muted: #5f4d4f; /* secondary text */
+  --color-stone: #6d5f5d; /* captions, icons, subtle UI text */
+
+  /* Lines / borders */
+  --color-border: #cbb0a8;
+  --color-border-strong: #bfa29a;
+
+  /* Teal accent (replaces the blue) */
+  --color-accent: #3a7869; /* CTA fill on light + accent text on dark */
+  --color-accent-hover: #2e6b5c; /* CTA hover */
+  --color-accent-ink: #26594d; /* links on nude (passes contrast) */
+  --color-accent-ink-hover: #224f43;
+
+  /* Transparent helpers */
+  --color-accent-15: rgba(58, 120, 105, 0.15);
+  --color-accent-35: rgba(58, 120, 105, 0.35);
+
+  /* Optional “status” tones (kept muted & on-brand) */
+  --color-success: #2f6f63; /* close to accent, enterprise-safe */
+  --color-warning: #a5742a; /* muted amber */
+  --color-danger: #8b2d3b; /* restrained berry */
 
   --font-main: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-secondary: "Merriweather", "ui-serif", "Georgia", "serif";
@@ -26,6 +47,9 @@
   --font-2xl: 2rem; /* 32px */
   --font-3xl: 3rem; /* 48px */
   --font-4xl: 4rem; /* 64px */
+  --font-5xl: 5rem; /* 80px */
+  --font-6xl: 6rem; /* 96px */
+  --font-7xl: 7rem; /* 112px */
 
   --font-weight-thin: 100;
   --font-weight-light: 300;

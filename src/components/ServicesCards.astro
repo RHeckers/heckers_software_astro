@@ -1,0 +1,120 @@
+---
+import NumberCard from "./NumberCard.astro";
+---
+
+<div class="card-container">
+  <NumberCard number="01" title="Development & Maintenance">
+    <h3 slot="subtitle">
+      <span class="accent">Built</span> with <span class="accent">quality</span>
+    </h3>
+    <span class="description" slot="description">
+      Do you have a vision you want to bring to life? Heckers Software is here
+      to help you turn that vision into a reality. We offer comprehensive
+      development and maintenance services tailored to your unique needs.
+
+      <br />
+      <br />
+
+      From enterprise applications to innovative startups, our team of
+      experienced developers is dedicated to delivering <span class="accent"
+        >high-quality</span
+      >
+      solutions that exceed your expectations. We work closely with you throughout
+      the development process to ensure that your project is delivered on time, within
+      budget, and to your exact specifications.
+    </span>
+  </NumberCard>
+  <NumberCard number="02" title="Angular & Nx Architecture Plan">
+    <h3 slot="subtitle">
+      <span class="accent">Improve</span> code <span class="accent"
+        >structure</span
+      >
+    </h3>
+    <span class="description" slot="description">
+      Is the <span class="accent">velocity</span> of your front-end team
+      <span class="accent">dropping</span> or your Nx monorepo becoming unmanageable?
+      Are bugs and technical debt piling up faster than new features can be delivered?
+
+      <br />
+      <br />
+      At Heckers Software, we specialize in Angular and Nx. We understand that a well-structured
+      codebase is the foundation of any successful project. With our expertise, we
+      analyze your codebase, architecture, and development processes to <span
+        class="accent">identify areas for improvement</span
+      >. Then, we provide a detailed report with actionable recommendations to
+      enhance code quality, maintainability, and scalability.
+    </span>
+  </NumberCard>
+  <NumberCard number="03" title="Front-end Workshops">
+    <h3 slot="subtitle">
+      <span class="accent">Improve</span> team's <span class="accent"
+        >velocity</span
+      >
+    </h3>
+    <span class="description" slot="description">
+      Are you embracing a new technology or looking to <span class="accent"
+        >boost</span
+      >
+      your front-end team's productivity and efficiency? Heckers Software offers specialized
+      front-end workshops designed to enhance your team's
+      <span class="accent">skills and knowledge</span>.
+
+      <br />
+      <br />
+
+      Our workshops cover a range of topics, including best practices in
+      front-end development, modern frameworks and libraries, performance
+      optimization, and user experience design. We tailor our workshops to meet
+      the specific needs of your team, ensuring that they receive practical,
+      hands-on training that can be immediately applied to their work.
+    </span>
+  </NumberCard>
+</div>
+
+<style>
+  .card-container {
+    padding: var(--spacer-2xl);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    flex-direction: column;
+    gap: var(--spacer-2xl);
+    justify-content: space-between;
+    color: var(--color-text);
+  }
+
+  .card-container :global(.card) {
+    top: 15vh;
+    position: sticky;
+    animation-timeline: view();
+    animation-range: entry 25vh cover 80vh;
+    animation-fill-mode: forwards;
+  }
+
+  .description {
+    font-family: var(--font-secondary);
+  }
+
+  :not(h3) > .accent {
+    font-family: var(--font-secondary);
+  }
+
+  .accent {
+    color: var(--color-danger);
+  }
+
+  .card-container :global(.card:nth-of-type(1)) {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .card-container :global(.card:nth-of-type(2)) {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  .card-container :global(.card:nth-of-type(3)) {
+    grid-row: 3;
+    grid-column: 3;
+  }
+</style>
