@@ -1,7 +1,7 @@
 ---
 import HeroSection from "../components/HeroSection.astro";
 import LogoBanner from "../components/LogoBanner.astro";
-import ServicesCards from "../components/ServicesCards.astro";
+import StoryBlock from "../components/StoryBlock.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import PageLayout from "../layouts/PageLayout.astro";
 ---
@@ -9,9 +9,15 @@ import PageLayout from "../layouts/PageLayout.astro";
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
   <section class="section-1">
-    <div class="cards">
+    <!-- <div class="cards">
       <ServicesCards />
-    </div>
+    </div> -->
+    <StoryBlock />
+    <LogoBanner />
+    <LogoBanner />
+    <LogoBanner />
+    <LogoBanner />
+    <LogoBanner />
     <LogoBanner />
   </section>
 </PageLayout>
@@ -22,9 +28,5 @@ import PageLayout from "../layouts/PageLayout.astro";
   }
   .cards {
     margin-bottom: 12vh;
-  }
-
-  h1 {
-    font-weight: var(--font-weight-light);
   }
 </style>

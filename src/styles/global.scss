@@ -101,6 +101,10 @@
   background: linear-gradient(to bottom, #280c13 0%, #dec2ba 90%);
 }
 
+.bg-gradient-reverse {
+  background: linear-gradient(to top, #280c13 0%, #dec2ba 90%);
+}
+
 /* accessibility */
 @media (prefers-reduced-motion: reduce) {
   .bg-gradient-animation {

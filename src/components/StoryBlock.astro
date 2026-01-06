@@ -1,0 +1,285 @@
+<div class="story">
+  <svg
+    #storyLinesSvg
+    class="story-line"
+    viewBox="0 0 100 200"
+    preserveAspectRatio="none"
+  >
+    <defs>
+      <linearGradient
+        id="storyLineGradient"
+        x1="0"
+        y1="0"
+        x2="0"
+        y2="200"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stop-color="#6b3640"></stop>
+        <stop offset="36%" stop-color="#6b3640"></stop>
+        <stop offset="36%" stop-color="#f7f4f2"></stop>
+        <stop offset="69.55%" stop-color="#f7f4f2"></stop>
+        <stop offset="69.55%" stop-color="#dec2ba"></stop>
+        <stop offset="100%" stop-color="#dec2ba"></stop>
+      </linearGradient>
+    </defs>
+
+    <g>
+      <path
+        d="M 0 11 C 14 25 -1 56 6 79 S 34 110 0 231"
+        fill="none"
+        stroke="url(#storyLineGradient)"
+        stroke-width="0.15"
+        stroke-linecap="round"></path>
+      <path
+        d="M 0 30 C 42 83 -10 131 1 263"
+        fill="none"
+        stroke="url(#storyLineGradient)"
+        stroke-width="0.15"
+        stroke-linecap="round"></path>
+    </g>
+  </svg>
+
+  <div class="sticky-wrapper">
+    <div class="story-block story-block-1">
+      <h2>
+        More <span class="danger danger-2">Bugs</span> in Angular
+      </h2>
+      <h2>
+        Nx Becomes <span class="danger danger-1">Slow</span>
+      </h2>
+      <h2>
+        Structure is <span class="danger danger-3 falling-word">Crumbling?</span
+        >
+      </h2>
+    </div>
+    <div class="sticky-spacer"></div>
+  </div>
+  <div class="sticky-wrapper">
+    <div class="story-block story-block-2">
+      <div class="stacked-text">
+        <p class="small-text">
+          Don't Worry
+          <br />
+          We've Got You Covered
+          <br />
+          Our <span class="accent accent-1">Expert</span> Angular & Nx
+          <br />
+          Engineers Are Here to
+          <br />
+        </p>
+        <p class="large-text accent accent-3">Help!</p>
+      </div>
+    </div>
+    <div class="sticky-spacer"></div>
+  </div>
+  <div class="story-block story-block-3">
+    <h2 class="line-4">
+      We <span class="accent accent-1">Identify</span> Problems
+    </h2>
+    <h2 class="line-5"><span class="accent accent-2">Fix</span> Your Code</h2>
+    <h2 class="line-5">
+      And <span class="accent accent-2">Train</span> Your Team
+    </h2>
+  </div>
+</div>
+
+<style>
+  .story {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-nude);
+
+    .story-block {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+
+      h2,
+      span {
+        font-size: var(--font-6xl);
+        font-weight: var(--font-weight-thin);
+        color: var(--color-sand-2);
+      }
+
+      .danger {
+        font-weight: var(--font-weight-light);
+        background: linear-gradient(
+          90deg,
+          var(--color-danger) 0%,
+          var(--color-danger) 50%,
+          currentColor 50%,
+          currentColor 100%
+        );
+        background-size: 200% 100%;
+        background-position: 100% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation-name: text-reveal;
+        animation-timeline: view();
+        animation-fill-mode: both;
+      }
+
+      .danger-1 {
+        animation-range: entry 70% cover 40%;
+      }
+
+      .danger-2 {
+        animation-range: entry 110% cover 40%;
+      }
+      .danger-3 {
+        animation-name: text-reveal, word-fall;
+        animation-range: entry 150% cover 45%;
+      }
+
+      .accent {
+        font-weight: var(--font-weight-light);
+        background: linear-gradient(
+          90deg,
+          var(--color-accent) 0%,
+          var(--color-accent) 50%,
+          currentColor 50%,
+          currentColor 100%
+        );
+        background-size: 200% 100%;
+        background-position: 100% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation-name: text-reveal;
+        animation-timeline: view();
+        animation-fill-mode: both;
+      }
+
+      .accent-1 {
+        animation-range: entry 85% cover 40%;
+      }
+      .accent-2 {
+        animation-range: entry 110% cover 40%;
+      }
+      .accent-3 {
+        animation-range: entry 125% cover 40%;
+      }
+      .accent-4 {
+        animation-range: entry 150% cover 40%;
+      }
+    }
+
+    .story-block-1 {
+      background-color: var(--color-nude);
+      position: sticky;
+      top: 0;
+      animation-timeline: view();
+      animation-range: entry 50vh cover 100vh;
+      animation-fill-mode: forwards;
+      padding-bottom: 20vh;
+    }
+
+    .sticky-wrapper {
+      position: sticky;
+      top: 90px;
+      z-index: 2;
+      margin: 0 var(--spacer-2xl);
+      animation-timeline: view();
+      animation-range: entry 25vh cover 100vh;
+      animation-fill-mode: forwards;
+    }
+
+    .story-block-2 {
+      background-color: var(--color-border-strong);
+
+      border-radius: 15px;
+      height: calc(100vh - 120px);
+
+      .stacked-text {
+        display: flex;
+        align-items: end;
+        text-align: end;
+        font-size: 2rem;
+        overflow: visible;
+
+        .small-text {
+          padding-bottom: 5rem;
+
+          span {
+            font-size: 2rem;
+          }
+        }
+
+        .large-text {
+          font-size: 15rem;
+        }
+      }
+    }
+
+    .sticky-spacer {
+      height: 20vh;
+    }
+
+    .story-block-3 {
+      background-color: var(--color-bordaux);
+      z-index: 2;
+      top: 120px;
+      animation-timeline: view();
+      animation-range: entry 25vh cover 120vh;
+      animation-fill-mode: forwards;
+      position: sticky;
+      border-radius: 15px;
+      margin: var(--spacer-2xl);
+      margin-bottom: 0;
+      height: calc(100vh - 120px);
+    }
+
+    svg {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      height: calc(360vh - 240px);
+      width: 100%;
+    }
+  }
+
+  .story-line {
+    stroke-dasharray: 250;
+    stroke-dashoffset: 250;
+    animation-name: line-draw;
+    animation-timeline: view();
+    animation-range: entry 50% cover 180%;
+    animation-fill-mode: forwards;
+  }
+
+  .falling-word {
+    display: inline-block;
+    animation-name: word-fall;
+    animation-timeline: view();
+    animation-range: entry 100% cover 100%;
+  }
+
+  @keyframes line-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes word-fall {
+    from {
+      transform: rotate(0deg) translateY(0) translateX(0);
+    }
+    to {
+      transform: rotate(15deg) translateY(3rem) translateX(1rem);
+    }
+  }
+
+  @keyframes text-reveal {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0% 0;
+    }
+  }
+</style>
