@@ -83,6 +83,10 @@ const { word, callToAction, size = "medium" } = Astro.props as Props;
     pointer-events: auto;
     white-space: nowrap;
     cursor: pointer;
+
+    &:hover {
+      color: var(--color-bordaux-light);
+    }
   }
 
   .expanding-word {

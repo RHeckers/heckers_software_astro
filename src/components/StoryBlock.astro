@@ -100,8 +100,11 @@
       h2,
       span {
         font-size: var(--font-6xl);
-        font-weight: var(--font-weight-thin);
         color: white;
+
+        &:not(.accent, .danger) {
+          font-weight: var(--font-weight-thin);
+        }
       }
 
       .danger {
@@ -134,39 +137,21 @@
         animation-name: text-reveal, word-fall;
         animation-range: entry 150% cover 45%;
       }
+    }
+    .accent-1 {
+      animation-range: entry 60% cover 55%;
+    }
 
-      .accent {
-        font-weight: var(--font-weight-light);
-        background: linear-gradient(
-          90deg,
-          var(--color-accent) 0%,
-          var(--color-accent) 50%,
-          currentColor 50%,
-          currentColor 100%
-        );
-        background-size: 200% 100%;
-        background-position: 100% 0;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation-name: text-reveal;
-        animation-timeline: view();
-        animation-fill-mode: both;
-      }
+    .accent-2 {
+      animation-range: entry 65% cover 60%;
+    }
 
-      .accent-1 {
-        animation-range: entry 230% cover 60%;
-      }
-      .accent-2 {
-        animation-range: entry 250% cover 70%;
-      }
-      .accent-3 {
-        animation-range: entry 270% cover 60%;
-      }
+    .accent-3 {
+      animation-range: entry 70% cover 65%;
+    }
 
-      .accent-4 {
-        animation-range: entry 80% cover 40%;
-      }
+    .accent-4 {
+      animation-range: entry 60% cover 50%;
     }
 
     .story-block-1 {
@@ -268,15 +253,6 @@
     }
     to {
       transform: rotate(15deg) translateY(3rem) translateX(1rem);
-    }
-  }
-
-  @keyframes text-reveal {
-    from {
-      background-position: 100% 0;
-    }
-    to {
-      background-position: 0% 0;
     }
   }
 </style>
