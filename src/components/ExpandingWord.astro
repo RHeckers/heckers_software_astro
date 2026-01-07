@@ -1,0 +1,180 @@
+---
+interface Props {
+  word: string;
+  callToAction?: string;
+  size?: "small" | "medium" | "large";
+}
+
+const { word, callToAction, size = "medium" } = Astro.props as Props;
+---
+
+<div class={"expanding-word-outer size-" + size}>
+  <div class="expanding-word-wrapper">
+    <p class="expanding-word expanding-up-1">{word}</p>
+    <p class="expanding-word expanding-up-2">{word}</p>
+    <p class="expanding-word expanding-up-3">{word}</p>
+    <p class="expanding-word center-word">
+      {word}
+      {callToAction && <span class="call-to-action">{callToAction}</span>}
+    </p>
+    <p class="expanding-word expanding-down-1">{word}</p>
+    <p class="expanding-word expanding-down-2">{word}</p>
+    <p class="expanding-word expanding-down-3">{word}</p>
+  </div>
+</div>
+
+<style>
+  .size-small {
+    --font-size: 8rem;
+    --step-size: 2rem;
+  }
+
+  .size-medium {
+    --font-size: 10rem;
+    --step-size: 3rem;
+  }
+
+  .size-large {
+    --font-size: 13rem;
+    --step-size: 5.5rem;
+  }
+
+  .expanding-word-outer {
+    height: 200dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-transform: uppercase;
+  }
+
+  .expanding-word-wrapper {
+    position: sticky;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    left: 0;
+    height: calc(50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .center-word {
+    z-index: 4;
+    position: relative;
+    display: inline-block;
+  }
+
+  .call-to-action {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    font-size: 0.2em;
+    color: var(--color-danger);
+    font-weight: var(--font-weight-fat);
+    padding: 0.25em;
+    opacity: 0.9;
+    border-radius: 0.3em;
+    pointer-events: auto;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .expanding-word {
+    position: absolute;
+    top: 40%;
+    font-size: var(--font-size);
+    font-weight: var(--font-weight-medium);
+    padding: 0.5rem 0;
+    line-height: 0.8;
+    color: white;
+    background-color: var(--color-nude);
+    animation-timeline: view();
+    animation-fill-mode: both;
+    animation-range: entry 150% cover 80%;
+    cursor: default;
+  }
+
+  .expanding-up-1 {
+    animation-name: move-up-1;
+    z-index: 3;
+  }
+  .expanding-up-2 {
+    animation-name: move-up-2;
+    z-index: 2;
+  }
+  .expanding-up-3 {
+    animation-name: move-up-3;
+  }
+
+  .expanding-down-1 {
+    animation-name: move-down-1;
+    z-index: 3;
+  }
+  .expanding-down-2 {
+    animation-name: move-down-2;
+    z-index: 2;
+  }
+  .expanding-down-3 {
+    animation-name: move-down-3;
+  }
+
+  @keyframes move-up-1 {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(calc(var(--step-size) * -1));
+    }
+  }
+
+  @keyframes move-up-2 {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(calc(var(--step-size) * -2));
+    }
+  }
+
+  @keyframes move-up-3 {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(calc(var(--step-size) * -3));
+    }
+  }
+
+  @keyframes move-down-1 {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(calc(var(--step-size) * 1));
+    }
+  }
+
+  @keyframes move-down-2 {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(calc(var(--step-size) * 2));
+    }
+  }
+
+  @keyframes move-down-3 {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(calc(var(--step-size) * 3));
+    }
+  }
+</style>

@@ -1,32 +1,55 @@
 ---
+import { Image } from "astro:assets";
+import ExpandingWord from "../components/ExpandingWord.astro";
 import HeroSection from "../components/HeroSection.astro";
 import LogoBanner from "../components/LogoBanner.astro";
 import StoryBlock from "../components/StoryBlock.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import PageLayout from "../layouts/PageLayout.astro";
+
+import code_img from "../assets/code_img.svg";
+import CodeReveal from "../components/CodeReveal.astro";
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
   <section class="section-1">
-    <!-- <div class="cards">
-      <ServicesCards />
-    </div> -->
+    <LogoBanner />
     <StoryBlock />
-    <LogoBanner />
-    <LogoBanner />
-    <LogoBanner />
-    <LogoBanner />
-    <LogoBanner />
-    <LogoBanner />
+    <ExpandingWord
+      word="Fix Your app"
+      callToAction="Book A call"
+      size="large"
+    />
+
+    <!-- <LogoBanner /> -->
+    <!-- <div class="logos">
+      <LogoBanner />
+    </div> -->
   </section>
+
+  <section class="section-2">
+    <CodeReveal />
+  </section>
+  <section class="section-3"></section>
 </PageLayout>
 
 <style>
   .section-1 {
     background-color: var(--color-nude);
   }
-  .cards {
-    margin-bottom: 12vh;
+
+  .section-2 {
+    position: relative;
+    background-color: var(--color-bordaux-light);
+    overflow: hidden;
+    view-timeline-name: --section-timeline;
+  }
+
+  .section-3 {
+    position: relative;
+    height: 100vh;
+    background-color: var(--color-nude);
+    overflow: hidden;
   }
 </style>

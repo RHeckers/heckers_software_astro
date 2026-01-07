@@ -1,0 +1,175 @@
+---
+import { Image } from "astro:assets";
+
+import code_img from "../assets/code_img.svg";
+---
+
+<div class="image-overlay-container">
+  <Image
+    src={code_img}
+    alt="Code snippet"
+    loading="lazy"
+    class="img circle-mask-image"
+  />
+  <div class="content-reveal">
+    <h2 class="reveal-title">Code Analysis & Architecture Report</h2>
+    <p class="reveal-text">
+      We review your Angular + Nx codebase end-to-end to uncover architectural
+      bottlenecks, hidden coupling, and build/CI slowdowns. Our approach adapts
+      to your setup, but every engagement includes an end-to-end review, a
+      detailed report with prioritized, actionable recommendations, and a
+      walkthrough so your team can start ship faster, and build with a structure
+      that scales..
+    </p>
+    <a href="#" class="cta-button">Get Your Architecture Report</a>
+  </div>
+</div>
+
+<style>
+  .image-overlay-container {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    object-position: left;
+    z-index: 1;
+  }
+
+  .circle-mask-image {
+    background: transparent;
+    -webkit-mask-image: radial-gradient(
+      circle 150px,
+      white 90%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(circle 150px, white 90%, transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 300px 300px;
+    mask-size: 300px 300px;
+    -webkit-mask-position: 0% 0%;
+    mask-position: 0% 0%;
+    animation-name: mask-zigzag-path;
+    opacity: 0.4;
+    animation-timeline: --section-timeline;
+    animation-fill-mode: both;
+    animation-range: entry 40% cover 80%;
+  }
+
+  .content-reveal {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    text-align: center;
+    /* height: 100vh; */
+    padding: var(--spacer-2xl);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .reveal-title {
+    font-size: 7rem;
+    font-weight: var(--font-weight-light);
+    color: white;
+    transform: translateY(50px);
+    animation-name: fade-in-up;
+    animation-timeline: --section-timeline;
+    animation-fill-mode: both;
+    animation-range: entry 30% cover 35%;
+  }
+
+  .reveal-text {
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-lighter);
+    font-family: var(--font-secondary);
+    color: white;
+    line-height: 1.6;
+    margin-bottom: var(--spacer-2xl);
+    opacity: 0;
+    transform: translateY(50px);
+    animation-name: fade-in-up;
+    animation-timeline: --section-timeline;
+    animation-fill-mode: both;
+    animation-range: entry 40% cover 45%;
+  }
+
+  .cta-button {
+    display: inline-block;
+    padding: var(--spacer-lg) var(--spacer-2xl);
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    background-color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+    opacity: 0.5;
+    transform: translateY(50px);
+    animation-name: fade-in-up;
+    animation-timeline: --section-timeline;
+    animation-fill-mode: both;
+    animation-range: entry 75% cover 80%;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0.5;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes mask-zigzag-path {
+    0% {
+      opacity: 0;
+      -webkit-mask-position: 0% 5%;
+      mask-position: 0% 5%;
+    }
+    5% {
+      opacity: 0.5;
+    }
+    20% {
+      -webkit-mask-position: 30% 10%;
+      mask-position: 30% 10%;
+    }
+    30% {
+      -webkit-mask-position: 10% 20%;
+      mask-position: 10% 20%;
+    }
+    70% {
+      -webkit-mask-position: 0% 80%;
+      mask-position: 0% 80%;
+    }
+    90% {
+      -webkit-mask-position: 15% 100%;
+      mask-position: 15% 100%;
+    }
+    100% {
+      -webkit-mask-position: 0% 100%;
+      mask-position: 0% 100%;
+    }
+  }
+</style>

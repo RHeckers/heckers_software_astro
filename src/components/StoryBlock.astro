@@ -42,10 +42,10 @@
   <div class="sticky-wrapper">
     <div class="story-block story-block-1">
       <h2>
-        More <span class="danger danger-2">Bugs</span> in Angular
+        More <span class="danger danger-1">Bugs</span> in Angular
       </h2>
       <h2>
-        Nx Becomes <span class="danger danger-1">Slow</span>
+        Nx Becomes <span class="danger danger-2">Slow</span>
       </h2>
       <h2>
         Structure is <span class="danger danger-3 falling-word">Crumbling?</span
@@ -54,7 +54,7 @@
     </div>
     <div class="sticky-spacer"></div>
   </div>
-  <div class="sticky-wrapper">
+  <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-2">
       <div class="stacked-text">
         <p class="small-text">
@@ -67,7 +67,7 @@
           Engineers Are Here to
           <br />
         </p>
-        <p class="large-text accent accent-3">Help!</p>
+        <p class="large-text accent accent-4">Help!</p>
       </div>
     </div>
     <div class="sticky-spacer"></div>
@@ -78,7 +78,7 @@
     </h2>
     <h2 class="line-5"><span class="accent accent-2">Fix</span> Your Code</h2>
     <h2 class="line-5">
-      And <span class="accent accent-2">Train</span> Your Team
+      And <span class="accent accent-3">Train</span> Your Team
     </h2>
   </div>
 </div>
@@ -101,7 +101,7 @@
       span {
         font-size: var(--font-6xl);
         font-weight: var(--font-weight-thin);
-        color: var(--color-sand-2);
+        color: white;
       }
 
       .danger {
@@ -124,11 +124,11 @@
       }
 
       .danger-1 {
-        animation-range: entry 70% cover 40%;
+        animation-range: entry 150% cover 80%;
       }
 
       .danger-2 {
-        animation-range: entry 110% cover 40%;
+        animation-range: entry 110% cover 70%;
       }
       .danger-3 {
         animation-name: text-reveal, word-fall;
@@ -155,16 +155,17 @@
       }
 
       .accent-1 {
-        animation-range: entry 85% cover 40%;
+        animation-range: entry 230% cover 60%;
       }
       .accent-2 {
-        animation-range: entry 110% cover 40%;
+        animation-range: entry 250% cover 70%;
       }
       .accent-3 {
-        animation-range: entry 125% cover 40%;
+        animation-range: entry 270% cover 60%;
       }
+
       .accent-4 {
-        animation-range: entry 150% cover 40%;
+        animation-range: entry 80% cover 40%;
       }
     }
 
@@ -172,9 +173,6 @@
       background-color: var(--color-nude);
       position: sticky;
       top: 0;
-      animation-timeline: view();
-      animation-range: entry 50vh cover 100vh;
-      animation-fill-mode: forwards;
       padding-bottom: 20vh;
     }
 
@@ -183,9 +181,11 @@
       top: 90px;
       z-index: 2;
       margin: 0 var(--spacer-2xl);
-      animation-timeline: view();
-      animation-range: entry 25vh cover 100vh;
-      animation-fill-mode: forwards;
+      --sticky-tail: 20vh;
+    }
+
+    .sticky-wrapper-long {
+      --sticky-tail: 10vh;
     }
 
     .story-block-2 {
@@ -216,16 +216,13 @@
     }
 
     .sticky-spacer {
-      height: 20vh;
+      height: var(--sticky-tail);
     }
 
     .story-block-3 {
       background-color: var(--color-bordaux);
       z-index: 2;
       top: 120px;
-      animation-timeline: view();
-      animation-range: entry 25vh cover 120vh;
-      animation-fill-mode: forwards;
       position: sticky;
       border-radius: 15px;
       margin: var(--spacer-2xl);
