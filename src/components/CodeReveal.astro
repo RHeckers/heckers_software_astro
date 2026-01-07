@@ -16,15 +16,15 @@ import code_img from "../assets/code_img.svg";
     <p class="reveal-text">
       We <span class="accent accent-1">review</span> your <span
         class="accent accent-1">Angular</span
-      > + <span class="accent accent-2">Nx</span> codebase end-to-end to <span
+      > + <span class="accent accent-1">Nx</span> codebase end-to-end to <span
         class="accent accent-3">uncover</span
       > architectural <span class="accent accent-3">bottlenecks</span>, hidden
       coupling, and build/CI slowdowns. Our approach adapts to your setup, but
       every engagement includes an end-to-end review, a
-      <span class="accent accent-4">detailed report</span> with prioritized, actionable
+      <span class="accent accent-3">detailed report</span> with prioritized, actionable
       recommendations, and a
-      <span class="accent accent-5">walkthrough</span> so your team can start <span
-        class="accent accent-5">ship faster</span
+      <span class="accent accent-4">walkthrough</span> so your team can start <span
+        class="accent accent-4">ship faster</span
       >, and build with a structure that scales..
     </p>
     <a href="#" class="cta-button">Get Your Architecture Report</a>
@@ -45,24 +45,15 @@ import code_img from "../assets/code_img.svg";
   }
 
   .reveal-text .accent-1 {
-    animation-range: entry 50% cover 40%;
-  }
-
-  .reveal-text .accent-2 {
-    animation-range: entry 50% cover 40%;
-  }
-
-  .reveal-text .accent-3 {
-    animation-range: entry 55% cover 40%;
-  }
-
-  .reveal-text .accent-4 {
     animation-range: entry 70% cover 40%;
   }
 
-  .reveal-text .accent-5 {
-    /* animation-range: entry 85% cover 40%; */
-    animation-range: entry 75% cover 50%;
+  .reveal-text .accent-3 {
+    animation-range: entry 75% cover 40%;
+  }
+
+  .reveal-text .accent-4 {
+    animation-range: entry 80% cover 40%;
   }
 
   .img {
@@ -95,7 +86,7 @@ import code_img from "../assets/code_img.svg";
     opacity: 0.4;
     animation-timeline: --section-timeline;
     animation-fill-mode: both;
-    animation-range: entry 40% cover 100%;
+    animation-range: entry 50% cover 50%;
   }
 
   .content-reveal {
@@ -106,9 +97,7 @@ import code_img from "../assets/code_img.svg";
     align-items: center;
     justify-content: space-evenly;
     text-align: center;
-    /* height: 100vh; */
-    padding: var(--spacer-2xl);
-    padding-bottom: var(--spacer-3xl);
+    padding: var(--spacer-3xl) var(--spacer-2xl);
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -121,11 +110,11 @@ import code_img from "../assets/code_img.svg";
     animation-name: fade-in-up;
     animation-timeline: --section-timeline;
     animation-fill-mode: both;
-    animation-range: entry 30% cover 35%;
+    animation-range: entry 10% cover 35%;
   }
 
   .reveal-text {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: var(--font-weight-lighter);
     font-family: var(--font-secondary);
     color: white;
@@ -136,7 +125,7 @@ import code_img from "../assets/code_img.svg";
     animation-name: fade-in-up;
     animation-timeline: --section-timeline;
     animation-fill-mode: both;
-    animation-range: entry 40% cover 45%;
+    animation-range: entry 20% cover 45%;
   }
 
   .cta-button {
@@ -156,15 +145,12 @@ import code_img from "../assets/code_img.svg";
     animation-name: fade-in-up;
     animation-timeline: --section-timeline;
     animation-fill-mode: both;
-    animation-range: entry 65% cover 75%;
+    animation-range: entry 45% cover 55%;
   }
 
   .cta-button:hover {
     outline: 4px solid var(--color-accent-hover);
     color: var(--color-accent-hover);
-    /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); */
-    /* Make box shadow more visible */
-    /* box-shadow: 0 10px 30px #3a786971; */
   }
 
   @keyframes mask-zigzag-path {
@@ -173,8 +159,8 @@ import code_img from "../assets/code_img.svg";
       -webkit-mask-position: 0% 5%;
       mask-position: 0% 5%;
     }
-    5% {
-      opacity: 0.5;
+    10% {
+      opacity: 0.4;
     }
     20% {
       -webkit-mask-position: 15% 10%;

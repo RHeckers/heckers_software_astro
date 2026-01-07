@@ -21,17 +21,21 @@ import CodeReveal from "../components/CodeReveal.astro";
       callToAction="Book A call"
       size="large"
     />
-
-    <!-- <LogoBanner /> -->
-    <!-- <div class="logos">
-      <LogoBanner />
-    </div> -->
   </section>
 
   <section class="section-2">
     <CodeReveal />
   </section>
-  <section class="section-3"></section>
+
+  <section class="section-3">
+    <ExpandingWord
+      word="WORKSHOPS"
+      callToAction="Book A workshop"
+      size="large"
+    />
+  </section>
+
+  <section class="section-4"></section>
 </PageLayout>
 
 <style>
@@ -40,16 +44,14 @@ import CodeReveal from "../components/CodeReveal.astro";
   }
 
   .section-2 {
-    position: relative;
+    height: 150vh;
     background-color: var(--color-bordaux-light);
-    overflow: hidden;
+    overflow: visible;
     view-timeline-name: --section-timeline;
   }
 
   .section-3 {
-    position: relative;
-    height: 100vh;
+    /* margin-top: 75vh; */
     background-color: var(--color-nude);
-    overflow: hidden;
   }
 </style>
