@@ -14,12 +14,12 @@
         y2="200"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset="0%" stop-color="#6b3640"></stop>
-        <stop offset="36%" stop-color="#6b3640"></stop>
-        <stop offset="36%" stop-color="#f7f4f2"></stop>
-        <stop offset="66.5%" stop-color="#f7f4f2"></stop>
-        <stop offset="66.5%" stop-color="#dec2ba"></stop>
-        <stop offset="100%" stop-color="#dec2ba"></stop>
+        <stop offset="0%" stop-color="#f9fbff"></stop>
+        <stop offset="36%" stop-color="#f9fbff"></stop>
+        <stop offset="36%" stop-color="#0f1a2b"></stop>
+        <stop offset="66.5%" stop-color="#0f1a2b"></stop>
+        <stop offset="66.5%" stop-color="#bccce6"></stop>
+        <stop offset="100%" stop-color="#bccce6"></stop>
       </linearGradient>
     </defs>
 
@@ -42,14 +42,13 @@
   <div class="sticky-wrapper">
     <div class="story-block story-block-1">
       <h2>
-        More <span class="danger danger-1">Bugs</span> in Angular
+        Angular <span class="danger danger-1">Bugs</span> Increasing
       </h2>
       <h2>
-        Nx Becomes <span class="danger danger-2">Slow</span>
+        Nx Becoming <span class="danger danger-2">Slow</span>
       </h2>
       <h2>
-        Structure is <span class="danger danger-3 falling-word">Crumbling?</span
-        >
+        Structure <span class="danger danger-3 falling-word">Crumbling?</span>
       </h2>
     </div>
     <div class="sticky-spacer"></div>
@@ -96,11 +95,12 @@
       justify-content: center;
       align-items: center;
       text-align: center;
+      min-height: fit-content;
 
       h2,
       span {
         font-size: var(--font-6xl);
-        color: white;
+        color: var(--color-ink-light);
 
         &:not(.accent, .danger) {
           font-weight: var(--font-weight-thin);
@@ -174,7 +174,7 @@
     }
 
     .story-block-2 {
-      color: white;
+      color: var(--color-ink-light);
       background-color: var(--color-stroke-strong);
       border-radius: 15px;
       height: calc(100vh - 120px);
@@ -253,6 +253,60 @@
     }
     to {
       transform: rotate(15deg) translateY(3rem) translateX(1rem);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .story-block {
+      height: 35vh !important;
+    }
+
+    .story-block-1 {
+      padding-bottom: 0 !important;
+    }
+
+    .story-block-3 {
+      margin: var(--spacer-md) !important;
+    }
+
+    .story-block h2,
+    .story-block span {
+      font-size: var(--font-2xl);
+    }
+
+    .stacked-text {
+      flex-direction: column;
+
+      .small-text {
+        font-size: 1.2rem !important;
+        padding-bottom: 0px !important;
+
+        span {
+          font-size: 1.2rem !important;
+        }
+      }
+
+      .large-text {
+        font-size: 5rem !important;
+        line-height: 1;
+      }
+    }
+
+    svg {
+      height: calc(165vh - 109px) !important;
+    }
+
+    .sticky-wrapper {
+      margin: 0 var(--spacer-md) !important;
+    }
+
+    .sticky-wrapper,
+    .sticky-wrapper-long {
+      top: 90px !important;
+    }
+
+    .story-block-1 {
+      top: 90px !important;
     }
   }
 </style>

@@ -30,7 +30,7 @@ const { icon, title } = Astro.props as Props;
     border-radius: 18px;
     padding: var(--spacer-xl);
     text-align: left;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    /* box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25); */
     isolation: isolate;
   }
 
@@ -85,16 +85,16 @@ const { icon, title } = Astro.props as Props;
       rgba(255, 255, 255, 0.06)
     );
     border: 1px solid rgba(255, 255, 255, 0.25);
-    color: white;
+    color: var(--color-ink-light);
     font-size: var(--font-xl);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    /* box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); */
   }
 
   .card-title {
     font-size: var(--font-xl);
     font-weight: var(--font-weight-semibold);
     margin: 0;
-    color: white;
+    color: var(--color-ink-light);
   }
 
   .card-copy {

@@ -133,16 +133,15 @@ import { Image } from "astro:assets";
 
 <style>
   .hero {
-    height: calc(100dvh + 80px);
-    display: grid;
-    margin-top: -80px;
-    grid-template-columns:
-      calc(35vw - var(--spacer-xl) - var(--spacer-lg))
-      30vw calc(35vw - var(--spacer-xl) - var(--spacer-lg));
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-top: -64px;
     align-items: center;
     justify-content: center;
     background-color: var(--color-dark);
-    padding: var(--spacer-xl) var(--spacer-xl);
+    padding: var(--spacer-lg);
     gap: var(--spacer-xl);
     --stroke-primary: var(--color-ink-light);
     --stroke-secondary: var(--color-accent);
@@ -157,11 +156,11 @@ import { Image } from "astro:assets";
 
   h1 {
     color: var(--color-light-raised);
-    font-size: clamp(var(--font-xl), var(--font-3xl), var(--font-4xl));
+    font-size: clamp(var(--font-lg), var(--font-2xl), var(--font-3xl));
     font-weight: var(--font-weight-thin);
 
     &:first-child {
-      text-align: end;
+      text-align: center;
     }
   }
 
@@ -228,6 +227,37 @@ import { Image } from "astro:assets";
     100% {
       stroke-dashoffset: var(--pathLen, 0);
       opacity: 0;
+    }
+  }
+
+  svg {
+    width: 50vw;
+    height: auto;
+  }
+
+  @media (min-width: 641px) {
+    .hero {
+      height: calc(100dvh + 80px);
+      display: grid;
+      margin-top: -80px;
+      grid-template-columns:
+        calc(35vw - var(--spacer-xl) - var(--spacer-lg))
+        30vw calc(35vw - var(--spacer-xl) - var(--spacer-lg));
+      padding: var(--spacer-xl) var(--spacer-xl);
+      text-align: left;
+    }
+
+    h1 {
+      font-size: clamp(var(--font-xl), var(--font-3xl), var(--font-4xl));
+
+      &:first-child {
+        text-align: end;
+      }
+    }
+
+    svg {
+      width: auto;
+      height: auto;
     }
   }
 </style>

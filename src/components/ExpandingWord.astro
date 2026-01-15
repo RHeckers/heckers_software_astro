@@ -49,6 +49,27 @@ const {
     --step-size: 5.5rem;
   }
 
+  @media (max-width: 640px) {
+    .size-small {
+      --font-size: 4.5rem;
+      --step-size: 1.25rem;
+    }
+
+    .size-medium {
+      --font-size: 6rem;
+      --step-size: 1.75rem;
+    }
+
+    .size-large {
+      --font-size: 7.5rem;
+      --step-size: 2.5rem;
+    }
+
+    .expanding-word {
+      margin-top: -10vh;
+    }
+  }
+
   .expanding-word-outer {
     height: 200dvh;
     width: 100%;
@@ -58,6 +79,8 @@ const {
     align-items: center;
     text-transform: uppercase;
     background-color: inherit;
+    position: relative;
+    z-index: 3;
   }
 
   .expanding-word-wrapper {
@@ -107,11 +130,11 @@ const {
     font-weight: var(--font-weight-medium);
     padding: 0.5rem 0;
     line-height: 0.8;
-    color: white;
+    color: var(--color-ink-light);
     background-color: inherit;
     animation-timeline: view();
     animation-fill-mode: both;
-    animation-range: entry 150% cover 80%;
+    animation-range: entry 10% cover 80%;
     cursor: default;
     width: 100%;
   }

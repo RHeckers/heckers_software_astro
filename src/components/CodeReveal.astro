@@ -15,35 +15,84 @@ import code_img from "../assets/code_img.svg";
     />
     <div class="content-reveal">
       <h2 class="reveal-title">Architecture Report</h2>
-      <ul class="reveal-card-list">
-        <ContentCards icon="◎" title="Deep Code Analysis">
-          We perform a <span class="accent accent-1">deep analysis</span> of your
-          codebase to surface architectural smells and find clear areas for <span
-            class="accent accent-4">improvement</span
-          >.
-        </ContentCards>
-        <ContentCards icon="📄" title="Improvements Report">
-          You receive a <span class="accent accent-1">detailed report</span> with
-          <span class="accent accent-3">architectural recommendations</span> to boost
-          code quality, maintainability, and
-          <span class="accent accent-4">scalability</span>.
-        </ContentCards>
-        <ContentCards icon="🗓" title="Plan & Walkthrough">
-          Together with your team, we craft a
-          <span class="accent accent-1">prioritized action plan</span>, sequence
-          the
-          <span class="accent accent-3">critical fixes</span>, and guide rollout
-          so you can <span class="accent accent-4">ship faster</span> with confidence.
-        </ContentCards>
-      </ul>
-      <a href="#" class="cta-button">Get Your Architecture Report</a>
+      <div class="reveal-card-shell">
+        <div class="reveal-card-scroll">
+          <ul class="reveal-card-list">
+            <ContentCards icon="◎" title="Deep Code Analysis">
+              We perform a <span class="accent accent-1">deep analysis</span> of your
+              codebase to surface architectural smells and find clear areas for <span
+                class="accent accent-4">improvement</span
+              >.
+            </ContentCards>
+            <ContentCards icon="📄" title="Improvements Report">
+              You receive a <span class="accent accent-1">detailed report</span> with
+              <span class="accent accent-3">architectural recommendations</span> to
+              boost code quality, maintainability, and
+              <span class="accent accent-4">scalability</span>.
+            </ContentCards>
+            <ContentCards icon="🗓" title="Plan & Walkthrough">
+              Together with your team, we craft a
+              <span class="accent accent-1">prioritized action plan</span>,
+              sequence the
+              <span class="accent accent-3">critical fixes</span>, and guide
+              rollout so you can <span class="accent accent-4">ship faster</span
+              > with confidence.
+            </ContentCards>
+          </ul>
+        </div>
+        <div class="reveal-card-nav" aria-label="Scroll cards">
+          <button
+            class="reveal-card-button"
+            data-direction="prev"
+            aria-label="Previous card"
+          >
+            ←
+          </button>
+          <button
+            class="reveal-card-button"
+            data-direction="next"
+            aria-label="Next card"
+          >
+            →
+          </button>
+        </div>
+      </div>
+      <a href="#" class="cta-button">Get Your Report</a>
     </div>
   </div>
 </section>
 
+<script is:inline>
+  const scrollShells = document.querySelectorAll(".reveal-card-shell");
+
+  scrollShells.forEach((shell) => {
+    const container = shell.querySelector(".reveal-card-scroll");
+    const list = shell.querySelector(".reveal-card-list");
+    const buttons = shell.querySelectorAll(".reveal-card-button");
+
+    if (!container || !list || buttons.length === 0) return;
+
+    const getStep = () => {
+      const firstCard = list.querySelector(".app-card");
+      const styles = window.getComputedStyle(list);
+      const gap = parseFloat(styles.columnGap || styles.gap || "0");
+      return (firstCard?.clientWidth || 0) + gap;
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const direction = button.getAttribute("data-direction");
+        const step = getStep() || container.clientWidth;
+        const delta = direction === "next" ? step : -step;
+        container.scrollBy({ left: delta, behavior: "smooth" });
+      });
+    });
+  });
+</script>
+
 <style>
   section {
-    height: 150vh;
+    /* min-height: 150vh; */
     background-color: var(--color-dark-soft);
     overflow: visible;
     view-timeline-name: --section-timeline;
@@ -61,15 +110,15 @@ import code_img from "../assets/code_img.svg";
   }
 
   .reveal-card-list .accent-1 {
-    animation-range: entry 65% cover 40%;
+    animation-range: entry 65% cover 50%;
   }
 
   .reveal-card-list .accent-3 {
-    animation-range: entry 70% cover 40%;
+    animation-range: entry 70% cover 50%;
   }
 
   .reveal-card-list .accent-4 {
-    animation-range: entry 75% cover 40%;
+    animation-range: entry 75% cover 50%;
   }
 
   .img {
@@ -87,15 +136,15 @@ import code_img from "../assets/code_img.svg";
   .circle-mask-image {
     background: transparent;
     -webkit-mask-image: radial-gradient(
-      circle 150px,
+      circle 75px,
       white 90%,
       transparent 100%
     );
-    mask-image: radial-gradient(circle 150px, white 90%, transparent 100%);
+    mask-image: radial-gradient(circle 75px, white 90%, transparent 100%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    -webkit-mask-size: 300px 300px;
-    mask-size: 300px 300px;
+    -webkit-mask-size: 200px 200px;
+    mask-size: 200px 200px;
     -webkit-mask-position: 0% 0%;
     mask-position: 0% 0%;
     animation-name: mask-zigzag-path;
@@ -114,16 +163,16 @@ import code_img from "../assets/code_img.svg";
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: var(--spacer-3xl) var(--spacer-2xl);
-    max-width: 1200px;
+    padding: var(--spacer-base) 0;
+    max-width: 100%;
     margin: 0 auto;
     gap: var(--spacer-xl);
   }
 
   .reveal-title {
-    font-size: 7rem;
+    font-size: 3.5rem;
     font-weight: var(--font-weight-light);
-    color: white;
+    color: var(--color-ink-light);
     transform: translateY(50px);
     animation-name: fade-in-up;
     animation-timeline: --section-timeline;
@@ -136,21 +185,77 @@ import code_img from "../assets/code_img.svg";
     padding: 0;
     margin: 0;
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--spacer-lg);
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: visible;
+    gap: var(--spacer-md);
+    padding: 0 1rem var(--spacer-md);
+    scrollbar-width: none;
     text-align: left;
     font-size: 1.2rem;
+    overflow: visible;
+  }
+
+  .reveal-card-list::after {
+    content: "";
+    flex: 0 0 1px;
+  }
+
+  .reveal-card-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .reveal-card-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
+  }
+
+  .reveal-card-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .reveal-card-shell {
+    width: 100%;
+  }
+
+  .reveal-card-nav {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--spacer-sm);
+    gap: var(--spacer-sm);
+    margin-right: var(--spacer-md);
+  }
+
+  .reveal-card-button {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(15, 26, 43, 0.7);
+    color: var(--color-ink-light);
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-lg);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
   }
 
   .cta-button {
     display: inline-block;
     margin-top: var(--spacer-lg);
-    padding: var(--spacer-lg) var(--spacer-2xl);
-    font-size: var(--font-2xl);
+    padding: var(--spacer-md) var(--spacer-xl);
+    font-size: var(--font-xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-accent);
-    background-color: white;
+    background-color: var(--color-ink-light);
     border-radius: 50px;
     text-decoration: none;
     transition:
@@ -169,6 +274,13 @@ import code_img from "../assets/code_img.svg";
     color: var(--color-accent-strong);
   }
 
+  .reveal-card-list :global(.app-card) {
+    flex: 0 0 82vw;
+    max-width: 82vw;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
   @keyframes mask-zigzag-path {
     0% {
       opacity: 0;
@@ -179,24 +291,111 @@ import code_img from "../assets/code_img.svg";
       opacity: 0.4;
     }
     20% {
-      -webkit-mask-position: 25% 10%;
-      mask-position: 25% 10%;
+      -webkit-mask-position: 80% 10%;
+      mask-position: 80% 10%;
     }
     40% {
-      -webkit-mask-position: 7% 30%;
-      mask-position: 7% 30%;
+      -webkit-mask-position: 7% 15%;
+      mask-position: 7% 15%;
     }
     60% {
-      -webkit-mask-position: 0% 70%;
-      mask-position: 0% 70%;
+      -webkit-mask-position: 0% 20%;
+      mask-position: 0% 20%;
     }
-    80% {
-      -webkit-mask-position: 15% 100%;
-      mask-position: 15% 100%;
+    85% {
+      -webkit-mask-position: 35% 80%;
+      mask-position: 35% 80%;
+    }
+    95% {
+      -webkit-mask-position: 5% 90%;
+      mask-position: 5% 90%;
     }
     100% {
       -webkit-mask-position: 0% 100%;
       mask-position: 0% 100%;
+    }
+  }
+
+  @media (min-width: 641px) {
+    .content-reveal {
+      padding: var(--spacer-3xl) var(--spacer-2xl);
+      max-width: 1200px;
+    }
+
+    .reveal-title {
+      font-size: 7rem;
+    }
+
+    .reveal-card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--spacer-lg);
+      padding: 0;
+    }
+
+    .reveal-card-scroll {
+      overflow: visible;
+      scroll-snap-type: none;
+      scroll-padding: 0;
+    }
+
+    .reveal-card-nav {
+      display: none;
+      margin-right: 0;
+    }
+
+    .reveal-card-list :global(.app-card) {
+      flex: initial;
+      max-width: none;
+      scroll-snap-align: unset;
+      scroll-snap-stop: normal;
+    }
+
+    .cta-button {
+      padding: var(--spacer-lg) var(--spacer-2xl);
+      font-size: var(--font-2xl);
+    }
+
+    .circle-mask-image {
+      -webkit-mask-image: radial-gradient(
+        circle 150px,
+        white 90%,
+        transparent 100%
+      );
+      mask-image: radial-gradient(circle 150px, white 90%, transparent 100%);
+      -webkit-mask-size: 300px 300px;
+      mask-size: 300px 300px;
+    }
+
+    @keyframes mask-zigzag-path {
+      0% {
+        opacity: 0;
+        -webkit-mask-position: 0% 5%;
+        mask-position: 0% 5%;
+      }
+      10% {
+        opacity: 0.4;
+      }
+      20% {
+        -webkit-mask-position: 25% 10%;
+        mask-position: 25% 10%;
+      }
+      40% {
+        -webkit-mask-position: 7% 30%;
+        mask-position: 7% 30%;
+      }
+      60% {
+        -webkit-mask-position: 0% 70%;
+        mask-position: 0% 70%;
+      }
+      80% {
+        -webkit-mask-position: 15% 100%;
+        mask-position: 15% 100%;
+      }
+      100% {
+        -webkit-mask-position: 0% 100%;
+        mask-position: 0% 100%;
+      }
     }
   }
 </style>

@@ -70,9 +70,8 @@ const workshops = [
 ];
 ---
 
-<section>
+<section id="workshops">
   <div class="workshops">
-    <h2 class="workshops__title">Train Your Team</h2>
     <div class="workshops__list">
       {
         workshops.map((item, index) => (
@@ -98,7 +97,7 @@ const workshops = [
                 ))}
               </ul>
               <div class="card-actions">
-                <a class="card-cta" href="#book-workshop">
+                <a class="card-cta" href="#workshops">
                   Book workshop
                 </a>
               </div>
@@ -118,19 +117,6 @@ const workshops = [
     overflow: hidden;
   }
 
-  .workshops__title {
-    font-size: 7rem;
-    font-weight: var(--font-weight-light);
-    color: white;
-    width: 100%;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(28px);
-    transition:
-      transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
-      opacity 0.7s ease;
-  }
-
   .workshops__title.is-visible {
     opacity: 1;
     transform: translateY(0);
@@ -147,7 +133,7 @@ const workshops = [
   .workshops__list {
     display: grid;
     grid-template-columns: 1fr;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
+    gap: clamp(1.25rem, 4vw, 2rem);
     align-items: stretch;
     max-width: 1400px;
     margin: 0 auto;
@@ -156,12 +142,12 @@ const workshops = [
 
   .workshop-card {
     display: grid;
-    grid-template-columns: minmax(300px, 45%) 1fr;
+    grid-template-columns: 1fr;
     align-items: stretch;
     background: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
     border: 1px solid var(--color-stroke);
     border-radius: 18px;
-    padding: clamp(1.1rem, 4vw, 1.4rem);
+    padding: clamp(1rem, 5vw, 1.35rem);
     box-shadow: 0 26px 60px rgba(40, 12, 19, 0.14);
     position: relative;
     isolation: isolate;
@@ -170,12 +156,12 @@ const workshops = [
     transform-origin: center;
     width: 100%;
     min-width: 0;
-    height: 500px;
+    height: auto;
     opacity: 0;
     transform: translateX(18vw) translateY(10px);
     transition:
-      transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
-      opacity 0.7s ease;
+      transform 1.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 1.5s ease;
     transition-delay: var(--card-stagger, 0ms);
   }
 
@@ -213,8 +199,9 @@ const workshops = [
   .card-media {
     border-radius: 14px;
     overflow: hidden;
-    height: 100%;
-    min-height: 260px;
+    height: clamp(180px, 45vw, 260px);
+    min-height: 0;
+    max-height: 260px;
     background: var(--color-light-alt);
     position: relative;
     z-index: 1;
@@ -233,8 +220,8 @@ const workshops = [
   .card-body {
     display: flex;
     flex-direction: column;
-    gap: var(--spacer-base);
-    padding-inline: 0.25rem;
+    gap: var(--spacer-sm);
+    padding-inline: 0;
     z-index: 1;
     height: 100%;
   }
@@ -260,14 +247,14 @@ const workshops = [
   .card-body ul {
     list-style: none;
     display: grid;
-    gap: var(--spacer-base);
+    gap: var(--spacer-sm);
     margin-top: var(--spacer-sm);
   }
 
   .card-actions {
     display: flex;
     margin-top: auto;
-    padding-top: var(--spacer-lg);
+    padding-top: var(--spacer-md);
   }
 
   .card-cta {
@@ -275,7 +262,7 @@ const workshops = [
     padding: var(--spacer-md) var(--spacer-xl);
     font-size: var(--font-lg);
     font-weight: var(--font-weight-bold);
-    color: white;
+    color: var(--color-ink-light);
     background-color: var(--color-accent);
     border-radius: 50px;
     text-decoration: none;
@@ -306,6 +293,38 @@ const workshops = [
     content: "→";
     color: var(--color-accent-ink);
     font-weight: var(--font-weight-bold);
+  }
+
+  @media (min-width: 769px) {
+    .workshops__list {
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    .workshop-card {
+      grid-template-columns: minmax(300px, 45%) 1fr;
+      height: 500px;
+      min-height: fit-content;
+      padding: clamp(1.1rem, 4vw, 1.4rem);
+    }
+
+    .card-media {
+      height: 100%;
+      min-height: 260px;
+      max-height: none;
+    }
+
+    .card-body {
+      padding-inline: 0.25rem;
+      gap: var(--spacer-base);
+    }
+
+    .card-body ul {
+      gap: var(--spacer-base);
+    }
+
+    .card-actions {
+      padding-top: var(--spacer-lg);
+    }
   }
 </style>
 

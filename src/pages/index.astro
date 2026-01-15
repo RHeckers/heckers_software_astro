@@ -14,7 +14,7 @@ import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
   <section class="section-1">
-    <LogoBanner />
+    <!-- <LogoBanner /> -->
     <StoryBlock />
     <ExpandingWord
       word="Fix Your app"
@@ -25,7 +25,6 @@ import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
   </section>
 
   <CodeReveal />
-
   <WorkshopSection client:visible={{ rootMargin: "500px" }} />
 
   <ApplicationDevelopment />

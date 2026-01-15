@@ -1,0 +1,226 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/logos/logo.png";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <div class="footer__mark">
+        <Image
+          class="footer__logo"
+          src={logo}
+          alt="Heckers Software logo"
+          width={220}
+          loading="lazy"
+          densities={[1, 2]}
+        />
+      </div>
+      <p class="footer__tagline">
+        Angular and Nx specialists delivering resilient apps, faster builds, and
+        teams that stay unblocked.
+      </p>
+    </div>
+
+    <div class="footer__list">
+      <p class="footer__heading">How we help</p>
+      <ul>
+        <li>Architecture and codebase assessments</li>
+        <li>Nx monorepo strategy and enablement</li>
+        <li>Angular performance tuning</li>
+        <li>Team coaching and workshops</li>
+      </ul>
+    </div>
+
+    <div class="footer__cta">
+      <div>
+        <p class="footer__heading">Need a senior crew?</p>
+        <p class="footer__copy">
+          We step in when releases stall or the roadmap needs a reset.
+        </p>
+      </div>
+      <a class="footer__button" href="#workshops">Plan a workshop</a>
+    </div>
+  </div>
+
+  <div class="footer__meta">
+    <span>© {year} Heckers Software</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    color: var(--color-ink-light);
+    background:
+      radial-gradient(circle at 10% 10%, #1c2a45 0%, #0f1a2b 45%),
+      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
+    border-top: 1px solid var(--color-stroke-strong);
+    box-shadow: 0 -18px 80px rgba(7, 16, 32, 0.6);
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 6vw, 5rem);
+  }
+
+  .footer__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  .footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-md);
+  }
+
+  .footer__tagline {
+    max-width: 26ch;
+    color: var(--color-ink-light);
+    opacity: 0.92;
+    line-height: 1.6;
+    font-size: var(--font-md);
+  }
+
+  .footer__logo {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  .footer__mark {
+    width: fit-content;
+  }
+
+  .footer__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-md);
+    color: var(--color-ink-light);
+  }
+
+  .footer__list ul {
+    list-style: none;
+    display: grid;
+    gap: var(--spacer-sm);
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer__list li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-weight: var(--font-weight-medium);
+    color: rgba(249, 251, 255, 0.92);
+  }
+
+  .footer__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 6px rgba(29, 154, 136, 0.18);
+  }
+
+  .footer__cta {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-sm);
+    align-content: start;
+    justify-content: space-between;
+    color: var(--color-ink-light);
+
+    .footer__heading {
+      margin-bottom: var(--spacer-md);
+    }
+  }
+
+  .footer__copy {
+    color: rgba(249, 251, 255, 0.85);
+    line-height: 1.5;
+  }
+
+  .footer__heading {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: var(--font-sm);
+    color: rgba(249, 251, 255, 0.7);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .footer__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.4rem;
+    margin-top: 0.35rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-ink-light);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    box-shadow: 0 16px 40px rgba(29, 154, 136, 0.35);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .footer__button:hover,
+  .footer__button:focus-visible {
+    background: var(--color-accent-strong);
+    box-shadow: 0 20px 48px rgba(17, 122, 106, 0.42);
+    transform: translateY(-1px);
+  }
+
+  .footer__button:active {
+    transform: translateY(0);
+  }
+
+  .footer__meta {
+    max-width: 1200px;
+    margin: clamp(1.75rem, 5vw, 2.5rem) auto 0;
+    padding-top: var(--spacer-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacer-md);
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
+    color: rgba(249, 251, 255, 0.65);
+    font-size: var(--font-sm);
+  }
+
+  @media (min-width: 721px) {
+    .footer__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer__mark {
+      width: auto;
+    }
+
+    .footer__meta {
+      flex-direction: row;
+      align-items: stretch;
+    }
+  }
+
+  @media (min-width: 961px) {
+    .footer__inner {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

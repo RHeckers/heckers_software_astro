@@ -5,24 +5,44 @@ import ContentCards from "./ContentCards.astro";
 <section class="section-4">
   <div class="app-development">
     <div class="app-dev-content">
-      <h2 class="app-dev-title">Application Development</h2>
-      <ul class="app-dev-list">
-        <ContentCards icon="✦" title="Discovery to Delivery">
-          Product discovery, architecture, and delivery in one
-          <span class="accent accent-1">cross-functional team</span> that stays with
-          you from first storyboard to launch.
-        </ContentCards>
-        <ContentCards icon="⧉" title="Cross Platform Applications">
-          Shared UI and domain core with
-          <span class="accent accent-1">platform-specific polish</span> so every surface
-          feels intentional while shipping from a single codebase.
-        </ContentCards>
-        <ContentCards icon="⚙" title="Architected for Scale">
-          From modular architecture to cloud-native infrastructure, we build
-          applications designed to <span class="accent accent-2">grow</span> with
-          your business.
-        </ContentCards>
-      </ul>
+      <h2 class="app-dev-title">App Development</h2>
+      <div class="app-dev-card-shell">
+        <div class="app-dev-card-scroll">
+          <ul class="app-dev-list">
+            <ContentCards icon="✦" title="Discovery to Delivery">
+              Product discovery, architecture, and delivery in one
+              <span class="accent accent-1">cross-functional team</span> that stays
+              with you from first storyboard to launch.
+            </ContentCards>
+            <ContentCards icon="⧉" title="Cross Platform Applications">
+              Shared UI and domain core with
+              <span class="accent accent-1">platform-specific polish</span> so every
+              surface feels intentional while shipping from a single codebase.
+            </ContentCards>
+            <ContentCards icon="⚙" title="Architected for Scale">
+              From modular architecture to cloud-native infrastructure, we build
+              applications designed to <span class="accent accent-2">grow</span> with
+              your business.
+            </ContentCards>
+          </ul>
+        </div>
+        <div class="app-dev-card-nav" aria-label="Scroll cards">
+          <button
+            class="app-dev-card-button"
+            data-direction="prev"
+            aria-label="Previous card"
+          >
+            ←
+          </button>
+          <button
+            class="app-dev-card-button"
+            data-direction="next"
+            aria-label="Next card"
+          >
+            →
+          </button>
+        </div>
+      </div>
       <a href="#" class="app-dev-cta">Build It With Us</a>
     </div>
   </div>
@@ -39,19 +59,24 @@ import ContentCards from "./ContentCards.astro";
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacer-3xl) var(--spacer-2xl);
+    padding: 0;
   }
 
   .app-dev-content {
     text-align: center;
-    color: white;
+    color: var(--color-ink-light);
     display: flex;
     flex-direction: column;
     gap: var(--spacer-xl);
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacer-base) 0;
+    max-width: 100%;
+    margin: 0 auto;
   }
 
   .app-dev-title {
-    font-size: 6rem;
+    font-size: 3.5rem;
     font-weight: var(--font-weight-light);
   }
 
@@ -61,33 +86,97 @@ import ContentCards from "./ContentCards.astro";
   }
 
   .accent-1 {
-    animation-range: entry 65% cover 40%;
+    animation-range: entry 65% cover 50%;
   }
 
   .accent-2 {
-    animation-range: entry 70% cover 40%;
+    animation-range: entry 70% cover 50%;
+  }
+
+  .app-dev-card-shell {
+    width: 100%;
+  }
+
+  .app-dev-card-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
+  }
+
+  .app-dev-card-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
 
   .app-dev-list {
     list-style: none;
     padding: 0;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--spacer-lg);
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: visible;
+    gap: var(--spacer-md);
+    padding: 0 1rem var(--spacer-md);
+    scrollbar-width: none;
     font-size: 1.2rem;
-    max-width: 1100px;
+    width: 100%;
+    text-align: left;
+    overflow: visible;
+  }
+
+  .app-dev-list::after {
+    content: "";
+    flex: 0 0 1px;
+  }
+
+  .app-dev-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .app-dev-list :global(.app-card) {
+    flex: 0 0 82vw;
+    max-width: 82vw;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .app-dev-card-nav {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--spacer-sm);
+    gap: var(--spacer-sm);
+    margin-right: var(--spacer-md);
+  }
+
+  .app-dev-card-button {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(15, 26, 43, 0.7);
+    color: var(--color-ink-light);
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-lg);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
   }
 
   .app-dev-cta {
     display: inline-block;
     align-self: center;
     margin-top: var(--spacer-lg);
-    padding: var(--spacer-lg) var(--spacer-2xl);
-    font-size: var(--font-2xl);
+    padding: var(--spacer-md) var(--spacer-xl);
+    font-size: var(--font-xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-accent);
-    background-color: white;
+    background-color: var(--color-ink-light);
     border-radius: 50px;
     text-decoration: none;
     transition:
@@ -102,4 +191,73 @@ import ContentCards from "./ContentCards.astro";
     color: var(--color-accent-strong);
     transform: translateY(-2px);
   }
+
+  @media (min-width: 641px) {
+    .app-dev-content {
+      max-width: 1200px;
+      padding: var(--spacer-3xl) var(--spacer-2xl);
+    }
+
+    .app-dev-title {
+      font-size: 6rem;
+    }
+
+    .app-dev-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--spacer-lg);
+      padding: 0;
+    }
+
+    .app-dev-card-scroll {
+      overflow: visible;
+      scroll-snap-type: none;
+      scroll-padding: 0;
+    }
+
+    .app-dev-card-nav {
+      display: none;
+      margin-right: 0;
+    }
+
+    .app-dev-list :global(.app-card) {
+      flex: initial;
+      max-width: none;
+      scroll-snap-align: unset;
+      scroll-snap-stop: normal;
+    }
+
+    .app-dev-cta {
+      font-size: var(--font-2xl);
+      padding: var(--spacer-lg) var(--spacer-2xl);
+    }
+  }
 </style>
+
+<script is:inline>
+  const appDevShells = document.querySelectorAll(".app-dev-card-shell");
+
+  appDevShells.forEach((shell) => {
+    const container = shell.querySelector(".app-dev-card-scroll");
+    const list = shell.querySelector(".app-dev-list");
+    const buttons = shell.querySelectorAll(".app-dev-card-button");
+
+    if (!container || !list || buttons.length === 0) return;
+
+    const getStep = () => {
+      const firstCard = list.querySelector(".app-card");
+      const styles = window.getComputedStyle(list);
+      const gap = parseFloat(styles.columnGap || styles.gap || "0");
+      return (firstCard?.clientWidth || 0) + gap;
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const direction = button.getAttribute("data-direction");
+        const step = getStep() || container.clientWidth;
+        const delta = direction === "next" ? step : -step;
+        container.scrollBy({ left: delta, behavior: "smooth" });
+      });
+    });
+  });
+</script>

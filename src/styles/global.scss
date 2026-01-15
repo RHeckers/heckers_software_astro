@@ -1,34 +1,33 @@
 @use "./mixins.scss" as mixins;
 
 :root {
-  /* Brand gradient anchors (dark stack) */
-  --color-dark: #280c13; /* deep brand base */
-  --color-dark-strong: #2c1017; /* lifted deep tone */
-  --color-dark-soft: #43272c; /* panels on dark / subtle contrast */
+  /* Brand gradient anchors (deep navy stack) */
+  --color-dark: #0f1a2b; /* primary hero background */
+  --color-dark-strong: #17233a; /* elevated dark surfaces */
+  --color-dark-soft: #22314d; /* panels on dark */
 
   /* Core backgrounds (light stack) */
-  --color-light: #dec2ba; /* main background */
-  --color-light-alt: #f3ebe8; /* cards / sections on light */
-  --color-light-raised: #f7f4f2; /* elevated surfaces / modals */
-  --color-ink-light: #dde2ee; /* light ink on dark */
+  --color-light: #bccce6; /* main background (slightly deeper for contrast) */
+  --color-light-alt: #edf1f9; /* cards / sections on light */
+  --color-light-raised: #ffffff; /* elevated surfaces / modals */
+  --color-ink-light: #f9fbff; /* text on dark blocks with stronger lift */
 
   /* Text */
-  --color-ink: #2a0e15; /* primary text on light */
-  --color-ink-muted: #5f4d4f; /* secondary text */
+  --color-ink: #0e1524; /* primary text on light */
+  --color-ink-light: #f8fbff; /* primary text on dark */
+  --color-ink-muted: #4d5a72; /* secondary text */
 
   /* Lines / borders */
-  --color-stroke: #cbb0a8;
-  --color-stroke-strong: #bfa29a;
+  --color-stroke: #c7cfdd;
+  --color-stroke-strong: #aab5c7;
 
-  /* Teal accent */
-  --color-accent: #3a7869; /* CTA fill on light + accent text on dark */
-  --color-accent-strong: #2e6b5c; /* CTA hover / stronger tone */
-  --color-accent-ink: #26594d; /* links on light (passes contrast) */
-
-  /* Transparent helpers */
+  /* Accent (trust teal) */
+  --color-accent: #1d9a88; /* CTA fill / accent text */
+  --color-accent-strong: #117a6a; /* CTA hover */
+  --color-accent-ink: #0f665b; /* links on light (contrast-safe) */
 
   /* Optional “status” tones (kept muted & on-brand) */
-  --color-danger: #8b2d3b; /* restrained berry */
+  --color-danger: #b4414e; /* restrained alert */
 
   --font-xs: 0.75rem; /* 12px */
   --font-sm: 0.875rem; /* 14px */
