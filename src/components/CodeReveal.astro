@@ -1,37 +1,53 @@
 ---
 import { Image } from "astro:assets";
+import ContentCards from "./ContentCards.astro";
 
 import code_img from "../assets/code_img.svg";
 ---
 
-<div class="image-overlay-container">
-  <Image
-    src={code_img}
-    alt="Code snippet"
-    loading="lazy"
-    class="img circle-mask-image"
-  />
-  <div class="content-reveal">
-    <h2 class="reveal-title">Code Analysis & Architecture Report</h2>
-    <p class="reveal-text">
-      We <span class="accent accent-1">review</span> your <span
-        class="accent accent-1">Angular</span
-      > + <span class="accent accent-1">Nx</span> codebase end-to-end to <span
-        class="accent accent-3">uncover</span
-      > architectural <span class="accent accent-3">bottlenecks</span>, hidden
-      coupling, and build/CI slowdowns. Our approach adapts to your setup, but
-      every engagement includes an end-to-end review, a
-      <span class="accent accent-3">detailed report</span> with prioritized, actionable
-      recommendations, and a
-      <span class="accent accent-4">walkthrough</span> so your team can start <span
-        class="accent accent-4">ship faster</span
-      >, and build with a structure that scales..
-    </p>
-    <a href="#" class="cta-button">Get Your Architecture Report</a>
+<section>
+  <div class="image-overlay-container">
+    <Image
+      src={code_img}
+      alt="Code snippet"
+      loading="lazy"
+      class="img circle-mask-image"
+    />
+    <div class="content-reveal">
+      <h2 class="reveal-title">Architecture Report</h2>
+      <ul class="reveal-card-list">
+        <ContentCards icon="◎" title="Deep Code Analysis">
+          We perform a <span class="accent accent-1">deep analysis</span> of your
+          codebase to surface architectural smells and find clear areas for <span
+            class="accent accent-4">improvement</span
+          >.
+        </ContentCards>
+        <ContentCards icon="📄" title="Improvements Report">
+          You receive a <span class="accent accent-1">detailed report</span> with
+          <span class="accent accent-3">architectural recommendations</span> to boost
+          code quality, maintainability, and
+          <span class="accent accent-4">scalability</span>.
+        </ContentCards>
+        <ContentCards icon="🗓" title="Plan & Walkthrough">
+          Together with your team, we craft a
+          <span class="accent accent-1">prioritized action plan</span>, sequence
+          the
+          <span class="accent accent-3">critical fixes</span>, and guide rollout
+          so you can <span class="accent accent-4">ship faster</span> with confidence.
+        </ContentCards>
+      </ul>
+      <a href="#" class="cta-button">Get Your Architecture Report</a>
+    </div>
   </div>
-</div>
+</section>
 
 <style>
+  section {
+    height: 150vh;
+    background-color: var(--color-bordaux-light);
+    overflow: visible;
+    view-timeline-name: --section-timeline;
+  }
   .image-overlay-container {
     position: sticky;
     top: 0;
@@ -39,21 +55,21 @@ import code_img from "../assets/code_img.svg";
     min-height: 100vh;
   }
 
-  .reveal-text .accent {
+  .reveal-card-list .accent {
     font-weight: var(--font-weight-normal);
     animation-timeline: --section-timeline;
   }
 
-  .reveal-text .accent-1 {
+  .reveal-card-list .accent-1 {
+    animation-range: entry 65% cover 40%;
+  }
+
+  .reveal-card-list .accent-3 {
     animation-range: entry 70% cover 40%;
   }
 
-  .reveal-text .accent-3 {
+  .reveal-card-list .accent-4 {
     animation-range: entry 75% cover 40%;
-  }
-
-  .reveal-text .accent-4 {
-    animation-range: entry 80% cover 40%;
   }
 
   .img {
@@ -90,17 +106,18 @@ import code_img from "../assets/code_img.svg";
   }
 
   .content-reveal {
-    height: 100vh;
+    min-height: 100vh;
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     text-align: center;
     padding: var(--spacer-3xl) var(--spacer-2xl);
     max-width: 1200px;
     margin: 0 auto;
+    gap: var(--spacer-xl);
   }
 
   .reveal-title {
@@ -114,23 +131,21 @@ import code_img from "../assets/code_img.svg";
     animation-range: entry 10% cover 35%;
   }
 
-  .reveal-text {
-    font-size: 2rem;
-    font-weight: var(--font-weight-lighter);
-    font-family: var(--font-secondary);
-    color: white;
-    line-height: 1.6;
-    margin-bottom: var(--spacer-2xl);
-    opacity: 0;
-    transform: translateY(50px);
-    animation-name: fade-in-up;
-    animation-timeline: --section-timeline;
-    animation-fill-mode: both;
-    animation-range: entry 20% cover 45%;
+  .reveal-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacer-lg);
+    text-align: left;
+    font-size: 1.2rem;
   }
 
   .cta-button {
     display: inline-block;
+    margin-top: var(--spacer-lg);
     padding: var(--spacer-lg) var(--spacer-2xl);
     font-size: var(--font-2xl);
     font-weight: var(--font-weight-bold);
@@ -164,12 +179,12 @@ import code_img from "../assets/code_img.svg";
       opacity: 0.4;
     }
     20% {
-      -webkit-mask-position: 15% 10%;
-      mask-position: 15% 10%;
+      -webkit-mask-position: 25% 10%;
+      mask-position: 25% 10%;
     }
     40% {
-      -webkit-mask-position: 5% 30%;
-      mask-position: 5% 30%;
+      -webkit-mask-position: 7% 30%;
+      mask-position: 7% 30%;
     }
     60% {
       -webkit-mask-position: 0% 70%;

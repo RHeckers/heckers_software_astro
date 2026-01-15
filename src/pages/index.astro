@@ -7,6 +7,8 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import PageLayout from "../layouts/PageLayout.astro";
 
 import CodeReveal from "../components/CodeReveal.astro";
+import WorkshopSection from "../components/WorkshopSection.astro";
+import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -18,38 +20,19 @@ import CodeReveal from "../components/CodeReveal.astro";
       word="Fix Your app"
       callToAction="Book A call"
       size="large"
+      reversedAnimation={true}
     />
   </section>
 
-  <section class="section-2">
-    <CodeReveal />
-  </section>
+  <CodeReveal />
 
-  <section class="section-3">
-    <ExpandingWord
-      word="WORKSHOPS"
-      callToAction="Book A workshop"
-      size="large"
-    />
-  </section>
+  <WorkshopSection client:visible={{ rootMargin: "500px" }} />
 
-  <section class="section-4"></section>
+  <ApplicationDevelopment />
 </PageLayout>
 
 <style>
   .section-1 {
-    background-color: var(--color-nude);
-  }
-
-  .section-2 {
-    height: 150vh;
-    background-color: var(--color-bordaux-light);
-    overflow: visible;
-    view-timeline-name: --section-timeline;
-  }
-
-  .section-3 {
-    /* margin-top: 75vh; */
     background-color: var(--color-nude);
   }
 </style>

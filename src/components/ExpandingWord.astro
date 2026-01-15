@@ -3,12 +3,22 @@ interface Props {
   word: string;
   callToAction?: string;
   size?: "small" | "medium" | "large";
+  reversedAnimation?: boolean;
 }
 
-const { word, callToAction, size = "medium" } = Astro.props as Props;
+const {
+  word,
+  callToAction,
+  size = "medium",
+  reversedAnimation = false,
+} = Astro.props as Props;
 ---
 
-<div class={"expanding-word-outer size-" + size}>
+<div
+  class={"expanding-word-outer size-" +
+    size +
+    (reversedAnimation ? " reversed" : "")}
+>
   <div class="expanding-word-wrapper">
     <p class="expanding-word expanding-up-1">{word}</p>
     <p class="expanding-word expanding-up-2">{word}</p>
@@ -47,6 +57,7 @@ const { word, callToAction, size = "medium" } = Astro.props as Props;
     justify-content: flex-start;
     align-items: center;
     text-transform: uppercase;
+    background-color: inherit;
   }
 
   .expanding-word-wrapper {
@@ -60,6 +71,7 @@ const { word, callToAction, size = "medium" } = Astro.props as Props;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background: inherit;
   }
 
   .center-word {
@@ -75,17 +87,16 @@ const { word, callToAction, size = "medium" } = Astro.props as Props;
     transform: translate(-50%, -50%);
     z-index: 10;
     font-size: 0.2em;
-    color: var(--color-danger);
+    color: var(--color-accent);
     font-weight: var(--font-weight-fat);
     padding: 0.25em;
-    opacity: 0.9;
     border-radius: 0.3em;
     pointer-events: auto;
     white-space: nowrap;
     cursor: pointer;
 
     &:hover {
-      color: var(--color-bordaux-light);
+      color: var(--color-accent-hover);
     }
   }
 
@@ -97,12 +108,16 @@ const { word, callToAction, size = "medium" } = Astro.props as Props;
     padding: 0.5rem 0;
     line-height: 0.8;
     color: white;
-    background-color: var(--color-nude);
+    background-color: inherit;
     animation-timeline: view();
     animation-fill-mode: both;
     animation-range: entry 150% cover 80%;
     cursor: default;
     width: 100%;
+  }
+
+  .reversed .expanding-word {
+    animation-direction: reverse;
   }
 
   .expanding-up-1 {

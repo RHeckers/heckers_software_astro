@@ -1,0 +1,106 @@
+---
+interface Props {
+  icon: string;
+  title: string;
+}
+
+const { icon, title } = Astro.props as Props;
+---
+
+<li class="app-card">
+  <div class="card-head">
+    <div class="card-badge">{icon}</div>
+    <div class="card-title">{title}</div>
+  </div>
+  <p class="card-copy">
+    <slot />
+  </p>
+</li>
+
+<style>
+  .app-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: var(--spacer-xl);
+    text-align: left;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    isolation: isolate;
+  }
+
+  .app-card::before {
+    content: "";
+    position: absolute;
+    inset: -30% auto auto -20%;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0) 65%
+    );
+    opacity: 0.8;
+    transform: rotate(-8deg);
+    z-index: -1;
+  }
+
+  .app-card::after {
+    content: "";
+    position: absolute;
+    inset: auto -20% -35% auto;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0) 65%
+    );
+    transform: rotate(12deg);
+    z-index: -1;
+  }
+
+  .card-head {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacer-md);
+    margin-bottom: var(--spacer-lg);
+  }
+
+  .card-badge {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.06)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    font-size: var(--font-xl);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .card-title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+    color: white;
+  }
+
+  .card-copy {
+    margin: 0;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0 var(--spacer-sm);
+  }
+</style>
