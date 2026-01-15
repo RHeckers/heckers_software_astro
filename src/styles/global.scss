@@ -1,43 +1,34 @@
 @use "./mixins.scss" as mixins;
 
 :root {
-  /* Brand gradient anchors */
-  --color-brown: #280c13; /* gradient top / deep brand */
-  --color-bordaux: #2c1017; /* slightly lifted deep */
-  --color-bordaux-light: #43272c; /* panels on dark / subtle contrast */
+  /* Brand gradient anchors (dark stack) */
+  --color-dark: #280c13; /* deep brand base */
+  --color-dark-strong: #2c1017; /* lifted deep tone */
+  --color-dark-soft: #43272c; /* panels on dark / subtle contrast */
 
-  /* Core backgrounds (warm, enterprise-clean) */
-  --color-nude: #dec2ba; /* your main background */
-  --color-sand: #f3ebe8; /* cards / sections on nude */
-  --color-sand-2: #f7f4f2; /* elevated surfaces / modals */
-  --color-light: #dde2ee; /* text on dark / primary surface on light */
+  /* Core backgrounds (light stack) */
+  --color-light: #dec2ba; /* main background */
+  --color-light-alt: #f3ebe8; /* cards / sections on light */
+  --color-light-raised: #f7f4f2; /* elevated surfaces / modals */
+  --color-ink-light: #dde2ee; /* light ink on dark */
 
-  /* Text (high contrast on nude) */
-  --color-text: #2a0e15; /* primary text on nude */
-  --color-text-muted: #5f4d4f; /* secondary text */
-  --color-stone: #6d5f5d; /* captions, icons, subtle UI text */
+  /* Text */
+  --color-ink: #2a0e15; /* primary text on light */
+  --color-ink-muted: #5f4d4f; /* secondary text */
 
   /* Lines / borders */
-  --color-border: #cbb0a8;
-  --color-border-strong: #bfa29a;
+  --color-stroke: #cbb0a8;
+  --color-stroke-strong: #bfa29a;
 
-  /* Teal accent (replaces the blue) */
+  /* Teal accent */
   --color-accent: #3a7869; /* CTA fill on light + accent text on dark */
-  --color-accent-hover: #2e6b5c; /* CTA hover */
-  --color-accent-ink: #26594d; /* links on nude (passes contrast) */
-  --color-accent-ink-hover: #224f43;
+  --color-accent-strong: #2e6b5c; /* CTA hover / stronger tone */
+  --color-accent-ink: #26594d; /* links on light (passes contrast) */
 
   /* Transparent helpers */
-  --color-accent-15: rgba(58, 120, 105, 0.15);
-  --color-accent-35: rgba(58, 120, 105, 0.35);
 
   /* Optional “status” tones (kept muted & on-brand) */
-  --color-success: #2f6f63; /* close to accent, enterprise-safe */
-  --color-warning: #a5742a; /* muted amber */
   --color-danger: #8b2d3b; /* restrained berry */
-
-  --font-main: "Montserrat", ui-sans-serif, system-ui, sans-serif;
-  --font-secondary: "Work Sans", "ui-serif", "Georgia", "serif";
 
   --font-xs: 0.75rem; /* 12px */
   --font-sm: 0.875rem; /* 14px */
@@ -67,24 +58,6 @@
   --spacer-xl: 2rem; /* 32px */
   --spacer-2xl: 3rem; /* 48px */
   --spacer-3xl: 4rem; /* 64px */
-
-  color-scheme: dark;
-
-  --bg-primary: var(--color-blue);
-  --bg-secondary: var(--color-blue-nude);
-  --text-primary: var(--color-light);
-  --text-secondary: var(--color-blue);
-  --text-accent: var(--color-nude);
-}
-
-[data-theme="light"] {
-  @include mixins.light-theme;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    @include mixins.light-theme;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -94,16 +67,12 @@
   }
 }
 
-.secondary-font {
-  font-family: var(--font-secondary);
-}
-
 .bg-gradient {
-  background: linear-gradient(to bottom, #280c13 0%, #dec2ba 90%);
-}
-
-.bg-gradient-reverse {
-  background: linear-gradient(to top, #280c13 0%, #dec2ba 90%);
+  background: linear-gradient(
+    to bottom,
+    var(--color-dark) 0%,
+    var(--color-light) 90%
+  );
 }
 
 /* accent text with reveal animation */
@@ -160,7 +129,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: var(--font-main);
+  font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {

@@ -1,8 +1,3 @@
 @mixin light-theme {
   color-scheme: light;
-  --bg-primary: var(--color-light);
-  --bg-secondary: var(--color-nude);
-  --text-primary: var(--color-blue);
-  --text-secondary: var(--color-light);
-  --text-accent: var(--color-nude);
 }

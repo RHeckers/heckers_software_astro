@@ -141,12 +141,12 @@ import { Image } from "astro:assets";
       30vw calc(35vw - var(--spacer-xl) - var(--spacer-lg));
     align-items: center;
     justify-content: center;
-    background-color: var(--bg-primary);
+    background-color: var(--color-dark);
     padding: var(--spacer-xl) var(--spacer-xl);
     gap: var(--spacer-xl);
-    --stroke-primary: var(--color-light);
+    --stroke-primary: var(--color-ink-light);
     --stroke-secondary: var(--color-accent);
-    --stroke-tertiary: var(--color-nude);
+    --stroke-tertiary: var(--color-light);
     --draw-pass-gap: 5s;
     --draw-pass-duration: calc(var(--draw-pass-gap) * 3);
   }
@@ -156,7 +156,7 @@ import { Image } from "astro:assets";
   }
 
   h1 {
-    color: var(--color-sand-2);
+    color: var(--color-light-raised);
     font-size: clamp(var(--font-xl), var(--font-3xl), var(--font-4xl));
     font-weight: var(--font-weight-thin);
 
