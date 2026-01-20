@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import LogoBanner from "./LogoBanner.astro";
 
 // import arch from "../assets/architecture_design.svg";
 // import { SITE_TITLE } from "../consts";
@@ -33,6 +34,10 @@ import { Image } from "astro:assets";
   <h1 class="headline headline-2" data-rotate="hero-headline-2">
     Built With Simplicity
   </h1>
+
+  <div class="logo-banner-container">
+    <LogoBanner />
+  </div>
 </section>
 
 <script>
@@ -133,6 +138,7 @@ import { Image } from "astro:assets";
 
 <style>
   .hero {
+    position: relative;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -150,6 +156,12 @@ import { Image } from "astro:assets";
     --draw-pass-duration: calc(var(--draw-pass-gap) * 3);
   }
 
+  .logo-banner-container {
+    position: absolute;
+    bottom: -10px;
+    width: 100%;
+  }
+
   svg {
     z-index: 2;
   }
@@ -157,7 +169,7 @@ import { Image } from "astro:assets";
   h1 {
     color: var(--color-light-raised);
     font-size: clamp(var(--font-lg), var(--font-2xl), var(--font-3xl));
-    font-weight: var(--font-weight-thin);
+    font-weight: var(--font-weight-lighter);
 
     &:first-child {
       text-align: center;
@@ -235,7 +247,11 @@ import { Image } from "astro:assets";
     height: auto;
   }
 
-  @media (min-width: 641px) {
+  @media (min-width: 650px) {
+    .logo-banner-container {
+      bottom: 2.7rem;
+    }
+
     .hero {
       height: calc(100dvh + 80px);
       display: grid;

@@ -46,14 +46,18 @@ const logosBase = [
 ];
 
 const logos = [...logosBase, ...logosBase];
+
+const isMobile = typeof window !== "undefined" ? window.innerWidth < 600 : true;
+const lampHeight = isMobile ? 150 : 300;
+const logoWidth = isMobile ? 100 : 135;
 ---
 
 <section>
   <div class="lamp-frame">
     <Image
       src={lamp}
-      width={300}
-      height={300}
+      width={lampHeight}
+      height={lampHeight}
       alt="Logo spotlight"
       class="lamp-img"
     />
@@ -71,7 +75,7 @@ const logos = [...logosBase, ...logosBase];
             <Image
               src={client.src}
               alt={`Client Logo ${client.id}`}
-              width={135}
+              width={logoWidth}
               densities={[1, 2]}
               loading="lazy"
             />
@@ -95,7 +99,7 @@ const logos = [...logosBase, ...logosBase];
   }
 
   .lamp-frame {
-    height: 200px;
+    height: 120px;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -103,7 +107,7 @@ const logos = [...logosBase, ...logosBase];
   }
 
   .lamp-frame :global(img.lamp-img) {
-    height: 200px;
+    height: 120px;
     object-fit: cover;
     object-position: top center;
   }
@@ -129,7 +133,7 @@ const logos = [...logosBase, ...logosBase];
     bottom: 0;
     left: -20px;
     height: 100px;
-    width: calc(50% - 59px);
+    width: calc(50% - 20px);
     transform: skewX(341deg);
     z-index: 2;
     background: #b0ceff80;
@@ -140,7 +144,7 @@ const logos = [...logosBase, ...logosBase];
     &:last-of-type {
       right: -20px;
       left: auto;
-      width: calc(50% - 53px);
+      width: calc(50% - 17px);
       transform: skewX(20deg);
     }
   }
@@ -161,6 +165,24 @@ const logos = [...logosBase, ...logosBase];
 
     100% {
       transform: translateX(0);
+    }
+  }
+
+  @media (min-width: 650px) {
+    .lamp-frame {
+      height: 150px;
+    }
+
+    .lamp-frame :global(img.lamp-img) {
+      height: 200px;
+    }
+
+    .overlay {
+      width: calc(50% - 34px);
+
+      &:last-of-type {
+        width: calc(50% - 30px);
+      }
     }
   }
 </style>

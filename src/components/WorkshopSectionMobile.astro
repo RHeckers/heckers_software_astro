@@ -1,0 +1,350 @@
+---
+import { Image } from "astro:assets";
+import effectiveAngular from "../assets/workshop/effective_angular.jpg";
+import ngPoland from "../assets/workshop/ng_poland.jpg";
+import talk1 from "../assets/workshop/talk_1.jpg";
+import talk2 from "../assets/workshop/talk_2.png";
+
+const workshops = [
+  {
+    image: talk2,
+    objectPosition: "center",
+    title: "Enterprise Angular Patterns",
+    tag: "Architecture • Angular",
+    description:
+      "Learn to implement enterprise-grade Angular patterns for scalable and maintainable applications.",
+    bullets: [
+      "Modern architecture for team scalability and code reuse",
+      "State management with signals and reactive patterns",
+      "Common pitfalls and anti-patterns to avoid",
+      "Performance optimization techniques for large applications",
+      "Tracing and monitoring strategies for reliability",
+      "Accessibility and security best practices in enterprise apps",
+    ],
+  },
+  {
+    image: ngPoland,
+    objectPosition: "left",
+    title: "Nx Monorepo Enablement",
+    tag: "Platform • Nx",
+    description:
+      "Adopt Nx to reduce build times and coordinate multiple apps, libraries, and standards at scale.",
+    bullets: [
+      "Monorepo fundamentals, benefits, and trade-offs",
+      "How to leverage Nx for optimal developer experience",
+      "Monorepo architecture patterns for large teams",
+      "Common challenges and solutions when migrating to a monorepo",
+      "Nx Cloud for faster and more stable builds and CI integration",
+    ],
+  },
+  {
+    image: talk1,
+    objectPosition: "center",
+    title: "Succesfully Leveraging AI in your Angular And Nx Projects",
+    tag: "AI • Productivity",
+    description: "Unlock the potential of AI to boost developer productivity.",
+    bullets: [
+      "Integrating AI tools into your development workflow",
+      "Using AI for code generation, refactoring, and documentation",
+      "Personalize AI instructions and reuse prompts for consistent results",
+      "Best practices for prompt engineering and tool selection",
+      "Ethical considerations and limitations of AI in software development",
+    ],
+  },
+  {
+    image: effectiveAngular,
+    objectPosition: "top center",
+    title: "Leassons for Developing Enterprise Grade UI Libraries",
+    tag: "UI Libraries • Angular",
+    description:
+      "Build robust, accessible, and reusable UI component libraries for enterprise applications.",
+    bullets: [
+      "Designing for reusability and consistency across applications",
+      "Prevent common pitfalls in UI component development and how to avoid them",
+      "Implementing accessibility best practices in UI components",
+      "Theming and customization strategies for diverse use cases",
+      "Testing strategies for UI libraries to ensure reliability",
+      "Documentation and developer experience for library consumers",
+    ],
+  },
+];
+---
+
+<section id="workshops">
+  <div class="workshops">
+    <div class="workshops__list">
+      {
+        workshops.map((item, index) => (
+          <article
+            class="workshop-card"
+            style={`--card-stagger: ${index * 120}ms`}
+          >
+            <div class="card-media" aria-hidden="true">
+              <Image
+                src={item.image}
+                alt={item.title}
+                loading="lazy"
+                style={`--object-position: ${item.objectPosition ?? "center"}; object-position: var(--object-position);`}
+              />
+            </div>
+            <div class="card-body">
+              <p class="card-tag">{item.tag}</p>
+              <h3>{item.title}</h3>
+              <p class="card-description">{item.description}</p>
+              <ul>
+                {item.bullets.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+              <div class="card-actions">
+                <a class="card-cta" href="#workshops">
+                  Book workshop
+                </a>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    background-color: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(3rem, 7vw, 6rem) clamp(1.5rem, 6vw, 5rem);
+    overflow: hidden;
+  }
+
+  .workshops__title.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .workshops {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .workshops__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.25rem, 4vw, 2rem);
+    align-items: stretch;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .workshop-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
+    border: 1px solid var(--color-stroke);
+    border-radius: 18px;
+    padding: clamp(1rem, 5vw, 1.35rem);
+    box-shadow: 0 26px 60px rgba(40, 12, 19, 0.14);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    gap: 1rem;
+    transform-origin: center;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    opacity: 0;
+    transform: translateX(18vw) translateY(10px);
+    transition:
+      transform 1.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 1.5s ease;
+    transition-delay: var(--card-stagger, 0ms);
+  }
+
+  .workshop-card.is-visible {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+
+  .workshop-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 35% 15%,
+      rgba(58, 120, 105, 0.12),
+      transparent 40%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .workshop-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 120% 50%,
+      rgba(44, 16, 23, 0.14),
+      transparent 45%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .card-media {
+    border-radius: 14px;
+    overflow: hidden;
+    height: clamp(180px, 45vw, 260px);
+    min-height: 0;
+    max-height: 260px;
+    background: var(--color-light-alt);
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 10px 24px rgba(40, 12, 19, 0.08);
+  }
+
+  .card-media :global(img) {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: var(--object-position, center);
+    transform: scale(1.02);
+    filter: saturate(1.05);
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    padding-inline: 0;
+    z-index: 1;
+    height: 100%;
+  }
+
+  .card-tag {
+    color: var(--color-accent-ink);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.08em;
+    font-size: var(--font-sm);
+    margin-top: 0.1rem;
+  }
+
+  .card-body h3 {
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    line-height: 1.2;
+    color: var(--color-ink);
+    margin-top: 0.7rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .card-description {
+    color: var(--color-ink-muted);
+    font-size: var(--font-md);
+  }
+
+  .card-body ul {
+    list-style: none;
+    display: grid;
+    gap: var(--spacer-sm);
+    margin-top: 0.7rem;
+    margin-left: 0.25rem;
+  }
+
+  .card-actions {
+    display: flex;
+    margin-top: auto;
+    padding-top: var(--spacer-md);
+    margin-top: 1.1rem;
+  }
+
+  .card-cta {
+    display: inline-block;
+    padding: var(--spacer-md) var(--spacer-xl);
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink-light);
+    background-color: var(--color-accent);
+    border-radius: 50px;
+    text-decoration: none;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .card-cta:hover,
+  .card-cta:focus-visible {
+    outline: 2px solid var(--color-accent-strong);
+    color: var(--color-light-alt);
+    background-color: var(--color-accent-strong);
+  }
+
+  .card-cta:active {
+    transform: translateY(0);
+  }
+
+  .card-body li {
+    display: flex;
+    gap: var(--spacer-sm);
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .card-body li::before {
+    content: "→";
+    color: var(--color-accent-ink);
+    font-weight: var(--font-weight-bold);
+  }
+
+  @media (min-width: 769px) {
+    .workshops__list {
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    .workshop-card {
+      grid-template-columns: minmax(300px, 45%) 1fr;
+      height: 500px;
+      min-height: fit-content;
+      padding: clamp(1.1rem, 4vw, 1.4rem);
+    }
+
+    .card-media {
+      height: 100%;
+      min-height: 260px;
+      max-height: none;
+    }
+
+    .card-body {
+      padding-inline: 0.25rem;
+      gap: var(--spacer-base);
+    }
+
+    .card-body ul {
+      gap: var(--spacer-base);
+    }
+
+    .card-actions {
+      padding-top: var(--spacer-lg);
+    }
+  }
+</style>
+
+<script>
+  const cards = document.querySelectorAll(".workshop-card, .workshops__title");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.3 },
+  );
+
+  cards.forEach((card) => observer.observe(card));
+</script>

@@ -77,7 +77,7 @@
     </h2>
     <h2 class="line-5"><span class="accent accent-2">Fix</span> Your Code</h2>
     <h2 class="line-5">
-      And <span class="accent accent-3">Train</span> Your Team
+      And <span class="accent accent-5">Train</span> Your Team
     </h2>
   </div>
 </div>
@@ -139,19 +139,23 @@
       }
     }
     .accent-1 {
-      animation-range: entry 60% cover 55%;
+      animation-range: entry 80% cover 85%;
     }
 
     .accent-2 {
-      animation-range: entry 65% cover 60%;
+      animation-range: entry 65% cover 70%;
     }
 
     .accent-3 {
-      animation-range: entry 70% cover 65%;
+      animation-range: entry 70% cover 100%;
     }
 
     .accent-4 {
       animation-range: entry 60% cover 50%;
+    }
+
+    .accent-5 {
+      animation-range: entry 60% cover 70%;
     }
 
     .story-block-1 {
@@ -174,6 +178,7 @@
     }
 
     .story-block-2 {
+      padding: 1rem;
       color: var(--color-ink-light);
       background-color: var(--color-stroke-strong);
       border-radius: 15px;
@@ -238,7 +243,7 @@
     display: inline-block;
     animation-name: word-fall;
     animation-timeline: view();
-    animation-range: entry 100% cover 100%;
+    animation-range: entry 400% cover 100%;
   }
 
   @keyframes line-draw {
@@ -257,56 +262,58 @@
   }
 
   @media (max-width: 640px) {
-    .story-block {
-      height: 35vh !important;
+    .story .story-block {
+      height: 50vh;
+      min-height: 500px;
     }
 
-    .story-block-1 {
-      padding-bottom: 0 !important;
+    .story .story-block-1 {
+      padding-bottom: 0;
     }
 
-    .story-block-3 {
-      margin: var(--spacer-md) !important;
+    .story .story-block-3 {
+      margin: var(--spacer-md);
     }
 
-    .story-block h2,
-    .story-block span {
-      font-size: var(--font-2xl);
+    .story .story-block h2,
+    .story .story-block span {
+      font-size: 2.5rem;
+      font-weight: var(--font-weight-normal);
     }
 
-    .stacked-text {
+    .story .stacked-text {
       flex-direction: column;
 
       .small-text {
-        font-size: 1.2rem !important;
-        padding-bottom: 0px !important;
+        font-size: 1.75rem;
+        padding-bottom: 0px;
 
         span {
-          font-size: 1.2rem !important;
+          font-size: 1.75rem;
         }
       }
 
       .large-text {
-        font-size: 5rem !important;
+        font-size: 5rem;
         line-height: 1;
       }
     }
 
-    svg {
-      height: calc(165vh - 109px) !important;
+    .story svg {
+      display: none;
     }
 
-    .sticky-wrapper {
-      margin: 0 var(--spacer-md) !important;
+    .story .sticky-wrapper {
+      margin: 0 var(--spacer-md);
     }
 
-    .sticky-wrapper,
-    .sticky-wrapper-long {
-      top: 90px !important;
+    .story .sticky-wrapper,
+    .story .sticky-wrapper-long {
+      top: 20vh;
     }
 
-    .story-block-1 {
-      top: 90px !important;
+    .story .story-block-1 {
+      top: 20vh;
     }
   }
 </style>

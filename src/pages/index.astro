@@ -9,12 +9,12 @@ import PageLayout from "../layouts/PageLayout.astro";
 import CodeReveal from "../components/CodeReveal.astro";
 import WorkshopSection from "../components/WorkshopSection.astro";
 import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
+import WorkshopSectionMobile from "../components/WorkshopSectionMobile.astro";
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
   <section class="section-1">
-    <!-- <LogoBanner /> -->
     <StoryBlock />
     <ExpandingWord
       word="Fix Your app"
@@ -25,7 +25,13 @@ import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
   </section>
 
   <CodeReveal />
-  <WorkshopSection client:visible={{ rootMargin: "500px" }} />
+
+  <div class="workshop-section-desktop">
+    <WorkshopSection client:visible={{ rootMargin: "500px" }} />
+  </div>
+  <div class="workshop-section-mobile">
+    <WorkshopSectionMobile client:visible={{ rootMargin: "500px" }} />
+  </div>
 
   <ApplicationDevelopment />
 </PageLayout>
@@ -33,5 +39,19 @@ import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
 <style>
   .section-1 {
     background-color: var(--color-light);
+  }
+  .workshop-section-desktop {
+    display: none;
+  }
+  .workshop-section-mobile {
+    display: block;
+  }
+  @media (min-width: 1425px) {
+    .workshop-section-desktop {
+      display: block;
+    }
+    .workshop-section-mobile {
+      display: none;
+    }
   }
 </style>

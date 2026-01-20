@@ -7,7 +7,7 @@ import talk2 from "../assets/workshop/talk_2.png";
 
 const workshops = [
   {
-    image: talk2,
+    image: talk1,
     objectPosition: "center",
     title: "Enterprise Angular Patterns",
     tag: "Architecture • Angular",
@@ -38,7 +38,7 @@ const workshops = [
     ],
   },
   {
-    image: talk1,
+    image: talk2,
     objectPosition: "center",
     title: "Succesfully Leveraging AI in your Angular And Nx Projects",
     tag: "AI • Productivity",
@@ -70,160 +70,194 @@ const workshops = [
 ];
 ---
 
-<section id="workshops">
-  <div class="workshops">
-    <div class="workshops__list">
-      {
-        workshops.map((item, index) => (
-          <article
-            class="workshop-card"
-            style={`--card-stagger: ${index * 120}ms`}
-          >
-            <div class="card-media" aria-hidden="true">
-              <Image
-                src={item.image}
-                alt={item.title}
-                loading="lazy"
-                style={`--object-position: ${item.objectPosition ?? "center"}; object-position: var(--object-position);`}
-              />
-            </div>
-            <div class="card-body">
-              <p class="card-tag">{item.tag}</p>
-              <h3>{item.title}</h3>
-              <p class="card-description">{item.description}</p>
-              <ul>
-                {item.bullets.map((point) => (
-                  <li>{point}</li>
-                ))}
-              </ul>
-              <div class="card-actions">
-                <a class="card-cta" href="#workshops">
-                  Book workshop
-                </a>
-              </div>
-            </div>
-          </article>
-        ))
-      }
+<div class="workshops-scroll-container">
+  <section id="workshops" class="workshops workshops--sticky">
+    <div class="wheel-pin" data-carousel>
+      <div class="wheel-layout">
+        <div class="wheel wheel--left" aria-hidden="true">
+          <div class="wheel__track" data-wheel="left">
+            {
+              workshops.map((item, index) => (
+                <article
+                  class="wheel-card"
+                  data-index={index}
+                  style={`--card-stagger: ${index * 120}ms`}
+                >
+                  <p class="card-tag">{item.tag}</p>
+                  <h3>{item.title}</h3>
+                  <p class="card-description">{item.description}</p>
+                  <ul>
+                    {item.bullets.map((point) => (
+                      <li>{point}</li>
+                    ))}
+                  </ul>
+                  <div class="card-actions">
+                    <a class="card-cta" href="#workshops">
+                      Book workshop
+                    </a>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="wheel wheel--right" aria-hidden="true">
+          <div class="wheel__track" data-wheel="right">
+            {
+              workshops.map((item, index) => (
+                <figure class="wheel-image" data-index={index}>
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    loading="lazy"
+                    style={`--object-position: ${item.objectPosition ?? "center"}; object-position: var(--object-position);`}
+                  />
+                </figure>
+              ))
+            }
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+  <div id="workshops-spacer" style="height:0;"></div>
+</div>
 
 <style>
-  section {
-    background-color: var(--color-light-alt);
+  .workshops-scroll-container {
+    position: relative;
+    /* Height = sticky section height + scroll distance for carousel */
+    height: calc(100vh + 1500px); /* Adjust 600px for desired scroll length */
+  }
+  #workshops-spacer {
+    width: 100%;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .workshops--sticky {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    will-change: transform;
+  }
+  .workshops {
+    background: linear-gradient(160deg, #f8f4f2 0%, #ffffff 55%, #f3ecea 100%);
     color: var(--color-ink);
-    padding: clamp(3rem, 7vw, 6rem) clamp(1.5rem, 6vw, 5rem);
+    padding: clamp(3.5rem, 8vw, 7rem) clamp(1.5rem, 7vw, 6rem);
     overflow: hidden;
   }
 
-  .workshops__title.is-visible {
+  .wheel-pin {
+    position: relative;
+    height: var(--pin-height, 100vh);
+  }
+
+  .wheel-layout {
+    position: sticky;
+    top: clamp(1.5rem, 6vh, 4rem);
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    align-items: center;
+    gap: clamp(1.5rem, 6vw, 5rem);
+    min-height: clamp(460px, 70vw, 680px);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding-inline: 0;
+  }
+
+  .wheel {
+    position: relative;
+    min-height: clamp(460px, 70vw, 680px);
+    overflow: visible;
+  }
+
+  .wheel__track {
+    position: absolute;
+    top: 50%;
+    width: clamp(520px, 60vw, 720px);
+    height: clamp(520px, 60vw, 720px);
+  }
+
+  .wheel--left {
+    justify-self: start;
+  }
+
+  .wheel--left .wheel__track {
+    left: 0;
+    transform: translate(-55%, -50%);
+  }
+
+  .wheel--right {
+    justify-self: end;
+  }
+
+  .wheel--right .wheel__track {
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+
+  .wheel-card,
+  .wheel-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition:
+      transform 0.7s ease,
+      filter 0.7s ease,
+      opacity 0.7s ease;
+    opacity: 0.55;
+    filter: blur(3px) saturate(0.95);
+  }
+
+  .wheel-card.is-active,
+  .wheel-image.is-active {
     opacity: 1;
-    transform: translateY(0);
+    filter: blur(0) saturate(1.05);
+    z-index: 3;
   }
 
-  .workshops {
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: clamp(1.5rem, 4vw, 2.5rem);
-  }
-
-  .workshops__list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(1.25rem, 4vw, 2rem);
-    align-items: stretch;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  .workshop-card {
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
+  .wheel-card {
+    width: min(660px, 98vw);
+    max-width: 700px;
+    background: rgba(255, 255, 255, 0.96);
     border: 1px solid var(--color-stroke);
     border-radius: 18px;
-    padding: clamp(1rem, 5vw, 1.35rem);
-    box-shadow: 0 26px 60px rgba(40, 12, 19, 0.14);
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    gap: 1rem;
-    transform-origin: center;
-    width: 100%;
-    min-width: 0;
-    height: auto;
-    opacity: 0;
-    transform: translateX(18vw) translateY(10px);
-    transition:
-      transform 1.5s cubic-bezier(0.22, 0.61, 0.36, 1),
-      opacity 1.5s ease;
-    transition-delay: var(--card-stagger, 0ms);
-  }
-
-  .workshop-card.is-visible {
-    opacity: 1;
-    transform: translateX(0) translateY(0);
-  }
-
-  .workshop-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 35% 15%,
-      rgba(58, 120, 105, 0.12),
-      transparent 40%
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .workshop-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 120% 50%,
-      rgba(44, 16, 23, 0.14),
-      transparent 45%
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .card-media {
-    border-radius: 14px;
-    overflow: hidden;
-    height: clamp(180px, 45vw, 260px);
-    min-height: 0;
-    max-height: 260px;
-    background: var(--color-light-alt);
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 10px 24px rgba(40, 12, 19, 0.08);
-  }
-
-  .card-media :global(img) {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    object-position: var(--object-position, center);
-    transform: scale(1.02);
-    filter: saturate(1.05);
-  }
-
-  .card-body {
+    padding: 2.2rem 2.6rem 2.1rem 2.4rem;
+    box-shadow: 0 26px 60px rgba(40, 12, 19, 0.16);
     display: flex;
     flex-direction: column;
-    gap: var(--spacer-sm);
-    padding-inline: 0;
-    z-index: 1;
+    z-index: 2;
+  }
+
+  .wheel-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: radial-gradient(
+      circle at 25% 15%,
+      rgba(58, 120, 105, 0.12),
+      transparent 55%
+    );
+  }
+
+  .wheel-image {
+    width: min(370px, 80vw);
+    height: min(370px, 80vw);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(40, 12, 19, 0.2);
+    background: var(--color-light-alt);
+  }
+
+  .wheel-image :global(img) {
+    width: 100%;
     height: 100%;
+    object-fit: cover;
+    object-position: var(--object-position, center);
+    transform: scale(1.03);
   }
 
   .card-tag {
@@ -231,116 +265,141 @@ const workshops = [
     font-weight: var(--font-weight-bold);
     letter-spacing: 0.08em;
     font-size: var(--font-sm);
+    margin-bottom: 0.35rem;
+    margin-top: 0.1rem;
   }
 
-  .card-body h3 {
-    font-size: clamp(1.35rem, 3vw, 1.7rem);
-    line-height: 1.2;
-    color: var(--color-ink);
+  .wheel-card h3 {
+    font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+    line-height: 1.13;
+    margin-top: 0.1rem;
   }
 
   .card-description {
     color: var(--color-ink-muted);
-    font-size: var(--font-md);
+    font-size: 1.18rem;
+    margin-bottom: 0.85rem;
+    margin-top: 0.15rem;
   }
 
-  .card-body ul {
+  .wheel-card ul {
     list-style: none;
-    display: grid;
-    gap: var(--spacer-sm);
-    margin-top: var(--spacer-sm);
-  }
-
-  .card-actions {
     display: flex;
-    margin-top: auto;
-    padding-top: var(--spacer-md);
+    flex-direction: column;
+    gap: 0.32rem;
+    margin-top: 0.7rem;
+    margin-left: 0.5rem;
+    padding: 0;
   }
 
-  .card-cta {
-    display: inline-block;
-    padding: var(--spacer-md) var(--spacer-xl);
-    font-size: var(--font-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-ink-light);
-    background-color: var(--color-accent);
-    border-radius: 50px;
-    text-decoration: none;
-    transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease;
-  }
-
-  .card-cta:hover,
-  .card-cta:focus-visible {
-    outline: 2px solid var(--color-accent-strong);
-    color: var(--color-light-alt);
-    background-color: var(--color-accent-strong);
-  }
-
-  .card-cta:active {
-    transform: translateY(0);
-  }
-
-  .card-body li {
+  .wheel-card li {
     display: flex;
-    gap: var(--spacer-sm);
+    gap: 0.5em;
     color: var(--color-ink);
     font-weight: var(--font-weight-medium);
+    margin-bottom: 0.13rem;
   }
 
-  .card-body li::before {
+  .wheel-card li::before {
     content: "→";
     color: var(--color-accent-ink);
     font-weight: var(--font-weight-bold);
   }
 
-  @media (min-width: 769px) {
-    .workshops__list {
-      gap: clamp(1.5rem, 3vw, 2.5rem);
-    }
+  .card-actions {
+    display: flex;
+    margin-top: 1.75rem;
+    cursor: pointer;
+    z-index: 10;
+  }
 
-    .workshop-card {
-      grid-template-columns: minmax(300px, 45%) 1fr;
-      height: 500px;
-      min-height: fit-content;
-      padding: clamp(1.1rem, 4vw, 1.4rem);
-    }
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2.2rem;
+    font-size: 1.13rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink-light);
+    background-color: var(--color-accent);
+    border-radius: 999px;
+    text-decoration: none;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      background-color 0.3s ease;
+  }
 
-    .card-media {
-      height: 100%;
-      min-height: 260px;
-      max-height: none;
-    }
-
-    .card-body {
-      padding-inline: 0.25rem;
-      gap: var(--spacer-base);
-    }
-
-    .card-body ul {
-      gap: var(--spacer-base);
-    }
-
-    .card-actions {
-      padding-top: var(--spacer-lg);
-    }
+  .card-cta:hover,
+  .card-cta:focus-visible {
+    outline: 2px solid var(--color-accent-strong);
+    background-color: var(--color-accent-strong);
   }
 </style>
 
 <script>
-  const cards = document.querySelectorAll(".workshop-card, .workshops__title");
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.3 },
-  );
+  // Sticky scroll-animated carousel logic with smooth unstick
+  (function () {
+    const scrollContainer = document.querySelector(
+      ".workshops-scroll-container",
+    ) as HTMLElement;
+    const section = document.querySelector(".workshops--sticky") as HTMLElement;
+    const spacer = document.getElementById("workshops-spacer") as HTMLElement;
+    if (!scrollContainer || !section || !spacer) return;
 
-  cards.forEach((card) => observer.observe(card));
+    const carousel = section.querySelector("[data-carousel]") as HTMLElement;
+    const leftItems = Array.from(
+      carousel.querySelectorAll("[data-wheel='left'] .wheel-card"),
+    ) as HTMLElement[];
+    const rightItems = Array.from(
+      carousel.querySelectorAll("[data-wheel='right'] .wheel-image"),
+    ) as HTMLElement[];
+    const total = Math.min(leftItems.length, rightItems.length);
+    const radiusLeft = 520;
+    const radiusRight = 440;
+    const arc = Math.PI * 1.25;
+    const baseAngleLeft = 0;
+    const baseAngleRight = 0;
+
+    function positionItems(activeIndex: number) {
+      leftItems.forEach((item, index) => {
+        const offset = index - activeIndex;
+        const angle = baseAngleLeft + (offset * arc) / (total - 1);
+        const x = Math.cos(angle) * radiusLeft;
+        const y = Math.sin(angle) * radiusLeft;
+        item.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+        item.classList.toggle("is-active", index === activeIndex);
+      });
+      rightItems.forEach((item, index) => {
+        const offset = index - activeIndex;
+        const angle = baseAngleRight - (offset * arc) / (total - 1);
+        const x = -Math.cos(angle) * radiusRight;
+        const y = Math.sin(angle) * radiusRight;
+        item.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+        item.classList.toggle("is-active", index === activeIndex);
+      });
+    }
+
+    function updateFromScroll() {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const scrollable = scrollContainer.offsetHeight - viewportHeight;
+      const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
+      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+      const index = Math.round(progress * (total - 1));
+      positionItems(index);
+      // Instead of toggling sticky/relative, grow the spacer to push the next section down
+      if (progress >= 1) {
+        // Grow the spacer to the height of the section for a smooth unstick
+        spacer.style.height = section.offsetHeight + "px";
+      } else {
+        spacer.style.height = "0px";
+      }
+    }
+
+    positionItems(0);
+    updateFromScroll();
+    window.addEventListener("scroll", updateFromScroll, { passive: true });
+    window.addEventListener("resize", updateFromScroll);
+  })();
 </script>
