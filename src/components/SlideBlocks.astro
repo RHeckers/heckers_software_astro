@@ -50,7 +50,6 @@ const { cards = [] } = Astro.props;
 
   .slider {
     width: 100%;
-    padding: 1rem;
     overflow: hidden;
   }
 
@@ -111,7 +110,7 @@ const { cards = [] } = Astro.props;
   }
   .project-card__title {
     color: #fff;
-    font-weight: 700;
+    font-weight: var(--font-weight-medium);
     width: max-content;
     font-size: 2rem;
     writing-mode: vertical-rl;

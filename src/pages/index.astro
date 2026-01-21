@@ -9,7 +9,8 @@ import PageLayout from "../layouts/PageLayout.astro";
 import CodeReveal from "../components/CodeReveal.astro";
 import WorkshopSection from "../components/WorkshopSection.astro";
 import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
-import WorkshopSectionMobile from "../components/WorkshopSectionMobile.astro";
+import Reviews from "../components/Reviews.astro";
+import Contact from "../components/Contact.astro";
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -26,32 +27,24 @@ import WorkshopSectionMobile from "../components/WorkshopSectionMobile.astro";
 
   <CodeReveal client:visible={{ rootMargin: "500px" }} />
 
-  <div class="workshop-section-desktop">
-    <WorkshopSection client:visible={{ rootMargin: "500px" }} />
-  </div>
-  <div class="workshop-section-mobile">
-    <WorkshopSectionMobile client:visible={{ rootMargin: "500px" }} />
-  </div>
+  <WorkshopSection />
 
-  <ApplicationDevelopment />
+  <section class="bottom-section">
+    <ApplicationDevelopment />
+    <Reviews />
+    <Contact />
+  </section>
 </PageLayout>
 
 <style>
   .section-1 {
     background-color: var(--color-light);
   }
-  .workshop-section-desktop {
-    display: none;
-  }
-  .workshop-section-mobile {
-    display: block;
-  }
-  @media (min-width: 1425px) {
-    .workshop-section-desktop {
-      display: block;
-    }
-    .workshop-section-mobile {
-      display: none;
-    }
+
+  .bottom-section {
+    padding-bottom: 3rem;
+    background:
+      radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
+      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
   }
 </style>

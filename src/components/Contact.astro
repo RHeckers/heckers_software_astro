@@ -1,0 +1,130 @@
+<form class="contact-form" name="contact" autocomplete="on" id="contactForm">
+  <div class="form-group">
+    <label for="name">Name*</label>
+    <input type="text" id="name" name="name" required placeholder="Your name" />
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email*</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      placeholder="your@email.com"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="phone">Phone</label>
+    <input type="tel" id="phone" name="phone" placeholder="Optional" />
+  </div>
+
+  <div class="form-group">
+    <label for="subject">Subject*</label>
+    <select id="subject" name="subject" required>
+      <option value="General">General</option>
+      <option value="General">Code Review</option>
+      <option value="General">Workshop</option>
+      <option value="General">Development</option>
+      <option value="Feedback">Feedback</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="content">Content*</label>
+    <textarea
+      id="content"
+      name="content"
+      required
+      placeholder="Type your message..."></textarea>
+  </div>
+
+  <button type="submit" id="contactSubmit">Send</button>
+  <script>
+    if (typeof window !== "undefined") {
+      const form = document.getElementById("contactForm") as HTMLFormElement;
+      const button = document.getElementById(
+        "contactSubmit",
+      ) as HTMLButtonElement;
+      const checkValidity = () => {
+        button.disabled = !form.checkValidity();
+      };
+      form.addEventListener("input", checkValidity);
+      window.addEventListener("DOMContentLoaded", checkValidity);
+    }
+  </script>
+</form>
+
+<style>
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    max-width: 100%;
+    margin: 0 1rem;
+  }
+  .contact-form label {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    margin-top: 0.25rem;
+    font-size: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .contact-form select {
+    cursor: pointer;
+    padding-right: 2.5rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #f9fafb
+      url('data:image/svg+xml;utf8,<svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M6 8L10 12L14 8" stroke="%231c2a45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+      no-repeat right 1rem center/1.2em;
+  }
+
+  .contact-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .contact-form button {
+    background: var(--color-primary, #1c2a45);
+    color: #fff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .contact-form button:disabled {
+    background: #d1d5db;
+    color: #888;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  .contact-form button:hover:not(:disabled) {
+    background: #0f1a2b;
+  }
+  @media (min-width: 600px) {
+    .contact-form {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+  }
+</style>

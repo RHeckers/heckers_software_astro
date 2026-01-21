@@ -1,0 +1,360 @@
+---
+import { Image } from "astro:assets";
+
+interface Review {
+  image: string; // Path to customer image
+  name: string;
+  title: string;
+  content: string;
+}
+
+const reviews: Review[] = [
+  {
+    image:
+      "https://media.licdn.com/dms/image/v2/C5603AQFl7MIQ7kxFww/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1520685686408?e=1770854400&v=beta&t=c9xkyYI3ZVPQ-Jdnljqu1f-z6SWEOeqqDYZE4KEuyQo",
+    name: "Nico Vandenbroucke",
+    title: "IT-Directeur, Wit-Gele Kruis West Vlaanderen",
+    content:
+      "It was a pleasure working with Heckers Software and having Roberto on our team. He knows Angular very well, and no task was too difficult for him. I would highly recommend him for your Angular project.",
+  },
+  {
+    image:
+      "https://media.licdn.com/dms/image/v2/C5603AQEGkOor4ankyw/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1589368543033?e=1770854400&v=beta&t=C33HyC41oT14m_m-WMIMsacyA6TnrMYN1pH4nqY4s60",
+    name: "Marc Caessens",
+    title: "Senior Software Program Manager, Marel",
+    content: `
+      Roberto really was a great addition to his team for several years at Marel and has developed a big front-end angular data visualisation framework for us, going from the earliest versions of Angular to the most recent versions and he was able to tackle all challenges that you can encounter in a technology that is continuously improving.
+      `,
+  },
+  {
+    image:
+      "https://media.licdn.com/dms/image/v2/C4E03AQHLPxVSl8Y3YA/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1616600014330?e=1770854400&v=beta&t=s2olLsPYeGzolWKnkrRmAt5FRh7oE_-w7LTWZe9DY1g",
+    name: "Alex Wesselink",
+    title: "Designer & Researcher, Vattenfall",
+    content: `
+      Working alongside Roberto at Vattenfall has been a great experience. As a UX designer, I was consistently impressed by his ability to not just code, but to actively think along and enhance our user experiences. His quick development skills with Angular, combined with his thoughtful input during product discussions, made our collaboration efficient and productive.      `,
+  },
+  {
+    image:
+      "https://media.licdn.com/dms/image/v2/C4E03AQEc8TvXjYG5NQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1516447130387?e=1770854400&v=beta&t=lZSAQyyQ4E-gI277IyCGZoUPH1J89Ok95vQZcTSLYuE",
+    name: "Peter Nieuwenhuyse",
+    title: "Software architect & Angular coach",
+    content: `
+In January 2025 Roberto from Heckers Software joined our team. Not by immediately bulldozing through the code, but by carefully and thoughtfully paving the right paths with insight and calm. Many of the choices he made back then still contribute today to the stability and quality of the project.
+      `,
+  },
+];
+---
+
+<section class="reviews-section">
+  <div class="parallax-bg-reviews">
+    <Image
+      src={import.meta.env.BASE_URL + "src/assets/desktop_lookup.svg"}
+      alt="Desktop Lookup"
+      class="parallax-img-reviews parallax-desktop-lookup"
+      loading="lazy"
+      width={200}
+      height={150}
+    />
+  </div>
+  <div class="reviews-container">
+    <div class="reviews-header">
+      <h2 class="reviews-title">Testimonials</h2>
+    </div>
+    <div class="reviews-card-shell">
+      <div class="reviews-card-scroll">
+        <ul class="reviews-list">
+          {
+            reviews.map((review) => (
+              <li class="review-card">
+                <Image
+                  src={review.image}
+                  alt={review.name}
+                  class="review-img"
+                  width={56}
+                  height={56}
+                  fit="cover"
+                />
+                <div class="review-info">
+                  <div class="review-name">{review.name}</div>
+                  <div class="review-title">{review.title}</div>
+                  <p class="review-content">{review.content}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="reviews-card-nav" aria-label="Scroll reviews">
+        <button
+          class="reviews-card-button"
+          data-direction="prev"
+          aria-label="Previous review">⮜</button
+        >
+        <button
+          class="reviews-card-button"
+          data-direction="next"
+          aria-label="Next review">⮞</button
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .parallax-bg-reviews {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 0;
+  }
+  .parallax-img-reviews {
+    position: absolute;
+    will-change: transform;
+    opacity: 0.7;
+    transition: transform 0.2s linear;
+    max-width: 30vw;
+    min-width: 120px;
+    height: auto;
+  }
+  .parallax-desktop-lookup {
+    left: 2vw;
+    top: 2vh;
+    width: 16vw;
+    max-width: 200px;
+    z-index: 1;
+  }
+  @media (max-width: 640px) {
+    .parallax-bg-reviews {
+      display: none;
+    }
+    .parallax-img-reviews {
+      max-width: 60vw;
+      min-width: 80px;
+    }
+    .parallax-desktop-lookup {
+      left: 0vw;
+      top: 0vh;
+      width: 35vw;
+    }
+  }
+  .reviews-section {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .reviews-container {
+    padding: var(--spacer-xl) 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1200px;
+    gap: var(--spacer-xl);
+  }
+
+  .reviews-title {
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink-light);
+    width: 100%;
+    text-align: center;
+  }
+
+  .reviews-card-shell {
+    width: 100%;
+  }
+  .reviews-card-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
+  }
+  .reviews-card-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  .reviews-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--spacer-md);
+    padding: 0 1rem var(--spacer-md);
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: left;
+  }
+  .reviews-list::after {
+    content: "";
+    flex: 0 0 1px;
+  }
+  .reviews-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  .review-card {
+    flex: 0 0 82vw;
+    max-width: 82vw;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: var(--spacer-xl);
+    text-align: left;
+    isolation: isolate;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    gap: var(--spacer-md);
+  }
+  .review-img {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid var(--color-accent);
+    flex-shrink: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.06)
+    );
+  }
+  .review-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .review-name {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+    color: var(--color-ink-light);
+  }
+  .review-title {
+    font-size: var(--font-md);
+    color: var(--color-accent);
+  }
+  .review-content {
+    margin: 0;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0 var(--spacer-sm);
+    font-size: var(--font-md);
+  }
+  .reviews-card-nav {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--spacer-sm);
+    gap: var(--spacer-sm);
+    margin-right: var(--spacer-md);
+  }
+  .reviews-card-button {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(15, 26, 43, 0.7);
+    color: var(--color-ink-light);
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-md);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+  }
+  @media (min-width: 650px) {
+    .reviews-container {
+      padding: var(--spacer-3xl) var(--spacer-2xl);
+    }
+
+    .reviews-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacer-lg);
+      padding: 0;
+    }
+    .reviews-card-scroll {
+      overflow: visible;
+      scroll-snap-type: none;
+      scroll-padding: 0;
+    }
+    .reviews-card-nav {
+      display: none;
+      margin-right: 0;
+    }
+    .review-card {
+      flex: initial;
+      max-width: none;
+      flex-direction: row;
+      scroll-snap-align: unset;
+      scroll-snap-stop: normal;
+    }
+    .review-img {
+      width: 58px;
+      height: 58px;
+    }
+    .review-name {
+      font-size: var(--font-xl);
+    }
+    .review-title {
+      font-size: var(--font-md);
+    }
+    .reviews-title {
+      font-size: 5rem;
+    }
+    .review-content {
+      font-size: var(--font-md);
+    }
+  }
+</style>
+<script is:inline>
+  // Parallax scroll effect for desktop_lookup.svg
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY;
+    const desktopLookup = document.querySelector(".parallax-desktop-lookup");
+    if (desktopLookup) {
+      desktopLookup.style.transform = `translateY(${scrollY * 0.04 - 300}px)`;
+    }
+  });
+  // Card scroll logic for reviews
+  const reviewShells = document.querySelectorAll(".reviews-card-shell");
+  reviewShells.forEach((shell) => {
+    const container = shell.querySelector(".reviews-card-scroll");
+    const list = shell.querySelector(".reviews-list");
+    const buttons = shell.querySelectorAll(".reviews-card-button");
+    if (!container || !list || buttons.length === 0) return;
+    const getStep = () => {
+      const firstCard = list.querySelector(".review-card");
+      const styles = window.getComputedStyle(list);
+      const gap = parseFloat(styles.columnGap || styles.gap || "0");
+      return (firstCard?.clientWidth || 0) + gap;
+    };
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const direction = button.getAttribute("data-direction");
+        const step = getStep() || container.clientWidth;
+        const delta = direction === "next" ? step : -step;
+        container.scrollBy({ left: delta, behavior: "smooth" });
+      });
+    });
+  });
+</script>

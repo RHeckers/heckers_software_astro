@@ -14,7 +14,7 @@ import SlideBlocks from "./SlideBlocks.astro";
         class="img circle-mask-image"
       />
       <div class="content-reveal">
-        <h2 class="reveal-title">Improve Your Code</h2>
+        <h2 class="reveal-title">Four steps of improvement</h2>
 
         <SlideBlocks
           cards={[
@@ -22,7 +22,7 @@ import SlideBlocks from "./SlideBlocks.astro";
               isActive: true,
               title: "Codebase Analysis",
               description:
-                "Our experts perform a deep analysis of your existing codebase and architecture. This helps us identify code smells, architectural issues, performance bottlenecks, and security vulnerabilities that may be hindering your application's success.",
+                "Our industry experts perform a deep analysis of your existing codebase and architecture. This helps us identify code smells, architectural issues, performance bottlenecks, and security vulnerabilities that may be hindering your application's success.",
               backgroundImage:
                 "https://plus.unsplash.com/premium_photo-1678566111481-8e275550b700?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             },
@@ -108,7 +108,7 @@ import SlideBlocks from "./SlideBlocks.astro";
 <style>
   .code-reveal-scroll-container {
     background-color: var(--color-light);
-    padding-bottom: 1rem;
+    padding-bottom: 1.5rem;
     position: relative;
     height: calc(100vh + 1800px); /* Adjust for desired scroll length */
   }
@@ -134,23 +134,6 @@ import SlideBlocks from "./SlideBlocks.astro";
     position: sticky;
     top: 0;
     width: 100%;
-  }
-
-  .reveal-card-list .accent {
-    font-weight: var(--font-weight-normal);
-    animation-timeline: --section-timeline;
-  }
-
-  .reveal-card-list .accent-1 {
-    animation-range: entry 65% cover 50%;
-  }
-
-  .reveal-card-list .accent-3 {
-    animation-range: entry 70% cover 50%;
-  }
-
-  .reveal-card-list .accent-4 {
-    animation-range: entry 75% cover 50%;
   }
 
   .img {
@@ -204,7 +187,7 @@ import SlideBlocks from "./SlideBlocks.astro";
     display: none;
     text-align: center;
     font-size: 3rem;
-    font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-medium);
     color: var(--color-ink-light);
     transform: translateY(50px);
     animation-name: fade-in-up;
@@ -349,6 +332,8 @@ import SlideBlocks from "./SlideBlocks.astro";
       max-width: 1200px;
       padding: var(--spacer-base) 0;
       gap: var(--spacer-xl);
+      justify-content: center;
+      height: 100%;
     }
 
     .code-reveal-section.code-reveal--sticky {
@@ -357,7 +342,7 @@ import SlideBlocks from "./SlideBlocks.astro";
 
     .reveal-title {
       display: block;
-      font-size: 7rem;
+      font-size: 5rem;
     }
 
     .reveal-card-list {
@@ -411,12 +396,12 @@ import SlideBlocks from "./SlideBlocks.astro";
         opacity: 0.4;
       }
       20% {
-        -webkit-mask-position: 25% 10%;
-        mask-position: 25% 10%;
+        -webkit-mask-position: 40% 10%;
+        mask-position: 40% 10%;
       }
       40% {
-        -webkit-mask-position: 50% 30%;
-        mask-position: 50% 30%;
+        -webkit-mask-position: 80% 20%;
+        mask-position: 80% 20%;
       }
       60% {
         -webkit-mask-position: 10% 50%;

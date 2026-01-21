@@ -1,18 +1,37 @@
 ---
 import ContentCards from "./ContentCards.astro";
+import { Image } from "astro:assets";
 ---
 
 <section class="section-4">
   <div class="app-development">
+    <div class="parallax-bg">
+      <Image
+        src={import.meta.env.BASE_URL + "src/assets/laptop_en_telefoon.svg"}
+        alt="Laptop and Phone"
+        class="parallax-img parallax-laptop"
+        loading="lazy"
+        width={260}
+        height={180}
+      />
+      <Image
+        src={import.meta.env.BASE_URL + "src/assets/cloud.svg"}
+        alt="Cloud"
+        class="parallax-img parallax-cloud"
+        loading="lazy"
+        width={180}
+        height={120}
+      />
+    </div>
     <div class="app-dev-content">
-      <h2 class="app-dev-title">App Development</h2>
+      <h2 class="app-dev-title">Application Development</h2>
       <div class="app-dev-card-shell">
         <div class="app-dev-card-scroll">
           <ul class="app-dev-list">
-            <ContentCards icon="✦" title="Discovery to Delivery">
-              Product discovery, architecture, and delivery in one
-              <span class="accent accent-1">cross-functional team</span> that stays
-              with you from first storyboard to launch.
+            <ContentCards icon="✦" title="Concept to Delivery">
+              From idea to launch, we partner with you to build
+              <span class="accent accent-1">products that resonate</span> with your
+              users and achieve your business goals.
             </ContentCards>
             <ContentCards icon="⧉" title="Cross Platform Applications">
               Shared UI and domain core with
@@ -20,9 +39,11 @@ import ContentCards from "./ContentCards.astro";
               surface feels intentional while shipping from a single codebase.
             </ContentCards>
             <ContentCards icon="⚙" title="Architected for Scale">
-              From modular architecture to cloud-native infrastructure, we build
-              applications designed to <span class="accent accent-2">grow</span> with
-              your business.
+              From modular architecture to <span class="accent accent-2"
+                >cloud-native infrastructure</span
+              >, we build applications designed to <span class="accent accent-2"
+                >grow</span
+              > with your business.
             </ContentCards>
           </ul>
         </div>
@@ -49,11 +70,76 @@ import ContentCards from "./ContentCards.astro";
 </section>
 
 <style>
+  .parallax-bg {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 0;
+  }
+  .parallax-img {
+    position: absolute;
+    will-change: transform;
+    opacity: 0.7;
+    transition: transform 0.2s linear;
+    max-width: 30vw;
+    min-width: 120px;
+    height: auto;
+  }
+  .parallax-laptop {
+    left: 2vw;
+    top: 8vh;
+    width: 18vw;
+    max-width: 260px;
+    z-index: 1;
+  }
+  .parallax-cloud {
+    right: 6vw;
+    top: 18vh;
+    width: 14vw;
+    max-width: 180px;
+    z-index: 1;
+  }
+  .parallax-computer {
+    left: 55vw;
+    bottom: 7vh;
+    width: 16vw;
+    max-width: 200px;
+    z-index: 1;
+  }
+  @media (max-width: 640px) {
+    .parallax-bg {
+      display: none;
+    }
+    .parallax-img {
+      max-width: 60vw;
+      min-width: 80px;
+    }
+    .parallax-laptop {
+      left: 0vw;
+      top: 4vh;
+      width: 40vw;
+    }
+    .parallax-cloud {
+      right: 0vw;
+      top: 10vh;
+      width: 30vw;
+    }
+    .parallax-computer {
+      left: 30vw;
+      bottom: 2vh;
+      width: 35vw;
+    }
+  }
+
+  .section-4 {
+    position: relative;
+    overflow: hidden;
+  }
   .section-4 {
     view-timeline-name: --app-dev-timeline;
-    background:
-      radial-gradient(circle at 10% 10%, #1c2a45 0%, #0f1a2b 45%),
-      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
   }
 
   .app-development {
@@ -78,8 +164,8 @@ import ContentCards from "./ContentCards.astro";
   }
 
   .app-dev-title {
-    font-size: 3.5rem;
-    font-weight: var(--font-weight-light);
+    font-size: 2.5rem;
+    font-weight: var(--font-weight-medium);
   }
 
   .app-dev-list .accent {
@@ -194,14 +280,14 @@ import ContentCards from "./ContentCards.astro";
     transform: translateY(-2px);
   }
 
-  @media (min-width: 641px) {
+  @media (min-width: 650px) {
     .app-dev-content {
       max-width: 1200px;
       padding: var(--spacer-3xl) var(--spacer-2xl);
     }
 
     .app-dev-title {
-      font-size: 6rem;
+      font-size: 5rem;
     }
 
     .app-dev-list {
@@ -237,22 +323,19 @@ import ContentCards from "./ContentCards.astro";
 </style>
 
 <script is:inline>
+  // Card scroll logic ...existing code...
   const appDevShells = document.querySelectorAll(".app-dev-card-shell");
-
   appDevShells.forEach((shell) => {
     const container = shell.querySelector(".app-dev-card-scroll");
     const list = shell.querySelector(".app-dev-list");
     const buttons = shell.querySelectorAll(".app-dev-card-button");
-
     if (!container || !list || buttons.length === 0) return;
-
     const getStep = () => {
       const firstCard = list.querySelector(".app-card");
       const styles = window.getComputedStyle(list);
       const gap = parseFloat(styles.columnGap || styles.gap || "0");
       return (firstCard?.clientWidth || 0) + gap;
     };
-
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
         const direction = button.getAttribute("data-direction");
@@ -261,5 +344,19 @@ import ContentCards from "./ContentCards.astro";
         container.scrollBy({ left: delta, behavior: "smooth" });
       });
     });
+  });
+
+  // Parallax scroll effect
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY;
+    const laptop = document.querySelector(".parallax-laptop");
+    const cloud = document.querySelector(".parallax-cloud");
+    // Only move a couple of pixels for subtle effect
+    if (laptop) {
+      laptop.style.transform = `translateY(${scrollY * 0.05 - 450}px)`;
+    }
+    if (cloud) {
+      cloud.style.transform = `translateY(${scrollY * 0.06 - 200}px)`;
+    }
   });
 </script>
