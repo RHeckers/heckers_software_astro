@@ -1,11 +1,11 @@
 <nav>
   <div class="content">
     <div class="links">
-      <p>blog</p>
+      <a>blog</a>
     </div>
     <h3>Heckers Software</h3>
     <div class="links">
-      <p>contact</p>
+      <a href="#contact-target">contact</a>
     </div>
   </div>
 
@@ -34,9 +34,15 @@
   }
 
   h3,
-  p {
+  a {
     mix-blend-mode: difference;
     cursor: pointer;
+    text-decoration: none;
+    color: var(--color-light);
+  }
+  a:hover {
+    text-decoration: underline;
+    color: var(--color-ink-light);
   }
 
   h3 {
