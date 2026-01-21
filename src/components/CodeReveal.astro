@@ -82,26 +82,29 @@ import SlideBlocks from "./SlideBlocks.astro";
       });
     }
 
-    function updateFromScroll() {
-      const containerRect = scrollContainer.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const scrollable = scrollContainer.offsetHeight - viewportHeight;
-      const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
-      const index = Math.round(progress * (total - 1));
-      setActiveCard(index);
-      // Unstick when last card is active
-      if (progress >= 1) {
-        spacer.style.height = section.offsetHeight + "px";
-      } else {
-        spacer.style.height = "0px";
+    requestAnimationFrame(() => {
+      function updateFromScroll() {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const scrollable = scrollContainer.offsetHeight - viewportHeight;
+        const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
+        const progress = scrollable > 0 ? scrolled / scrollable : 0;
+        const index = Math.round(progress * (total - 1));
+        setActiveCard(index);
+        // Unstick when last card is active
+        if (progress >= 1) {
+          spacer.style.height = section.offsetHeight + "px";
+        } else {
+          spacer.style.height = "0px";
+        }
       }
-    }
 
-    setActiveCard(0);
-    updateFromScroll();
-    window.addEventListener("scroll", updateFromScroll, { passive: true });
-    window.addEventListener("resize", updateFromScroll);
+      setActiveCard(0);
+      updateFromScroll();
+
+      window.addEventListener("scroll", updateFromScroll, { passive: true });
+      window.addEventListener("resize", updateFromScroll);
+    });
   })();
 </script>
 

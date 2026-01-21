@@ -1,13 +1,16 @@
 ---
 import ContentCards from "./ContentCards.astro";
 import { Image } from "astro:assets";
+
+import laptopEnTelefoon from "../assets/laptop_en_telefoon.svg";
+import cloud from "../assets/cloud.svg";
 ---
 
 <section class="section-4">
   <div class="app-development">
     <div class="parallax-bg">
       <Image
-        src={import.meta.env.BASE_URL + "src/assets/laptop_en_telefoon.svg"}
+        src={laptopEnTelefoon}
         alt="Laptop and Phone"
         class="parallax-img parallax-laptop"
         loading="lazy"
@@ -15,7 +18,7 @@ import { Image } from "astro:assets";
         height={180}
       />
       <Image
-        src={import.meta.env.BASE_URL + "src/assets/cloud.svg"}
+        src={cloud}
         alt="Cloud"
         class="parallax-img parallax-cloud"
         loading="lazy"

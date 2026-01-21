@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import desktop from "../assets/desktop_lookup.svg";
 
 interface Review {
   image: string; // Path to customer image
@@ -49,7 +50,7 @@ In January 2025 Roberto from Heckers Software joined our team. Not by immediatel
 <section class="reviews-section">
   <div class="parallax-bg-reviews">
     <Image
-      src={import.meta.env.BASE_URL + "src/assets/desktop_lookup.svg"}
+      src={desktop}
       alt="Desktop Lookup"
       class="parallax-img-reviews parallax-desktop-lookup"
       loading="lazy"

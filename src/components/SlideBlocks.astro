@@ -1,4 +1,6 @@
 ---
+import { Image } from "astro:assets";
+
 export interface Card {
   title: string;
   description: string;
@@ -21,10 +23,13 @@ const { cards = [] } = Astro.props;
           class={"project-card" + (card.isActive ? " project-card-active" : "")}
         >
           {card.backgroundImage && (
-            <img
+            <Image
               class="project-card__bg"
               src={card.backgroundImage}
               alt={card.title}
+              loading="lazy"
+              width={400}
+              height={300}
             />
           )}
           <div class="project-card__content">
@@ -224,13 +229,12 @@ const { cards = [] } = Astro.props;
     .project-card__title {
       writing-mode: horizontal-tb;
       transform: none;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       margin-right: auto;
     }
 
     .project-card-active .project-card__content {
       align-items: flex-start;
-      padding: 1.5rem;
       opacity: 1;
       transform: translateY(0);
       transition:
@@ -240,7 +244,6 @@ const { cards = [] } = Astro.props;
 
     .project-card-active .project-card__title {
       font-size: 1.8rem;
-      margin-top: 1rem;
     }
 
     .project-card-active .project-card__desc {

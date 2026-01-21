@@ -30,9 +30,9 @@ import Contact from "../components/Contact.astro";
   <WorkshopSection />
 
   <section class="bottom-section">
-    <ApplicationDevelopment />
-    <Reviews />
-    <Contact />
+    <ApplicationDevelopment client:visible={{ rootMargin: "500px" }} />
+    <Reviews client:visible={{ rootMargin: "500px" }} />
+    <Contact client:visible={{ rootMargin: "500px" }} />
   </section>
 </PageLayout>
 

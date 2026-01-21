@@ -381,26 +381,29 @@ const workshops = [
       });
     }
 
-    function updateFromScroll() {
-      const containerRect = scrollContainer.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const scrollable = scrollContainer.offsetHeight - viewportHeight;
-      const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
-      const progress = scrollable > 0 ? scrolled / scrollable : 0;
-      const index = Math.round(progress * (total - 1));
-      positionItems(index);
-      // Instead of toggling sticky/relative, grow the spacer to push the next section down
-      if (progress >= 1) {
-        // Grow the spacer to the height of the section for a smooth unstick
-        spacer.style.height = section.offsetHeight + "px";
-      } else {
-        spacer.style.height = "0px";
+    requestAnimationFrame(() => {
+      function updateFromScroll() {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const scrollable = scrollContainer.offsetHeight - viewportHeight;
+        const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
+        const progress = scrollable > 0 ? scrolled / scrollable : 0;
+        const index = Math.round(progress * (total - 1));
+        positionItems(index);
+        // Instead of toggling sticky/relative, grow the spacer to push the next section down
+        if (progress >= 1) {
+          // Grow the spacer to the height of the section for a smooth unstick
+          spacer.style.height = section.offsetHeight + "px";
+        } else {
+          spacer.style.height = "0px";
+        }
       }
-    }
+
+      updateFromScroll();
+      window.addEventListener("scroll", updateFromScroll, { passive: true });
+      window.addEventListener("resize", updateFromScroll);
+    });
 
     positionItems(0);
-    updateFromScroll();
-    window.addEventListener("scroll", updateFromScroll, { passive: true });
-    window.addEventListener("resize", updateFromScroll);
   })();
 </script>
