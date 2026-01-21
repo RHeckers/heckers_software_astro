@@ -25,7 +25,13 @@ const {
     <p class="expanding-word expanding-up-3">{word}</p>
     <p class="expanding-word center-word">
       {word}
-      {callToAction && <span class="call-to-action">{callToAction}</span>}
+      {
+        callToAction && (
+          <a href="#contact-target" class="call-to-action">
+            {callToAction}
+          </a>
+        )
+      }
     </p>
     <p class="expanding-word expanding-down-1">{word}</p>
     <p class="expanding-word expanding-down-2">{word}</p>
@@ -117,6 +123,7 @@ const {
     pointer-events: auto;
     white-space: nowrap;
     cursor: pointer;
+    text-decoration: none;
 
     &:hover {
       color: var(--color-accent-strong);
