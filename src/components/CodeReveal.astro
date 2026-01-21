@@ -1,98 +1,129 @@
 ---
 import { Image } from "astro:assets";
-import ContentCards from "./ContentCards.astro";
-
 import code_img from "../assets/code_img.svg";
+import SlideBlocks from "./SlideBlocks.astro";
 ---
 
-<section>
-  <div class="image-overlay-container">
-    <Image
-      src={code_img}
-      alt="Code snippet"
-      loading="lazy"
-      class="img circle-mask-image"
-    />
-    <div class="content-reveal">
-      <h2 class="reveal-title">Architecture Report</h2>
-      <div class="reveal-card-shell">
-        <div class="reveal-card-scroll">
-          <ul class="reveal-card-list">
-            <ContentCards icon="◎" title="Deep Code Analysis">
-              We perform a <span class="accent accent-1">deep analysis</span> of your
-              codebase to surface architectural smells and find clear areas for <span
-                class="accent accent-4">improvement</span
-              >.
-            </ContentCards>
-            <ContentCards icon="📄" title="Improvements Report">
-              You receive a <span class="accent accent-1">detailed report</span> with
-              <span class="accent accent-3">architectural recommendations</span> to
-              boost code quality, maintainability, and
-              <span class="accent accent-4">scalability</span>.
-            </ContentCards>
-            <ContentCards icon="🗓" title="Plan & Walkthrough">
-              Together with your team, we craft a
-              <span class="accent accent-1">prioritized action plan</span>,
-              sequence the
-              <span class="accent accent-3">critical fixes</span>, and guide
-              rollout so you can <span class="accent accent-4">ship faster</span
-              > with confidence.
-            </ContentCards>
-          </ul>
-        </div>
-        <div class="reveal-card-nav" aria-label="Scroll cards">
-          <button
-            class="reveal-card-button"
-            data-direction="prev"
-            aria-label="Previous card"
-          >
-            ⮜
-          </button>
-          <button
-            class="reveal-card-button"
-            data-direction="next"
-            aria-label="Next card"
-          >
-            ⮞
-          </button>
-        </div>
+<div class="code-reveal-scroll-container">
+  <section id="code-reveal" class="code-reveal-section code-reveal--sticky">
+    <div class="image-overlay-container">
+      <Image
+        src={code_img}
+        alt="Code snippet"
+        loading="lazy"
+        class="img circle-mask-image"
+      />
+      <div class="content-reveal">
+        <h2 class="reveal-title">Improve Your Code</h2>
+
+        <SlideBlocks
+          cards={[
+            {
+              isActive: true,
+              title: "Codebase Analysis",
+              description:
+                "Our experts perform a deep analysis of your existing codebase and architecture. This helps us identify code smells, architectural issues, performance bottlenecks, and security vulnerabilities that may be hindering your application's success.",
+              backgroundImage:
+                "https://plus.unsplash.com/premium_photo-1678566111481-8e275550b700?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            },
+            {
+              title: "Improvement Report",
+              backgroundImage:
+                "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              description:
+                "Next, we compile a comprehensive report detailing our findings. This report highlights critical issues, prioritizes them based on impact, and provides actionable recommendations for improvement.",
+            },
+            {
+              title: "Alignment Meeting",
+              backgroundImage:
+                "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              description:
+                "We will share the improvement report with your team and walk you through our recommendations. We collaborate to create a tailored plan that aligns with your business goals and technical requirements.",
+            },
+            {
+              title: "Implementation",
+              backgroundImage:
+                "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              description:
+                "Our experts can do the heavy lifting for you by implementing the recommended changes directly into your codebase. Alternatively, we can provide guidance and support for your team to carry out the improvements.",
+            },
+          ]}
+        />
+        <a href="#" class="cta-button">Start Now</a>
       </div>
-      <a href="#" class="cta-button">Get Your Report</a>
     </div>
-  </div>
-</section>
+  </section>
+  <div id="code-reveal-spacer" style="height:0;"></div>
+</div>
 
-<script is:inline>
-  const scrollShells = document.querySelectorAll(".reveal-card-shell");
+<script>
+  // Sticky scroll-animated SlideBlocks logic
+  (function () {
+    const scrollContainer = document.querySelector(
+      ".code-reveal-scroll-container",
+    ) as HTMLElement;
+    const section = document.querySelector(
+      ".code-reveal--sticky",
+    ) as HTMLElement;
+    const spacer = document.getElementById("code-reveal-spacer") as HTMLElement;
+    if (!scrollContainer || !section || !spacer) return;
 
-  scrollShells.forEach((shell) => {
-    const container = shell.querySelector(".reveal-card-scroll");
-    const list = shell.querySelector(".reveal-card-list");
-    const buttons = shell.querySelectorAll(".reveal-card-button");
+    // Find SlideBlocks cards (fix: use .project-card from SlideBlocks)
+    const slideBlocks = section.querySelector(".slider");
+    let cards: HTMLElement[] = [];
+    if (slideBlocks) {
+      cards = Array.from(slideBlocks.querySelectorAll(".project-card"));
+    }
+    const total = cards.length;
 
-    if (!container || !list || buttons.length === 0) return;
-
-    const getStep = () => {
-      const firstCard = list.querySelector(".app-card");
-      const styles = window.getComputedStyle(list);
-      const gap = parseFloat(styles.columnGap || styles.gap || "0");
-      return (firstCard?.clientWidth || 0) + gap;
-    };
-
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const direction = button.getAttribute("data-direction");
-        const step = getStep() || container.clientWidth;
-        const delta = direction === "next" ? step : -step;
-        container.scrollBy({ left: delta, behavior: "smooth" });
+    function setActiveCard(index: number) {
+      cards.forEach((card, i) => {
+        card.classList.toggle("project-card-active", i === index);
       });
-    });
-  });
+    }
+
+    function updateFromScroll() {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const scrollable = scrollContainer.offsetHeight - viewportHeight;
+      const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
+      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+      const index = Math.round(progress * (total - 1));
+      setActiveCard(index);
+      // Unstick when last card is active
+      if (progress >= 1) {
+        spacer.style.height = section.offsetHeight + "px";
+      } else {
+        spacer.style.height = "0px";
+      }
+    }
+
+    setActiveCard(0);
+    updateFromScroll();
+    window.addEventListener("scroll", updateFromScroll, { passive: true });
+    window.addEventListener("resize", updateFromScroll);
+  })();
 </script>
 
 <style>
-  section {
-    overflow: visible;
+  .code-reveal-scroll-container {
+    background-color: var(--color-light);
+    padding-bottom: 1rem;
+    position: relative;
+    height: calc(100vh + 1800px); /* Adjust for desired scroll length */
+  }
+  #code-reveal-spacer {
+    width: 100%;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .code-reveal-section.code-reveal--sticky {
+    position: sticky;
+    margin: 0 1rem;
+    border-radius: 15px;
+    top: 4.5rem;
+    z-index: 10;
+    will-change: transform;
     view-timeline-name: --section-timeline;
     background:
       radial-gradient(circle at 10% 10%, #1c2a45 0%, #0f1a2b 45%),
@@ -103,7 +134,6 @@ import code_img from "../assets/code_img.svg";
     position: sticky;
     top: 0;
     width: 100%;
-    min-height: 100vh;
   }
 
   .reveal-card-list .accent {
@@ -153,27 +183,28 @@ import code_img from "../assets/code_img.svg";
     opacity: 0.4;
     animation-timeline: --section-timeline;
     animation-fill-mode: both;
-    animation-range: entry 50% cover 50%;
+    animation-range: entry 30% cover 90%;
   }
 
   .content-reveal {
-    min-height: 100vh;
+    border-radius: 15px;
+    margin: 0 2rem;
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: var(--spacer-base) 0;
+    padding: 2rem 0;
     max-width: 100%;
     margin: 0 auto;
-    gap: var(--spacer-xl);
   }
 
   .reveal-title {
-    font-size: 3.5rem;
-    font-weight: var(--font-weight-light);
+    display: none;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: var(--font-weight-normal);
     color: var(--color-ink-light);
     transform: translateY(50px);
     animation-name: fade-in-up;
@@ -260,15 +291,6 @@ import code_img from "../assets/code_img.svg";
     background-color: var(--color-ink-light);
     border-radius: 50px;
     text-decoration: none;
-    transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease;
-    opacity: 0.5;
-    transform: translateY(50px);
-    animation-name: fade-in-up;
-    animation-timeline: --section-timeline;
-    animation-fill-mode: both;
-    animation-range: entry 45% cover 55%;
   }
 
   .cta-button:hover {
@@ -286,8 +308,8 @@ import code_img from "../assets/code_img.svg";
   @keyframes mask-zigzag-path {
     0% {
       opacity: 0;
-      -webkit-mask-position: 0% 5%;
-      mask-position: 0% 5%;
+      -webkit-mask-position: 0% 0%;
+      mask-position: 0% 0%;
     }
     10% {
       opacity: 0.4;
@@ -297,34 +319,44 @@ import code_img from "../assets/code_img.svg";
       mask-position: 80% 10%;
     }
     40% {
-      -webkit-mask-position: 7% 15%;
-      mask-position: 7% 15%;
+      -webkit-mask-position: 7% 20%;
+      mask-position: 7% 20%;
     }
     60% {
-      -webkit-mask-position: 0% 20%;
-      mask-position: 0% 20%;
+      -webkit-mask-position: 35% 30%;
+      mask-position: 35% 30%;
     }
-    85% {
-      -webkit-mask-position: 35% 80%;
-      mask-position: 35% 80%;
+    80% {
+      -webkit-mask-position: 5% 40%;
+      mask-position: 5% 40%;
     }
     95% {
-      -webkit-mask-position: 5% 90%;
-      mask-position: 5% 90%;
+      -webkit-mask-position: 5% 80%;
+      mask-position: 5% 80%;
     }
     100% {
-      -webkit-mask-position: 0% 100%;
-      mask-position: 0% 100%;
+      -webkit-mask-position: 80% 100%;
+      mask-position: 80% 100%;
     }
   }
 
   @media (min-width: 641px) {
+    .image-overlay-container {
+      height: calc(100dvh - 6rem);
+    }
+
     .content-reveal {
-      padding: var(--spacer-3xl) var(--spacer-2xl);
       max-width: 1200px;
+      padding: var(--spacer-base) 0;
+      gap: var(--spacer-xl);
+    }
+
+    .code-reveal-section.code-reveal--sticky {
+      margin: 0 2rem;
     }
 
     .reveal-title {
+      display: block;
       font-size: 7rem;
     }
 
@@ -383,16 +415,16 @@ import code_img from "../assets/code_img.svg";
         mask-position: 25% 10%;
       }
       40% {
-        -webkit-mask-position: 7% 30%;
-        mask-position: 7% 30%;
+        -webkit-mask-position: 50% 30%;
+        mask-position: 50% 30%;
       }
       60% {
-        -webkit-mask-position: 0% 70%;
-        mask-position: 0% 70%;
+        -webkit-mask-position: 10% 50%;
+        mask-position: 10% 50%;
       }
       80% {
-        -webkit-mask-position: 15% 100%;
-        mask-position: 15% 100%;
+        -webkit-mask-position: 15% 70%;
+        mask-position: 15% 70%;
       }
       100% {
         -webkit-mask-position: 0% 100%;

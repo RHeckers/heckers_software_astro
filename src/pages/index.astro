@@ -24,7 +24,7 @@ import WorkshopSectionMobile from "../components/WorkshopSectionMobile.astro";
     />
   </section>
 
-  <CodeReveal />
+  <CodeReveal client:visible={{ rootMargin: "500px" }} />
 
   <div class="workshop-section-desktop">
     <WorkshopSection client:visible={{ rootMargin: "500px" }} />
