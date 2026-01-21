@@ -129,8 +129,12 @@ import SlideBlocks from "./SlideBlocks.astro";
     will-change: transform;
     view-timeline-name: --section-timeline;
     background:
-      radial-gradient(circle at 10% 10%, #1c2a45 0%, #0f1a2b 45%),
-      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
+      radial-gradient(
+        circle at 10% 10%,
+        #1c2a45 0%,
+        var(--color-dark-soft) 45%
+      ),
+      linear-gradient(180deg, var(--color-dark-soft) 0%, #0c1625 100%);
   }
 
   .image-overlay-container {
