@@ -42,6 +42,11 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
+    transition: transform 500ms ease-in;
+  }
+
+  .nav.hidden {
+    transform: translate(-50%, -150%);
   }
 
   .nav:has(.pill.open) {
@@ -104,7 +109,7 @@
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transition: opacity 200ms ease 350ms;
+    transition: opacity 300ms ease 450ms;
   }
 
   /* MENU */
@@ -129,13 +134,13 @@
     pointer-events: auto;
 
     /* animation only when opening */
-    transition: opacity 200ms ease 350ms;
+    transition: opacity 300ms ease 450ms;
   }
 
   .pill.open .menu {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: 350ms;
+    transition-delay: 450ms;
   }
   .pill.open .brand,
   .pill.open .hamburger {
@@ -158,6 +163,7 @@
 </style>
 
 <script>
+  const nav = document.querySelector(".nav") as HTMLElement;
   const pill = document.getElementById("pill") as HTMLElement;
   const hamburger = pill.querySelector(".hamburger") as HTMLElement;
   const close = pill.querySelector(".close") as HTMLElement;
@@ -178,5 +184,32 @@
       pill.classList.remove("open");
       pill.setAttribute("aria-expanded", "false");
     });
+  });
+
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  function onScroll() {
+    const currentScrollY = window.scrollY;
+
+    if (!pill.classList.contains("open")) {
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        // scrolling down
+        nav.classList.add("hidden");
+      } else {
+        // scrolling up
+        nav.classList.remove("hidden");
+      }
+    }
+
+    lastScrollY = currentScrollY;
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(onScroll);
+      ticking = true;
+    }
   });
 </script>
