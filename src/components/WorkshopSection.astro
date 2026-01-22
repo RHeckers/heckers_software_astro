@@ -4,7 +4,7 @@ import WorkshopSectionDesktop from "./WorkshopSectionDesktop.astro";
 import WorkshopSectionMobile from "./WorkshopSectionMobile.astro";
 ---
 
-<section>
+<section id="workshops">
   <div class="workshop-section-desktop">
     <ExpandingWord word="Workshops" callToAction="BOOK NOW" size="large" />
     <WorkshopSectionDesktop client:visible={{ rootMargin: "500px" }} />
