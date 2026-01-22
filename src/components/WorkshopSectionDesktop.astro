@@ -128,7 +128,7 @@ const workshops = [
   .workshops-scroll-container {
     position: relative;
     /* Height = sticky section height + scroll distance for carousel */
-    height: calc(100vh + 1500px); /* Adjust 600px for desired scroll length */
+    height: calc(100dvh + 1500px); /* Adjust 600px for desired scroll length */
   }
   #workshops-spacer {
     width: 100%;
@@ -149,12 +149,12 @@ const workshops = [
 
   .wheel-pin {
     position: relative;
-    height: var(--pin-height, 100vh);
+    height: var(--pin-height, 100dvh);
   }
 
   .wheel-layout {
     position: sticky;
-    top: clamp(1.5rem, 6vh, 4rem);
+    top: clamp(1.5rem, 6dvh, 4rem);
     display: grid;
     grid-template-columns: 1.5fr 1fr;
     align-items: center;
@@ -279,8 +279,8 @@ const workshops = [
   .card-description {
     color: var(--color-ink-muted);
     font-size: 1.18rem;
-    margin-bottom: 0.85rem;
     margin-top: 0.15rem;
+    font-family: synonym;
   }
 
   .wheel-card ul {
@@ -299,6 +299,7 @@ const workshops = [
     color: var(--color-ink);
     font-weight: var(--font-weight-medium);
     margin-bottom: 0.13rem;
+    font-family: synonym;
   }
 
   .wheel-card li::before {

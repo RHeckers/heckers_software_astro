@@ -113,7 +113,7 @@ import SlideBlocks from "./SlideBlocks.astro";
     background-color: var(--color-light);
     padding-bottom: 1.5rem;
     position: relative;
-    height: calc(100vh + 1800px); /* Adjust for desired scroll length */
+    height: calc(100dvh + 1800px); /* Adjust for desired scroll length */
   }
   #code-reveal-spacer {
     width: 100%;
@@ -129,12 +129,8 @@ import SlideBlocks from "./SlideBlocks.astro";
     will-change: transform;
     view-timeline-name: --section-timeline;
     background:
-      radial-gradient(
-        circle at 10% 10%,
-        #1c2a45 0%,
-        var(--color-dark-soft) 45%
-      ),
-      linear-gradient(180deg, var(--color-dark-soft) 0%, #0c1625 100%);
+      radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
+      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
   }
 
   .image-overlay-container {
@@ -156,24 +152,7 @@ import SlideBlocks from "./SlideBlocks.astro";
   }
 
   .circle-mask-image {
-    background: transparent;
-    -webkit-mask-image: radial-gradient(
-      circle 75px,
-      white 90%,
-      transparent 100%
-    );
-    mask-image: radial-gradient(circle 75px, white 90%, transparent 100%);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 200px 200px;
-    mask-size: 200px 200px;
-    -webkit-mask-position: 0% 0%;
-    mask-position: 0% 0%;
-    animation-name: mask-zigzag-path;
-    opacity: 0.4;
-    animation-timeline: --section-timeline;
-    animation-fill-mode: both;
-    animation-range: entry 10% cover 90%;
+    display: none;
   }
 
   .content-reveal {
@@ -295,41 +274,6 @@ import SlideBlocks from "./SlideBlocks.astro";
     scroll-snap-stop: always;
   }
 
-  @keyframes mask-zigzag-path {
-    0% {
-      opacity: 0;
-      -webkit-mask-position: 0% 0%;
-      mask-position: 0% 0%;
-    }
-    10% {
-      opacity: 0.6;
-    }
-    20% {
-      -webkit-mask-position: 80% 10%;
-      mask-position: 80% 10%;
-    }
-    40% {
-      -webkit-mask-position: 7% 20%;
-      mask-position: 7% 20%;
-    }
-    60% {
-      -webkit-mask-position: 35% 30%;
-      mask-position: 35% 30%;
-    }
-    80% {
-      -webkit-mask-position: 5% 40%;
-      mask-position: 5% 40%;
-    }
-    95% {
-      -webkit-mask-position: 5% 80%;
-      mask-position: 5% 80%;
-    }
-    100% {
-      -webkit-mask-position: 80% 100%;
-      mask-position: 80% 100%;
-    }
-  }
-
   @media (min-width: 641px) {
     .image-overlay-container {
       height: calc(100dvh - 6rem);
@@ -383,6 +327,7 @@ import SlideBlocks from "./SlideBlocks.astro";
     }
 
     .circle-mask-image {
+      display: block;
       -webkit-mask-image: radial-gradient(
         circle 150px,
         white 90%,
@@ -391,6 +336,16 @@ import SlideBlocks from "./SlideBlocks.astro";
       mask-image: radial-gradient(circle 150px, white 90%, transparent 100%);
       -webkit-mask-size: 300px 300px;
       mask-size: 300px 300px;
+      background: transparent;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: 0% 0%;
+      mask-position: 0% 0%;
+      animation-name: mask-zigzag-path;
+      opacity: 0.6;
+      animation-timeline: --section-timeline;
+      animation-fill-mode: both;
+      animation-range: entry 10% cover 90%;
     }
 
     @keyframes mask-zigzag-path {
@@ -400,7 +355,7 @@ import SlideBlocks from "./SlideBlocks.astro";
         mask-position: 0% 5%;
       }
       10% {
-        opacity: 0.6;
+        opacity: 0.8;
       }
       20% {
         -webkit-mask-position: 40% 10%;

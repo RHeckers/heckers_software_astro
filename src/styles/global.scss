@@ -36,9 +36,32 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "synonym";
+  src: url("/fonts/Synonym-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "synonym";
+  src: url("/fonts/Synonym-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "synonym";
+  src: url("/fonts/Synonym-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: medium;
+  font-display: swap;
+}
+
 :root {
   /* Brand gradient anchors (dark stack) */
   --color-dark: #280c13; /* deep brand base */
+  --color-dark-alt: #0c1625; /* deep brand base */
   --color-dark-strong: #2c1017; /* lifted deep tone */
   --color-dark-soft: #43272c; /* panels on dark / subtle contrast */
 

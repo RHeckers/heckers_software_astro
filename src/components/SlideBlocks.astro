@@ -130,7 +130,7 @@ const { cards = [] } = Astro.props;
   .project-card-active .project-card__content {
     flex-direction: row;
     align-items: center;
-    padding: 1.2rem 2rem;
+    padding: 1rem;
     gap: 1.1rem;
   }
   .project-card-active .project-card__title {
@@ -155,6 +155,7 @@ const { cards = [] } = Astro.props;
     font-size: 1.2rem;
     line-height: 1.4;
     max-width: 23rem;
+    font-family: synonym;
   }
 
   @media (max-width: 767px) {
@@ -210,7 +211,6 @@ const { cards = [] } = Astro.props;
 
     .project-card-active {
       min-height: 300px;
-      /* transform: none; */
       box-shadow: 0 8px 38px 0 rgba(31, 38, 135, 0.18);
     }
 
@@ -230,7 +230,6 @@ const { cards = [] } = Astro.props;
       writing-mode: horizontal-tb;
       transform: none;
       font-size: 1.5rem;
-      margin-right: auto;
     }
 
     .project-card-active .project-card__content {
@@ -247,7 +246,7 @@ const { cards = [] } = Astro.props;
     }
 
     .project-card-active .project-card__desc {
-      font-size: 1.1rem;
+      font-size: 1rem;
       max-width: 100%;
       margin-bottom: 1rem;
     }

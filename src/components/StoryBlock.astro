@@ -16,10 +16,10 @@
       >
         <stop offset="0%" stop-color="#6b3640"></stop>
         <stop offset="36%" stop-color="#6b3640"></stop>
-        <stop offset="36%" stop-color="#22314d"></stop>
-        <stop offset="66.5%" stop-color="#22314d"></stop>
-        <stop offset="66.5%" stop-color="#bccce6"></stop>
-        <stop offset="100%" stop-color="#bccce6"></stop>
+        <stop offset="36%" stop-color="#f7f4f2"></stop>
+        <stop offset="66.5%" stop-color="#f7f4f2"></stop>
+        <stop offset="66.5%" stop-color="#dec2ba"></stop>
+        <stop offset="100%" stop-color="#dec2ba"></stop>
       </linearGradient>
     </defs>
 
@@ -89,7 +89,7 @@
     background-color: var(--color-light);
 
     .story-block {
-      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -162,7 +162,7 @@
       background-color: var(--color-light);
       position: sticky;
       top: 0;
-      padding-bottom: 20vh;
+      padding-bottom: 20dvh;
     }
 
     .sticky-wrapper {
@@ -170,19 +170,21 @@
       top: 90px;
       z-index: 2;
       margin: 0 var(--spacer-2xl);
-      --sticky-tail: 20vh;
+      --sticky-tail: 20dvh;
     }
 
     .sticky-wrapper-long {
-      --sticky-tail: 10vh;
+      --sticky-tail: 10dvh;
     }
 
     .story-block-2 {
       padding: 1rem;
       color: var(--color-ink-light);
-      background-color: var(--color-stroke-strong);
+      background:
+        radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
+        linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
       border-radius: 15px;
-      height: calc(100vh - 120px);
+      height: calc(100dvh - 120px);
 
       .stacked-text {
         display: flex;
@@ -210,6 +212,9 @@
     }
 
     .story-block-3 {
+      background:
+        radial-gradient(circle at 10% 10%, #2c1017 0%, #43272c 45%),
+        linear-gradient(180deg, #2c1017 0%, #43272c 100%);
       background-color: var(--color-dark-strong);
       z-index: 2;
       top: 120px;
@@ -217,7 +222,7 @@
       border-radius: 15px;
       margin: var(--spacer-2xl);
       margin-bottom: 0;
-      height: calc(100vh - 120px);
+      height: calc(100dvh - 120px);
     }
 
     svg {
@@ -225,7 +230,7 @@
       position: absolute;
       inset: 0;
       z-index: 3;
-      height: calc(360vh - 240px);
+      height: calc(360dvh - 240px);
       width: 100%;
     }
   }
@@ -263,7 +268,7 @@
 
   @media (max-width: 640px) {
     .story .story-block {
-      height: 50vh;
+      height: 50dvh;
       min-height: 500px;
     }
 
@@ -309,11 +314,11 @@
 
     .story .sticky-wrapper,
     .story .sticky-wrapper-long {
-      top: 20vh;
+      top: 20dvh;
     }
 
     .story .story-block-1 {
-      top: 20vh;
+      top: 20dvh;
     }
   }
 </style>
