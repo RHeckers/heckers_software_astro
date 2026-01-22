@@ -1,21 +1,29 @@
-<div class="nav">
-  <div id="pill" class="pill" aria-expanded="false">
+<nav class="nav" role="navigation" aria-label="Main Navigation">
+  <div id="pill" class="pill" aria-expanded="false" aria-controls="main-menu">
     <span class="brand">HECKERS SOFTWARE</span>
-    <span class="hamburger">☰</span>
-
-    <span class="close">×</span>
-
-    <nav class="menu">
+    <span class="hamburger" role="button" aria-label="Open menu" tabindex="0"
+      >☰</span
+    >
+    <span class="close" role="button" aria-label="Close menu" tabindex="0"
+      >×</span
+    >
+    <div class="menu" id="main-menu" role="menu">
       <ul>
-        <li><a href="">Blog</a></li>
-        <li><a href="#code-analysis">Code Analysis</a></li>
-        <li><a href="#workshops">Workshops</a></li>
-        <li><a href="#app-development">App Development</a></li>
-        <li><a href="#contact-target">Contact</a></li>
+        <li role="none"><a role="menuitem" href="">Blog</a></li>
+        <li role="none">
+          <a role="menuitem" href="#code-analysis">Code Analysis</a>
+        </li>
+        <li role="none"><a role="menuitem" href="#workshops">Workshops</a></li>
+        <li role="none">
+          <a role="menuitem" href="#app-development">App Development</a>
+        </li>
+        <li role="none">
+          <a role="menuitem" href="#contact-target">Contact</a>
+        </li>
       </ul>
-    </nav>
+    </div>
   </div>
-</div>
+</nav>
 
 <style>
   :root {
