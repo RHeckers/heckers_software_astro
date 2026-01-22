@@ -70,7 +70,7 @@ const workshops = [
 ];
 ---
 
-<div class="workshops-scroll-container">
+<div class="workshops-scroll-container" id="workshops">
   <section id="workshops" class="workshops workshops--sticky">
     <div class="wheel-pin" data-carousel>
       <div class="wheel-layout">
@@ -128,7 +128,7 @@ const workshops = [
   .workshops-scroll-container {
     position: relative;
     /* Height = sticky section height + scroll distance for carousel */
-    height: calc(100dvh + 1500px); /* Adjust 600px for desired scroll length */
+    height: calc(100svh + 1500px); /* Adjust 600px for desired scroll length */
   }
   #workshops-spacer {
     width: 100%;
@@ -149,12 +149,12 @@ const workshops = [
 
   .wheel-pin {
     position: relative;
-    height: var(--pin-height, 100dvh);
+    height: var(--pin-height, 100svh);
   }
 
   .wheel-layout {
     position: sticky;
-    top: clamp(1.5rem, 6dvh, 4rem);
+    top: clamp(1.5rem, 6svh, 4rem);
     display: grid;
     grid-template-columns: 1.5fr 1fr;
     align-items: center;

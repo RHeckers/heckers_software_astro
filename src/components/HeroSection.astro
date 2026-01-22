@@ -101,11 +101,10 @@ import arch from "../assets/architecture_design.svg";
   }
   .hero {
     position: relative;
-    height: 100dvh;
+    height: 100svh;
     display: flex;
     flex-direction: column;
     text-align: center;
-    margin-top: -64px;
     align-items: center;
     justify-content: center;
     background-color: var(--color-dark);
@@ -116,6 +115,10 @@ import arch from "../assets/architecture_design.svg";
     --stroke-tertiary: var(--color-light);
     --draw-pass-gap: 5s;
     --draw-pass-duration: calc(var(--draw-pass-gap) * 3);
+  }
+
+  .hero-container {
+    margin-top: -7vh;
   }
 
   .logo-banner-container {
@@ -228,12 +231,8 @@ import arch from "../assets/architecture_design.svg";
       opacity: 0.5;
     }
 
-    .logo-banner-container {
-      bottom: 4rem;
-    }
-
     .hero {
-      height: calc(100dvh + 80px);
+      height: 100svh;
       text-align: left;
     }
 

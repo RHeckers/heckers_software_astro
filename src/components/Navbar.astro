@@ -1,140 +1,174 @@
-<nav>
-  <div class="content">
-    <div class="links">
-      <a>blog</a>
-    </div>
-    <h3>Heckers Software</h3>
-    <div class="links">
-      <a href="#contact-target">contact</a>
-    </div>
-  </div>
+<div class="nav">
+  <div id="pill" class="pill" aria-expanded="false">
+    <span class="brand">HECKERS SOFTWARE</span>
+    <span class="hamburger">☰</span>
 
-  <div class="divider-bar">
-    <span>+</span>
-    <div class="divider"></div>
-    <span>+</span>
+    <span class="close">×</span>
+
+    <nav class="menu">
+      <ul>
+        <li><a href="">Blog</a></li>
+        <li><a href="#code-analysis">Code Analysis</a></li>
+        <li><a href="#workshops">Workshops</a></li>
+        <li><a href="#app-development">App Development</a></li>
+        <li><a href="#contact-target">Contact</a></li>
+      </ul>
+    </nav>
   </div>
-</nav>
+</div>
 
 <style>
-  nav {
-    position: sticky;
-    top: 0;
-    background-color: transparent;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    mix-blend-mode: difference;
-    overflow: hidden;
-    color: var(--color-light);
-    text-transform: uppercase;
+  :root {
+    --pill-height: 56px;
+    --radius-pill: 999px;
+    --transition-main: 550ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  h3,
   a {
-    mix-blend-mode: difference;
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--color-light);
-  }
-  a:hover {
-    text-decoration: underline;
-    color: var(--color-ink-light);
+    all: unset;
   }
 
-  h3 {
-    letter-spacing: 4px;
-    font-weight: var(--font-weight-semi-bold);
-    text-align: center;
-    font-size: clamp(0.5rem, 1rem, 1.35rem);
+  .nav {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
   }
 
-  .content {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    align-items: center;
-    width: 100%;
-    padding: var(--spacer-base) 2.2rem;
-    gap: 0;
-
-    p {
-      font-weight: var(--font-weight-normal);
-      font-size: var(--font-sm);
-    }
-
-    .links {
-      display: flex;
-      gap: var(--spacer-md);
-      margin-top: -150px;
-      animation: slide-down 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      animation-delay: 1s;
-
-      &:last-child {
-        justify-content: flex-end;
-      }
-    }
+  .nav:has(.pill.open) {
+    top: 0;
   }
 
-  .divider-bar {
+  .pill {
+    gap: 1rem;
+    height: var(--pill-height);
+    background: white;
+    color: black;
+    border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+
+    transform-origin: center;
+    transition:
+      width var(--transition-main),
+      height var(--transition-main),
+      border-radius var(--transition-main),
+      box-shadow var(--transition-main);
+  }
+
+  /* OPEN STATE */
+  .pill.open {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    cursor: default;
+  }
+
+  .brand {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .hamburger {
+    font-size: 20px;
+  }
+
+  .close {
     position: absolute;
-    bottom: -14.5px;
-    width: 100%;
-    gap: var(--spacer-base);
-    mix-blend-mode: difference;
-    padding: 0 1rem;
-
-    span {
-      font-weight: var(--font-weight-light);
-      font-size: var(--font-lg);
-      mix-blend-mode: difference;
-      pointer-events: none;
-    }
-
-    .divider {
-      height: 0.1px;
-      width: 0%;
-      background-color: var(--color-light);
-      mix-blend-mode: difference;
-      animation: divider-grow 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
+    top: 24px;
+    right: 24px;
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: var(--font-weight-bold);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: none;
+    z-index: 1100;
   }
 
-  @keyframes divider-grow {
-    from {
-      width: 0%;
-    }
-    to {
-      width: 100%;
-    }
+  .pill.open .close {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 200ms ease 350ms;
   }
 
-  @keyframes slide-down {
-    from {
-      margin-top: -150px;
-    }
-    to {
-      margin-top: 0;
-    }
+  /* MENU */
+  .menu {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    /* default = no animation (used on close) */
+    transition: none;
   }
 
-  @media (min-width: 641px) {
-    h3 {
-      font-size: initial;
-    }
+  .pill.open .menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 
-    .divider-bar {
-      padding: 0 1.75rem;
-    }
+    /* animation only when opening */
+    transition: opacity 200ms ease 350ms;
+  }
 
-    .content {
-      gap: initial;
-      padding: var(--spacer-md) 3rem;
-    }
+  .pill.open .menu {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 350ms;
+  }
+  .pill.open .brand,
+  .pill.open .hamburger {
+    display: none;
+  }
+
+  .menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .menu li {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 16px 0;
+    cursor: pointer;
   }
 </style>
+
+<script>
+  const pill = document.getElementById("pill") as HTMLElement;
+  const hamburger = pill.querySelector(".hamburger") as HTMLElement;
+  const close = pill.querySelector(".close") as HTMLElement;
+  const menuLinks = pill.querySelectorAll(".menu a") as NodeListOf<HTMLElement>;
+
+  hamburger.addEventListener("click", () => {
+    pill.classList.add("open");
+    pill.setAttribute("aria-expanded", "true");
+  });
+
+  close.addEventListener("click", () => {
+    pill.classList.remove("open");
+    pill.setAttribute("aria-expanded", "false");
+  });
+
+  menuLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      pill.classList.remove("open");
+      pill.setAttribute("aria-expanded", "false");
+    });
+  });
+</script>

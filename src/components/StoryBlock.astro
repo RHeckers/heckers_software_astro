@@ -89,7 +89,7 @@
     background-color: var(--color-light);
 
     .story-block {
-      height: 100dvh;
+      height: 100svh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -162,7 +162,7 @@
       background-color: var(--color-light);
       position: sticky;
       top: 0;
-      padding-bottom: 20dvh;
+      padding-bottom: 20svh;
     }
 
     .sticky-wrapper {
@@ -170,11 +170,11 @@
       top: 90px;
       z-index: 2;
       margin: 0 var(--spacer-2xl);
-      --sticky-tail: 20dvh;
+      --sticky-tail: 20svh;
     }
 
     .sticky-wrapper-long {
-      --sticky-tail: 10dvh;
+      --sticky-tail: 10svh;
     }
 
     .story-block-2 {
@@ -184,7 +184,7 @@
         radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
         linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
       border-radius: 15px;
-      height: calc(100dvh - 120px);
+      height: calc(100svh - 120px);
 
       .stacked-text {
         display: flex;
@@ -222,7 +222,7 @@
       border-radius: 15px;
       margin: var(--spacer-2xl);
       margin-bottom: 0;
-      height: calc(100dvh - 120px);
+      height: calc(100svh - 120px);
     }
 
     svg {
@@ -230,7 +230,7 @@
       position: absolute;
       inset: 0;
       z-index: 3;
-      height: calc(360dvh - 240px);
+      height: calc(360svh - 240px);
       width: 100%;
     }
   }
@@ -268,7 +268,7 @@
 
   @media (max-width: 640px) {
     .story .story-block {
-      height: 50dvh;
+      height: 50svh;
       min-height: 500px;
     }
 
@@ -314,11 +314,11 @@
 
     .story .sticky-wrapper,
     .story .sticky-wrapper-long {
-      top: 20dvh;
+      top: 15svh;
     }
 
     .story .story-block-1 {
-      top: 20dvh;
+      top: 15svh;
     }
   }
 </style>

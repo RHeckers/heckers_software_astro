@@ -4,7 +4,7 @@ import code_img from "../assets/code_img.svg";
 import SlideBlocks from "./SlideBlocks.astro";
 ---
 
-<div class="code-reveal-scroll-container">
+<div class="code-reveal-scroll-container" id="code-analysis">
   <section id="code-reveal" class="code-reveal-section code-reveal--sticky">
     <div class="image-overlay-container">
       <Image
@@ -113,7 +113,7 @@ import SlideBlocks from "./SlideBlocks.astro";
     background-color: var(--color-light);
     padding-bottom: 1.5rem;
     position: relative;
-    height: calc(100dvh + 1800px); /* Adjust for desired scroll length */
+    height: calc(100svh + 1800px); /* Adjust for desired scroll length */
   }
   #code-reveal-spacer {
     width: 100%;
@@ -276,7 +276,7 @@ import SlideBlocks from "./SlideBlocks.astro";
 
   @media (min-width: 641px) {
     .image-overlay-container {
-      height: calc(100dvh - 6rem);
+      height: calc(100svh - 6rem);
     }
 
     .content-reveal {
