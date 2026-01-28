@@ -27,7 +27,7 @@
 
 <style>
   :root {
-    --pill-height: 56px;
+    --pill-height: 40px;
     --radius-pill: 999px;
     --transition-main: 550ms cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -46,7 +46,7 @@
   }
 
   .nav.hidden {
-    transform: translate(-50%, -150%);
+    transform: translate(-50%, -200%);
   }
 
   .nav:has(.pill.open) {
@@ -56,7 +56,7 @@
   .pill {
     gap: 1rem;
     height: var(--pill-height);
-    background: white;
+    background: var(--color-gray);
     color: black;
     border-radius: var(--radius-pill);
     display: flex;

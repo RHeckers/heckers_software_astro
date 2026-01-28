@@ -67,6 +67,7 @@
 
   /* Core backgrounds (light stack) */
   --color-light: #dec2ba; /* main background */
+  --color-gray: #c9c0c0; /* main background */
   --color-light-alt: #bccce6; /* cards / sections on light */
   --color-light-raised: #f7f4f2; /* elevated surfaces / modals */
   --color-ink-light: #dde2ee; /* light ink on dark */
@@ -90,6 +91,19 @@
   /* Optional “status” tones (kept muted & on-brand) */
   --color-danger: #8b2d3b; /* restrained berry */
 
+  --background-gradient-primary: radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
+      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
+  --background-gradient-secondary: radial-gradient(circle at 10% 10%, #2c1017 0%, #43272c 45%),
+        linear-gradient(180deg, #2c1017 0%, #43272c 100%);
+  --background-gradient-transparent: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    );
+
+  --background-gradient-white: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%)
+
+  
   --font-xs: 0.75rem; /* 12px */
   --font-sm: 0.875rem; /* 14px */
   --font-md: 1rem; /* 16px */
@@ -169,13 +183,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-/* accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .bg-gradient-animation {
-    animation: none;
   }
 }
 

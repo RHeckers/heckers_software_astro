@@ -21,11 +21,7 @@ const { icon, title } = Astro.props as Props;
   .app-card {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.08),
-      rgba(255, 255, 255, 0.02)
-    );
+    background: var(--background-gradient-transparent);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 18px;
     padding: var(--spacer-xl);
@@ -79,15 +75,8 @@ const { icon, title } = Astro.props as Props;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.22),
-      rgba(255, 255, 255, 0.06)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.25);
     color: var(--color-ink-light);
     font-size: var(--font-xl);
-    /* box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); */
   }
 
   .card-title {

@@ -17,8 +17,8 @@
         <stop offset="0%" stop-color="#6b3640"></stop>
         <stop offset="36%" stop-color="#6b3640"></stop>
         <stop offset="36%" stop-color="#f7f4f2"></stop>
-        <stop offset="66.5%" stop-color="#f7f4f2"></stop>
-        <stop offset="66.5%" stop-color="#dec2ba"></stop>
+        <stop offset="65%" stop-color="#f7f4f2"></stop>
+        <stop offset="65%" stop-color="#dec2ba"></stop>
         <stop offset="100%" stop-color="#dec2ba"></stop>
       </linearGradient>
     </defs>
@@ -167,22 +167,21 @@
 
     .sticky-wrapper {
       position: sticky;
-      top: 90px;
+      top: 60px;
       z-index: 2;
       margin: 0 var(--spacer-2xl);
       --sticky-tail: 20svh;
     }
 
     .sticky-wrapper-long {
-      --sticky-tail: 10svh;
+      --sticky-tail: 5svh;
     }
 
     .story-block-2 {
+      position: relative;
       padding: 1rem;
       color: var(--color-ink-light);
-      background:
-        radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
-        linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
+      background: var(--background-gradient-primary);
       border-radius: 15px;
       height: calc(100svh - 120px);
 
@@ -194,7 +193,7 @@
         overflow: visible;
 
         .small-text {
-          padding-bottom: 5rem;
+          padding-bottom: 5.5rem;
 
           span {
             font-size: 2rem;
@@ -212,17 +211,17 @@
     }
 
     .story-block-3 {
-      background:
-        radial-gradient(circle at 10% 10%, #2c1017 0%, #43272c 45%),
-        linear-gradient(180deg, #2c1017 0%, #43272c 100%);
-      background-color: var(--color-dark-strong);
+      background: var(--background-gradient-secondary);
       z-index: 2;
-      top: 120px;
       position: sticky;
       border-radius: 15px;
       margin: var(--spacer-2xl);
       margin-bottom: 0;
       height: calc(100svh - 120px);
+
+      .background-image {
+        object-fit: fill;
+      }
     }
 
     svg {
@@ -233,6 +232,18 @@
       height: calc(360svh - 240px);
       width: 100%;
     }
+  }
+
+  .background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* object-position: bottom; */
+    border-radius: 15px;
+    z-index: -1;
   }
 
   .story-line {
