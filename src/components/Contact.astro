@@ -3,6 +3,7 @@
   <div class="form-group">
     <label for="name">Name*</label>
     <input type="text" id="name" name="name" required placeholder="Your name" />
+    <div class="error-message" id="nameError"></div>
   </div>
 
   <div class="form-group">
@@ -14,11 +15,13 @@
       required
       placeholder="your@email.com"
     />
+    <div class="error-message" id="emailError"></div>
   </div>
 
   <div class="form-group">
     <label for="phone">Phone</label>
     <input type="tel" id="phone" name="phone" placeholder="Optional" />
+    <div class="error-message" id="phoneError"></div>
   </div>
 
   <div class="form-group">
@@ -31,6 +34,7 @@
       <option value="Feedback">Feedback</option>
       <option value="Other">Other</option>
     </select>
+    <div class="error-message" id="subjectError"></div>
   </div>
 
   <div class="form-group">
@@ -40,67 +44,220 @@
       name="content"
       required
       placeholder="Type your message..."></textarea>
+    <div class="error-message" id="contentError"></div>
   </div>
 
-  <button type="submit" id="contactSubmit">Send</button>
-  <script>
-    if (typeof window !== "undefined") {
-      const form = document.getElementById("contactForm") as HTMLFormElement;
-      const button = document.getElementById(
-        "contactSubmit",
-      ) as HTMLButtonElement;
-      const checkValidity = () => {
-        button.disabled = !form.checkValidity();
-      };
-      form.addEventListener("input", checkValidity);
-      window.addEventListener("DOMContentLoaded", checkValidity);
+  <div class="submit-group">
+    <button type="submit" id="contactSubmit">
+      <span id="submitText">Send</span>
+      <span id="submitCheck" style="display:none;">✔️</span>
+    </button>
+    <div class="error-message" id="submitError"></div>
+  </div>
+</form>
 
-      form.addEventListener("submit", async (e) => {
+<script>
+  if (typeof window !== "undefined") {
+    const form = document.getElementById(
+      "contactForm",
+    ) as HTMLFormElement | null;
+    const button = document.getElementById(
+      "contactSubmit",
+    ) as HTMLButtonElement | null;
+    const submitText = document.getElementById(
+      "submitText",
+    ) as HTMLSpanElement | null;
+    const submitCheck = document.getElementById(
+      "submitCheck",
+    ) as HTMLSpanElement | null;
+    const submitError = document.getElementById(
+      "submitError",
+    ) as HTMLDivElement | null;
+
+    type Field = {
+      id: string;
+      errorId: string;
+      required: boolean;
+      label: string;
+      type?: string;
+    };
+    const fields: Field[] = [
+      { id: "name", errorId: "nameError", required: true, label: "Name" },
+      {
+        id: "email",
+        errorId: "emailError",
+        required: true,
+        label: "Email",
+        type: "email",
+      },
+      {
+        id: "phone",
+        errorId: "phoneError",
+        required: false,
+        label: "Phone",
+        type: "tel",
+      },
+      {
+        id: "subject",
+        errorId: "subjectError",
+        required: true,
+        label: "Subject",
+      },
+      {
+        id: "content",
+        errorId: "contentError",
+        required: true,
+        label: "Content",
+      },
+    ];
+
+    // Track dirty state and submission
+    const dirty: { [key: string]: boolean } = {};
+    let formSubmitted = false;
+
+    fields.forEach((f) => {
+      dirty[f.id] = false;
+    });
+
+    function validateField(field: Field): boolean {
+      const input = document.getElementById(field.id) as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+        | null;
+      const errorDiv = document.getElementById(
+        field.errorId,
+      ) as HTMLDivElement | null;
+      let value =
+        input &&
+        typeof (
+          input as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        ).value === "string"
+          ? (
+              input as
+                | HTMLInputElement
+                | HTMLTextAreaElement
+                | HTMLSelectElement
+            ).value.trim()
+          : "";
+      let error = "";
+      if (field.required && !value) {
+        error = `${field.label} is required.`;
+      } else if (field.type === "email" && value) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(value)) {
+          error = "Please enter a valid email address.";
+        }
+      }
+      // Only show error if dirty or form submitted
+      if (errorDiv) {
+        if (dirty[field.id] || formSubmitted) {
+          errorDiv.textContent = error;
+        } else {
+          errorDiv.textContent = "";
+        }
+      }
+      return !error;
+    }
+
+    function validateForm(): boolean {
+      let valid = true;
+      for (const field of fields) {
+        if (!validateField(field)) valid = false;
+      }
+      if (button) button.disabled = !valid;
+      return valid;
+    }
+
+    if (form) {
+      // Mark fields as dirty on change
+      fields.forEach((field) => {
+        const input = document.getElementById(field.id) as
+          | HTMLInputElement
+          | HTMLTextAreaElement
+          | HTMLSelectElement
+          | null;
+        if (input) {
+          input.addEventListener("input", () => {
+            dirty[field.id] = true;
+            validateField(field);
+            validateForm();
+          });
+        }
+      });
+      window.addEventListener("DOMContentLoaded", validateForm);
+
+      form.addEventListener("submit", async (e: Event) => {
         e.preventDefault();
-        if (!form.checkValidity()) {
+        formSubmitted = true;
+        if (submitError) submitError.textContent = "";
+        validateForm();
+        if (!validateForm()) {
           return;
         }
 
-        const name = (document.getElementById("name") as HTMLInputElement)
-          .value;
-        const email = (document.getElementById("email") as HTMLInputElement)
-          .value;
-        const phone = (document.getElementById("phone") as HTMLInputElement)
-          .value;
-        const subject = (
-          document.getElementById("subject") as HTMLSelectElement
-        ).value;
-        const message = (
-          document.getElementById("content") as HTMLTextAreaElement
-        ).value;
+        if (button) button.disabled = true;
+        if (submitText) submitText.style.display = "none";
+        if (submitCheck) submitCheck.style.display = "none";
+
+        const getValue = (id: string): string => {
+          const el = document.getElementById(id) as
+            | HTMLInputElement
+            | HTMLTextAreaElement
+            | HTMLSelectElement
+            | null;
+          return el && typeof el.value === "string" ? el.value : "";
+        };
+        const name = getValue("name");
+        const email = getValue("email");
+        const phone = getValue("phone");
+        const subject = getValue("subject");
+        const message = getValue("content");
 
         try {
           const res = await fetch("/api/send-contact-email", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name,
-              email,
-              phone,
-              subject,
-              message,
-            }),
+            body: JSON.stringify({ name, email, phone, subject, message }),
           });
-
           if (res.ok) {
-            alert("Message sent successfully!");
-            form.reset();
-            checkValidity();
+            // Success: show checkmark, reset form, clear errors
+            if (submitCheck) submitCheck.style.display = "inline";
+            if (submitText) submitText.style.display = "none";
+            setTimeout(() => {
+              if (submitCheck) submitCheck.style.display = "none";
+              if (submitText) submitText.style.display = "inline";
+            }, 1500);
+            if (typeof form.reset === "function") form.reset();
+            fields.forEach((f) => {
+              const errDiv = document.getElementById(
+                f.errorId,
+              ) as HTMLDivElement | null;
+              if (errDiv) errDiv.textContent = "";
+              dirty[f.id] = false;
+            });
+            formSubmitted = false;
+            validateForm();
           } else {
-            alert("Failed to send message. Please try again.");
+            if (submitError)
+              submitError.textContent =
+                "Failed to send message. Please try again.";
+            if (button) button.disabled = false;
+            if (submitText) submitText.style.display = "inline";
+            if (submitCheck) submitCheck.style.display = "none";
           }
         } catch (err) {
-          alert("An error occurred. Please try again later.");
+          if (submitError)
+            submitError.textContent =
+              "An error occurred. Please try again later.";
+          if (button) button.disabled = false;
+          if (submitText) submitText.style.display = "inline";
+          if (submitCheck) submitCheck.style.display = "none";
         }
       });
     }
-  </script>
-</form>
+  }
+</script>
 
 <style>
   .contact-form {
@@ -169,6 +326,24 @@
   }
   .contact-form button:hover:not(:disabled) {
     background: #0f1a2b;
+  }
+  .error-message {
+    color: #d32f2f;
+    font-size: 0.95rem;
+    margin-top: 0.2rem;
+    min-height: 1.2em;
+  }
+  .submit-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  #submitCheck {
+    font-size: 1.2em;
+    color: #2ecc40;
+    margin-left: 0.5em;
+    vertical-align: middle;
   }
   @media (min-width: 600px) {
     .contact-form {
