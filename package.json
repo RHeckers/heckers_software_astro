@@ -11,7 +11,9 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
     "astro": "^5.16.6",
-    "sharp": "^0.34.5"
+    "nodemailer": "^7.0.13",
+    "sharp": "^0.34.5",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "sass-embedded": "^1.97.1"

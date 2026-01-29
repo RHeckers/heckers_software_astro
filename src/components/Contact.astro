@@ -54,6 +54,50 @@
       };
       form.addEventListener("input", checkValidity);
       window.addEventListener("DOMContentLoaded", checkValidity);
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        const name = (document.getElementById("name") as HTMLInputElement)
+          .value;
+        const email = (document.getElementById("email") as HTMLInputElement)
+          .value;
+        const phone = (document.getElementById("phone") as HTMLInputElement)
+          .value;
+        const subject = (
+          document.getElementById("subject") as HTMLSelectElement
+        ).value;
+        const message = (
+          document.getElementById("content") as HTMLTextAreaElement
+        ).value;
+
+        try {
+          const res = await fetch("/api/send-contact-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name,
+              email,
+              phone,
+              subject,
+              message,
+            }),
+          });
+
+          if (res.ok) {
+            alert("Message sent successfully!");
+            form.reset();
+            checkValidity();
+          } else {
+            alert("Failed to send message. Please try again.");
+          }
+        } catch (err) {
+          alert("An error occurred. Please try again later.");
+        }
+      });
     }
   </script>
 </form>
