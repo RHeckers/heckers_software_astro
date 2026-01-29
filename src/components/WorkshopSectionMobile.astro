@@ -143,7 +143,7 @@ const workshops = [
     display: grid;
     grid-template-columns: 1fr;
     align-items: stretch;
-    background: var(--background-gradient-white);
+    background: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
     border: 1px solid var(--color-stroke);
     border-radius: 18px;
     padding: clamp(1rem, 5vw, 1.35rem);
@@ -173,6 +173,11 @@ const workshops = [
     content: "";
     position: absolute;
     inset: 0;
+    background: radial-gradient(
+      circle at 35% 15%,
+      rgba(58, 120, 105, 0.12),
+      transparent 40%
+    );
     pointer-events: none;
     z-index: 0;
   }
@@ -181,6 +186,11 @@ const workshops = [
     content: "";
     position: absolute;
     inset: 0;
+    background: radial-gradient(
+      circle at 120% 50%,
+      rgba(44, 16, 23, 0.14),
+      transparent 45%
+    );
     pointer-events: none;
     z-index: 0;
   }
