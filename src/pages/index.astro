@@ -16,12 +16,15 @@ import Contact from "../components/Contact.astro";
   <HeroSection />
   <section class="section-1">
     <StoryBlock />
-    <ExpandingWord
-      word="Fix Your app"
-      callToAction="Book A call"
-      size="large"
-      reversedAnimation={true}
-    />
+
+    <div class="expanding">
+      <ExpandingWord
+        word="Fix Your app"
+        callToAction="Book A call"
+        size="large"
+        reversedAnimation={true}
+      />
+    </div>
   </section>
 
   <CodeReveal client:visible={{ rootMargin: "500px" }} />
@@ -38,6 +41,10 @@ import Contact from "../components/Contact.astro";
 <style>
   .section-1 {
     background-color: var(--color-light);
+  }
+
+  .expanding {
+    background-color: var(--color-dark-alt);
   }
 
   .bottom-section {

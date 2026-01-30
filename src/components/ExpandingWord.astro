@@ -119,15 +119,18 @@ const {
     color: var(--color-accent);
     font-weight: var(--font-weight-fat);
     padding: 0.25em;
-    border-radius: 0.3em;
+    border-radius: 1em;
     pointer-events: auto;
     white-space: nowrap;
     cursor: pointer;
     text-decoration: none;
     font-family: synonym;
+    backdrop-filter: blur(4px);
+    border: 2px solid var(--color-accent);
 
     &:hover {
       color: var(--color-accent-strong);
+      border-color: var(--color-accent-strong);
     }
   }
 

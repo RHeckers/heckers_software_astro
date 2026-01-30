@@ -59,47 +59,53 @@
 }
 
 :root {
-  /* Brand gradient anchors (dark stack) */
-  --color-dark: #280c13; /* deep brand base */
-  --color-dark-alt: #0c1625; /* deep brand base */
-  --color-dark-strong: #2c1017; /* lifted deep tone */
-  --color-dark-soft: #43272c; /* panels on dark / subtle contrast */
+  /* Dark foundation — authority & trust */
+  --color-dark: #0b1220;        /* primary brand dark (navy-black) */
+  --color-dark-alt: #0f1a2b;    /* sections / gradients */
+  --color-dark-strong: #16243a; /* elevated dark surfaces */
+  --color-dark-soft: #1d2f4a;   /* cards on dark */
 
-  /* Core backgrounds (light stack) */
-  --color-light: #dec2ba; /* main background */
-  --color-gray: #c9c0c0; /* main background */
-  --color-light-alt: #bccce6; /* cards / sections on light */
-  --color-light-raised: #f7f4f2; /* elevated surfaces / modals */
-  --color-ink-light: #dde2ee; /* light ink on dark */
+
+  /* Light foundation — clarity & elegance */
+  --color-light: #f4f6f9;        /* main background */
+  --color-light-alt: #e9edf3;    /* cards / sections */
+  --color-light-raised: #ffffff; /* modals / elevated surfaces */
 
   /* Text */
-  --color-ink: #2a0e15; /* primary text on light */
-  --color-ink-light: white; /* primary text on light */
-  --color-ink-muted: #5f4d4f; /* secondary text */
+  --color-ink: #363d4b;         /* primary text on light */
+  --color-ink-muted: #5c667a;   /* secondary text */
+  --color-ink-light: #e8edf6;   /* text on dark */
 
-  /* Lines / borders */
-  --color-stroke: #cbb0a8;
-  --color-stroke-strong: #bfa29a;
+  /* Lines & structure */
+  --color-stroke: #d6dbe5;
+  --color-stroke-strong: #c2c9d6;
 
-  /* Teal accent */
-  --color-accent: #3a7869; /* CTA fill on light + accent text on dark */
-  --color-accent-strong: #2e6b5c; /* CTA hover / stronger tone */
-  --color-accent-ink: #26594d; /* links on light (passes contrast) */
+  /* Accent — expertise & confidence */
+  --color-accent: #2f7dd1;         /* primary accent / CTA */
+  --color-accent-strong: #2563a8;  /* hover / emphasis */
+  --color-accent-ink: #1f4f87;     /* links on light */
+
+  /* Optional secondary accent (very controlled) */
+  --color-accent-secondary: #3aa3a0; /* diagrams, highlights */
 
   /* Transparent helpers */
 
   /* Optional “status” tones (kept muted & on-brand) */
-  --color-danger: #8b2d3b; /* restrained berry */
+  --color-danger: #c2413b; /* controlled, professional error state */
+  --color-warning: #b0892f;
+  --color-success: #2e8b6f;
 
-  --background-gradient-primary: radial-gradient(circle at 10% 10%, #0f1a2b 0%, #1c2a45 45%),
-      linear-gradient(180deg, #0f1a2b 0%, #0c1625 100%);
-  --background-gradient-secondary: radial-gradient(circle at 10% 10%, #2c1017 0%, #43272c 45%),
-        linear-gradient(180deg, #2c1017 0%, #43272c 100%);
-  --background-gradient-transparent: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.08),
-      rgba(255, 255, 255, 0.02)
-    );
+--background-gradient-primary:
+  linear-gradient(180deg, #0f1a2b 0%, #0b1220 100%);
+
+--background-gradient-secondary:
+  linear-gradient(180deg, #16243a 0%, #0f1a2b 100%);
+
+--background-gradient-subtle:
+  linear-gradient(135deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02)
+  );
 
   --background-gradient-white: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%)
 
@@ -151,8 +157,8 @@
 .accent {
   background: linear-gradient(
     90deg,
-    var(--color-accent) 0%,
-    var(--color-accent) 50%,
+    var(--color-success) 0%,
+    var(--color-success) 50%,
     currentColor 50%,
     currentColor 100%
   );
