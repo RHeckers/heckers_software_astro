@@ -16,18 +16,17 @@ import Contact from "../components/Contact.astro";
   <HeroSection />
   <section class="section-1">
     <StoryBlock />
-
-    <div class="expanding">
-      <ExpandingWord
-        word="Fix Your app"
-        callToAction="Book A call"
-        size="large"
-        reversedAnimation={true}
-      />
-    </div>
   </section>
 
-  <CodeReveal client:visible={{ rootMargin: "500px" }} />
+  <div class="expanding">
+    <ExpandingWord
+      word="Fix Your app"
+      callToAction="Book A call"
+      size="large"
+      reversedAnimation={true}
+    />
+    <CodeReveal client:visible={{ rootMargin: "500px" }} />
+  </div>
 
   <WorkshopSection />
 
