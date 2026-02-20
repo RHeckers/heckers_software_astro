@@ -16,6 +16,11 @@ module.exports = async function (context, req) {
             return;
         }
 
+        // Honeypot check
+        if (req.body && typeof req.body.website === "string" && req.body.website.trim() !== "") {
+            context.res = { status: 200, body: { success: true } };
+            return;
+        }
 
         const parsed = ContactSchema.safeParse(req.body);
         if (!parsed.success) {

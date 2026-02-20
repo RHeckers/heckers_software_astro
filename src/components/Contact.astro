@@ -1,5 +1,16 @@
 <div class="spacer" id="contact-target"></div>
 <form class="contact-form" name="contact" autocomplete="on" id="contactForm">
+  <!-- Honeypot field for bot protection -->
+  <div style="display:none;">
+    <label for="website">Website</label>
+    <input
+      type="text"
+      id="website"
+      name="website"
+      autocomplete="off"
+      tabindex="-1"
+    />
+  </div>
   <div class="form-group">
     <label for="name">Name*</label>
     <input type="text" id="name" name="name" required placeholder="Your name" />
@@ -213,12 +224,20 @@
         const phone = getValue("phone");
         const subject = getValue("subject");
         const message = getValue("content");
+        const website = getValue("website"); // Honeypot
 
         try {
           const res = await fetch("/api/send-contact-email", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, phone, subject, message }),
+            body: JSON.stringify({
+              name,
+              email,
+              phone,
+              subject,
+              message,
+              website,
+            }),
           });
           if (res.ok) {
             // Success: show checkmark, reset form, clear errors
