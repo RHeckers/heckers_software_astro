@@ -271,10 +271,15 @@ const { Content } = await render(post);
     margin: 1.5rem 0;
   }
 
+  .prose :global(.table-wrapper) {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .prose :global(table) {
     width: 100%;
     border-collapse: collapse;
-    margin: 1.5rem 0;
     font-size: var(--font-sm);
     line-height: 1.6;
   }

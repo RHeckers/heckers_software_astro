@@ -27,13 +27,13 @@ export class GlobalErrorHandler implements ErrorHandler {
   private readonly snackBar = inject(MatSnackBar);
 
   handleError(error: unknown): void {
-    console.error('[GlobalErrorHandler]', error);
+    console.error("[GlobalErrorHandler]", error);
 
     // Send to Sentry
     Sentry.captureException(error);
 
     // Show a toast
-    this.snackBar.open('Something went wrong.', 'Dismiss', {
+    this.snackBar.open("Something went wrong.", "Dismiss", {
       duration: 5000,
     });
   }
@@ -128,24 +128,24 @@ Angular's dependency injection system has a powerful feature called **multi-prov
 This is the mechanism that makes our plugin system work. We define a token, and each app can register as many extensions as it wants:
 
 ```typescript
-import { InjectionToken, Type } from '@angular/core';
-import { ErrorHandlerExtension } from './error-handler-extension';
+import { InjectionToken, Type } from "@angular/core";
+import { ErrorHandlerExtension } from "./error-handler-extension";
 
 /**
  * Multi-provider token. Each registered extension is collected into
  * an array and injected into the GlobalErrorHandler.
  */
-export const ERROR_HANDLER_EXTENSIONS =
-  new InjectionToken<ErrorHandlerExtension[]>('ERROR_HANDLER_EXTENSIONS');
+export const ERROR_HANDLER_EXTENSIONS = new InjectionToken<
+  ErrorHandlerExtension[]
+>("ERROR_HANDLER_EXTENSIONS");
 
 /**
  * Optional token for disabling specific extensions at a given
  * injector scope. Useful for feature-level overrides.
  */
-export const DISABLED_ERROR_HANDLER_EXTENSIONS =
-  new InjectionToken<Type<ErrorHandlerExtension>[]>(
-    'DISABLED_ERROR_HANDLER_EXTENSIONS'
-  );
+export const DISABLED_ERROR_HANDLER_EXTENSIONS = new InjectionToken<
+  Type<ErrorHandlerExtension>[]
+>("DISABLED_ERROR_HANDLER_EXTENSIONS");
 ```
 
 We'll come back to `DISABLED_ERROR_HANDLER_EXTENSIONS` later. For now, just know that it lets you selectively turn off extensions in specific parts of your app.
@@ -155,10 +155,10 @@ We'll come back to `DISABLED_ERROR_HANDLER_EXTENSIONS` later. For now, just know
 This is the orchestrator. It doesn't know about Sentry, Datadog, toasts, or console logging. It only knows how to loop through whatever extensions are registered:
 
 ```typescript
-import { ErrorHandler, inject, Injectable } from '@angular/core';
-import { ERROR_HANDLER_EXTENSIONS } from './error-handler.tokens';
-import { DISABLED_ERROR_HANDLER_EXTENSIONS } from './error-handler.tokens';
-import type { ErrorHandlerExtension } from './error-handler-extension';
+import { ErrorHandler, inject, Injectable } from "@angular/core";
+import { ERROR_HANDLER_EXTENSIONS } from "./error-handler.tokens";
+import { DISABLED_ERROR_HANDLER_EXTENSIONS } from "./error-handler.tokens";
+import type { ErrorHandlerExtension } from "./error-handler-extension";
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -172,7 +172,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     // Sort by priority (lower number = runs first). Extensions
     // without a priority default to 0.
     const sorted = [...this.extensions].sort(
-      (a, b) => (a.priority ?? 0) - (b.priority ?? 0)
+      (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
     );
 
     for (const ext of sorted) {
@@ -188,7 +188,7 @@ export class GlobalErrorHandler implements ErrorHandler {
         // Fall back to basic console output.
         console.error(
           `[GlobalErrorHandler] Extension ${ext.constructor.name} failed:`,
-          extensionError
+          extensionError,
         );
       }
     }
@@ -215,8 +215,8 @@ Now let's build the actual plugins. Each one is a standalone `@Injectable()` cla
 The simplest extension. Logs the error with a timestamp and stack trace:
 
 ```typescript
-import { Injectable } from '@angular/core';
-import type { ErrorHandlerExtension } from './error-handler-extension';
+import { Injectable } from "@angular/core";
+import type { ErrorHandlerExtension } from "./error-handler-extension";
 
 @Injectable()
 export class ConsoleErrorExtension implements ErrorHandlerExtension {
@@ -238,9 +238,9 @@ export class ConsoleErrorExtension implements ErrorHandlerExtension {
 Reports errors to [Sentry](https://sentry.io) for production monitoring. Notice that this extension manages its own dependency (`Sentry`). The core handler never imports it:
 
 ```typescript
-import { Injectable } from '@angular/core';
-import * as Sentry from '@sentry/angular';
-import type { ErrorHandlerExtension } from './error-handler-extension';
+import { Injectable } from "@angular/core";
+import * as Sentry from "@sentry/angular";
+import type { ErrorHandlerExtension } from "./error-handler-extension";
 
 @Injectable()
 export class SentryErrorExtension implements ErrorHandlerExtension {
@@ -257,9 +257,9 @@ export class SentryErrorExtension implements ErrorHandlerExtension {
 Shows a user-facing notification. This extension lives in a UI-specific library (not in the shared core) because it depends on `MatSnackBar`:
 
 ```typescript
-import { Injectable, inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import type { ErrorHandlerExtension } from './error-handler-extension';
+import { Injectable, inject } from "@angular/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import type { ErrorHandlerExtension } from "./error-handler-extension";
 
 @Injectable()
 export class ToastErrorExtension implements ErrorHandlerExtension {
@@ -269,13 +269,11 @@ export class ToastErrorExtension implements ErrorHandlerExtension {
 
   handle(error: unknown): void {
     const message =
-      error instanceof Error
-        ? error.message
-        : 'An unexpected error occurred.';
+      error instanceof Error ? error.message : "An unexpected error occurred.";
 
-    this.snackBar.open(message, 'Dismiss', {
+    this.snackBar.open(message, "Dismiss", {
       duration: 6000,
-      panelClass: 'error-toast',
+      panelClass: "error-toast",
     });
   }
 }
@@ -286,10 +284,10 @@ export class ToastErrorExtension implements ErrorHandlerExtension {
 A more advanced extension that specifically handles HTTP errors and gives the user a more helpful message:
 
 ```typescript
-import { Injectable, inject } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import type { ErrorHandlerExtension } from './error-handler-extension';
+import { Injectable, inject } from "@angular/core";
+import { HttpErrorResponse } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import type { ErrorHandlerExtension } from "./error-handler-extension";
 
 @Injectable()
 export class HttpErrorExtension implements ErrorHandlerExtension {
@@ -304,18 +302,18 @@ export class HttpErrorExtension implements ErrorHandlerExtension {
     }
 
     const messages: Record<number, string> = {
-      0: 'Unable to reach the server. Check your internet connection.',
-      401: 'Your session has expired. Please sign in again.',
-      403: 'You don\'t have permission to perform this action.',
-      404: 'The requested resource was not found.',
-      500: 'Something went wrong on our end. Please try again later.',
+      0: "Unable to reach the server. Check your internet connection.",
+      401: "Your session has expired. Please sign in again.",
+      403: "You don't have permission to perform this action.",
+      404: "The requested resource was not found.",
+      500: "Something went wrong on our end. Please try again later.",
     };
 
     const message = messages[error.status] ?? `Server error (${error.status})`;
 
-    this.snackBar.open(message, 'Dismiss', {
+    this.snackBar.open(message, "Dismiss", {
       duration: 8000,
-      panelClass: 'error-toast',
+      panelClass: "error-toast",
     });
   }
 }
@@ -330,14 +328,17 @@ Here's where the architecture pays off. Each app in your Nx workspace declares e
 ### Customer Portal (`apps/customer-portal/src/main.ts`)
 
 ```typescript
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { ErrorHandler } from '@angular/core';
-import { GlobalErrorHandler, ERROR_HANDLER_EXTENSIONS } from '@core/error-handling';
-import { SentryErrorExtension } from '@core/error-handling-sentry';
-import { ConsoleErrorExtension } from '@core/error-handling';
-import { ToastErrorExtension } from '@ui/error-toast';
-import { HttpErrorExtension } from '@ui/error-toast';
+import { bootstrapApplication } from "@angular/platform-browser";
+import { AppComponent } from "./app/app.component";
+import { ErrorHandler } from "@angular/core";
+import {
+  GlobalErrorHandler,
+  ERROR_HANDLER_EXTENSIONS,
+} from "@core/error-handling";
+import { SentryErrorExtension } from "@core/error-handling-sentry";
+import { ConsoleErrorExtension } from "@core/error-handling";
+import { ToastErrorExtension } from "@ui/error-toast";
+import { HttpErrorExtension } from "@ui/error-toast";
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -369,11 +370,14 @@ bootstrapApplication(AppComponent, {
 ### Background Worker (`apps/background-worker/src/main.ts`)
 
 ```typescript
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { ErrorHandler } from '@angular/core';
-import { GlobalErrorHandler, ERROR_HANDLER_EXTENSIONS } from '@core/error-handling';
-import { ConsoleErrorExtension } from '@core/error-handling';
+import { bootstrapApplication } from "@angular/platform-browser";
+import { AppComponent } from "./app/app.component";
+import { ErrorHandler } from "@angular/core";
+import {
+  GlobalErrorHandler,
+  ERROR_HANDLER_EXTENSIONS,
+} from "@core/error-handling";
+import { ConsoleErrorExtension } from "@core/error-handling";
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -396,12 +400,12 @@ Sometimes you need granular control. Maybe your Admin Dashboard uses the `ToastE
 That's what `DISABLED_ERROR_HANDLER_EXTENSIONS` is for. You can provide it at any injector scope: a route, a component, or a lazy-loaded module:
 
 ```typescript
-import { DISABLED_ERROR_HANDLER_EXTENSIONS } from '@core/error-handling';
-import { ToastErrorExtension } from '@ui/error-toast';
+import { DISABLED_ERROR_HANDLER_EXTENSIONS } from "@core/error-handling";
+import { ToastErrorExtension } from "@ui/error-toast";
 
 export const fileUploadRoutes: Routes = [
   {
-    path: '',
+    path: "",
     component: FileUploadComponent,
     providers: [
       {
@@ -459,7 +463,9 @@ Your `tsconfig.base.json` paths tie it all together:
   "compilerOptions": {
     "paths": {
       "@core/error-handling": ["libs/core/error-handling/src/index.ts"],
-      "@integrations/error-handling-sentry": ["libs/integrations/error-handling-sentry/src/index.ts"],
+      "@integrations/error-handling-sentry": [
+        "libs/integrations/error-handling-sentry/src/index.ts"
+      ],
       "@ui/error-toast": ["libs/ui/error-toast/src/index.ts"]
     }
   }
@@ -473,11 +479,11 @@ One of the biggest wins of this architecture is testability. Each extension is a
 ### Testing an extension
 
 ```typescript
-describe('SentryErrorExtension', () => {
-  it('should capture the exception with Sentry', () => {
-    const captureExceptionSpy = vi.spyOn(Sentry, 'captureException');
+describe("SentryErrorExtension", () => {
+  it("should capture the exception with Sentry", () => {
+    const captureExceptionSpy = vi.spyOn(Sentry, "captureException");
     const extension = new SentryErrorExtension();
-    const error = new Error('test error');
+    const error = new Error("test error");
 
     extension.handle(error);
 
@@ -491,8 +497,8 @@ describe('SentryErrorExtension', () => {
 You can test the orchestration logic with mock extensions:
 
 ```typescript
-describe('GlobalErrorHandler', () => {
-  it('should call all registered extensions', () => {
+describe("GlobalErrorHandler", () => {
+  it("should call all registered extensions", () => {
     const ext1: ErrorHandlerExtension = { handle: vi.fn() };
     const ext2: ErrorHandlerExtension = { handle: vi.fn() };
 
@@ -505,7 +511,7 @@ describe('GlobalErrorHandler', () => {
     });
 
     const handler = TestBed.inject(GlobalErrorHandler);
-    const error = new Error('test');
+    const error = new Error("test");
 
     handler.handleError(error);
 
@@ -513,7 +519,7 @@ describe('GlobalErrorHandler', () => {
     expect(ext2.handle).toHaveBeenCalledWith(error);
   });
 
-  it('should skip disabled extensions', () => {
+  it("should skip disabled extensions", () => {
     const ext: ErrorHandlerExtension = { handle: vi.fn() };
 
     TestBed.configureTestingModule({
@@ -528,27 +534,37 @@ describe('GlobalErrorHandler', () => {
     });
 
     const handler = TestBed.inject(GlobalErrorHandler);
-    handler.handleError(new Error('test'));
+    handler.handleError(new Error("test"));
 
     expect(ext.handle).not.toHaveBeenCalled();
   });
 
-  it('should not crash if one extension throws', () => {
+  it("should not crash if one extension throws", () => {
     const failingExt: ErrorHandlerExtension = {
-      handle: () => { throw new Error('extension broke'); },
+      handle: () => {
+        throw new Error("extension broke");
+      },
     };
     const healthyExt: ErrorHandlerExtension = { handle: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [
         GlobalErrorHandler,
-        { provide: ERROR_HANDLER_EXTENSIONS, useValue: failingExt, multi: true },
-        { provide: ERROR_HANDLER_EXTENSIONS, useValue: healthyExt, multi: true },
+        {
+          provide: ERROR_HANDLER_EXTENSIONS,
+          useValue: failingExt,
+          multi: true,
+        },
+        {
+          provide: ERROR_HANDLER_EXTENSIONS,
+          useValue: healthyExt,
+          multi: true,
+        },
       ],
     });
 
     const handler = TestBed.inject(GlobalErrorHandler);
-    handler.handleError(new Error('test'));
+    handler.handleError(new Error("test"));
 
     // The healthy extension still runs despite the first one failing
     expect(healthyExt.handle).toHaveBeenCalled();
@@ -562,14 +578,14 @@ No Sentry SDK mocking. No `MatSnackBar` setup. No platform detection. Each test 
 
 Let's revisit the original problems and see how this architecture solves them:
 
-| Problem | Solution |
-|---|---|
-| Apps import dependencies they don't use | Each app only registers (and bundles) the extensions it needs |
-| Adding a new integration means modifying the core handler | You create a new extension class. The core handler is never touched |
-| Hard to test because of tightly coupled services | Each extension is a standalone class with one method to test |
-| Feature-level overrides require complex configuration | `DISABLED_ERROR_HANDLER_EXTENSIONS` lets you opt out at any injector scope |
-| Execution order is unpredictable | The `priority` field gives you deterministic ordering |
-| One extension crashing breaks all error handling | The try/catch in the handler isolates each extension |
+| Problem                                                   | Solution                                                                   |
+| --------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Apps import dependencies they don't use                   | Each app only registers (and bundles) the extensions it needs              |
+| Adding a new integration means modifying the core handler | You create a new extension class. The core handler is never touched        |
+| Hard to test because of tightly coupled services          | Each extension is a standalone class with one method to test               |
+| Feature-level overrides require complex configuration     | `DISABLED_ERROR_HANDLER_EXTENSIONS` lets you opt out at any injector scope |
+| Execution order is unpredictable                          | The `priority` field gives you deterministic ordering                      |
+| One extension crashing breaks all error handling          | The try/catch in the handler isolates each extension                       |
 
 This is the **Open-Closed Principle** applied to error handling: the `GlobalErrorHandler` is closed for modification (you never edit it to add new behavior) but open for extension (you register new plugins through dependency injection).
 
