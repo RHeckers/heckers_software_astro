@@ -9,7 +9,8 @@
     >
     <div class="menu" id="main-menu" role="menu">
       <ul>
-        <li role="none"><a role="menuitem" href="">Blog</a></li>
+        <li role="none"><a role="menuitem" href="/">Home</a></li>
+        <li role="none"><a role="menuitem" href="/blog">Blog</a></li>
         <li role="none">
           <a role="menuitem" href="#code-analysis">Code Analysis</a>
         </li>
@@ -91,6 +92,10 @@
     height: 100vh;
     border-radius: 0;
     cursor: default;
+  }
+
+  .pill.no-close-animation {
+    transition: none;
   }
 
   .brand {
@@ -193,20 +198,48 @@
   const close = pill.querySelector(".close") as HTMLElement;
   const menuLinks = pill.querySelectorAll(".menu a") as NodeListOf<HTMLElement>;
 
+  function closeMenu() {
+    pill.classList.remove("open");
+    pill.setAttribute("aria-expanded", "false");
+  }
+
+  function closeMenuInstant() {
+    pill.classList.add("no-close-animation");
+    closeMenu();
+
+    // Re-enable transitions for subsequent open/close interactions.
+    window.requestAnimationFrame(() => {
+      pill.classList.remove("no-close-animation");
+    });
+  }
+
   hamburger.addEventListener("click", () => {
     pill.classList.add("open");
     pill.setAttribute("aria-expanded", "true");
   });
 
   close.addEventListener("click", () => {
-    pill.classList.remove("open");
-    pill.setAttribute("aria-expanded", "false");
+    closeMenu();
   });
 
   menuLinks.forEach((link) => {
     link.addEventListener("click", () => {
-      pill.classList.remove("open");
-      pill.setAttribute("aria-expanded", "false");
+      const href = link.getAttribute("href");
+      if (!href) {
+        return;
+      }
+
+      const targetUrl = new URL(href, window.location.href);
+      const currentUrl = new URL(window.location.href);
+      const isSameDocument =
+        targetUrl.origin === currentUrl.origin &&
+        targetUrl.pathname === currentUrl.pathname &&
+        targetUrl.search === currentUrl.search;
+
+      // Only run close behavior for in-page navigation, and do it instantly.
+      if (isSameDocument) {
+        closeMenuInstant();
+      }
     });
   });
 

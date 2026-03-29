@@ -1,0 +1,118 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "../../layouts/PageLayout.astro";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<PageLayout
+  title="Blog — Heckers Software"
+  description="Insights on software architecture, code analysis, and building reliable systems."
+>
+  <section class="blog-listing">
+    <h1>Blog</h1>
+    <ul>
+      {
+        posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.id}/`}>
+              {post.data.heroImage && (
+                <img
+                  src={post.data.heroImage}
+                  alt=""
+                  width="1100"
+                  height="500"
+                />
+              )}
+              <div class="info">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</PageLayout>
+
+<style>
+  .blog-listing {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(6rem, 10vw, 8rem) 1.5rem 4rem;
+  }
+
+  h1 {
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink);
+    margin-bottom: 2rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  li {
+    border: 1px solid var(--color-stroke);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 200ms ease;
+  }
+
+  li:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+  }
+
+  .info {
+    padding: 1.5rem;
+  }
+
+  time {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  h2 {
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-ink);
+    margin: 0.5rem 0;
+  }
+
+  p {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+  }
+</style>

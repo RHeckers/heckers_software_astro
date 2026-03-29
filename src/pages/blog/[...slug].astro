@@ -1,0 +1,531 @@
+---
+import { getCollection, render } from "astro:content";
+import PageLayout from "../../layouts/PageLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: post,
+  }));
+}
+
+const post = Astro.props;
+const { Content } = await render(post);
+---
+
+<PageLayout title={post.data.title} description={post.data.description}>
+  <article class="post">
+    <header>
+      <div class="header-meta">
+        <time datetime={post.data.pubDate.toISOString()}>
+          {
+            post.data.pubDate.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          }
+        </time>
+        <a href="/blog/" class="back-link">&larr; All posts</a>
+      </div>
+      {
+        post.data.updatedDate && (
+          <span class="updated">
+            (Updated:{" "}
+            {post.data.updatedDate.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+            )
+          </span>
+        )
+      }
+      <h1>{post.data.title}</h1>
+      {
+        post.data.heroImage && (
+          <img src={post.data.heroImage} alt="" width="960" height="480" />
+        )
+      }
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <aside class="newsletter">
+      <div class="newsletter-content">
+        <h2>Get practical engineering insights straight to your inbox</h2>
+        <p>
+          Join developers who receive our deep dives on Angular architecture, Nx
+          monorepo strategies, and scalable frontend patterns. No spam, no fluff
+          just actionable content you can apply today.
+        </p>
+      </div>
+      <form
+        class="newsletter-form"
+        id="newsletterForm"
+        method="POST"
+        action="https://zcv2-zcmp.maillist-manage.eu/weboptin.zc"
+        target="zcFrame"
+      >
+        <div class="fields">
+          <input
+            type="text"
+            name="FIRSTNAME"
+            id="newsletterName"
+            placeholder="Name (optional)"
+            aria-label="First name"
+          />
+          <div class="input-group">
+            <input
+              type="email"
+              name="CONTACT_EMAIL"
+              id="newsletterEmail"
+              placeholder="Enter your email"
+              required
+              aria-label="Email address"
+            />
+            <button type="submit">Subscribe</button>
+          </div>
+        </div>
+        <span class="newsletter-msg" id="newsletterMsg"></span>
+        <input type="hidden" name="submitType" value="optinCustomView" />
+        <input type="hidden" name="formType" value="QuickForm" />
+        <input type="hidden" name="zx" value="14aec560cd" />
+        <input type="hidden" name="zcvers" value="2.0" />
+        <input type="hidden" name="mode" value="OptinCreateView" />
+        <input type="hidden" name="zcld" value="13ce2114ace6871e" />
+        <input type="hidden" name="zctd" value="13ce2114ace68541" />
+        <input type="hidden" name="zc_trackCode" value="ZCFORMVIEW" />
+        <input
+          type="hidden"
+          name="zc_formIx"
+          value="3zdd934e667aaf45237dedcebdfc4f8ab98f75d0617ab556be86d925d0ec82e9fc"
+        />
+        <input type="hidden" name="viewFrom" value="URL_ACTION" />
+      </form>
+      <iframe
+        name="zcFrame"
+        id="zcFrame"
+        style="display:none;"
+        aria-hidden="true"></iframe>
+    </aside>
+
+    <aside class="cta">
+      <h2>Ready to level up your Angular&nbsp;or&nbsp;Nx project?</h2>
+      <p>
+        Our engineers help teams ship faster with clean architecture, scalable
+        Nx monorepos, and battle-tested Angular patterns. Whether you need a
+        code review, hands-on support, or a full architecture overhaul, we've
+        got you covered!
+      </p>
+      <a href="/#contactForm" class="cta-button">Get in touch</a>
+    </aside>
+
+    <footer>
+      <a href="/blog/">&larr; Back to all posts</a>
+    </footer>
+  </article>
+</PageLayout>
+
+<style>
+  .post {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: clamp(6rem, 10vw, 8rem) 1.5rem 4rem;
+  }
+
+  header {
+    margin-bottom: 2rem;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  time {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .back-link {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-accent-ink);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .updated {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  h1 {
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink);
+    margin: 0.5rem 0 1.5rem;
+    line-height: 1.2;
+  }
+
+  header img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+
+  .prose {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink);
+    line-height: 1.8;
+  }
+
+  .prose :global(h2),
+  .prose :global(h3) {
+    font-family: "chillax", sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-ink);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .prose :global(h2) {
+    font-size: var(--font-2xl);
+  }
+
+  .prose :global(h3) {
+    font-size: var(--font-xl);
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.25rem 1.5rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(a) {
+    color: var(--color-accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .prose :global(a:hover) {
+    color: var(--color-accent-strong);
+  }
+
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .prose :global(pre) {
+    background: var(--color-dark);
+    color: var(--color-ink-light);
+    padding: 1.25rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-size: var(--font-sm);
+    line-height: 1.6;
+  }
+
+  .prose :global(code) {
+    font-family: "synonym", sans-serif;
+    font-size: 0.9em;
+  }
+
+  .prose :global(:not(pre) > code) {
+    background: var(--color-light-alt);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+  }
+
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: var(--font-sm);
+    line-height: 1.6;
+  }
+
+  .prose :global(thead) {
+    background: var(--color-dark);
+    color: var(--color-ink-light);
+  }
+
+  .prose :global(th) {
+    font-family: "chillax", sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    text-align: left;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .prose :global(td) {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--color-stroke);
+    vertical-align: top;
+  }
+
+  .prose :global(tbody tr:hover) {
+    background: var(--color-light-alt);
+  }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-stroke);
+    margin: 2rem 0;
+  }
+
+  .newsletter {
+    margin-top: 3rem;
+    padding: 2.5rem;
+    border: 1px solid var(--color-stroke);
+    border-radius: 12px;
+    background: var(--color-light-alt);
+  }
+
+  .newsletter-content {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .newsletter-content h2 {
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink);
+    margin: 0 0 0.75rem;
+    line-height: 1.3;
+  }
+
+  .newsletter-content p {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink-muted);
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .fields input[name="FIRSTNAME"] {
+    width: 100%;
+    max-width: 460px;
+    padding: 0.8rem 1rem;
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink);
+    background: #fff;
+    border: 1px solid var(--color-stroke-strong);
+    border-radius: 8px;
+    outline: none;
+  }
+
+  .fields input[name="FIRSTNAME"]::placeholder {
+    color: var(--color-ink-muted);
+    opacity: 0.6;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 460px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-strong);
+    background: #fff;
+  }
+
+  .input-group input {
+    flex: 1;
+    border: none;
+    padding: 0.8rem 1rem;
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink);
+    background: transparent;
+    outline: none;
+    min-width: 0;
+  }
+
+  .input-group input::placeholder {
+    color: var(--color-ink-muted);
+    opacity: 0.6;
+  }
+
+  .input-group button {
+    flex-shrink: 0;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-semi-bold);
+    color: #fff;
+    background: var(--color-accent);
+    cursor: pointer;
+    transition: background 200ms ease;
+  }
+
+  .input-group button:hover {
+    background: var(--color-accent-strong);
+  }
+
+  .newsletter-msg {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    min-height: 1.2em;
+  }
+
+  .newsletter-msg.success {
+    color: var(--color-success);
+  }
+
+  .newsletter-msg.error {
+    color: var(--color-danger);
+  }
+
+  .cta {
+    margin-top: 1.5rem;
+    padding: 2.5rem;
+    background: var(--color-dark);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .cta h2 {
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink-light);
+    margin: 0 0 0.75rem;
+    line-height: 1.3;
+  }
+
+  .cta p {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink-light);
+    opacity: 0.85;
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .cta-button {
+    display: inline-block;
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-dark);
+    background: var(--color-light);
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition:
+      background 200ms ease,
+      transform 200ms ease;
+  }
+
+  .cta-button:hover {
+    background: #fff;
+    transform: translateY(-1px);
+  }
+
+  footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-stroke);
+  }
+
+  footer a {
+    font-family: "synonym", sans-serif;
+    color: var(--color-accent-ink);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  const form = document.getElementById("newsletterForm") as HTMLFormElement;
+  const nameInput = document.getElementById(
+    "newsletterName",
+  ) as HTMLInputElement;
+  const emailInput = document.getElementById(
+    "newsletterEmail",
+  ) as HTMLInputElement;
+  const msg = document.getElementById("newsletterMsg") as HTMLSpanElement;
+
+  form.addEventListener("submit", () => {
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    const btn = form.querySelector("button") as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = "Subscribing...";
+    msg.textContent = "";
+    msg.className = "newsletter-msg";
+
+    // Zoho processes the POST in the hidden iframe.
+    // Show success after a short delay (Zoho doesn't return a
+    // cross-origin readable response, so we optimistically confirm).
+    setTimeout(() => {
+      msg.textContent =
+        "You're in! Check your inbox to confirm (don't forget to check your spam folder).";
+      msg.classList.add("success");
+      nameInput.value = "";
+      emailInput.value = "";
+      btn.disabled = false;
+      btn.textContent = "Subscribe";
+    }, 1500);
+  });
+</script>
