@@ -25,15 +25,15 @@ import Contact from "../components/Contact.astro";
       size="large"
       reversedAnimation={true}
     />
-    <CodeReveal client:visible={{ rootMargin: "500px" }} />
+    <CodeReveal />
   </div>
 
   <WorkshopSection />
 
   <section class="bottom-section">
-    <ApplicationDevelopment client:visible={{ rootMargin: "500px" }} />
-    <Reviews client:visible={{ rootMargin: "500px" }} />
-    <Contact client:visible={{ rootMargin: "500px" }} />
+    <ApplicationDevelopment />
+    <Reviews />
+    <Contact />
   </section>
 </PageLayout>
 

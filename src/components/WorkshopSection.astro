@@ -7,10 +7,10 @@ import WorkshopSectionMobile from "./WorkshopSectionMobile.astro";
 <section id="workshops">
   <div class="workshop-section-desktop">
     <ExpandingWord word="Workshops" callToAction="BOOK NOW" size="large" />
-    <WorkshopSectionDesktop client:visible={{ rootMargin: "500px" }} />
+    <WorkshopSectionDesktop />
   </div>
   <div class="workshop-section-mobile">
-    <WorkshopSectionMobile client:visible={{ rootMargin: "500px" }} />
+    <WorkshopSectionMobile />
   </div>
 </section>
 
