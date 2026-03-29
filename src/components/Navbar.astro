@@ -36,6 +36,10 @@
     all: unset;
   }
 
+  span:focus-visible {
+    outline: none;
+  }
+
   .nav {
     position: fixed;
     top: 24px;
@@ -71,6 +75,14 @@
       height var(--transition-main),
       border-radius var(--transition-main),
       box-shadow var(--transition-main);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .pill:focus,
+  .pill:active {
+    outline: none;
   }
 
   /* OPEN STATE */
@@ -88,6 +100,9 @@
 
   .hamburger {
     font-size: 20px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .close {
@@ -102,6 +117,16 @@
     pointer-events: none;
     transition: none;
     z-index: 1100;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .hamburger:focus,
+  .hamburger:active,
+  .close:focus,
+  .close:active {
+    outline: none;
   }
 
   .pill.open .close {
