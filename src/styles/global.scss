@@ -199,13 +199,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "chillax", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  /* 3. Add accessible line-height */
+  font-family: "chillax", ui-sans-serif, system-ui, sans-serif;
   line-height: 1.5;
-  /* 4. Improve text rendering */
   -webkit-font-smoothing: antialiased;
 }
 

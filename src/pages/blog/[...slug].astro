@@ -131,11 +131,35 @@ const { Content } = await render(post);
 </PageLayout>
 
 <style>
+  /* Base: synonym for body text, ink color — children inherit */
   .post {
     max-width: 960px;
     margin: 0 auto;
     padding: clamp(6rem, 10vw, 8rem) 1.5rem 4rem;
+    font-family: "synonym", sans-serif;
+    color: var(--color-ink);
   }
+
+  /* Display font for headings, table headers, buttons */
+  h1,
+  .prose :global(h2),
+  .prose :global(h3),
+  .prose :global(th),
+  .newsletter-content h2,
+  .cta h2,
+  .input-group button,
+  .cta-button {
+    font-family: "chillax", sans-serif;
+  }
+
+  /* Monospace for code */
+  .prose :global(pre),
+  .prose :global(code) {
+    font-family:
+      ui-monospace, "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+  }
+
+  /* --- Header --- */
 
   header {
     margin-bottom: 2rem;
@@ -147,15 +171,22 @@ const { Content } = await render(post);
     align-items: center;
   }
 
-  time {
-    font-family: "synonym", sans-serif;
+  time,
+  .back-link,
+  .updated {
     font-size: var(--font-sm);
+  }
+
+  time,
+  .updated {
     color: var(--color-ink-muted);
   }
 
+  .updated {
+    font-style: italic;
+  }
+
   .back-link {
-    font-family: "synonym", sans-serif;
-    font-size: var(--font-sm);
     color: var(--color-accent-ink);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
@@ -165,20 +196,10 @@ const { Content } = await render(post);
     text-decoration: underline;
   }
 
-  .updated {
-    font-family: "synonym", sans-serif;
-    font-size: var(--font-sm);
-    color: var(--color-ink-muted);
-    font-style: italic;
-  }
-
   h1 {
-    font-family: "chillax", sans-serif;
     font-size: var(--font-3xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-ink);
     margin: 0.5rem 0 1.5rem;
-    line-height: 1.2;
   }
 
   header img {
@@ -188,18 +209,15 @@ const { Content } = await render(post);
     object-fit: cover;
   }
 
+  /* --- Prose (markdown content) --- */
+
   .prose {
-    font-family: "synonym", sans-serif;
     font-size: var(--font-md);
-    color: var(--color-ink);
-    line-height: 1.8;
   }
 
   .prose :global(h2),
   .prose :global(h3) {
-    font-family: "chillax", sans-serif;
     font-weight: var(--font-weight-semi-bold);
-    color: var(--color-ink);
     margin: 2rem 0 0.75rem;
   }
 
@@ -254,7 +272,6 @@ const { Content } = await render(post);
   }
 
   .prose :global(code) {
-    font-family: "synonym", sans-serif;
     font-size: 0.9em;
   }
 
@@ -290,7 +307,6 @@ const { Content } = await render(post);
   }
 
   .prose :global(th) {
-    font-family: "chillax", sans-serif;
     font-weight: var(--font-weight-semi-bold);
     text-align: left;
     padding: 0.75rem 1.25rem;
@@ -312,6 +328,8 @@ const { Content } = await render(post);
     margin: 2rem 0;
   }
 
+  /* --- Newsletter --- */
+
   .newsletter {
     margin-top: 3rem;
     padding: 2.5rem;
@@ -326,17 +344,12 @@ const { Content } = await render(post);
   }
 
   .newsletter-content h2 {
-    font-family: "chillax", sans-serif;
     font-size: var(--font-xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-ink);
     margin: 0 0 0.75rem;
-    line-height: 1.3;
   }
 
   .newsletter-content p {
-    font-family: "synonym", sans-serif;
-    font-size: var(--font-md);
     color: var(--color-ink-muted);
     line-height: 1.7;
     max-width: 520px;
@@ -362,23 +375,20 @@ const { Content } = await render(post);
     width: 100%;
     max-width: 460px;
     padding: 0.8rem 1rem;
-    font-family: "synonym", sans-serif;
-    font-size: var(--font-md);
-    color: var(--color-ink);
     background: #fff;
     border: 1px solid var(--color-stroke-strong);
     border-radius: 8px;
     outline: none;
   }
 
-  .fields input[name="FIRSTNAME"]::placeholder {
+  .fields input[name="FIRSTNAME"]::placeholder,
+  .input-group input::placeholder {
     color: var(--color-ink-muted);
     opacity: 0.6;
   }
 
   .input-group {
     display: flex;
-    gap: 0;
     width: 100%;
     max-width: 460px;
     border-radius: 8px;
@@ -391,25 +401,15 @@ const { Content } = await render(post);
     flex: 1;
     border: none;
     padding: 0.8rem 1rem;
-    font-family: "synonym", sans-serif;
-    font-size: var(--font-md);
-    color: var(--color-ink);
     background: transparent;
     outline: none;
     min-width: 0;
-  }
-
-  .input-group input::placeholder {
-    color: var(--color-ink-muted);
-    opacity: 0.6;
   }
 
   .input-group button {
     flex-shrink: 0;
     border: none;
     padding: 0.8rem 1.5rem;
-    font-family: "chillax", sans-serif;
-    font-size: var(--font-md);
     font-weight: var(--font-weight-semi-bold);
     color: #fff;
     background: var(--color-accent);
@@ -422,7 +422,6 @@ const { Content } = await render(post);
   }
 
   .newsletter-msg {
-    font-family: "synonym", sans-serif;
     font-size: var(--font-sm);
     min-height: 1.2em;
   }
@@ -435,6 +434,8 @@ const { Content } = await render(post);
     color: var(--color-danger);
   }
 
+  /* --- CTA --- */
+
   .cta {
     margin-top: 1.5rem;
     padding: 2.5rem;
@@ -444,7 +445,6 @@ const { Content } = await render(post);
   }
 
   .cta h2 {
-    font-family: "chillax", sans-serif;
     font-size: var(--font-xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-ink-light);
@@ -453,8 +453,6 @@ const { Content } = await render(post);
   }
 
   .cta p {
-    font-family: "synonym", sans-serif;
-    font-size: var(--font-md);
     color: var(--color-ink-light);
     opacity: 0.85;
     line-height: 1.7;
@@ -464,8 +462,6 @@ const { Content } = await render(post);
 
   .cta-button {
     display: inline-block;
-    font-family: "chillax", sans-serif;
-    font-size: var(--font-md);
     font-weight: var(--font-weight-semi-bold);
     color: var(--color-dark);
     background: var(--color-light);
@@ -482,6 +478,8 @@ const { Content } = await render(post);
     transform: translateY(-1px);
   }
 
+  /* --- Footer --- */
+
   footer {
     margin-top: 2rem;
     padding-top: 1.5rem;
@@ -489,7 +487,6 @@ const { Content } = await render(post);
   }
 
   footer a {
-    font-family: "synonym", sans-serif;
     color: var(--color-accent-ink);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
