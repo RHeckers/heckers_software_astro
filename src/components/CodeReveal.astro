@@ -1,63 +1,73 @@
 ---
 import { Image } from "astro:assets";
 import code_img from "../assets/code_img.svg";
-import SlideBlocks from "./SlideBlocks.astro";
 ---
 
 <div class="code-reveal-scroll-container" id="code-analysis">
   <section id="code-reveal" class="code-reveal-section code-reveal--sticky">
-    <div class="image-overlay-container">
-      <Image
-        src={code_img}
-        alt="Code snippet"
-        loading="lazy"
-        class="img circle-mask-image"
-      />
-      <div class="content-reveal">
-        <h2 class="reveal-title">Four steps of improvement</h2>
+    <Image
+      src={code_img}
+      alt="Code analysis"
+      loading="lazy"
+      class="section-bg-image"
+    />
 
-        <SlideBlocks
-          cards={[
-            {
-              isActive: true,
-              title: "Codebase Analysis",
-              description:
-                "Our industry experts perform a deep analysis of your existing codebase and architecture. This helps us identify code smells, architectural issues, performance bottlenecks, and security vulnerabilities that may be hindering your application's success.",
-              backgroundImage:
-                "https://plus.unsplash.com/premium_photo-1678566111481-8e275550b700?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            },
-            {
-              title: "Improvement Report",
-              backgroundImage:
-                "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              description:
-                "Next, we compile a comprehensive report detailing our findings. This report highlights critical issues, prioritizes them based on impact, and provides actionable recommendations for improvement.",
-            },
-            {
-              title: "Alignment Meeting",
-              backgroundImage:
-                "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              description:
-                "We will share the improvement report with your team and walk you through our recommendations. We collaborate to create a tailored plan that aligns with your business goals and technical requirements.",
-            },
-            {
-              title: "Implementation",
-              backgroundImage:
-                "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              description:
-                "Our experts can do the heavy lifting for you by implementing the recommended changes directly into your codebase. Alternatively, we can provide guidance and support for your team to carry out the improvements.",
-            },
-          ]}
-        />
-        <a href="#contactForm" class="cta-button">Start Now</a>
+    <div class="content-reveal">
+      <h2 class="reveal-title">How we transform your codebase</h2>
+
+      <div class="bento-grid">
+        <div class="bento-card card-1">
+          <div class="card-header">
+            <span class="card-step">01</span>
+            <h3 class="card-title">Deep Dive</h3>
+          </div>
+          <p class="card-desc">
+            We audit your codebase, architecture, and workflows — surfacing the
+            issues that hold you back.
+          </p>
+        </div>
+
+        <div class="bento-card card-2">
+          <div class="card-header">
+            <span class="card-step">02</span>
+            <h3 class="card-title">Clear Roadmap</h3>
+          </div>
+          <p class="card-desc">
+            You receive a prioritized report with targeted, actionable fixes —
+            no guesswork.
+          </p>
+        </div>
+
+        <div class="bento-card card-3">
+          <div class="card-header">
+            <span class="card-step">03</span>
+            <h3 class="card-title">Team Alignment</h3>
+          </div>
+          <p class="card-desc">
+            We present our findings and co&#8209;create an execution plan that
+            fits your goals, timeline, and team capacity.
+          </p>
+        </div>
+
+        <div class="bento-card card-4">
+          <div class="card-header">
+            <span class="card-step">04</span>
+            <h3 class="card-title">Hands&#8209;On Execution</h3>
+          </div>
+          <p class="card-desc">
+            We implement the improvements ourselves or guide your developers
+            through every change. Either way, your codebase comes out stronger.
+          </p>
+        </div>
       </div>
+
+      <a href="#contactForm" class="cta-button">Start Now</a>
     </div>
   </section>
   <div id="code-reveal-spacer" style="height:0;"></div>
 </div>
 
 <script>
-  // Sticky scroll-animated SlideBlocks logic
   (function () {
     const scrollContainer = document.querySelector(
       ".code-reveal-scroll-container",
@@ -68,19 +78,10 @@ import SlideBlocks from "./SlideBlocks.astro";
     const spacer = document.getElementById("code-reveal-spacer") as HTMLElement;
     if (!scrollContainer || !section || !spacer) return;
 
-    // Find SlideBlocks cards (fix: use .project-card from SlideBlocks)
-    const slideBlocks = section.querySelector(".slider");
-    let cards: HTMLElement[] = [];
-    if (slideBlocks) {
-      cards = Array.from(slideBlocks.querySelectorAll(".project-card"));
-    }
+    const cards = Array.from(
+      section.querySelectorAll(".bento-card"),
+    ) as HTMLElement[];
     const total = cards.length;
-
-    function setActiveCard(index: number) {
-      cards.forEach((card, i) => {
-        card.classList.toggle("project-card-active", i === index);
-      });
-    }
 
     requestAnimationFrame(() => {
       function updateFromScroll() {
@@ -89,9 +90,13 @@ import SlideBlocks from "./SlideBlocks.astro";
         const scrollable = scrollContainer.offsetHeight - viewportHeight;
         const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
         const progress = scrollable > 0 ? scrolled / scrollable : 0;
-        const index = Math.round(progress * (total - 1));
-        setActiveCard(index);
-        // Unstick when last card is active
+
+        // Reveal cards one by one as user scrolls
+        cards.forEach((card, i) => {
+          const threshold = (i + 1) / (total + 1);
+          card.classList.toggle("card-visible", progress >= threshold);
+        });
+
         if (progress >= 1) {
           spacer.style.height = section.offsetHeight + "px";
         } else {
@@ -99,9 +104,7 @@ import SlideBlocks from "./SlideBlocks.astro";
         }
       }
 
-      setActiveCard(0);
       updateFromScroll();
-
       window.addEventListener("scroll", updateFromScroll, { passive: true });
       window.addEventListener("resize", updateFromScroll);
     });
@@ -109,17 +112,20 @@ import SlideBlocks from "./SlideBlocks.astro";
 </script>
 
 <style>
+  /* ─── Scroll container ─── */
   .code-reveal-scroll-container {
     background-color: var(--color-light);
     padding: 2rem 0;
     position: relative;
-    height: calc(100svh + 1800px); /* Adjust for desired scroll length */
+    height: calc(100svh + 1800px);
   }
+
   #code-reveal-spacer {
     width: 100%;
     transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* ─── Sticky section ─── */
   .code-reveal-section.code-reveal--sticky {
     position: sticky;
     margin: 0 1rem;
@@ -129,48 +135,89 @@ import SlideBlocks from "./SlideBlocks.astro";
     will-change: transform;
     view-timeline-name: --section-timeline;
     background: var(--background-gradient-primary);
+    overflow: hidden;
   }
 
-  .image-overlay-container {
-    position: sticky;
-    top: 0;
-    width: 100%;
-  }
-
-  .img {
+  /* ─── Background code image with circle mask ─── */
+  .section-bg-image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
     object-position: left;
     z-index: 1;
+    opacity: 0.6;
+    -webkit-mask-image: radial-gradient(
+      circle 100px,
+      white 90%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(circle 100px, white 90%, transparent 100%);
+    -webkit-mask-size: 200px 200px;
+    mask-size: 200px 200px;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 0% 0%;
+    mask-position: 0% 0%;
+    animation-name: mask-zigzag-mobile;
+    animation-timeline: --section-timeline;
+    animation-fill-mode: both;
+    animation-range: entry 5% cover 85%;
   }
 
-  .circle-mask-image {
-    display: none;
+  @keyframes mask-zigzag-mobile {
+    0% {
+      opacity: 0;
+      -webkit-mask-position: 0% 0%;
+      mask-position: 0% 0%;
+    }
+    8% {
+      opacity: 0.7;
+    }
+    25% {
+      -webkit-mask-position: 65% 18%;
+      mask-position: 65% 18%;
+    }
+    45% {
+      -webkit-mask-position: 5% 40%;
+      mask-position: 5% 40%;
+    }
+    65% {
+      -webkit-mask-position: 60% 60%;
+      mask-position: 60% 60%;
+    }
+    70% {
+      -webkit-mask-position: 5% 75%;
+      mask-position: 5% 75%;
+      opacity: 0.7;
+    }
+    82% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      -webkit-mask-position: 50% 95%;
+      mask-position: 50% 95%;
+    }
   }
 
+  /* ─── Content ─── */
   .content-reveal {
-    border-radius: 15px;
-    margin: 0 2rem;
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
-    max-width: 100%;
+    padding: var(--spacer-xl) var(--spacer-md);
     margin: 0 auto;
   }
 
   .reveal-title {
-    display: none;
     text-align: center;
-    font-size: 3rem;
+    font-size: 1.75rem;
+    margin-bottom: var(--spacer-lg);
     font-weight: var(--font-weight-medium);
     color: var(--color-ink-light);
     transform: translateY(50px);
@@ -180,77 +227,70 @@ import SlideBlocks from "./SlideBlocks.astro";
     animation-range: entry 10% cover 35%;
   }
 
-  .reveal-card-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
+  /* ─── Bento grid — stacked on mobile ─── */
+  .bento-grid {
     display: flex;
-    flex-wrap: nowrap;
-    overflow: visible;
-    gap: var(--spacer-md);
-    padding: 0 1rem var(--spacer-md);
-    scrollbar-width: none;
-    text-align: left;
-    font-size: 1.2rem;
-    overflow: visible;
-  }
-
-  .reveal-card-list::after {
-    content: "";
-    flex: 0 0 1px;
-  }
-
-  .reveal-card-list::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-
-  .reveal-card-scroll {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 1rem;
-  }
-
-  .reveal-card-scroll::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-
-  .reveal-card-shell {
+    flex-direction: column;
+    gap: 0.75rem;
     width: 100%;
   }
 
-  .reveal-card-nav {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: var(--spacer-sm);
-    gap: var(--spacer-sm);
-    margin-right: var(--spacer-md);
-  }
-
-  .reveal-card-button {
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(15, 26, 43, 0.7);
-    color: var(--color-ink-light);
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-md);
-    cursor: pointer;
+  /* ─── Cards ─── */
+  .bento-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: var(--spacer-lg);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(25px);
+    transition:
+      opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .bento-card.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Group step number + title tightly */
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .card-step {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    font-family: synonym, sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  .card-title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink-light);
+    line-height: 1.2;
+  }
+
+  .card-desc {
+    font-size: var(--font-sm);
+    color: rgba(232, 237, 246, 0.7);
+    line-height: 1.5;
+    font-family: synonym, sans-serif;
+  }
+
+  /* ─── CTA ─── */
   .cta-button {
     display: inline-block;
-    margin-top: var(--spacer-lg);
+    margin-top: var(--spacer-xl);
     padding: var(--spacer-md) var(--spacer-xl);
     font-size: var(--font-xl);
     font-weight: var(--font-weight-bold);
@@ -265,24 +305,13 @@ import SlideBlocks from "./SlideBlocks.astro";
     color: var(--color-accent-strong);
   }
 
-  .reveal-card-list :global(.app-card) {
-    flex: 0 0 82vw;
-    max-width: 82vw;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
-
+  /* ─── Desktop ─── */
   @media (min-width: 641px) {
-    .image-overlay-container {
-      height: calc(100svh - 6rem);
-    }
-
     .content-reveal {
       max-width: 1200px;
-      padding: var(--spacer-base) 0;
-      gap: var(--spacer-xl);
+      padding: var(--spacer-2xl) var(--spacer-xl);
+      min-height: calc(100svh - 6rem);
       justify-content: center;
-      height: 100%;
     }
 
     .code-reveal-section.code-reveal--sticky {
@@ -290,33 +319,65 @@ import SlideBlocks from "./SlideBlocks.astro";
     }
 
     .reveal-title {
-      display: block;
-      font-size: 5rem;
+      font-size: clamp(2.5rem, 4.5vw, 4rem);
+      margin-bottom: var(--spacer-2xl);
     }
 
-    .reveal-card-list {
+    /* Bento grid — 3 columns, 2 rows */
+    .bento-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: var(--spacer-lg);
-      padding: 0;
+      grid-template-columns: 1fr 1fr 1.3fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1rem;
     }
 
-    .reveal-card-scroll {
-      overflow: visible;
-      scroll-snap-type: none;
-      scroll-padding: 0;
+    .card-1 {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .card-2 {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .card-3 {
+      grid-column: 1 / 3;
+      grid-row: 2;
+    }
+    .card-4 {
+      grid-column: 3;
+      grid-row: 1 / 3;
+      position: relative;
+      background: rgba(47, 125, 209, 0.07);
+      border-color: rgba(47, 125, 209, 0.12);
     }
 
-    .reveal-card-nav {
-      display: none;
-      margin-right: 0;
+    .card-4::after {
+      content: "04";
+      position: absolute;
+      bottom: 0.75rem;
+      right: 1rem;
+      font-size: 7rem;
+      font-weight: 700;
+      line-height: 1;
+      color: rgba(47, 125, 209, 0.06);
+      pointer-events: none;
     }
 
-    .reveal-card-list :global(.app-card) {
-      flex: initial;
-      max-width: none;
-      scroll-snap-align: unset;
-      scroll-snap-stop: normal;
+    .bento-card {
+      padding: var(--spacer-xl);
+    }
+
+    .card-header {
+      gap: 0.15rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-size: var(--font-2xl);
+    }
+
+    .card-desc {
+      font-size: var(--font-md);
     }
 
     .cta-button {
@@ -324,8 +385,8 @@ import SlideBlocks from "./SlideBlocks.astro";
       font-size: var(--font-2xl);
     }
 
-    .circle-mask-image {
-      display: block;
+    /* Desktop circle mask — original zigzag animation */
+    .section-bg-image {
       -webkit-mask-image: radial-gradient(
         circle 150px,
         white 90%,
@@ -334,15 +395,7 @@ import SlideBlocks from "./SlideBlocks.astro";
       mask-image: radial-gradient(circle 150px, white 90%, transparent 100%);
       -webkit-mask-size: 300px 300px;
       mask-size: 300px 300px;
-      background: transparent;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-position: 0% 0%;
-      mask-position: 0% 0%;
       animation-name: mask-zigzag-path;
-      opacity: 0.6;
-      animation-timeline: --section-timeline;
-      animation-fill-mode: both;
       animation-range: entry 10% cover 90%;
     }
 
@@ -356,24 +409,20 @@ import SlideBlocks from "./SlideBlocks.astro";
         opacity: 0.8;
       }
       20% {
-        -webkit-mask-position: 40% 10%;
-        mask-position: 40% 10%;
+        -webkit-mask-position: 70% 10%;
+        mask-position: 70% 10%;
       }
       40% {
-        -webkit-mask-position: 80% 20%;
-        mask-position: 80% 20%;
+        -webkit-mask-position: 3% 20%;
+        mask-position: 3% 20%;
       }
-      60% {
-        -webkit-mask-position: 3% 50%;
-        mask-position: 3% 50%;
-      }
-      80% {
-        -webkit-mask-position: 2% 80%;
-        mask-position: 2% 80%;
+      70% {
+        -webkit-mask-position: 70% 40%;
+        mask-position: 70% 40%;
       }
       100% {
-        -webkit-mask-position: 0% 100%;
-        mask-position: 0% 100%;
+        -webkit-mask-position: 0% 90%;
+        mask-position: 0% 90%;
       }
     }
   }
