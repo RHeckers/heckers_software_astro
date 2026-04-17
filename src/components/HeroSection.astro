@@ -57,15 +57,35 @@ import LogoBanner from "./LogoBanner.astro";
       resume: () => void;
     } | null = null;
 
+    let heroVisible = true;
+
     import("../lib/hero-scene").then(async ({ createHeroScene }) => {
       controller = await createHeroScene({ canvas, reducedMotion });
+      // If hero scrolled away before scene loaded, pause immediately
+      if (!heroVisible) controller.pause();
     });
+
+    // Pause/resume based on whether the hero is on screen
+    const heroSection = canvas.closest(".hero")!;
+    const scrollObserver = new IntersectionObserver(
+      ([entry]) => {
+        heroVisible = entry.isIntersecting;
+        if (!controller || document.hidden) return;
+        if (entry.isIntersecting) {
+          controller.resume();
+        } else {
+          controller.pause();
+        }
+      },
+      { threshold: 0 },
+    );
+    scrollObserver.observe(heroSection);
 
     function onVisibility() {
       if (!controller) return;
       if (document.hidden) {
         controller.pause();
-      } else {
+      } else if (heroVisible) {
         controller.resume();
       }
     }
@@ -74,6 +94,7 @@ import LogoBanner from "./LogoBanner.astro";
     function onSwap() {
       controller?.destroy();
       controller = null;
+      scrollObserver.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       document.removeEventListener("astro:before-swap", onSwap);
     }
