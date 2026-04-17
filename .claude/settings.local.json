@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx astro build:*)"
+      "Bash(npx astro build:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(npm install:*)",
+      "Bash(timeout:*)",
+      "Bash(npx astro dev:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_evaluate"
     ]
   }
 }

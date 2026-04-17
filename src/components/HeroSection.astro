@@ -1,29 +1,27 @@
 ---
-import { Image } from "astro:assets";
 import LogoBanner from "./LogoBanner.astro";
-
-import arch from "../assets/architecture_design.svg";
 ---
 
 <section class="hero bg-gradient">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
   <div class="hero-content">
-    <h1 class="headline">Complex Systems</h1>
+    <h1>Complex Systems</h1>
 
-    <Image
-      src={arch}
-      alt="Abstract geometric shape representing complex systems"
-      class="hero-img"
-      loading="eager"
-      width={600}
-      height={600}
-      fetchpriority="high"
-    />
-    <div class="placeholder"></div>
+    <div class="particle-text-spacer">
+      <h2 class="sr-only">Built With Simplicity</h2>
+      <h2 class="sr-only">Architected For Scale</h2>
+      <h2 class="sr-only">Performance Driven</h2>
+    </div>
 
-    <div class="headline-rotator">
-      <h1 class="headline headline-2 heading-1">Built With Simplicity</h1>
-      <h1 class="headline headline-2 heading-2">Architected For Scale</h1>
-      <h1 class="headline headline-2 heading-3">Performance Driven</h1>
+    <span class="hero-badge">Angular & Nx Architecture Experts</span>
+
+    <p class="hero-description">
+      We architect, build, and rescue large-scale Angular & Nx applications.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#contactForm" class="btn btn-primary">Book a Call</a>
     </div>
   </div>
 
@@ -32,237 +30,216 @@ import arch from "../assets/architecture_design.svg";
   </div>
 </section>
 
+<script>
+  function initHero() {
+    const canvas = document.getElementById(
+      "hero-canvas",
+    ) as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    // Feature-detect WebGL on a temporary canvas
+    const testCanvas = document.createElement("canvas");
+    const gl =
+      testCanvas.getContext("webgl") ||
+      testCanvas.getContext("experimental-webgl");
+    if (!gl) {
+      canvas.style.display = "none";
+      return;
+    }
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    let controller: {
+      destroy: () => void;
+      pause: () => void;
+      resume: () => void;
+    } | null = null;
+
+    import("../lib/hero-scene").then(async ({ createHeroScene }) => {
+      controller = await createHeroScene({ canvas, reducedMotion });
+    });
+
+    function onVisibility() {
+      if (!controller) return;
+      if (document.hidden) {
+        controller.pause();
+      } else {
+        controller.resume();
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibility);
+
+    function onSwap() {
+      controller?.destroy();
+      controller = null;
+      document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("astro:before-swap", onSwap);
+    }
+    document.addEventListener("astro:before-swap", onSwap);
+  }
+
+  initHero();
+  document.addEventListener("astro:after-swap", initHero);
+</script>
+
 <style>
-  .hero-img {
-    z-index: 1;
-    opacity: 0.5;
-    height: auto;
-  }
-
-  .headline-rotator {
-    position: relative;
-    height: 3em;
-    width: 100%;
-    display: block;
-    margin: 0 auto;
-    perspective: 800px;
-    perspective-origin: 50% 50%;
-    margin-top: -23px;
-  }
-
-  .headline-rotator h1 {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    margin: 0 auto;
-    opacity: 0;
-    transform: rotateX(90deg) scale(0.95);
-    animation: headline-rotate-3d 9s cubic-bezier(0.77, 0, 0.175, 1) infinite;
-    pointer-events: none;
-    z-index: 1;
-    width: 100%;
-    text-align: center;
-    backface-visibility: hidden;
-    will-change: opacity, transform;
-  }
-
-  .headline-rotator .heading-1 {
-    animation-delay: 0s;
-  }
-  .headline-rotator .heading-2 {
-    animation-delay: 3s;
-  }
-  .headline-rotator .heading-3 {
-    animation-delay: 6s;
-  }
-
-  @keyframes headline-rotate-3d {
-    0% {
-      opacity: 0;
-      transform: rotateX(90deg) scale(0.95);
-    }
-    8% {
-      opacity: 1;
-      transform: rotateX(0deg) scale(1);
-    }
-    28% {
-      opacity: 1;
-      transform: rotateX(0deg) scale(1);
-    }
-    36% {
-      opacity: 0;
-      transform: rotateX(-90deg) scale(0.95);
-    }
-    100% {
-      opacity: 0;
-      transform: rotateX(-90deg) scale(0.95);
-    }
-  }
   .hero {
     position: relative;
-    height: 100svh;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
-    text-align: center;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-dark);
-    padding: var(--spacer-lg);
-    gap: var(--spacer-xl);
-    --stroke-primary: var(--color-ink-light);
-    --stroke-secondary: var(--color-accent);
-    --stroke-tertiary: var(--color-light);
-    --draw-pass-gap: 5s;
-    --draw-pass-duration: calc(var(--draw-pass-gap) * 3);
+    overflow: hidden;
   }
 
-  .hero-container {
-    margin-top: -7vh;
+  #hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 900px;
+    padding: var(--spacer-xl) var(--spacer-lg);
+  }
+
+  h1 {
+    color: var(--color-light-raised);
+    font-size: clamp(var(--font-2xl), 10vw, var(--font-6xl));
+    font-weight: var(--font-weight-light);
+    line-height: 1.1;
+    margin: 0 0 0.25rem;
+    white-space: nowrap;
+  }
+
+  /* Spacer where the particle text appears through the canvas */
+  .particle-text-spacer {
+    height: clamp(3.5rem, 8vw, 5rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 0.35em 1.1em;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink-light);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-description {
+    color: var(--color-ink-muted);
+    font-size: clamp(var(--font-md), 1.8vw, var(--font-lg));
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--spacer-md);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--spacer-xl);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7em 1.8em;
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-medium);
+    border-radius: 100px;
+    text-decoration: none;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-light-raised);
+    border: 1px solid var(--color-accent);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--color-ink-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .btn-outline:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: var(--color-light-raised);
   }
 
   .logo-banner-container {
     position: absolute;
     bottom: -10px;
     width: 100%;
+    z-index: 3;
   }
 
-  svg {
-    z-index: 2;
-  }
-
-  h1 {
-    color: var(--color-light-raised);
-    font-size: clamp(var(--font-lg), var(--font-2xl), var(--font-3xl));
-    font-weight: var(--font-weight-light);
-
-    &:first-child {
-      text-align: center;
-    }
-  }
-
-  .draw {
-    fill: none;
-    stroke-width: 1;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    stroke-dasharray: var(--pathLen, 0);
-    stroke-dashoffset: var(--pathLen, 0);
-  }
-
-  .draw-primary {
-    stroke: var(--stroke-primary);
-    animation:
-      draw-initial 3s cubic-bezier(0.99, 0, 1, 1) forwards,
-      draw-pass var(--draw-pass-duration) cubic-bezier(0.99, 0.01, 0.25, 1)
-        infinite;
-    animation-delay: var(--draw-pass-duration), 0s;
-    animation-fill-mode: forwards, both;
-  }
-
-  .draw-secondary {
-    stroke: var(--stroke-secondary);
-    animation: draw-pass var(--draw-pass-duration)
-      cubic-bezier(0.99, 0.01, 0.25, 1) infinite;
-    animation-delay: var(--draw-pass-gap);
-    animation-fill-mode: both;
-  }
-
-  .draw-tertiary {
-    stroke: var(--stroke-tertiary);
-    animation: draw-pass var(--draw-pass-duration)
-      cubic-bezier(0.99, 0.01, 0.25, 1) infinite;
-    animation-delay: calc(var(--draw-pass-gap) * 2);
-    animation-fill-mode: both;
-  }
-
-  @keyframes draw-initial {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  @keyframes draw-pass {
-    0% {
-      stroke-dashoffset: var(--pathLen, 0);
-      opacity: 0;
-    }
-    5% {
-      opacity: 1;
-    }
-    35% {
-      stroke-dashoffset: 0;
-      opacity: 1;
-    }
-    70% {
-      stroke-dashoffset: 0;
-      opacity: 1;
-    }
-    80% {
-      opacity: 0;
-    }
-    100% {
-      stroke-dashoffset: var(--pathLen, 0);
-      opacity: 0;
-    }
-  }
-
-  svg {
-    width: 50vw;
-    height: auto;
-  }
-
-  .placeholder {
-    display: none;
+  /* Screen-reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   @media (min-width: 650px) {
-    .placeholder {
-      display: block;
-    }
-
-    .hero-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      opacity: 0.5;
-    }
-
-    .hero {
-      height: 100svh;
-      text-align: left;
-    }
-
     .hero-content {
-      position: relative;
-      display: grid;
-      height: 100%;
-      margin-top: -150px;
-      grid-template-columns:
-        calc(35vw - var(--spacer-xl) - var(--spacer-lg))
-        30vw calc(35vw - var(--spacer-xl) - var(--spacer-lg));
-      padding: var(--spacer-xl) var(--spacer-xl);
-      align-items: center;
+      padding: var(--spacer-3xl) var(--spacer-xl);
     }
 
     h1 {
-      font-size: clamp(var(--font-xl), var(--font-3xl), var(--font-4xl));
-
-      &:first-child {
-        text-align: end;
-      }
+      margin-bottom: 0.5rem;
     }
 
-    svg {
-      width: auto;
-      height: auto;
+    .particle-text-spacer {
+      margin-bottom: 1.5rem;
     }
 
-    .headline-rotator h1 {
-      text-align: left !important;
+    .hero-badge {
+      font-size: var(--font-sm);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-description {
+      white-space: nowrap;
+    }
+
+    .hero-actions {
+      margin-top: var(--spacer-2xl);
     }
   }
 </style>
