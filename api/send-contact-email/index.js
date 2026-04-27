@@ -22,6 +22,27 @@ module.exports = async function (context, req) {
             return;
         }
 
+        // Turnstile verification
+        const turnstileToken = req.body?.turnstileToken;
+        if (!turnstileToken) {
+            context.res = { status: 400, body: "Turnstile verification required" };
+            return;
+        }
+
+        const turnstileRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                secret: process.env.TURNSTILE_SECRET_KEY,
+                response: turnstileToken
+            })
+        });
+        const turnstileData = await turnstileRes.json();
+        if (!turnstileData.success) {
+            context.res = { status: 403, body: "Turnstile verification failed" };
+            return;
+        }
+
         const parsed = ContactSchema.safeParse(req.body);
         if (!parsed.success) {
             context.res = { status: 400, body: "Invalid input" };

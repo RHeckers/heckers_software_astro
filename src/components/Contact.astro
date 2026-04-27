@@ -57,6 +57,19 @@
     <div class="error-message" id="contentError"></div>
   </div>
 
+  <div class="turnstile-group">
+    <div
+      id="turnstileWidget"
+      class="cf-turnstile"
+      data-sitekey="YOUR_TURNSTILE_SITE_KEY"
+      data-callback="onTurnstileSuccess"
+      data-expired-callback="onTurnstileExpired"
+      data-theme="light"
+    >
+    </div>
+    <div class="error-message" id="turnstileError"></div>
+  </div>
+
   <div class="submit-group">
     <button type="submit" id="contactSubmit">
       <span id="submitText">Send</span>
@@ -65,6 +78,8 @@
     <div class="error-message" id="submitError"></div>
   </div>
 </form>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <script>
   if (typeof window !== "undefined") {
@@ -83,6 +98,23 @@
     const submitError = document.getElementById(
       "submitError",
     ) as HTMLDivElement | null;
+
+    // Turnstile token state
+    let turnstileToken: string = "";
+
+    // Global callbacks for Turnstile widget
+    (window as any).onTurnstileSuccess = (token: string) => {
+      turnstileToken = token;
+      const turnstileError = document.getElementById(
+        "turnstileError",
+      ) as HTMLDivElement | null;
+      if (turnstileError) turnstileError.textContent = "";
+      validateForm();
+    };
+    (window as any).onTurnstileExpired = () => {
+      turnstileToken = "";
+      validateForm();
+    };
 
     type Field = {
       id: string;
@@ -175,8 +207,9 @@
       for (const field of fields) {
         if (!validateField(field)) valid = false;
       }
-      if (button) button.disabled = !valid;
-      return valid;
+      const hasTurnstile = !!turnstileToken;
+      if (button) button.disabled = !valid || !hasTurnstile;
+      return valid && hasTurnstile;
     }
 
     if (form) {
@@ -203,6 +236,17 @@
         if (submitError) submitError.textContent = "";
         validateForm();
         if (!validateForm()) {
+          return;
+        }
+
+        // Validate Turnstile
+        const turnstileError = document.getElementById(
+          "turnstileError",
+        ) as HTMLDivElement | null;
+        if (!turnstileToken) {
+          if (turnstileError)
+            turnstileError.textContent =
+              "Please complete the verification.";
           return;
         }
 
@@ -236,6 +280,7 @@
               subject,
               message,
               website,
+              turnstileToken,
             }),
           });
           if (res.ok) {
@@ -255,6 +300,11 @@
               dirty[f.id] = false;
             });
             formSubmitted = false;
+            // Reset Turnstile widget for next submission
+            turnstileToken = "";
+            if ((window as any).turnstile) {
+              (window as any).turnstile.reset("#turnstileWidget");
+            }
             validateForm();
           } else {
             if (submitError)
@@ -347,6 +397,11 @@
     font-size: 0.95rem;
     margin-top: 0.2rem;
     min-height: 1.2em;
+  }
+  .turnstile-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
   }
   .submit-group {
     display: flex;
