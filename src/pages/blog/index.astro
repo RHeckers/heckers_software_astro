@@ -20,23 +20,10 @@ const posts = (await getCollection("blog")).sort(
             <a href={`/blog/${post.id}/`}>
               {post.data.heroImage && (
                 <img
-                  src={post.data.heroImage}
-                  alt=""
-                  width="1100"
-                  height="500"
+                  src={post.data.heroImage.src}
+                  alt={post.data.title}
                 />
               )}
-              <div class="info">
-                <time datetime={post.data.pubDate.toISOString()}>
-                  {post.data.pubDate.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
-                <h2>{post.data.title}</h2>
-                <p>{post.data.description}</p>
-              </div>
             </a>
           </li>
         ))
@@ -86,30 +73,7 @@ const posts = (await getCollection("blog")).sort(
 
   img {
     width: 100%;
-    height: 280px;
-    object-fit: cover;
-  }
-
-  .info {
-    padding: 1.5rem;
-    font-family: "synonym", sans-serif;
-  }
-
-  time {
-    font-size: var(--font-sm);
-    color: var(--color-ink-muted);
-  }
-
-  h2 {
-    font-family: "chillax", sans-serif;
-    font-size: var(--font-xl);
-    font-weight: var(--font-weight-semi-bold);
-    margin: 0.5rem 0;
-  }
-
-  p {
-    font-size: var(--font-md);
-    color: var(--color-ink-muted);
-    line-height: 1.6;
+    height: auto;
+    display: block;
   }
 </style>

@@ -2,7 +2,7 @@
 title: "Build a Plugin-Based Global Error Handler for Your Angular Nx Monorepo"
 description: "Stop hardcoding error integrations. Learn how to build an extendible, plugin-based ErrorHandler using Angular's dependency injection and multi-providers, designed for scalable Nx workspaces."
 pubDate: "2026-03-29"
-heroImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1100&h=500&fit=crop"
+heroImage: "../../assets/blog-images/Plugin-Based-Global-Error-Handler-for-Your-Angular-Nx-Monorepo.png"
 ---
 
 Your Angular `ErrorHandler` is the last safety net. When something breaks, whether that's a failed HTTP request, a null reference, or a third-party script blowing up, the `ErrorHandler` catches it. It gives your app a chance to log the error, report it, or tell the user what happened instead of just silently dying.

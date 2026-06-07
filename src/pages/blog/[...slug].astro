@@ -42,10 +42,10 @@ const { Content } = await render(post);
           </span>
         )
       }
-      <h1>{post.data.title}</h1>
+      <h1 class="title">{post.data.title}</h1>
       {
         post.data.heroImage && (
-          <img src={post.data.heroImage} alt="" width="960" height="480" />
+          <img src={post.data.heroImage.src} alt="" width="960" height="480" />
         )
       }
     </header>
@@ -131,6 +131,10 @@ const { Content } = await render(post);
     padding: clamp(6rem, 10vw, 8rem) 1.5rem 4rem;
     font-family: "synonym", sans-serif;
     color: var(--color-ink);
+  }
+
+  .title {
+    line-height: 3.5rem;
   }
 
   /* Display font for headings, table headers, buttons */
@@ -487,6 +491,19 @@ const { Content } = await render(post);
 
   footer a:hover {
     text-decoration: underline;
+  }
+
+  @media (max-width: 769px) {
+    .title {
+      font-size: var(--font-2xl);
+      line-height: 2.5rem;
+    }
+
+    .prose :global(h2),
+    .prose :global(h3) {
+      font-size: var(--font-xl);
+      line-height: 2rem;
+    }
   }
 </style>
 
