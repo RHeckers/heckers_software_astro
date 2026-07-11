@@ -1,3 +1,7 @@
+---
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
 <form class="contact-form" name="contact" autocomplete="on" id="contactForm">
   <!-- Honeypot field for bot protection -->
   <div style="display:none;">
@@ -38,9 +42,9 @@
     <label for="subject">Subject*</label>
     <select id="subject" name="subject" required>
       <option value="General">General</option>
-      <option value="General">Code Review</option>
-      <option value="General">Workshop</option>
-      <option value="General">Development</option>
+      <option value="Code Review">Code Review</option>
+      <option value="Workshop">Workshop</option>
+      <option value="Development">Development</option>
       <option value="Feedback">Feedback</option>
       <option value="Other">Other</option>
     </select>
@@ -61,7 +65,7 @@
     <div
       id="turnstileWidget"
       class="cf-turnstile"
-      data-sitekey="YOUR_TURNSTILE_SITE_KEY"
+      data-sitekey={turnstileSiteKey}
       data-callback="onTurnstileSuccess"
       data-expired-callback="onTurnstileExpired"
       data-theme="light"
