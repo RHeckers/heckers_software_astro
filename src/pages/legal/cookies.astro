@@ -1,0 +1,99 @@
+---
+import LegalLayout from "../../layouts/LegalLayout.astro";
+import { COMPANY } from "../../consts";
+---
+
+<LegalLayout
+  title="Cookie Policy"
+  description="How Heckers Software uses cookies and similar technologies on its website."
+  lastUpdated="11 August 2026"
+>
+  <p>
+    This Cookie Policy explains how {COMPANY.name} ("we", "us", or "our") uses
+    cookies and similar technologies on our website. It should be read together
+    with our <a href="/legal/privacy">Privacy Policy</a>.
+  </p>
+
+  <h2>1. What are cookies?</h2>
+  <p>
+    Cookies are small text files that are placed on your device when you visit a
+    website. They are widely used to make websites work, or work more
+    efficiently, as well as to provide information to the site owners. Similar
+    technologies such as pixels and local storage may be used for comparable
+    purposes.
+  </p>
+
+  <h2>2. Types of cookies we use</h2>
+
+  <h3>Consent-based cookies</h3>
+  <p>
+    We do not load any cookie-setting third-party scripts until you accept
+    cookies via our consent banner. Once you accept, we may load
+    <strong>Cloudflare Turnstile</strong>, which we use to protect our contact
+    form from spam and automated abuse and which may set a cookie for that
+    purpose. If you decline, Turnstile is not loaded.
+  </p>
+
+  <h3>Functional cookies</h3>
+  <p>
+    Our newsletter subscription form, provided by our email service provider,
+    may set cookies when you actively submit the form to sign up. These support
+    the sign-up and delivery of the newsletter you requested.
+  </p>
+
+  <h2>3. Managing your consent</h2>
+  <p>
+    When you first visit our website, a small banner lets you accept or decline
+    cookies. You can change your choice at any time using the
+    <strong>"Cookie settings"</strong> link in the footer of any page. If you
+    decline or later withdraw consent, the affected features (such as the
+    contact form's spam protection) may not be available.
+  </p>
+
+  <h2>4. Third-party cookies</h2>
+  <p>
+    Some cookies are placed by third-party services that appear on our pages. We
+    do not control these cookies. The main third parties we use are:
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Cloudflare Turnstile</td>
+        <td>Protecting the contact form against spam and automated abuse</td>
+      </tr>
+      <tr>
+        <td>Newsletter provider</td>
+        <td>Managing newsletter sign-ups and delivery</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5. Managing cookies in your browser</h2>
+  <p>
+    Most web browsers also allow you to control cookies through their settings.
+    You can set your browser to refuse cookies or to alert you when cookies are
+    being sent. Please note that if you disable or refuse cookies, some parts of
+    this website may become inaccessible or not function properly. For more
+    information on how to manage cookies, visit
+    <a href="https://www.aboutcookies.org" rel="noopener" target="_blank">aboutcookies.org</a>.
+  </p>
+
+  <h2>6. Changes to this policy</h2>
+  <p>
+    We may update this Cookie Policy from time to time. The version published on
+    this page, with the "Last updated" date shown above, is the version in
+    effect.
+  </p>
+
+  <h2>7. Contact</h2>
+  <p>
+    If you have any questions about our use of cookies, please contact us at
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>.
+  </p>
+</LegalLayout>

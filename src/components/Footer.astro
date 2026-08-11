@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import logo from "../assets/logos/logo.png";
+import { COMPANY } from "../consts";
 
 const year = new Date().getFullYear();
 ---
@@ -35,20 +36,53 @@ const year = new Date().getFullYear();
       </ul>
     </div>
 
-    <div class="footer__cta">
-      <div>
-        <p class="footer__heading">Need a senior crew?</p>
-        <p class="footer__copy">
-          We step in when releases stall or the roadmap needs a reset.
-        </p>
-      </div>
+    <div class="footer__contact">
+      <p class="footer__heading">Get in touch</p>
+      <address class="footer__address">
+        {COMPANY.street}<br />
+        {COMPANY.postalCode} {COMPANY.city}<br />
+        {COMPANY.country}
+      </address>
+      <ul class="footer__contact-list">
+        <li>
+          <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a>
+        </li>
+        <li>
+          <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer__legal">
+      <p class="footer__heading">Legal</p>
+      <ul class="footer__links">
+        <li><a href="/legal/terms">Terms of Service</a></li>
+        <li><a href="/legal/privacy">Privacy Policy</a></li>
+        <li><a href="/legal/cookies">Cookie Policy</a></li>
+        <li>
+          <button type="button" class="footer__link-button" id="cookieSettings">
+            Cookie settings
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 
   <div class="footer__meta">
-    <span>© {year} Heckers Software</span>
+    <span>© {year} {COMPANY.name}</span>
+    <span class="footer__registration">
+      KVK: {COMPANY.kvk} &nbsp;·&nbsp; BTW: {COMPANY.btw}
+    </span>
   </div>
 </footer>
+
+<script>
+  document
+    .getElementById("cookieSettings")
+    ?.addEventListener("click", () => {
+      (window as any).openCookieConsent?.();
+    });
+</script>
 
 <style>
   .footer {
@@ -131,23 +165,55 @@ const year = new Date().getFullYear();
     box-shadow: 0 0 0 6px rgba(29, 154, 136, 0.18);
   }
 
-  .footer__cta {
-    height: 100%;
+  .footer__contact,
+  .footer__legal {
     display: flex;
     flex-direction: column;
-    gap: var(--spacer-sm);
-    align-content: start;
-    justify-content: space-between;
+    gap: var(--spacer-md);
     color: var(--color-ink-light);
-
-    .footer__heading {
-      margin-bottom: var(--spacer-md);
-    }
   }
 
-  .footer__copy {
+  .footer__address {
+    font-style: normal;
+    line-height: 1.7;
     color: rgba(249, 251, 255, 0.85);
-    line-height: 1.5;
+  }
+
+  .footer__contact-list,
+  .footer__links {
+    list-style: none;
+    display: grid;
+    gap: var(--spacer-sm);
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer__contact-list a,
+  .footer__links a,
+  .footer__link-button {
+    color: rgba(249, 251, 255, 0.85);
+    text-decoration: none;
+    transition: color 180ms ease;
+  }
+
+  .footer__link-button {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .footer__contact-list a:hover,
+  .footer__contact-list a:focus-visible,
+  .footer__links a:hover,
+  .footer__links a:focus-visible,
+  .footer__link-button:hover,
+  .footer__link-button:focus-visible {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .footer__heading {
@@ -220,7 +286,7 @@ const year = new Date().getFullYear();
 
   @media (min-width: 961px) {
     .footer__inner {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 </style>

@@ -71,6 +71,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       data-theme="light"
     >
     </div>
+    <div id="turnstilePlaceholder" class="turnstile-placeholder" hidden>
+      <span>Spam protection needs a cookie to load.</span>
+      <button type="button" id="enableTurnstile">Accept cookies to enable</button>
+    </div>
     <div class="error-message" id="turnstileError"></div>
   </div>
 
@@ -83,7 +87,57 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   </div>
 </form>
 
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+  // Load Cloudflare Turnstile (which may set a cookie) only after the visitor
+  // has accepted cookies. Until then, show a placeholder that lets them opt in.
+  const CONSENT_KEY = "cookie-consent";
+  const TURNSTILE_SRC =
+    "https://challenges.cloudflare.com/turnstile/v0/api.js";
+
+  function hasConsent(): boolean {
+    try {
+      return localStorage.getItem(CONSENT_KEY) === "accepted";
+    } catch {
+      return false;
+    }
+  }
+
+  let turnstileLoaded = false;
+  function loadTurnstile() {
+    if (turnstileLoaded) return;
+    turnstileLoaded = true;
+    const placeholder = document.getElementById("turnstilePlaceholder");
+    if (placeholder) placeholder.hidden = true;
+    const script = document.createElement("script");
+    script.src = TURNSTILE_SRC;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
+  function showPlaceholder() {
+    const placeholder = document.getElementById("turnstilePlaceholder");
+    if (placeholder) placeholder.hidden = false;
+  }
+
+  if (hasConsent()) {
+    loadTurnstile();
+  } else {
+    showPlaceholder();
+  }
+
+  // React when the visitor accepts cookies via the consent banner.
+  window.addEventListener("cookie-consent-changed", (e: Event) => {
+    if ((e as CustomEvent).detail === "accepted") loadTurnstile();
+  });
+
+  // The "Accept cookies to enable" button reopens the consent banner.
+  document
+    .getElementById("enableTurnstile")
+    ?.addEventListener("click", () => {
+      (window as any).openCookieConsent?.();
+    });
+</script>
 
 <script>
   if (typeof window !== "undefined") {
@@ -406,6 +460,38 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
+  }
+  .turnstile-placeholder[hidden] {
+    display: none;
+  }
+  .turnstile-placeholder {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    font-size: 0.95rem;
+    color: #555;
+  }
+  .turnstile-placeholder button {
+    background: transparent;
+    border: 1px solid var(--color-primary, #1c2a45);
+    color: var(--color-primary, #1c2a45);
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  .turnstile-placeholder button:hover {
+    background: var(--color-primary, #1c2a45);
+    color: #fff;
   }
   .submit-group {
     display: flex;

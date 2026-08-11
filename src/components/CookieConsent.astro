@@ -1,0 +1,153 @@
+---
+// Minimal, non-intrusive cookie consent banner.
+// Consent gates third-party scripts that may set cookies (e.g. Cloudflare
+// Turnstile on the contact form). Choice is stored in localStorage and
+// broadcast via a `cookie-consent-changed` event so gated scripts can react.
+---
+
+<div
+  id="cookie-consent"
+  class="cc"
+  role="region"
+  aria-label="Cookie consent"
+  hidden
+>
+  <p class="cc__text">
+    We use a cookie only to protect our forms from spam. See our
+    <a href="/legal/cookies">Cookie Policy</a>.
+  </p>
+  <div class="cc__actions">
+    <button type="button" class="cc__btn cc__btn--ghost" data-cc-decline>
+      Decline
+    </button>
+    <button type="button" class="cc__btn cc__btn--accept" data-cc-accept>
+      Accept
+    </button>
+  </div>
+</div>
+
+<style>
+  .cc {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1200;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-dark-soft);
+    border-top: 1px solid var(--color-stroke-strong);
+    box-shadow: 0 -8px 30px rgba(7, 16, 32, 0.4);
+    color: rgba(249, 251, 255, 0.85);
+    font-size: var(--font-sm);
+  }
+
+  .cc[hidden] {
+    display: none;
+  }
+
+  .cc__text {
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .cc__text a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cc__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .cc__btn {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semi-bold);
+    cursor: pointer;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .cc__btn--ghost {
+    background: transparent;
+    border-color: rgba(249, 251, 255, 0.3);
+    color: rgba(249, 251, 255, 0.85);
+  }
+
+  .cc__btn--ghost:hover {
+    border-color: rgba(249, 251, 255, 0.6);
+    color: #fff;
+  }
+
+  .cc__btn--accept {
+    background: var(--color-accent);
+    color: #fff;
+  }
+
+  .cc__btn--accept:hover {
+    background: var(--color-accent-strong);
+  }
+
+  @media (min-width: 721px) {
+    .cc {
+      justify-content: space-between;
+      flex-wrap: nowrap;
+    }
+  }
+</style>
+
+<script>
+  const STORAGE_KEY = "cookie-consent";
+  const banner = document.getElementById("cookie-consent");
+
+  function readConsent(): string | null {
+    try {
+      return localStorage.getItem(STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  }
+
+  function setConsent(value: "accepted" | "declined") {
+    try {
+      localStorage.setItem(STORAGE_KEY, value);
+    } catch {
+      /* storage unavailable — session-only choice */
+    }
+    if (banner) banner.hidden = true;
+    window.dispatchEvent(
+      new CustomEvent("cookie-consent-changed", { detail: value }),
+    );
+  }
+
+  function showBanner() {
+    if (banner) banner.hidden = false;
+  }
+
+  // Allow other components (e.g. the contact form) to reopen the banner.
+  (window as any).openCookieConsent = showBanner;
+
+  if (banner) {
+    banner
+      .querySelector("[data-cc-accept]")
+      ?.addEventListener("click", () => setConsent("accepted"));
+    banner
+      .querySelector("[data-cc-decline]")
+      ?.addEventListener("click", () => setConsent("declined"));
+
+    // Show only when the visitor hasn't chosen yet.
+    if (!readConsent()) showBanner();
+  }
+</script>

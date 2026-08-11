@@ -1,0 +1,144 @@
+---
+import LegalLayout from "../../layouts/LegalLayout.astro";
+import { COMPANY } from "../../consts";
+---
+
+<LegalLayout
+  title="Privacy Policy"
+  description="How Heckers Software collects, uses, and protects your personal data under the GDPR."
+  lastUpdated="11 August 2026"
+>
+  <p>
+    {COMPANY.name} ("we", "us", or "our") respects your privacy and is committed
+    to protecting your personal data. This Privacy Policy explains what personal
+    data we collect, why we collect it, how we use it, and the rights you have
+    under the EU General Data Protection Regulation (GDPR) and the Dutch
+    implementation act (UAVG).
+  </p>
+
+  <h2>1. Data controller</h2>
+  <p>The data controller responsible for your personal data is:</p>
+  <address>
+    <strong>{COMPANY.name}</strong><br />
+    {COMPANY.street}<br />
+    {COMPANY.postalCode} {COMPANY.city}, {COMPANY.country}<br />
+    Tel: <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a><br />
+    Email: <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a><br />
+    Chamber of Commerce (KVK): {COMPANY.kvk}<br />
+    VAT (BTW): {COMPANY.btw}
+  </address>
+
+  <h2>2. What data we collect</h2>
+  <p>We may collect and process the following categories of personal data:</p>
+  <ul>
+    <li>
+      <strong>Contact details</strong> you provide via our contact form or by
+      email — such as your name, email address, and the content of your message.
+    </li>
+    <li>
+      <strong>Newsletter data</strong> — your email address, if you subscribe to
+      our newsletter.
+    </li>
+    <li>
+      <strong>Technical data</strong> — such as your IP address, browser type,
+      and interactions collected through security tools (for example, Cloudflare
+      Turnstile) to protect our forms from abuse. These are loaded only after
+      you accept cookies.
+    </li>
+  </ul>
+
+  <h2>3. Why we use your data and legal basis</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Purpose</th>
+        <th>Legal basis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Responding to your enquiries and providing our services</td>
+        <td>Performance of a contract / your consent</td>
+      </tr>
+      <tr>
+        <td>Sending our newsletter</td>
+        <td>Your consent (which you may withdraw at any time)</td>
+      </tr>
+      <tr>
+        <td>Protecting our website and forms from spam and abuse</td>
+        <td>Our legitimate interest in securing our systems</td>
+      </tr>
+      <tr>
+        <td>Complying with legal and tax obligations</td>
+        <td>Compliance with a legal obligation</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. How long we keep your data</h2>
+  <p>
+    We keep your personal data only for as long as necessary for the purposes
+    set out above, or as required by law. Enquiry correspondence is retained for
+    as long as needed to handle your request and for a reasonable period
+    afterwards. Newsletter data is kept until you unsubscribe. Data related to
+    invoicing is retained for the statutory period required by Dutch tax law
+    (currently seven years).
+  </p>
+
+  <h2>5. Sharing your data</h2>
+  <p>
+    We do not sell your personal data. We may share it with trusted service
+    providers who process data on our behalf (processors), such as our email
+    newsletter provider and hosting and security providers. These parties may
+    only process your data on our instructions and under an appropriate data
+    processing agreement. Where data is transferred outside the European
+    Economic Area, we ensure appropriate safeguards (such as EU Standard
+    Contractual Clauses) are in place.
+  </p>
+
+  <h2>6. Cookies</h2>
+  <p>
+    Our website uses cookies and similar technologies. For details, please see
+    our <a href="/legal/cookies">Cookie Policy</a>.
+  </p>
+
+  <h2>7. Your rights</h2>
+  <p>Under the GDPR, you have the right to:</p>
+  <ul>
+    <li>access the personal data we hold about you;</li>
+    <li>request correction of inaccurate or incomplete data;</li>
+    <li>request erasure of your data ("right to be forgotten");</li>
+    <li>restrict or object to our processing of your data;</li>
+    <li>data portability;</li>
+    <li>withdraw consent at any time, where processing is based on consent.</li>
+  </ul>
+  <p>
+    To exercise any of these rights, contact us at
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>. You also have the
+    right to lodge a complaint with the Dutch Data Protection Authority
+    (Autoriteit Persoonsgegevens) at
+    <a href="https://www.autoriteitpersoonsgegevens.nl" rel="noopener" target="_blank">autoriteitpersoonsgegevens.nl</a>.
+  </p>
+
+  <h2>8. Security</h2>
+  <p>
+    We take appropriate technical and organisational measures to protect your
+    personal data against loss, misuse, and unauthorised access. However, no
+    method of transmission over the internet is fully secure, and we cannot
+    guarantee absolute security.
+  </p>
+
+  <h2>9. Changes to this policy</h2>
+  <p>
+    We may update this Privacy Policy from time to time. The version published
+    on this page, with the "Last updated" date shown above, is the version in
+    effect.
+  </p>
+
+  <h2>10. Contact</h2>
+  <p>
+    For any questions about this Privacy Policy or how we handle your data,
+    please contact us at
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>.
+  </p>
+</LegalLayout>

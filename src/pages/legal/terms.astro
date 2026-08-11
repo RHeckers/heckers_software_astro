@@ -1,0 +1,109 @@
+---
+import LegalLayout from "../../layouts/LegalLayout.astro";
+import { COMPANY } from "../../consts";
+---
+
+<LegalLayout
+  title="Terms of Service"
+  description="The terms and conditions governing the use of the Heckers Software website and services."
+  lastUpdated="11 August 2026"
+>
+  <p>
+    These Terms of Service ("Terms") govern your access to and use of the
+    website and services provided by {COMPANY.name} ("we", "us", or "our"). By
+    accessing this website or engaging our services, you agree to be bound by
+    these Terms. If you do not agree, please do not use our website or services.
+  </p>
+
+  <h2>1. Who we are</h2>
+  <address>
+    <strong>{COMPANY.name}</strong><br />
+    {COMPANY.street}<br />
+    {COMPANY.postalCode} {COMPANY.city}, {COMPANY.country}<br />
+    Tel: <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a><br />
+    Email: <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a><br />
+    Chamber of Commerce (KVK): {COMPANY.kvk}<br />
+    VAT (BTW): {COMPANY.btw}
+  </address>
+
+  <h2>2. Use of the website</h2>
+  <p>
+    You may use this website for lawful purposes only. You agree not to use the
+    website in any way that breaches applicable laws or regulations, is
+    fraudulent or harmful, or that attempts to gain unauthorised access to our
+    systems or interfere with their normal operation.
+  </p>
+
+  <h2>3. Services and quotations</h2>
+  <p>
+    Information on this website about our services is provided for general
+    information and does not constitute a binding offer. Any engagement for
+    services is subject to a separate written agreement between you and
+    {COMPANY.name}. Where a specific project agreement conflicts with these
+    Terms, the project agreement prevails.
+  </p>
+
+  <h2>4. Intellectual property</h2>
+  <p>
+    All content on this website — including text, graphics, logos, images, and
+    software — is the property of {COMPANY.name} or its licensors and is
+    protected by intellectual property laws. You may not reproduce, distribute,
+    or create derivative works from any content without our prior written
+    consent.
+  </p>
+
+  <h2>5. Third-party links and services</h2>
+  <p>
+    Our website may contain links to third-party websites and may rely on
+    third-party services (for example, Cloudflare Turnstile and our email
+    newsletter provider). We are not responsible for the content or practices of
+    these
+    third parties. Your use of those services is governed by their own terms and
+    privacy policies.
+  </p>
+
+  <h2>6. Disclaimer of warranties</h2>
+  <p>
+    This website is provided on an "as is" and "as available" basis. While we
+    take reasonable care to keep the information accurate and up to date, we make
+    no warranties, express or implied, regarding the completeness, accuracy, or
+    availability of the website or its content.
+  </p>
+
+  <h2>7. Limitation of liability</h2>
+  <p>
+    To the fullest extent permitted by law, {COMPANY.name} shall not be liable
+    for any indirect, incidental, or consequential damages arising from your use
+    of, or inability to use, this website. Nothing in these Terms excludes or
+    limits our liability where it would be unlawful to do so.
+  </p>
+
+  <h2>8. Privacy</h2>
+  <p>
+    Your use of this website is also governed by our
+    <a href="/legal/privacy">Privacy Policy</a> and
+    <a href="/legal/cookies">Cookie Policy</a>, which explain how we collect and
+    process personal data.
+  </p>
+
+  <h2>9. Changes to these Terms</h2>
+  <p>
+    We may update these Terms from time to time. The version published on this
+    page, with the "Last updated" date shown above, is the version in effect.
+    Continued use of the website after changes are posted constitutes acceptance
+    of the revised Terms.
+  </p>
+
+  <h2>10. Governing law and jurisdiction</h2>
+  <p>
+    These Terms are governed by the laws of the Netherlands. Any disputes
+    arising out of or in connection with these Terms shall be submitted to the
+    competent court in the Netherlands, unless mandatory law provides otherwise.
+  </p>
+
+  <h2>11. Contact</h2>
+  <p>
+    If you have any questions about these Terms, please contact us at
+    <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>.
+  </p>
+</LegalLayout>
