@@ -77,10 +77,11 @@ Now that you have a form, let's connect it to the DOM. The `FormField` directive
 ```html
 <form (submit)="onSubmit($event)">
   <input type="email" [formField]="loginForm.email" />
-  @if (loginForm.email().touched() && loginForm.email().invalid()) { @for (err
-  of loginForm.email().errors(); track err.kind) {
-  <p class="error">{{ err.message }}</p>
-  } }
+  @if (loginForm.email().touched() && loginForm.email().invalid()) { 
+    @for (err of loginForm.email().errors(); track err.kind) {
+      <p class="error">{{ err.message }}</p>
+    } 
+  }
 
   <input type="password" [formField]="loginForm.password" />
 
