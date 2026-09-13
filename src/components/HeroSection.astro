@@ -248,11 +248,19 @@ ${hoverCss}`}
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* The logo banner's blend panels must composite against this opaque
+       background, not against a transparent group (see LogoBanner). */
+    isolation: isolate;
+    /* The logo reel (see LogoBanner) starts 75px above the bottom edge, at
+       every viewport size. The gradient must be flat --color-light by then,
+       so the stop is in pixels from the bottom rather than a percentage of
+       the (viewport-dependent) hero height. */
+    --hero-fade-end: 90px;
     background: linear-gradient(
       to bottom,
       var(--color-dark) 0%,
       var(--color-dark-alt) 55%,
-      var(--color-light) 94%
+      var(--color-light) calc(100% - var(--hero-fade-end))
     );
   }
 
@@ -593,11 +601,13 @@ ${hoverCss}`}
 
   /* --- Logo banner --- */
 
+  /* No z-index here: that would make this a stacking context, and the
+     banner's mix-blend-mode panels would then blend against a transparent
+     backdrop and leave a grey line along the top of the reel. */
   .logo-banner-container {
     position: absolute;
     bottom: -10px;
     width: 100%;
-    z-index: 3;
   }
 
   /* --- Layout breakpoints --- */

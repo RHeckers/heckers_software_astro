@@ -60,7 +60,6 @@ const logoWidth = isMobile ? 100 : 135;
     />
   </div>
   <div class="reel">
-    <div class="overlay"></div>
     <div class="track">
       {
         logos.map((client, index) => (
@@ -80,7 +79,10 @@ const logoWidth = isMobile ? 100 : 135;
         ))
       }
     </div>
-    <div class="overlay"></div>
+    <div class="overlay overlay--mute overlay--left"></div>
+    <div class="overlay overlay--mute overlay--right"></div>
+    <div class="overlay overlay--desaturate overlay--left"></div>
+    <div class="overlay overlay--desaturate overlay--right"></div>
   </div>
 </section>
 
@@ -125,25 +127,48 @@ const logoWidth = isMobile ? 100 : 135;
     will-change: transform;
   }
 
+  /*
+    The lamp "lights" the logos: skewed panels cover the reel and leave a
+    wedge under the lamp where the logos keep their colour. Each side is
+    two opaque blend panels: `lighten` with a mid grey lifts the logos' dark
+    ink to that grey (mutes them), then `saturation` with the page's light
+    colour turns them grey. Both leave the light background exactly as it
+    is, so the reel has no visible edge. (A backdrop-filter or translucent
+    wash would tint the background itself and leave a band with a hard top
+    edge, especially on phones.)
+
+    The panels rely on blending against the hero's opaque background: the
+    hero is `isolation: isolate` and nothing between it and the panels may
+    form a stacking context (see .logo-banner-container in HeroSection).
+  */
   .overlay {
     position: absolute;
     bottom: 0;
-    left: -20px;
     height: 100px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .overlay--left {
+    left: -20px;
     width: calc(50% - 20px);
     transform: skewX(341deg);
-    z-index: 2;
-    background: #f2f6fd45;
-    opacity: 1;
-    -webkit-backdrop-filter: grayscale(1);
-    backdrop-filter: grayscale(1);
+  }
 
-    &:last-of-type {
-      right: -20px;
-      left: auto;
-      width: calc(50% - 17px);
-      transform: skewX(20deg);
-    }
+  .overlay--right {
+    right: -20px;
+    width: calc(50% - 17px);
+    transform: skewX(20deg);
+  }
+
+  .overlay--mute {
+    background: #6e6e6e;
+    mix-blend-mode: lighten;
+  }
+
+  .overlay--desaturate {
+    background: var(--color-light);
+    mix-blend-mode: saturation;
   }
 
   .logo-container {
@@ -174,12 +199,12 @@ const logoWidth = isMobile ? 100 : 135;
       height: 200px;
     }
 
-    .overlay {
+    .overlay--left {
       width: calc(50% - 34px);
+    }
 
-      &:last-of-type {
-        width: calc(50% - 30px);
-      }
+    .overlay--right {
+      width: calc(50% - 30px);
     }
   }
 </style>
