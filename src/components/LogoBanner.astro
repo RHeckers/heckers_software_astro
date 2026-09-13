@@ -3,11 +3,11 @@ import { Image } from "astro:assets";
 import vattenfall from "../assets/logos/vattenfall_logo.svg";
 import marel from "../assets/logos/marel_logo.svg";
 import wgka from "../assets/logos/wgk-antwerpen.svg";
-import spacewell from "../assets/logos/spacewell_logo.svg";
-import phitaal from "../assets/logos/phitaal_logo.svg";
+import spacewell from "../assets/logos/spacewell_logo.png";
+import phitaal from "../assets/logos/phitaal_logo.png";
 import dh_automation from "../assets/logos/dh_automation_logo.svg";
 import ministerie_van_defensie from "../assets/logos/ministerie_van_defensie_logo.png";
-import lamp from "../assets//lamp.svg";
+import lamp from "../assets/lamp.png";
 
 const logosBase = [
   {
@@ -40,7 +40,9 @@ const logosBase = [
   },
 ];
 
-const logos = [...logosBase, ...logosBase];
+// Three copies so even very wide screens are filled from the first frame;
+// the track shifts by exactly one copy per cycle for a seamless loop.
+const logos = [...logosBase, ...logosBase, ...logosBase];
 
 const isMobile = typeof window !== "undefined" ? window.innerWidth < 600 : true;
 const lampHeight = isMobile ? 150 : 300;
@@ -155,7 +157,7 @@ const logoWidth = isMobile ? 100 : 135;
 
   @keyframes marquee {
     0% {
-      transform: translateX(-50%);
+      transform: translateX(calc(-100% / 3));
     }
 
     100% {

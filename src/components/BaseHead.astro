@@ -140,14 +140,23 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
   )
 }
 
-<!-- Analytics (Umami is cookieless; production builds only) -->
+<!-- Analytics (Umami is cookieless; production builds only).
+     Injected after the load event so the external script never sits on the
+     critical path of the first paint. -->
 {
   import.meta.env.PROD && (
-    <script
-      is:inline
-      defer
-      src="https://cloud.umami.is/script.js"
-      data-website-id={UMAMI_WEBSITE_ID}
-    />
+    <script is:inline define:vars={{ UMAMI_WEBSITE_ID }}>
+      window.addEventListener(
+        "load",
+        () => {
+          const s = document.createElement("script");
+          s.defer = true;
+          s.src = "https://cloud.umami.is/script.js";
+          s.dataset.websiteId = UMAMI_WEBSITE_ID;
+          document.head.appendChild(s);
+        },
+        { once: true },
+      );
+    </script>
   )
 }
