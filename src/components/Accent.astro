@@ -21,14 +21,22 @@ interface Props {
   tone?: "accent" | "danger";
   /** animation-range for the reveal, e.g. "entry 80% entry 95%". */
   range?: string;
+  /**
+   * animation-range used on phones (max-width 640px) instead of `range`.
+   * A flick scrolls hundreds of pixels at once, so a wipe that spans a
+   * narrow band of the viewport is over before anyone sees it; give it a
+   * wider range here.
+   */
+  mobileRange?: string;
   /** Named scroll/view timeline to drive the reveal; defaults to the element's own view timeline. */
   timeline?: string;
 }
 
-const { tone = "accent", range, timeline } = Astro.props;
+const { tone = "accent", range, mobileRange, timeline } = Astro.props;
 
 const style = [
   range && `--accent-range: ${range}`,
+  mobileRange && `--accent-range-mobile: ${mobileRange}`,
   timeline && `--accent-timeline: ${timeline}`,
 ]
   .filter(Boolean)

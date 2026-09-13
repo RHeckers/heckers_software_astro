@@ -69,17 +69,23 @@ import Accent from "./Accent.astro";
     <div class="story-block story-block-2">
       <div class="stacked-text">
         <p class="small-text">
-          With our <Accent range="cover 14% cover 34%"
-            >Architecture assessment</Accent
+          With our <Accent
+            range="cover 14% cover 34%"
+            mobileRange="cover 2% cover 32%">Architecture assessment</Accent
           >
           <br />
-          Angular and Nx <Accent range="cover 18% cover 38%">experts</Accent>
+          Angular and Nx <Accent
+            range="cover 18% cover 38%"
+            mobileRange="cover 6% cover 36%">experts</Accent
+          >
           <br />
           Show you how to
           <br />
         </p>
         <p class="large-text">
-          <Accent range="cover 20% cover 44%">IMPROVE</Accent>
+          <Accent range="cover 20% cover 44%" mobileRange="cover 12% cover 44%"
+            >IMPROVE</Accent
+          >
         </p>
       </div>
     </div>
@@ -88,13 +94,19 @@ import Accent from "./Accent.astro";
   <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-3">
       <p class="story-text line-4">
-        <Accent range="cover 14% cover 34%">Find</Accent> the real problems
+        <Accent range="cover 14% cover 34%" mobileRange="cover 10% cover 42%"
+          >Find</Accent
+        > the real problems
       </p>
       <p class="story-text line-5">
-        <Accent range="cover 18% cover 38%">Fix</Accent> what matters
+        <Accent range="cover 18% cover 38%" mobileRange="cover 14% cover 46%"
+          >Fix</Accent
+        > what matters
       </p>
       <p class="story-text line-5">
-        <Accent range="cover 22% cover 42%">Train</Accent> your team
+        <Accent range="cover 22% cover 42%" mobileRange="cover 18% cover 50%"
+          >Train</Accent
+        > your team
       </p>
       <p class="story-caption">
         One review. A report, a roadmap, and the people to carry it out.
@@ -297,27 +309,56 @@ import Accent from "./Accent.astro";
       padding-bottom: 0;
     }
 
+    /*
+      The dark cards keep a gutter on every side. The accent words never
+      wrap, so the type scales with the viewport (vw) and stays inside the
+      card on narrow phones instead of running past the rounded edge.
+    */
+    .story .story-block-2,
+    .story .story-block-3 {
+      padding: var(--spacer-xl) var(--spacer-lg);
+      /* clip, not hidden: hidden makes the card a scroll container, which
+         would pin the accent words' view timelines to the card instead of
+         the page and freeze their wipe. */
+      overflow: clip;
+    }
+
     .story .story-block .story-text {
-      font-size: 2.5rem;
+      font-size: clamp(1.75rem, 8.5vw, 2.5rem);
       font-weight: var(--font-weight-normal);
+      max-width: 100%;
+      text-wrap: balance;
     }
 
     .story .stacked-text {
       flex-direction: column;
+      max-width: 100%;
+
+      .small-text,
+      .large-text {
+        max-width: 100%;
+        min-width: 0;
+      }
 
       .small-text {
-        font-size: 1.5rem;
+        font-size: clamp(0.9rem, 4.6vw, 1.5rem);
         padding-bottom: 0px;
 
         span {
-          font-size: 1.5rem;
+          font-size: inherit;
         }
       }
 
       .large-text {
-        font-size: 5rem;
+        font-size: clamp(3rem, 16vw, 5rem);
         line-height: 1;
       }
+    }
+
+    .story .story-caption {
+      margin-top: var(--spacer-lg);
+      font-size: 1rem;
+      padding: 0;
     }
 
     .story svg {

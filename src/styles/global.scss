@@ -227,6 +227,19 @@
   animation-fill-mode: both;
 }
 
+/* Phones: an Accent may pass a wider range via mobileRange, see Accent.astro. */
+@media (max-width: 640px) {
+  .accent__base,
+  .accent__base-copy,
+  .accent__clip,
+  .accent__copy {
+    animation-range: var(
+      --accent-range-mobile,
+      var(--accent-range, entry 50% cover 60%)
+    );
+  }
+}
+
 @keyframes accent-base-out {
   from {
     transform: translateX(0);
