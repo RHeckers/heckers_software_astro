@@ -1,4 +1,5 @@
 ---
+import Accent from "./Accent.astro";
 import ContentCards from "./ContentCards.astro";
 import { Image } from "astro:assets";
 
@@ -33,24 +34,24 @@ import cloud from "../assets/cloud.svg";
           <ul class="app-dev-list">
             <ContentCards icon="✦" title="Concept to Delivery">
               From idea to launch, we partner with you to build
-              <span class="accent accent-1">products that resonate</span> with your
+              <Accent range="entry 65% cover 50%" timeline="--app-dev-timeline">products that resonate</Accent> with your
               users and achieve your business goals.
             </ContentCards>
             <ContentCards icon="⧉" title="Cross Platform Applications">
               Shared UI and domain core with
-              <span class="accent accent-1">platform-specific polish</span> so every
+              <Accent range="entry 65% cover 50%" timeline="--app-dev-timeline">platform-specific polish</Accent> so every
               surface feels intentional while shipping from a single codebase.
             </ContentCards>
             <ContentCards icon="⚙" title="Architected for Scale">
-              From modular architecture to <span class="accent accent-2"
-                >cloud-native infrastructure</span
-              >, we build applications designed to <span class="accent accent-2"
-                >grow</span
+              From modular architecture to <Accent range="entry 70% cover 50%" timeline="--app-dev-timeline"
+                >cloud-native infrastructure</Accent
+              >, we build applications designed to <Accent range="entry 70% cover 50%" timeline="--app-dev-timeline"
+                >grow</Accent
               > with your business.
             </ContentCards>
           </ul>
         </div>
-        <div class="app-dev-card-nav" aria-label="Scroll cards">
+        <div class="app-dev-card-nav" role="group" aria-label="Scroll cards">
           <button
             class="app-dev-card-button"
             data-direction="prev"
@@ -173,15 +174,6 @@ import cloud from "../assets/cloud.svg";
 
   .app-dev-list .accent {
     font-weight: var(--font-weight-normal);
-    animation-timeline: --app-dev-timeline;
-  }
-
-  .accent-1 {
-    animation-range: entry 65% cover 50%;
-  }
-
-  .accent-2 {
-    animation-range: entry 70% cover 50%;
   }
 
   .app-dev-card-shell {

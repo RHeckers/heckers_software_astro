@@ -9,12 +9,10 @@ import LogoBanner from "./LogoBanner.astro";
     <h1>Complex Systems</h1>
 
     <div class="particle-text-spacer">
-      <h2 class="sr-only">Built With Simplicity</h2>
-      <h2 class="sr-only">Architected For Scale</h2>
-      <h2 class="sr-only">Performance Driven</h2>
+      <p class="sr-only">
+        Built With Simplicity. Architected For Scale. Performance Driven.
+      </p>
     </div>
-
-    <span class="hero-badge">Angular & Nx Architecture Experts</span>
 
     <p class="hero-description">
       We architect, build, and rescue large-scale Angular & Nx applications.
@@ -37,16 +35,6 @@ import LogoBanner from "./LogoBanner.astro";
     ) as HTMLCanvasElement | null;
     if (!canvas) return;
 
-    // Feature-detect WebGL on a temporary canvas
-    const testCanvas = document.createElement("canvas");
-    const gl =
-      testCanvas.getContext("webgl") ||
-      testCanvas.getContext("experimental-webgl");
-    if (!gl) {
-      canvas.style.display = "none";
-      return;
-    }
-
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -59,11 +47,42 @@ import LogoBanner from "./LogoBanner.astro";
 
     let heroVisible = true;
 
-    import("../lib/hero-scene").then(async ({ createHeroScene }) => {
-      controller = await createHeroScene({ canvas, reducedMotion });
-      // If hero scrolled away before scene loaded, pause immediately
-      if (!heroVisible) controller.pause();
-    });
+    let disposed = false;
+
+    // Load the scene off the critical path: after the page has loaded and
+    // the main thread is idle, so it never competes with LCP or TTI.
+    function loadScene() {
+      if (disposed) return;
+      import("../lib/hero-scene")
+        .then(async ({ createHeroScene }) => {
+          if (disposed) return;
+          const scene = await createHeroScene({ canvas, reducedMotion });
+          if (disposed) {
+            scene.destroy();
+            return;
+          }
+          controller = scene;
+          // If hero scrolled away before scene loaded, pause immediately
+          if (!heroVisible) controller.pause();
+        })
+        .catch(() => {
+          canvas.style.display = "none";
+        });
+    }
+
+    function scheduleLoad() {
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(loadScene, { timeout: 1500 });
+      } else {
+        window.setTimeout(loadScene, 300);
+      }
+    }
+
+    if (document.readyState === "complete") {
+      scheduleLoad();
+    } else {
+      window.addEventListener("load", scheduleLoad, { once: true });
+    }
 
     // Pause/resume based on whether the hero is on screen
     const heroSection = canvas.closest(".hero")!;
@@ -92,6 +111,7 @@ import LogoBanner from "./LogoBanner.astro";
     document.addEventListener("visibilitychange", onVisibility);
 
     function onSwap() {
+      disposed = true;
       controller?.destroy();
       controller = null;
       scrollObserver.disconnect();
@@ -141,30 +161,14 @@ import LogoBanner from "./LogoBanner.astro";
     font-size: clamp(var(--font-2xl), 10vw, var(--font-6xl));
     font-weight: var(--font-weight-light);
     line-height: 1.1;
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.75rem;
     white-space: nowrap;
   }
 
   /* Spacer where the particle text appears through the canvas */
   .particle-text-spacer {
     height: clamp(3.5rem, 8vw, 5rem);
-    margin-bottom: 1.25rem;
-  }
-
-  .hero-badge {
-    display: inline-block;
-    padding: 0.35em 1.1em;
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-ink-light);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 100px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.75rem;
   }
 
   .hero-description {
@@ -197,14 +201,15 @@ import LogoBanner from "./LogoBanner.astro";
     cursor: pointer;
   }
 
+  /* accent-strong keeps white text at >= 4.5:1 contrast */
   .btn-primary {
-    background-color: var(--color-accent);
+    background-color: var(--color-accent-strong);
     color: var(--color-light-raised);
-    border: 1px solid var(--color-accent);
+    border: 1px solid var(--color-accent-strong);
   }
   .btn-primary:hover {
-    background-color: var(--color-accent-strong);
-    border-color: var(--color-accent-strong);
+    background-color: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
   }
 
   .btn-outline {
@@ -243,16 +248,11 @@ import LogoBanner from "./LogoBanner.astro";
     }
 
     h1 {
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
     }
 
     .particle-text-spacer {
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-badge {
-      font-size: var(--font-sm);
-      margin-bottom: 0.75rem;
+      margin-bottom: 2.25rem;
     }
 
     .hero-description {

@@ -1,26 +1,22 @@
-<nav class="nav" role="navigation" aria-label="Main Navigation">
-  <div id="pill" class="pill" aria-expanded="false" aria-controls="main-menu">
+<nav class="nav" aria-label="Main Navigation">
+  <div id="pill" class="pill">
     <a class="brand" href="/">HECKERS SOFTWARE</a>
-    <span class="hamburger" role="button" aria-label="Open menu" tabindex="0"
-      >☰</span
+    <button
+      type="button"
+      class="hamburger"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="main-menu">☰</button
     >
-    <span class="close" role="button" aria-label="Close menu" tabindex="0"
-      >×</span
-    >
-    <div class="menu" id="main-menu" role="menu">
+    <button type="button" class="close" aria-label="Close menu">×</button>
+    <div class="menu" id="main-menu">
       <ul>
-        <li role="none"><a role="menuitem" href="/">Home</a></li>
-        <li role="none"><a role="menuitem" href="/blog">Blog</a></li>
-        <li role="none">
-          <a role="menuitem" href="/#code-analysis">Code Analysis</a>
-        </li>
-        <li role="none"><a role="menuitem" href="/#workshops">Workshops</a></li>
-        <li role="none">
-          <a role="menuitem" href="/#app-development">App Development</a>
-        </li>
-        <li role="none">
-          <a role="menuitem" href="/#contactForm">Contact</a>
-        </li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/#code-analysis">Code Analysis</a></li>
+        <li><a href="/#workshops">Workshops</a></li>
+        <li><a href="/#app-development">App Development</a></li>
+        <li><a href="/#contactForm">Contact</a></li>
       </ul>
     </div>
   </div>
@@ -37,8 +33,10 @@
     all: unset;
   }
 
-  span:focus-visible {
-    outline: none;
+  a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
   }
 
   .nav {
@@ -68,7 +66,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    cursor: pointer;
 
     transform-origin: center;
     transition:
@@ -81,17 +78,11 @@
     -webkit-user-select: none;
   }
 
-  .pill:focus,
-  .pill:active {
-    outline: none;
-  }
-
   /* OPEN STATE */
   .pill.open {
     width: 100vw;
     height: 100vh;
     border-radius: 0;
-    cursor: default;
   }
 
   .pill.no-close-animation {
@@ -101,13 +92,32 @@
   .brand {
     font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .hamburger,
+  .close {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .hamburger:focus-visible,
+  .close:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
   }
 
   .hamburger {
     font-size: 20px;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
   }
 
   .close {
@@ -115,23 +125,12 @@
     top: 24px;
     right: 24px;
     font-size: 24px;
-    cursor: pointer;
     font-weight: var(--font-weight-bold);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transition: none;
     z-index: 1100;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  .hamburger:focus,
-  .hamburger:active,
-  .close:focus,
-  .close:active {
-    outline: none;
   }
 
   .pill.open .close {
@@ -166,11 +165,6 @@
     transition: opacity 300ms ease 450ms;
   }
 
-  .pill.open .menu {
-    opacity: 1;
-    pointer-events: auto;
-    transition-delay: 450ms;
-  }
   .pill.open .brand,
   .pill.open .hamburger {
     display: none;
@@ -187,6 +181,9 @@
     font-size: 32px;
     font-weight: 700;
     margin: 16px 0;
+  }
+
+  .menu a {
     cursor: pointer;
   }
 </style>
@@ -194,18 +191,26 @@
 <script>
   const nav = document.querySelector(".nav") as HTMLElement;
   const pill = document.getElementById("pill") as HTMLElement;
-  const hamburger = pill.querySelector(".hamburger") as HTMLElement;
-  const close = pill.querySelector(".close") as HTMLElement;
+  const hamburger = pill.querySelector(".hamburger") as HTMLButtonElement;
+  const close = pill.querySelector(".close") as HTMLButtonElement;
   const menuLinks = pill.querySelectorAll(".menu a") as NodeListOf<HTMLElement>;
 
-  function closeMenu() {
+  function openMenu() {
+    pill.classList.add("open");
+    hamburger.setAttribute("aria-expanded", "true");
+    // Move focus into the dialog-like menu so keyboard users can close it.
+    close.focus({ preventScroll: true });
+  }
+
+  function closeMenu(restoreFocus = true) {
     pill.classList.remove("open");
-    pill.setAttribute("aria-expanded", "false");
+    hamburger.setAttribute("aria-expanded", "false");
+    if (restoreFocus) hamburger.focus({ preventScroll: true });
   }
 
   function closeMenuInstant() {
     pill.classList.add("no-close-animation");
-    closeMenu();
+    closeMenu(false);
 
     // Re-enable transitions for subsequent open/close interactions.
     window.requestAnimationFrame(() => {
@@ -213,13 +218,13 @@
     });
   }
 
-  hamburger.addEventListener("click", () => {
-    pill.classList.add("open");
-    pill.setAttribute("aria-expanded", "true");
-  });
+  hamburger.addEventListener("click", openMenu);
+  close.addEventListener("click", () => closeMenu());
 
-  close.addEventListener("click", () => {
-    closeMenu();
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && pill.classList.contains("open")) {
+      closeMenu();
+    }
   });
 
   menuLinks.forEach((link) => {

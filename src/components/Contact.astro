@@ -2,7 +2,14 @@
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
-<form class="contact-form" name="contact" autocomplete="on" id="contactForm">
+<form
+  class="contact-form"
+  name="contact"
+  autocomplete="on"
+  id="contactForm"
+  aria-labelledby="contact-heading"
+>
+  <h2 class="sr-only" id="contact-heading">Contact us</h2>
   <!-- Honeypot field for bot protection -->
   <div style="display:none;">
     <label for="website">Website</label>

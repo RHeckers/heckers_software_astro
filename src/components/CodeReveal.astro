@@ -68,7 +68,7 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
       {
         articlesLink && (
           <a href={articlesLink.href} class="articles-link">
-            {articlesLink.label} &rarr;
+            {articlesLink.label}
           </a>
         )
       }
@@ -94,10 +94,15 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     const total = cards.length;
 
     requestAnimationFrame(() => {
+      let spacerHeight = "";
+
       function updateFromScroll() {
+        // Read layout first, then write, so the browser never has to
+        // recalculate layout halfway through this handler (forced reflow).
         const containerRect = scrollContainer.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
         const scrollable = scrollContainer.offsetHeight - viewportHeight;
+        const sectionHeight = section.offsetHeight;
         const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
         const progress = scrollable > 0 ? scrolled / scrollable : 0;
 
@@ -107,10 +112,10 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
           card.classList.toggle("card-visible", progress >= threshold);
         });
 
-        if (progress >= 1) {
-          spacer.style.height = section.offsetHeight + "px";
-        } else {
-          spacer.style.height = "0px";
+        const nextHeight = progress >= 1 ? sectionHeight + "px" : "0px";
+        if (nextHeight !== spacerHeight) {
+          spacerHeight = nextHeight;
+          spacer.style.height = nextHeight;
         }
       }
 
@@ -315,20 +320,22 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     color: var(--color-accent-strong);
   }
 
+  /* Deliberately quiet so it never competes with the CTA above it. */
   .articles-link {
-    margin-top: var(--spacer-md);
+    margin-top: var(--spacer-lg);
     font-family: synonym, sans-serif;
-    font-size: var(--font-md);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-ink-light);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    opacity: 0.85;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-normal);
+    color: rgba(232, 237, 246, 0.55);
+    text-decoration: none;
+    letter-spacing: 0.01em;
   }
 
   .articles-link:hover,
   .articles-link:focus-visible {
-    opacity: 1;
+    color: var(--color-ink-light);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   /* ─── Desktop ─── */

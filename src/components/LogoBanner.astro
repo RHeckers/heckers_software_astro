@@ -47,17 +47,17 @@ const lampHeight = isMobile ? 150 : 300;
 const logoWidth = isMobile ? 100 : 135;
 ---
 
-<section>
+<section aria-label="Trusted clients">
   <div class="lamp-frame">
     <Image
       src={lamp}
       width={lampHeight}
       height={lampHeight}
-      alt="Logo spotlight"
+      alt=""
       class="lamp-img"
     />
   </div>
-  <div class="reel" aria-label="Trusted clients marquee moving left to right">
+  <div class="reel">
     <div class="overlay"></div>
     <div class="track">
       {
@@ -65,7 +65,7 @@ const logoWidth = isMobile ? 100 : 135;
           <div
             class="logo-container"
             data-index={index}
-            aria-hidden={index >= logos.length ? "true" : undefined}
+            aria-hidden={index >= logosBase.length ? "true" : undefined}
           >
             <Image
               src={client.src}

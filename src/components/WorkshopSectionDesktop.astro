@@ -90,7 +90,7 @@ const workshopLinks = await Promise.all(
   <section class="workshops workshops--sticky">
     <div class="wheel-pin" data-carousel>
       <div class="wheel-layout">
-        <div class="wheel wheel--left" aria-hidden="true">
+        <div class="wheel wheel--left">
           <div class="wheel__track" data-wheel="left">
             {
               workshops.map((item, index) => (
@@ -416,20 +416,29 @@ const workshopLinks = await Promise.all(
     }
 
     requestAnimationFrame(() => {
+      let activeIndex = -1;
+      let spacerHeight = "";
+
       function updateFromScroll() {
+        // Read layout first, then write, so the browser never has to
+        // recalculate layout halfway through this handler (forced reflow).
         const containerRect = scrollContainer.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
         const scrollable = scrollContainer.offsetHeight - viewportHeight;
+        const sectionHeight = section.offsetHeight;
         const scrolled = Math.min(Math.max(-containerRect.top, 0), scrollable);
         const progress = scrollable > 0 ? scrolled / scrollable : 0;
         const index = Math.round(progress * (total - 1));
-        positionItems(index);
+
+        if (index !== activeIndex) {
+          activeIndex = index;
+          positionItems(index);
+        }
         // Instead of toggling sticky/relative, grow the spacer to push the next section down
-        if (progress >= 1) {
-          // Grow the spacer to the height of the section for a smooth unstick
-          spacer.style.height = section.offsetHeight + "px";
-        } else {
-          spacer.style.height = "0px";
+        const nextHeight = progress >= 1 ? sectionHeight + "px" : "0px";
+        if (nextHeight !== spacerHeight) {
+          spacerHeight = nextHeight;
+          spacer.style.height = nextHeight;
         }
       }
 

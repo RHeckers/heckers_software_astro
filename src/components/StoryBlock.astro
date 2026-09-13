@@ -1,4 +1,9 @@
+---
+import Accent from "./Accent.astro";
+---
+
 <div class="story">
+  <h2 class="sr-only">How we help Angular and Nx teams</h2>
   <svg
     #storyLinesSvg
     class="story-line"
@@ -41,15 +46,15 @@
 
   <div class="sticky-wrapper">
     <div class="story-block story-block-1">
-      <h2>
-        Angular <span class="danger danger-1">Bugs</span> Increasing
-      </h2>
-      <h2>
-        Nx Becoming <span class="danger danger-2">Slow</span>
-      </h2>
-      <h2>
-        Structure <span class="danger danger-3 falling-word">Crumbling?</span>
-      </h2>
+      <p class="story-text">
+        Angular <Accent tone="danger" range="entry 150% cover 80%">Bugs</Accent> Increasing
+      </p>
+      <p class="story-text">
+        Nx Becoming <Accent tone="danger" range="entry 110% cover 70%">Slow</Accent>
+      </p>
+      <p class="story-text">
+        Structure <span class="danger-3 falling-word"><Accent tone="danger" range="entry 150% cover 45%">Crumbling?</Accent></span>
+      </p>
     </div>
     <div class="sticky-spacer"></div>
   </div>
@@ -61,25 +66,25 @@
           <br />
           We've Got You Covered
           <br />
-          Our <span class="accent accent-1">Expert</span> Angular & Nx
+          Our <Accent range="entry 80% cover 85%">Expert</Accent> Angular & Nx
           <br />
           Engineers Are Here to
           <br />
         </p>
-        <p class="large-text accent accent-4">Help!</p>
+        <p class="large-text"><Accent range="entry 60% cover 50%">Help!</Accent></p>
       </div>
     </div>
     <div class="sticky-spacer"></div>
   </div>
   <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-3">
-      <h2 class="line-4">
-        We <span class="accent accent-1">Identify</span> Problems
-      </h2>
-      <h2 class="line-5"><span class="accent accent-2">Fix</span> Your Code</h2>
-      <h2 class="line-5">
-        And <span class="accent accent-5">Train</span> Your Team
-      </h2>
+      <p class="story-text line-4">
+        We <Accent range="entry 80% cover 85%">Identify</Accent> Problems
+      </p>
+      <p class="story-text line-5"><Accent range="entry 65% cover 70%">Fix</Accent> Your Code</p>
+      <p class="story-text line-5">
+        And <Accent range="entry 60% cover 70%">Train</Accent> Your Team
+      </p>
     </div>
     <div class="sticky-spacer"></div>
   </div>
@@ -101,8 +106,7 @@
       text-align: center;
       min-height: fit-content;
 
-      h2,
-      span {
+      .story-text {
         font-size: var(--font-6xl);
         color: var(--color-ink-light);
 
@@ -110,56 +114,12 @@
           font-weight: var(--font-weight-light);
         }
       }
-
-      .danger {
-        font-weight: var(--font-weight-light);
-        background: linear-gradient(
-          90deg,
-          var(--color-danger) 0%,
-          var(--color-danger) 50%,
-          currentColor 50%,
-          currentColor 100%
-        );
-        background-size: 200% 100%;
-        background-position: 100% 0;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation-name: text-reveal;
+      .danger-3 {
+        animation-name: word-fall;
         animation-timeline: view();
         animation-fill-mode: both;
-      }
-
-      .danger-1 {
-        animation-range: entry 150% cover 80%;
-      }
-
-      .danger-2 {
-        animation-range: entry 110% cover 70%;
-      }
-      .danger-3 {
-        animation-name: text-reveal, word-fall;
         animation-range: entry 150% cover 45%;
       }
-    }
-    .accent-1 {
-      animation-range: entry 80% cover 85%;
-    }
-
-    .accent-2 {
-      animation-range: entry 65% cover 70%;
-    }
-
-    .accent-3 {
-      animation-range: entry 70% cover 100%;
-    }
-
-    .accent-4 {
-      animation-range: entry 60% cover 50%;
-    }
-
-    .accent-5 {
-      animation-range: entry 60% cover 70%;
     }
 
     .story-block-1 {
@@ -168,8 +128,7 @@
       top: 0;
       padding-bottom: 20svh;
 
-      h2,
-      span {
+      .story-text {
         color: var(--color-ink);
       }
     }
@@ -299,8 +258,7 @@
       padding-bottom: 0;
     }
 
-    .story .story-block h2,
-    .story .story-block span {
+    .story .story-block .story-text {
       font-size: 2.5rem;
       font-weight: var(--font-weight-normal);
     }

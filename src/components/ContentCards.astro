@@ -9,8 +9,8 @@ const { icon, title } = Astro.props as Props;
 
 <li class="app-card">
   <div class="card-head">
-    <div class="card-badge">{icon}</div>
-    <div class="card-title">{title}</div>
+    <div class="card-badge" aria-hidden="true">{icon}</div>
+    <h3 class="card-title">{title}</h3>
   </div>
   <p class="card-copy">
     <slot />

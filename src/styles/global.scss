@@ -153,32 +153,86 @@
   );
 }
 
-/* accent text with reveal animation */
-.accent {
-  background: linear-gradient(
-    90deg,
-    var(--color-success) 0%,
-    var(--color-success) 50%,
-    currentColor 50%,
-    currentColor 100%
-  );
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation-name: text-reveal;
-  animation-timeline: view();
+/*
+  Accent text with a left-to-right colour reveal (see Accent.astro).
+
+  Two transforms cancel each other out: .accent__clip slides in from the
+  left while .accent__copy inside it slides right by the same amount, so the
+  coloured copy stays put on screen and only the clip edge moves. Transforms
+  are composited, so scrolling never repaints these words.
+
+  Parents tune the reveal through custom properties set inline by
+  <Accent range="…" timeline="…">.
+*/
+.accent,
+.danger {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  view-timeline-name: --accent-reveal;
+}
+
+.accent__clip {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+  transform: translateX(-100%);
+  animation-name: accent-clip-in;
+}
+
+.accent__copy {
+  display: block;
+  white-space: nowrap;
+  transform: translateX(100%);
+  animation-name: accent-copy-in;
+}
+
+.accent .accent__copy {
+  color: var(--color-success);
+}
+
+.danger .accent__copy {
+  color: var(--color-danger);
+}
+
+.accent__clip,
+.accent__copy {
+  animation-timeline: var(--accent-timeline, --accent-reveal);
+  animation-range: var(--accent-range, entry 50% cover 60%);
+  animation-timing-function: ease;
   animation-fill-mode: both;
 }
 
-@keyframes text-reveal {
+@keyframes accent-clip-in {
   from {
-    background-position: 100% 0;
+    transform: translateX(-100%);
   }
   to {
-    background-position: 0% 0;
+    transform: translateX(0);
   }
+}
+
+@keyframes accent-copy-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Visually hidden, still announced by assistive technology */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 @keyframes fade-in-up {
