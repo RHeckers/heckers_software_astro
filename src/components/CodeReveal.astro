@@ -6,7 +6,13 @@ import { HOME_CATEGORY_LINKS, resolveHomeLink } from "../lib/home-links";
 const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
 ---
 
-<div class="code-reveal-scroll-container" id="code-analysis">
+<div class="code-reveal-scroll-container">
+  <!--
+    Anchor target for #code-analysis. It sits at the end of the scroll
+    distance, so a link to this section lands with every step already
+    revealed instead of at the start of the reveal animation.
+  -->
+  <div class="code-reveal-anchor" id="code-analysis" aria-hidden="true"></div>
   <section id="code-reveal" class="code-reveal-section code-reveal--sticky">
     <Image
       src={code_img}
@@ -16,17 +22,22 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     />
 
     <div class="content-reveal">
-      <h2 class="reveal-title">How we transform your codebase</h2>
+      <h2 class="reveal-title">The Architecture Assessment</h2>
+      <p class="reveal-lede">
+        A fixed-scope assessment of your Angular or Nx codebase by senior
+        engineers. Typically two to three weeks from kickoff to roadmap.
+      </p>
 
       <div class="bento-grid">
         <div class="bento-card card-1">
           <div class="card-header">
             <span class="card-step">01</span>
-            <h3 class="card-title">Deep Dive</h3>
+            <h3 class="card-title">Deep dive</h3>
           </div>
           <p class="card-desc">
-            We audit your codebase, architecture, and workflows surfacing the
-            issues that hold you back.
+            We read your codebase, architecture and workflows, and talk to the
+            people who work in it daily. That is where the real problems
+            surface.
           </p>
         </div>
 
@@ -36,35 +47,42 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
             <h3 class="card-title">Report</h3>
           </div>
           <p class="card-desc">
-            You receive a prioritized report with targeted, actionable fixes. No
-            guesswork, just a clear path to a healthier codebase.
+            A written report with every finding ranked by impact and the
+            concrete fix for each. No guesswork, no generic advice.
           </p>
         </div>
 
         <div class="bento-card card-3">
           <div class="card-header">
             <span class="card-step">03</span>
-            <h3 class="card-title">Team Alignment</h3>
+            <h3 class="card-title">Roadmap with your team</h3>
           </div>
           <p class="card-desc">
-            We present our findings and co&#8209;create an execution plan that
-            fits your goals, timeline, and team capacity.
+            We present the findings to your team and turn them into an execution
+            plan that fits your goals, timeline and capacity. You can run it
+            yourself from here.
           </p>
         </div>
 
         <div class="bento-card card-4">
           <div class="card-header">
-            <span class="card-step">04</span>
-            <h3 class="card-title">Hands&#8209;On Execution</h3>
+            <span class="card-step"
+              >04 <em class="card-optional">optional</em></span
+            >
+            <h3 class="card-title">Hands&#8209;on execution</h3>
           </div>
           <p class="card-desc">
-            We implement the improvements ourselves or guide your developers
-            through every change. Either way, your codebase comes out stronger.
+            Want it done? We implement the improvements ourselves or guide your
+            developers through every change, pairing and reviewing as we go.
+            Either way, your codebase comes out stronger and your team knows
+            why.
           </p>
         </div>
       </div>
 
-      <a href="#contactForm" class="cta-button">Start Now</a>
+      <a href="#contactForm" class="cta-button" data-subject="Code Review">
+        Book your assessment
+      </a>
       {
         articlesLink && (
           <a href={articlesLink.href} class="articles-link">
@@ -138,6 +156,17 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
   #code-reveal-spacer {
     width: 100%;
     transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Container height is 100svh + the scroll distance, so this lands where
+     the reveal progress reaches 100%. */
+  .code-reveal-anchor {
+    position: absolute;
+    left: 0;
+    top: calc(100% - 100svh);
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
   }
 
   /* ─── Sticky section ─── */
@@ -232,7 +261,7 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
   .reveal-title {
     text-align: center;
     font-size: 1.75rem;
-    margin-bottom: var(--spacer-lg);
+    margin-bottom: var(--spacer-base);
     font-weight: var(--font-weight-medium);
     color: var(--color-ink-light);
     transform: translateY(50px);
@@ -240,6 +269,32 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     animation-timeline: --section-timeline;
     animation-fill-mode: both;
     animation-range: entry 10% cover 35%;
+  }
+
+  .reveal-lede {
+    text-align: center;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.72);
+    max-width: 58ch;
+    margin: 0 auto var(--spacer-lg);
+    transform: translateY(50px);
+    animation-name: fade-in-up;
+    animation-timeline: --section-timeline;
+    animation-fill-mode: both;
+    animation-range: entry 12% cover 37%;
+  }
+
+  .card-optional {
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0;
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(47, 125, 209, 0.5);
+    color: rgba(232, 237, 246, 0.8);
   }
 
   /* ─── Bento grid — stacked on mobile ─── */
@@ -342,7 +397,7 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
   @media (min-width: 641px) {
     .content-reveal {
       max-width: 1200px;
-      padding: var(--spacer-2xl) var(--spacer-xl);
+      padding: var(--spacer-lg) var(--spacer-xl);
       min-height: calc(100svh - 6rem);
       justify-content: center;
     }
@@ -352,8 +407,14 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     }
 
     .reveal-title {
-      font-size: clamp(2.5rem, 4.5vw, 4rem);
-      margin-bottom: var(--spacer-2xl);
+      font-size: clamp(2.25rem, 4vw, 3.5rem);
+      margin-bottom: var(--spacer-md);
+    }
+
+    .reveal-lede {
+      font-size: 1.15rem;
+      max-width: 64ch;
+      margin-bottom: var(--spacer-xl);
     }
 
     /* Bento grid — 3 columns, 2 rows */
@@ -397,12 +458,12 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     }
 
     .bento-card {
-      padding: var(--spacer-xl);
+      padding: var(--spacer-lg) var(--spacer-xl);
     }
 
     .card-header {
       gap: 0.15rem;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.6rem;
     }
 
     .card-title {
@@ -414,8 +475,32 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     }
 
     .cta-button {
-      padding: var(--spacer-lg) var(--spacer-2xl);
-      font-size: var(--font-2xl);
+      margin-top: var(--spacer-lg);
+      padding: var(--spacer-md) var(--spacer-2xl);
+      font-size: var(--font-xl);
+    }
+
+    .articles-link {
+      margin-top: var(--spacer-md);
+    }
+
+    /* Short desktop viewports: keep the whole panel visible while sticky. */
+    @media (max-height: 860px) {
+      .content-reveal {
+        min-height: 0;
+      }
+
+      .bento-card {
+        padding: var(--spacer-md) var(--spacer-lg);
+      }
+
+      .card-title {
+        font-size: var(--font-xl);
+      }
+
+      .card-desc {
+        font-size: 0.95rem;
+      }
     }
 
     /* Desktop circle mask — original zigzag animation */
@@ -442,12 +527,12 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
         opacity: 0.8;
       }
       20% {
-        -webkit-mask-position: 70% 10%;
-        mask-position: 70% 10%;
+        -webkit-mask-position: 70% 30%;
+        mask-position: 70% 30%;
       }
       40% {
-        -webkit-mask-position: 3% 20%;
-        mask-position: 3% 20%;
+        -webkit-mask-position: 3% 37%;
+        mask-position: 3% 37%;
       }
       70% {
         -webkit-mask-position: 70% 40%;

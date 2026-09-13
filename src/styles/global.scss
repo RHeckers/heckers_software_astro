@@ -156,10 +156,12 @@
 /*
   Accent text with a left-to-right colour reveal (see Accent.astro).
 
-  Two transforms cancel each other out: .accent__clip slides in from the
-  left while .accent__copy inside it slides right by the same amount, so the
-  coloured copy stays put on screen and only the clip edge moves. Transforms
-  are composited, so scrolling never repaints these words.
+  Two layers, each a clipping box with a counter-translated copy inside so
+  the glyphs never appear to move: .accent__base (base colour) slides out to
+  the right while .accent__clip (accent colour) slides in from the left. The
+  two windows are complementary, so the base text is never painted under the
+  accent text and no fringe shows. Transforms are composited, so scrolling
+  never repaints these words.
 
   Parents tune the reveal through custom properties set inline by
   <Accent range="…" timeline="…">.
@@ -170,6 +172,25 @@
   display: inline-block;
   white-space: nowrap;
   view-timeline-name: --accent-reveal;
+  /* The base layer slides out to the right; clip it here so the transformed
+     box never widens the page's scrollable area. Vertical stays visible so
+     ascenders and descenders are not cut. */
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.accent__base {
+  display: block;
+  overflow: clip;
+  transform: translateX(0);
+  animation-name: accent-base-out;
+}
+
+.accent__base-copy {
+  display: block;
+  white-space: nowrap;
+  transform: translateX(0);
+  animation-name: accent-base-copy-out;
 }
 
 .accent__clip {
@@ -196,12 +217,32 @@
   color: var(--color-danger);
 }
 
+.accent__base,
+.accent__base-copy,
 .accent__clip,
 .accent__copy {
   animation-timeline: var(--accent-timeline, --accent-reveal);
   animation-range: var(--accent-range, entry 50% cover 60%);
   animation-timing-function: ease;
   animation-fill-mode: both;
+}
+
+@keyframes accent-base-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes accent-base-copy-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }
 
 @keyframes accent-clip-in {

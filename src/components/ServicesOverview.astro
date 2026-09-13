@@ -1,0 +1,364 @@
+---
+/**
+ * The three services in one glance, right under the hero. Three equal dark
+ * panels in the same style as the story cards below, each a link to its
+ * section. Static on purpose: nothing resizes on hover, only the diagram
+ * lifts and the link brightens.
+ *
+ * The diagrams are inline SVG in the same idiom as the hero's project graph
+ * (rounded nodes, thin edges, one accent), so all three share one size and
+ * one visual language. Their colours are presentation attributes on the
+ * markup rather than stylesheet rules, so they render the same everywhere
+ * and never depend on a stylesheet being current.
+ */
+const ACCENT = "#2f7dd1";
+const DANGER = "#c2413b";
+const EDGES =
+  'fill="none" stroke="rgba(232, 237, 246, 0.42)" stroke-width="1.5" stroke-linecap="round"';
+const NODES =
+  'fill="rgba(232, 237, 246, 0.06)" stroke="rgba(232, 237, 246, 0.6)" stroke-width="1.5"';
+const ACCENT_NODE = `fill="rgba(47, 125, 209, 0.28)" stroke="${ACCENT}"`;
+const FONT = 'font-family="chillax, sans-serif" text-anchor="middle"';
+
+const services = [
+  {
+    title: "Architecture assessment",
+    copy: "Senior engineers read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks.",
+    href: "#code-analysis",
+    label: "How the assessment works",
+    /* A dependency graph with one circular dependency flagged. */
+    art: `
+      <g ${EDGES}>
+        <path d="M 90 40 C 90 52, 60 52, 60 64" />
+        <path d="M 90 40 C 90 52, 118 52, 118 64" />
+        <path d="M 160 40 C 160 52, 132 52, 132 64" />
+        <path d="M 160 40 C 160 52, 190 52, 190 64" />
+        <path d="M 60 86 C 60 98, 88 98, 88 110" />
+        <path d="M 118 86 C 118 98, 100 98, 100 110" />
+        <path d="M 125 86 C 125 98, 152 98, 152 110" />
+        <path d="M 190 86 C 190 98, 166 98, 166 110" />
+      </g>
+      <path d="M 172 110 C 210 96, 212 46, 186 30" fill="none" stroke="${DANGER}" stroke-width="1.75" stroke-linecap="round" stroke-dasharray="5 4" />
+      <g ${NODES}>
+        <rect x="62" y="18" width="56" height="22" rx="6" />
+        <rect x="132" y="18" width="56" height="22" rx="6" />
+        <rect x="32" y="64" width="56" height="22" rx="6" />
+        <rect x="97" y="64" width="56" height="22" rx="6" />
+        <rect x="162" y="64" width="56" height="22" rx="6" />
+        <rect x="66" y="110" width="56" height="22" rx="6" />
+        <rect x="131" y="110" width="56" height="22" rx="6" />
+      </g>
+      <circle cx="206" cy="46" r="11" fill="${DANGER}" />
+      <text x="206" y="50.5" fill="#ffffff" ${FONT} font-size="15" font-weight="700">!</text>
+    `,
+  },
+  {
+    title: "Angular and Nx workshops",
+    copy: "Hands-on training for your team in enterprise Angular patterns, Nx monorepos and AI-assisted development.",
+    href: "#workshops",
+    label: "See the workshops",
+    /* One trainer node feeding three team nodes, each with a growing bar. */
+    art: `
+      <g ${EDGES}>
+        <path d="M 110 42 C 110 58, 48 58, 48 74" />
+        <path d="M 110 42 L 110 74" />
+        <path d="M 110 42 C 110 58, 172 58, 172 74" />
+      </g>
+      <g ${NODES}>
+        <rect x="82" y="16" width="56" height="26" rx="7" ${ACCENT_NODE} />
+        <rect x="20" y="74" width="56" height="26" rx="7" />
+        <rect x="82" y="74" width="56" height="26" rx="7" />
+        <rect x="144" y="74" width="56" height="26" rx="7" />
+      </g>
+      <g fill="rgba(232, 237, 246, 0.14)">
+        <rect x="20" y="112" width="56" height="6" rx="3" />
+        <rect x="82" y="112" width="56" height="6" rx="3" />
+        <rect x="144" y="112" width="56" height="6" rx="3" />
+      </g>
+      <g fill="${ACCENT}">
+        <rect x="20" y="112" width="24" height="6" rx="3" />
+        <rect x="82" y="112" width="38" height="6" rx="3" />
+        <rect x="144" y="112" width="50" height="6" rx="3" />
+      </g>
+    `,
+  },
+  {
+    title: "Application development",
+    copy: "A section of your enterprise software or a complete new application, built full stack by one senior team.",
+    href: "#app-development",
+    label: "See how we build",
+    /* Three connected layers: front end, API, data. */
+    art: `
+      <g ${EDGES}>
+        <path d="M 110 48 L 110 62" />
+        <path d="M 110 92 L 110 106" />
+      </g>
+      <g ${NODES}>
+        <rect x="40" y="16" width="140" height="32" rx="8" ${ACCENT_NODE} />
+        <rect x="40" y="62" width="140" height="30" rx="8" />
+        <rect x="40" y="106" width="140" height="30" rx="8" />
+      </g>
+      <g ${FONT} font-size="12.5" font-weight="500" fill="rgba(232, 237, 246, 0.8)">
+        <text x="110" y="36.5" fill="#ffffff">Front end</text>
+        <text x="110" y="81.5">API</text>
+        <text x="110" y="125.5">Data</text>
+      </g>
+    `,
+  },
+];
+---
+
+<section class="services" aria-labelledby="services-heading">
+  <div class="services__inner">
+    <h2 class="services__title" id="services-heading">Three ways we help</h2>
+
+    <ul class="trio">
+      {
+        services.map((service, index) => (
+          <li class="panel" style={`--i: ${index}`}>
+            <a class="panel__link" href={service.href}>
+              <svg
+                class="panel__art"
+                viewBox="0 0 220 150"
+                aria-hidden="true"
+                focusable="false"
+                set:html={service.art}
+              />
+              <span class="panel__body">
+                <span class="panel__title">{service.title}</span>
+                <span class="panel__copy">{service.copy}</span>
+                <span class="panel__cta">{service.label}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="services__next">
+      Most teams start with the assessment. Here is why.
+    </p>
+  </div>
+</section>
+
+<style>
+  .services {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 3rem) 0;
+  }
+
+  .services__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .services__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .trio {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-md);
+  }
+
+  .panel {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    background: var(--background-gradient-primary);
+    color: var(--color-ink-light);
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.18);
+    isolation: isolate;
+    /* Rise in as the trio scrolls into view; the fallback is simply visible. */
+    animation: panel-rise linear both;
+    animation-timeline: view();
+    animation-range: entry calc(5% + var(--i) * 8%) entry calc(45% + var(--i) * 8%);
+  }
+
+  .panel:nth-child(2) {
+    background: var(--background-gradient-secondary);
+  }
+
+  .panel:nth-child(3) {
+    background: linear-gradient(180deg, #1d2f4a 0%, #16243a 100%);
+  }
+
+  @keyframes panel-rise {
+    from {
+      opacity: 0;
+      transform: translateY(2.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Soft glow behind the diagram, like the glass cards elsewhere. */
+  .panel::before {
+    content: "";
+    position: absolute;
+    right: -15%;
+    top: -20%;
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(47, 125, 209, 0.22) 0%,
+      rgba(47, 125, 209, 0) 70%
+    );
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .panel__link {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr minmax(120px, 40%);
+    align-items: end;
+    gap: var(--spacer-md);
+    min-height: 230px;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .panel__link:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: -3px;
+    border-radius: 15px;
+  }
+
+  /* --- Diagram --- */
+
+  .panel__art {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+    width: 100%;
+    height: auto;
+    max-width: 210px;
+    overflow: visible;
+    transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* --- Text --- */
+
+  .panel__body {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  .panel__title {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .panel__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.78);
+    max-width: 36ch;
+  }
+
+  .panel__cta {
+    margin-top: 0.3rem;
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink-light);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    transition:
+      color 0.2s,
+      text-decoration-color 0.2s;
+  }
+
+  .panel__link:hover .panel__cta,
+  .panel__link:focus-visible .panel__cta {
+    color: var(--color-light-raised);
+    text-decoration-color: var(--color-light-raised);
+  }
+
+  .panel__link:hover .panel__art {
+    transform: translateY(-4px);
+  }
+
+  .services__next {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    color: var(--color-ink-muted);
+    text-align: center;
+    padding-top: var(--spacer-md);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      animation: none;
+    }
+    .panel__art,
+    .panel__cta {
+      transition: none;
+    }
+  }
+
+  /* --- Wide screens: three equal panels, diagram above the text --- */
+  @media (min-width: 900px) {
+    .trio {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacer-lg);
+    }
+
+    .panel__link {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 0;
+      height: 100%;
+      min-height: 0;
+      padding: clamp(1.5rem, 2.5vw, 2rem);
+      /* Room for the diagram above the text. */
+      padding-top: clamp(190px, 16vw, 220px);
+    }
+
+    .panel__art {
+      position: absolute;
+      top: clamp(1.5rem, 2.5vw, 2rem);
+      right: clamp(1.5rem, 2.5vw, 2rem);
+      width: 60%;
+      max-width: 220px;
+    }
+
+    .panel__body {
+      position: relative;
+    }
+
+    .panel__title {
+      font-size: 1.65rem;
+    }
+
+    .services__next {
+      padding-top: var(--spacer-base);
+    }
+  }
+</style>

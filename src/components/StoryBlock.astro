@@ -3,8 +3,8 @@ import Accent from "./Accent.astro";
 ---
 
 <div class="story">
-  <h2 class="sr-only">How we help Angular and Nx teams</h2>
-  <svg
+  <h2 class="sr-only">Why start with an architecture review</h2>
+  <!-- <svg
     #storyLinesSvg
     class="story-line"
     viewBox="0 0 100 200"
@@ -42,18 +42,25 @@ import Accent from "./Accent.astro";
         stroke-width="0.15"
         stroke-linecap="round"></path>
     </g>
-  </svg>
+  </svg> -->
 
   <div class="sticky-wrapper">
     <div class="story-block story-block-1">
       <p class="story-text">
-        Angular <Accent tone="danger" range="entry 150% cover 80%">Bugs</Accent> Increasing
+        Angular bugs <Accent tone="danger" range="cover 15% cover 45%"
+          >increasing</Accent
+        >
       </p>
       <p class="story-text">
-        Nx Becoming <Accent tone="danger" range="entry 110% cover 70%">Slow</Accent>
+        Nx builds <Accent tone="danger" range="cover 15% cover 40%"
+          >slowing down</Accent
+        >
       </p>
       <p class="story-text">
-        Structure <span class="danger-3 falling-word"><Accent tone="danger" range="entry 150% cover 45%">Crumbling?</Accent></span>
+        Architecture <span class="danger-3 falling-word"
+          ><Accent tone="danger" range="cover 8% cover 28%">crumbling?</Accent
+          ></span
+        >
       </p>
     </div>
     <div class="sticky-spacer"></div>
@@ -62,16 +69,18 @@ import Accent from "./Accent.astro";
     <div class="story-block story-block-2">
       <div class="stacked-text">
         <p class="small-text">
-          Don't Worry
+          With our <Accent range="cover 14% cover 34%"
+            >Architecture assessment</Accent
+          >
           <br />
-          We've Got You Covered
+          Angular and Nx <Accent range="cover 18% cover 38%">experts</Accent>
           <br />
-          Our <Accent range="entry 80% cover 85%">Expert</Accent> Angular & Nx
-          <br />
-          Engineers Are Here to
+          Show you how to
           <br />
         </p>
-        <p class="large-text"><Accent range="entry 60% cover 50%">Help!</Accent></p>
+        <p class="large-text">
+          <Accent range="cover 20% cover 44%">IMPROVE</Accent>
+        </p>
       </div>
     </div>
     <div class="sticky-spacer"></div>
@@ -79,11 +88,16 @@ import Accent from "./Accent.astro";
   <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-3">
       <p class="story-text line-4">
-        We <Accent range="entry 80% cover 85%">Identify</Accent> Problems
+        <Accent range="cover 14% cover 34%">Find</Accent> the real problems
       </p>
-      <p class="story-text line-5"><Accent range="entry 65% cover 70%">Fix</Accent> Your Code</p>
       <p class="story-text line-5">
-        And <Accent range="entry 60% cover 70%">Train</Accent> Your Team
+        <Accent range="cover 18% cover 38%">Fix</Accent> what matters
+      </p>
+      <p class="story-text line-5">
+        <Accent range="cover 22% cover 42%">Train</Accent> your team
+      </p>
+      <p class="story-caption">
+        One review. A report, a roadmap, and the people to carry it out.
       </p>
     </div>
     <div class="sticky-spacer"></div>
@@ -118,10 +132,18 @@ import Accent from "./Accent.astro";
         animation-name: word-fall;
         animation-timeline: view();
         animation-fill-mode: both;
-        animation-range: entry 150% cover 45%;
+        animation-range: cover 6% cover 34%;
       }
     }
 
+    /*
+      The accent wipes and the falling word run on each word's own view
+      timeline, in the lower part of the viewport (cover 6% to 45%). That
+      maps to the same on-screen moment on phones and desktops, unlike a
+      range on the block itself, since the blocks are much shorter than the
+      viewport on phones. The blocks pin once they reach the top and the
+      words stop moving, so every range finishes before that point.
+    */
     .story-block-1 {
       background-color: var(--color-light);
       position: sticky;
@@ -131,6 +153,12 @@ import Accent from "./Accent.astro";
       .story-text {
         color: var(--color-ink);
       }
+    }
+
+    /* Brighter green on the dark cards, the light-page token is too muddy there. */
+    .story-block-2 :global(.accent__copy),
+    .story-block-3 :global(.accent__copy) {
+      color: #3fae8c;
     }
 
     .sticky-wrapper {
@@ -159,6 +187,8 @@ import Accent from "./Accent.astro";
 
       .stacked-text {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: end;
         text-align: end;
         font-size: 2rem;
@@ -173,9 +203,18 @@ import Accent from "./Accent.astro";
         }
 
         .large-text {
-          font-size: 15rem;
+          font-size: clamp(6rem, 11vw, 15rem);
         }
       }
+    }
+
+    .story-caption {
+      margin-top: var(--spacer-xl);
+      font-family: synonym, sans-serif;
+      font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+      color: rgba(232, 237, 246, 0.72);
+      max-width: 40ch;
+      padding: 0 var(--spacer-md);
     }
 
     .sticky-spacer {

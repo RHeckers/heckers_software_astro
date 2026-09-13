@@ -2,6 +2,8 @@
 interface Props {
   word: string;
   callToAction?: string;
+  /** Contact form subject to preselect when the call to action is followed. */
+  subject?: string;
   size?: "small" | "medium" | "large";
   reversedAnimation?: boolean;
 }
@@ -9,6 +11,7 @@ interface Props {
 const {
   word,
   callToAction,
+  subject,
   size = "medium",
   reversedAnimation = false,
 } = Astro.props as Props;
@@ -27,7 +30,7 @@ const {
       {word}
       {
         callToAction && (
-          <a href="#contactForm" class="call-to-action">
+          <a href="#contactForm" class="call-to-action" data-subject={subject}>
             {callToAction}
           </a>
         )

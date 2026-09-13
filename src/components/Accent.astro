@@ -3,23 +3,23 @@
  * Inline word(s) that take on an accent colour with a left-to-right wipe as
  * they scroll into view.
  *
- * The wipe is built from two transforms that cancel each other out: a
- * clipping box slides in from the left while the coloured copy inside it
- * slides the other way, so the copy stays put on screen and only the clip
- * edge moves. Transforms run on the compositor, unlike the earlier
- * background-position / clip-path approaches which repainted on every
- * scroll frame.
+ * Two layers, each a clipping box with a counter-translated copy inside so
+ * the text itself never appears to move: the base-coloured layer slides out
+ * to the right while the accent-coloured layer slides in from the left.
+ * The two windows are complementary and never overlap, so no anti-aliased
+ * fringe of the base colour shows around the accent glyphs. Transforms only,
+ * so scrolling never repaints these words.
  *
  * Styling lives in global.scss (.accent / .danger). `range` and `timeline`
  * are passed down as CSS custom properties so parents can tune the
  * scroll-driven animation without reaching into this component's markup.
  *
- * The coloured copy is aria-hidden; assistive technology reads the slot once.
+ * The accent copy is aria-hidden; assistive technology reads the slot once.
  */
 interface Props {
   /** Colour token: "accent" (success green) or "danger" (red). */
   tone?: "accent" | "danger";
-  /** animation-range for the reveal, e.g. "entry 80% cover 85%". */
+  /** animation-range for the reveal, e.g. "entry 80% entry 95%". */
   range?: string;
   /** Named scroll/view timeline to drive the reveal; defaults to the element's own view timeline. */
   timeline?: string;
@@ -36,7 +36,9 @@ const style = [
 ---
 
 <span class={tone} style={style || undefined}>
-  <slot />
+  <span class="accent__base">
+    <span class="accent__base-copy"><slot /></span>
+  </span>
   <span class="accent__clip" aria-hidden="true">
     <span class="accent__copy"><slot /></span>
   </span>

@@ -6,6 +6,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import PageLayout from "../layouts/PageLayout.astro";
 
 import CodeReveal from "../components/CodeReveal.astro";
+import ServicesOverview from "../components/ServicesOverview.astro";
 import WorkshopSection from "../components/WorkshopSection.astro";
 import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
 import Reviews from "../components/Reviews.astro";
@@ -15,13 +16,15 @@ import Contact from "../components/Contact.astro";
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
   <section class="section-1">
+    <ServicesOverview />
     <StoryBlock />
   </section>
 
   <div class="expanding">
     <ExpandingWord
       word="Fix Your app"
-      callToAction="Book A call"
+      callToAction="Book your assessment"
+      subject="Code Review"
       size="large"
       reversedAnimation={true}
     />
@@ -30,11 +33,9 @@ import Contact from "../components/Contact.astro";
 
   <WorkshopSection />
 
-  <section class="bottom-section">
-    <ApplicationDevelopment />
-    <Reviews />
-    <Contact />
-  </section>
+  <ApplicationDevelopment />
+  <Reviews />
+  <Contact />
 </PageLayout>
 
 <style>
@@ -44,10 +45,5 @@ import Contact from "../components/Contact.astro";
 
   .expanding {
     background-color: var(--color-dark-alt);
-  }
-
-  .bottom-section {
-    padding-bottom: 3rem;
-    background: var(--background-gradient-primary);
   }
 </style>

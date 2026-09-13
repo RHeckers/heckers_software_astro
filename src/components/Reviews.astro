@@ -165,10 +165,14 @@ In January 2025 Roberto from Heckers Software joined our team. Not by immediatel
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    background: var(--background-gradient-primary);
   }
 
   .reviews-container {
-    padding: var(--spacer-xl) 0;
+    position: relative;
+    z-index: 1;
+    padding: clamp(3.5rem, 8vw, 6rem) 0;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -338,19 +342,36 @@ In January 2025 Roberto from Heckers Software joined our team. Not by immediatel
   }
 </style>
 <script is:inline>
-  // Parallax scroll effect for desktop_lookup.svg
-  window.addEventListener("scroll", () => {
-    const scrollY = window.scrollY;
+  // Parallax for the two sketches. Driven by the section's own position in
+  // the viewport rather than absolute scrollY, so it keeps working when the
+  // sections above change height.
+  (() => {
+    const section = document.querySelector(".reviews-section");
     const desktopLookup = document.querySelector(".parallax-desktop-lookup");
     const cicdImage = document.querySelector(".parallax-cicd");
-    if (desktopLookup) {
-      desktopLookup.style.transform = `translateY(${scrollY * 0.08 - 900}px)`;
-    }
-
-    if (cicdImage) {
-      cicdImage.style.transform = `translateY(-${scrollY * 0.09 - 1200}px)`;
-    }
-  });
+    if (!section || (!desktopLookup && !cicdImage)) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      // 0 when the section top reaches the viewport bottom, growing as it
+      // scrolls up; stays small so the drift is subtle.
+      const offset = window.innerHeight - section.getBoundingClientRect().top;
+      if (desktopLookup) {
+        desktopLookup.style.transform = `translateY(${offset * 0.08}px)`;
+      }
+      if (cicdImage) {
+        cicdImage.style.transform = `translateY(${-offset * 0.09}px)`;
+      }
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+  })();
   // Card scroll logic for reviews
   const reviewShells = document.querySelectorAll(".reviews-card-shell");
   reviewShells.forEach((shell) => {

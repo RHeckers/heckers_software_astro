@@ -1,357 +1,594 @@
 ---
+/**
+ * Application development: what we build, how a project runs, and what a
+ * client can count on. Sits on a light background so it reads as its own
+ * section between the dark workshops and testimonials blocks.
+ *
+ * The project plan panel is the one animated element: its vertical line
+ * draws down and each phase lights up as the panel scrolls into view
+ * (CSS scroll-driven animation, no script; fully drawn where unsupported).
+ */
 import Accent from "./Accent.astro";
-import ContentCards from "./ContentCards.astro";
-import { Image } from "astro:assets";
 
-import laptopEnTelefoon from "../assets/laptop_en_telefoon.svg";
-import cloud from "../assets/cloud.svg";
+const engagements = [
+  {
+    title: "Outsource a section of your application",
+    copy: "A module, a customer portal, a reporting suite or an integration, built inside your existing codebase to your standards and handed over cleanly to your own developers.",
+  },
+  {
+    title: "Add a new application to your suite",
+    copy: "A complete product from first sketch to production: architecture, front end, backend, deployment and handover. One accountable team, one point of contact.",
+  },
+];
+
+const scope =
+  "Customer and partner portals, back-office modules, internal tools, reporting, integrations with your ERP and CRM, and the APIs behind them.";
+
+const phases = [
+  {
+    title: "Discovery",
+    when: "Week 1–2",
+    copy: "We map the goals, the users and the systems the application must integrate with, and align with your architects and security requirements. You get a scoped plan and a realistic estimate.",
+  },
+  {
+    title: "Foundation",
+    when: "Week 2–3",
+    copy: "Data model, integrations and code structure are designed to fit your landscape and standards, so the application slots into your suite instead of beside it.",
+  },
+  {
+    title: "Build in short cycles",
+    when: "Every 2 weeks",
+    copy: "Working software your stakeholders can click through, reviewed together. Automated tests and deployments through your pipelines from the first sprint.",
+  },
+  {
+    title: "Launch and handover",
+    when: "Final weeks",
+    copy: "Go-live, documentation and a walkthrough for your developers. We stay available for support, or keep running it with you.",
+  },
+];
+
+const stack = ["Angular", "TypeScript", ".NET", "Node.js", "SQL", "Azure"];
+
+const commitments = [
+  {
+    title: "Fits your standards",
+    copy: "Your coding guidelines, security and compliance requirements, and release process. We adapt to your landscape, not the other way around.",
+  },
+  {
+    title: "Senior hands only",
+    copy: "The people you talk to are the people who build. No hand-off to a junior team.",
+  },
+  {
+    title: "You own everything",
+    copy: "Code, documentation and infrastructure live in your repositories from day one. No lock-in.",
+  },
+];
 ---
 
-<section class="section-4">
-  <div class="app-development" id="app-development">
-    <div class="parallax-bg">
-      <Image
-        src={laptopEnTelefoon}
-        alt="Laptop and Phone"
-        class="parallax-img parallax-laptop"
-        loading="lazy"
-        width={260}
-        height={180}
-      />
-      <Image
-        src={cloud}
-        alt="Cloud"
-        class="parallax-img parallax-cloud"
-        loading="lazy"
-        width={180}
-        height={120}
-      />
-    </div>
-    <div class="app-dev-content">
-      <h2 class="app-dev-title">Application Development</h2>
-      <div class="app-dev-card-shell">
-        <div class="app-dev-card-scroll">
-          <ul class="app-dev-list">
-            <ContentCards icon="✦" title="Concept to Delivery">
-              From idea to launch, we partner with you to build
-              <Accent range="entry 65% cover 50%" timeline="--app-dev-timeline">products that resonate</Accent> with your
-              users and achieve your business goals.
-            </ContentCards>
-            <ContentCards icon="⧉" title="Cross Platform Applications">
-              Shared UI and domain core with
-              <Accent range="entry 65% cover 50%" timeline="--app-dev-timeline">platform-specific polish</Accent> so every
-              surface feels intentional while shipping from a single codebase.
-            </ContentCards>
-            <ContentCards icon="⚙" title="Architected for Scale">
-              From modular architecture to <Accent range="entry 70% cover 50%" timeline="--app-dev-timeline"
-                >cloud-native infrastructure</Accent
-              >, we build applications designed to <Accent range="entry 70% cover 50%" timeline="--app-dev-timeline"
-                >grow</Accent
-              > with your business.
-            </ContentCards>
+<section class="app-dev" id="app-development">
+  <div class="app-dev__inner">
+    <div class="app-dev__grid">
+      <div class="app-dev__copy">
+        <header class="app-dev__header">
+          <h2 class="app-dev__title">Application development</h2>
+          <p class="app-dev__lede">
+            We take on application development for enterprise teams: a
+            section of your existing software, or a complete new application
+            within your suite. Full stack, from the screens your users see to
+            the backend and deployment behind them, delivered by
+            <Accent range="entry 40% cover 35%">one senior team</Accent> that
+            fits into how you already work.
+          </p>
+        </header>
+
+        <h3 class="app-dev__subtitle">Two ways to work with us</h3>
+        <ul class="offerings">
+          {
+            engagements.map((item) => (
+              <li class="offering">
+                <span class="offering__title">{item.title}</span>
+                <span class="offering__copy">{item.copy}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="app-dev__scope">
+          <span class="app-dev__scope-label">What that covers</span>
+          {scope}
+        </p>
+      </div>
+
+      <aside class="plan" aria-labelledby="plan-title">
+        <div class="plan__head">
+          <h3 class="plan__title" id="plan-title">How a project runs</h3>
+          <p class="plan__intro">
+            Fixed steps, short feedback loops, no long silences.
+          </p>
+        </div>
+        <ol class="phases">
+          {
+            phases.map((phase, index) => (
+              <li class="phase" style={`--i: ${index}`}>
+                <span class="phase__marker" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <div class="phase__body">
+                  <div class="phase__row">
+                    <h4 class="phase__title">{phase.title}</h4>
+                    <span class="phase__when">{phase.when}</span>
+                  </div>
+                  <p class="phase__copy">{phase.copy}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="plan__stack">
+          <span class="plan__stack-label">
+            Our default stack. Where your platform requires another, we work
+            in yours.
+          </span>
+          <ul class="stack">
+            {stack.map((tool) => <li class="stack__item">{tool}</li>)}
           </ul>
         </div>
-        <div class="app-dev-card-nav" role="group" aria-label="Scroll cards">
-          <button
-            class="app-dev-card-button"
-            data-direction="prev"
-            aria-label="Previous card"
-          >
-            &lt;
-          </button>
-          <button
-            class="app-dev-card-button"
-            data-direction="next"
-            aria-label="Next card"
-          >
-            &gt;
-          </button>
-        </div>
+      </aside>
+
+      <div class="app-dev__actions">
+        <a href="#contactForm" class="app-dev__cta" data-subject="Development">
+          Plan your project
+        </a>
+        <p class="app-dev__note">
+          No obligation. A short call to see whether we are the right fit.
+        </p>
       </div>
-      <a href="#contactForm" class="app-dev-cta">Build It With Us</a>
     </div>
+
+    <ul class="commitments" aria-label="What you can count on">
+      {
+        commitments.map((item) => (
+          <li class="commitment">
+            <h3 class="commitment__title">{item.title}</h3>
+            <p class="commitment__copy">{item.copy}</p>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
 
 <style>
-  .parallax-bg {
-    position: absolute;
-    inset: 0;
-    width: 100vw;
-    height: 100svh;
-    pointer-events: none;
-    overflow: visible;
-    z-index: 0;
-  }
-  .parallax-img {
-    position: absolute;
-    will-change: transform;
-    opacity: 0.7;
-    transition: transform 0.2s linear;
-    max-width: 30vw;
-    min-width: 120px;
-    height: auto;
-  }
-  .parallax-laptop {
-    left: 2vw;
-    top: 8svh;
-    width: 18vw;
-    max-width: 260px;
-    z-index: 1;
-  }
-  .parallax-cloud {
-    right: 6vw;
-    top: 18svh;
-    width: 14vw;
-    max-width: 180px;
-    z-index: 1;
-  }
-  .parallax-computer {
-    left: 55vw;
-    bottom: 7svh;
-    width: 16vw;
-    max-width: 200px;
-    z-index: 1;
-  }
-  @media (max-width: 640px) {
-    .parallax-bg {
-      display: none;
-    }
-    .parallax-img {
-      max-width: 60vw;
-      min-width: 80px;
-    }
-    .parallax-laptop {
-      left: 0vw;
-      top: 4svh;
-      width: 40vw;
-    }
-    .parallax-cloud {
-      right: 0vw;
-      top: 10svh;
-      width: 30vw;
-    }
-    .parallax-computer {
-      left: 30vw;
-      bottom: 2svh;
-      width: 35vw;
-    }
+  .app-dev {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
 
-  .section-4 {
-    position: relative;
-    overflow: hidden;
-  }
-  .section-4 {
-    view-timeline-name: --app-dev-timeline;
-  }
-
-  .app-development {
-    min-height: 100svh;
+  .app-dev__inner {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+    flex-direction: column;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
   }
 
-  .app-dev-content {
-    text-align: center;
-    color: var(--color-ink-light);
+  /* --- Header --- */
+
+  .app-dev__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 60ch;
+    margin-bottom: var(--spacer-md);
+  }
+
+  .app-dev__title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .app-dev__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .app-dev__lede :global(.accent) {
+    color: var(--color-ink);
+  }
+
+  /* --- Two column body --- */
+
+  .app-dev__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .app-dev__copy {
     display: flex;
     flex-direction: column;
     gap: var(--spacer-xl);
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacer-base) 0;
-    max-width: 100%;
-    margin: 0 auto;
   }
 
-  .app-dev-title {
-    font-size: 2.5rem;
-    font-weight: var(--font-weight-medium);
+  .app-dev__subtitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-ink);
   }
 
-  .app-dev-list .accent {
-    font-weight: var(--font-weight-normal);
-  }
-
-  .app-dev-card-shell {
-    width: 100%;
-  }
-
-  .app-dev-card-scroll {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 1rem;
-  }
-
-  .app-dev-card-scroll::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-
-  .app-dev-list {
+  .offerings {
     list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
-    flex-wrap: nowrap;
-    overflow: visible;
+    flex-direction: column;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .offering {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .offering__title {
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink);
+  }
+
+  .offering__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 52ch;
+  }
+
+  .app-dev__scope {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 52ch;
+  }
+
+  .app-dev__scope-label {
+    display: block;
+    font-family: chillax, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink);
+    margin-bottom: 0.2rem;
+  }
+
+  .app-dev__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--spacer-md);
-    padding: 0 1rem var(--spacer-md);
-    scrollbar-width: none;
-    font-size: 1.2rem;
-    width: 100%;
-    text-align: left;
-    overflow: visible;
+    margin-top: var(--spacer-base);
   }
 
-  .app-dev-list::after {
-    content: "";
-    flex: 0 0 1px;
-  }
-
-  .app-dev-list::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-
-  .app-dev-list :global(.app-card) {
-    flex: 0 0 82vw;
-    max-width: 82vw;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
-
-  .app-dev-card-nav {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: var(--spacer-sm);
-    gap: var(--spacer-sm);
-    margin-right: var(--spacer-md);
-  }
-
-  .app-dev-card-button {
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(15, 26, 43, 0.7);
-    color: var(--color-ink-light);
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
+  .app-dev__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-md);
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-  }
-
-  .app-dev-cta {
-    display: inline-block;
-    align-self: center;
-    margin-top: var(--spacer-lg);
-    padding: var(--spacer-md) var(--spacer-xl);
-    font-size: var(--font-xl);
+    padding: 0.95em 2.2em;
+    font-size: 1.15rem;
     font-weight: var(--font-weight-bold);
-    color: var(--color-accent);
-    background-color: var(--color-ink-light);
-    border-radius: 50px;
+    color: var(--color-light-raised);
+    background-color: var(--color-accent-strong);
+    border: 1px solid var(--color-accent-strong);
+    border-radius: 999px;
     text-decoration: none;
+    box-shadow: 0 14px 30px rgba(37, 99, 168, 0.28);
     transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease,
-      color 0.3s ease;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+      background-color 0.2s,
+      border-color 0.2s,
+      transform 0.2s;
   }
 
-  .app-dev-cta:hover {
-    outline: 4px solid var(--color-accent-strong);
-    color: var(--color-accent-strong);
-    transform: translateY(-2px);
+  .app-dev__cta:hover {
+    background-color: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
+    transform: translateY(-1px);
   }
 
-  @media (min-width: 650px) {
-    .app-dev-content {
-      max-width: 1200px;
-      padding: var(--spacer-3xl) var(--spacer-2xl);
+  .app-dev__cta:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .app-dev__note {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  /* --- Project plan panel --- */
+
+  .plan {
+    background: var(--background-gradient-secondary);
+    color: var(--color-ink-light);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-xl);
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    view-timeline-name: --plan-reveal;
+  }
+
+  .plan__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .plan__title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .plan__intro {
+    font-family: synonym, sans-serif;
+    color: rgba(232, 237, 246, 0.7);
+  }
+
+  .phases {
+    list-style: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    --marker: 2rem;
+  }
+
+  .phase {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--marker) 1fr;
+    gap: var(--spacer-md);
+    align-items: start;
+  }
+
+  /* Rail segment from this marker down to the next one; the accent copy
+     draws over the grey one as the phase scrolls into view. */
+  .phase:not(:last-child)::before,
+  .phase:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--marker) / 2 - 1px);
+    top: calc(var(--marker) / 2);
+    bottom: calc(-1 * var(--spacer-lg) - var(--marker) / 2);
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  .phase:not(:last-child)::before {
+    background: rgba(232, 237, 246, 0.14);
+  }
+
+  .phase:not(:last-child)::after {
+    background: var(--color-accent);
+    transform-origin: top;
+    transform: scaleY(1);
+  }
+
+  .phase__marker {
+    width: var(--marker);
+    height: var(--marker);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-light-raised);
+    background: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-dark-strong);
+    position: relative;
+    z-index: 1;
+  }
+
+  .phase__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.2rem;
+  }
+
+  .phase__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+  }
+
+  .phase__title {
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .phase__when {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .phase__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.78);
+    max-width: 48ch;
+  }
+
+  .plan__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-top: var(--spacer-lg);
+    border-top: 1px solid rgba(232, 237, 246, 0.12);
+  }
+
+  .plan__stack-label {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: rgba(232, 237, 246, 0.6);
+  }
+
+  .stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .stack__item {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(232, 237, 246, 0.2);
+    color: var(--color-ink-light);
+  }
+
+  /* Scroll-driven reveal: rail draws down, phases fade in in order. */
+  @supports (animation-timeline: view()) {
+    .phase:not(:last-child)::after {
+      transform: scaleY(0);
+      animation: plan-rail linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(35% + var(--i) * 15%)
+        entry calc(60% + var(--i) * 15%);
     }
 
-    .app-dev-title {
-      font-size: 5rem;
+    .phase {
+      opacity: 0.35;
+      animation: plan-phase linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(20% + var(--i) * 15%)
+        entry calc(45% + var(--i) * 15%);
     }
 
-    .app-dev-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: var(--spacer-lg);
-      padding: 0;
+    .phase__marker {
+      background: var(--color-dark-soft);
+      animation: plan-marker linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(20% + var(--i) * 15%)
+        entry calc(45% + var(--i) * 15%);
     }
 
-    .app-dev-card-scroll {
-      overflow: visible;
-      scroll-snap-type: none;
-      scroll-padding: 0;
+    /* On wide screens the panel enters quickly, so pace the reveal over its
+       whole pass through the viewport and start each step later. */
+    @media (min-width: 960px) {
+      .phase,
+      .phase__marker {
+        animation-range: cover calc(18% + var(--i) * 11%)
+          cover calc(30% + var(--i) * 11%);
+      }
+
+      .phase:not(:last-child)::after {
+        animation-range: cover calc(24% + var(--i) * 11%)
+          cover calc(38% + var(--i) * 11%);
+      }
+    }
+  }
+
+  @keyframes plan-rail {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes plan-phase {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes plan-marker {
+    to {
+      background: var(--color-accent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phase:not(:last-child)::after {
+      transform: scaleY(1);
+    }
+    .phase {
+      opacity: 1;
+    }
+    .phase__marker {
+      background: var(--color-accent);
+    }
+  }
+
+  /* --- Commitments --- */
+
+  .commitments {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .commitment {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--color-success);
+  }
+
+  .commitment__title {
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-ink);
+  }
+
+  .commitment__copy {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 40ch;
+  }
+
+  /* --- Wider screens --- */
+
+  @media (min-width: 720px) {
+    .commitments {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacer-xl);
+    }
+  }
+
+  @media (min-width: 960px) {
+    .app-dev__grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
     }
 
-    .app-dev-card-nav {
-      display: none;
-      margin-right: 0;
+    .plan {
+      grid-column: 2;
+      grid-row: 1 / 3;
     }
 
-    .app-dev-list :global(.app-card) {
-      flex: initial;
-      max-width: none;
-      scroll-snap-align: unset;
-      scroll-snap-stop: normal;
-    }
-
-    .app-dev-cta {
-      font-size: var(--font-2xl);
-      padding: var(--spacer-lg) var(--spacer-2xl);
+    .app-dev__actions {
+      grid-column: 1;
+      margin-top: 0;
     }
   }
 </style>
-
-<script is:inline>
-  // Card scroll logic ...existing code...
-  const appDevShells = document.querySelectorAll(".app-dev-card-shell");
-  appDevShells.forEach((shell) => {
-    const container = shell.querySelector(".app-dev-card-scroll");
-    const list = shell.querySelector(".app-dev-list");
-    const buttons = shell.querySelectorAll(".app-dev-card-button");
-    if (!container || !list || buttons.length === 0) return;
-    const getStep = () => {
-      const firstCard = list.querySelector(".app-card");
-      const styles = window.getComputedStyle(list);
-      const gap = parseFloat(styles.columnGap || styles.gap || "0");
-      return (firstCard?.clientWidth || 0) + gap;
-    };
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const direction = button.getAttribute("data-direction");
-        const step = getStep() || container.clientWidth;
-        const delta = direction === "next" ? step : -step;
-        container.scrollBy({ left: delta, behavior: "smooth" });
-      });
-    });
-  });
-
-  // Parallax scroll effect
-  window.addEventListener("scroll", () => {
-    const scrollY = window.scrollY;
-    const laptop = document.querySelector(".parallax-laptop");
-    const cloud = document.querySelector(".parallax-cloud");
-    // Only move a couple of pixels for subtle effect
-    if (laptop) {
-      laptop.style.transform = `translateY(${scrollY * 0.05 - 450}px)`;
-    }
-    if (cloud) {
-      cloud.style.transform = `translateY(${scrollY * 0.06 - 200}px)`;
-    }
-  });
-</script>
