@@ -4,9 +4,11 @@ import effectiveAngular from "../assets/workshop/effective_angular.jpg";
 import ngPoland from "../assets/workshop/ng_poland.jpg";
 import talk1 from "../assets/workshop/talk_1.jpg";
 import talk2 from "../assets/workshop/talk_2.png";
+import { HOME_CATEGORY_LINKS, resolveHomeLink } from "../lib/home-links";
 
 const workshops = [
   {
+    id: "enterprise-angular",
     image: talk1,
     objectPosition: "center",
     title: "Enterprise Angular Patterns",
@@ -25,6 +27,7 @@ const workshops = [
   {
     image: ngPoland,
     objectPosition: "left",
+    id: "nx-monorepo",
     title: "Nx Monorepo Enablement",
     tag: "Platform • Nx",
     description:
@@ -40,6 +43,7 @@ const workshops = [
   {
     image: talk2,
     objectPosition: "center",
+    id: "ai",
     title: "Succesfully Leveraging AI in your Angular And Nx Projects",
     tag: "AI • Productivity",
     description: "Unlock the potential of AI to boost developer productivity.",
@@ -54,6 +58,7 @@ const workshops = [
   {
     image: effectiveAngular,
     objectPosition: "top center",
+    id: "ui-libraries",
     title: "Leassons for Developing Enterprise Grade UI Libraries",
     tag: "UI Libraries • Angular",
     description:
@@ -68,6 +73,17 @@ const workshops = [
     ],
   },
 ];
+
+// Blog link per workshop, resolved at build time from HOME_CATEGORY_LINKS.
+const workshopLinks = await Promise.all(
+  workshops.map((item) =>
+    resolveHomeLink(
+      HOME_CATEGORY_LINKS.workshops[
+        item.id as keyof typeof HOME_CATEGORY_LINKS.workshops
+      ],
+    ),
+  ),
+);
 ---
 
 <div class="workshops-scroll-container">
@@ -95,6 +111,11 @@ const workshops = [
                     <a class="card-cta" href="#contactForm">
                       Book workshop
                     </a>
+                    {workshopLinks[index] && (
+                      <a class="card-link" href={workshopLinks[index].href}>
+                        {workshopLinks[index].label} &rarr;
+                      </a>
+                    )}
                   </div>
                 </article>
               ))
@@ -305,9 +326,26 @@ const workshops = [
 
   .card-actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
     margin-top: 1.75rem;
     cursor: pointer;
     z-index: 10;
+  }
+
+  .card-link {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .card-link:hover,
+  .card-link:focus-visible {
+    color: var(--color-accent-strong);
   }
 
   .card-cta {

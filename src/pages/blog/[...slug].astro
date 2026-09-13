@@ -1,55 +1,99 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
+import CategoryChips from "../../components/CategoryChips.astro";
 import PageLayout from "../../layouts/PageLayout.astro";
+import logo from "../../assets/logos/logo.png";
+import { AUTHOR, SITE_TITLE } from "../../consts";
+import {
+  formatDate,
+  getSortedPosts,
+  postHref,
+  relatedPosts,
+  type BlogPost,
+} from "../../lib/blog";
+
+interface Props {
+  post: BlogPost;
+  related: BlogPost[];
+}
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  const posts = await getSortedPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
-    props: post,
+    props: { post, related: relatedPosts(post, posts) } satisfies Props,
   }));
 }
 
-const post = Astro.props;
+const { post, related } = Astro.props;
 const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, heroImage, categories } =
+  post.data;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const heroURL = heroImage ? new URL(heroImage.src, Astro.site).href : undefined;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  ...(heroURL && { image: [heroURL] }),
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  author: {
+    "@type": "Person",
+    name: AUTHOR.name,
+    url: AUTHOR.url,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: SITE_TITLE,
+    url: Astro.site?.href,
+    logo: {
+      "@type": "ImageObject",
+      url: new URL(logo.src, Astro.site).href,
+    },
+  },
+  keywords: [...categories],
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonicalURL.href,
+  },
+};
 ---
 
 <PageLayout
-  title={post.data.title}
-  description={post.data.description}
-  image={post.data.heroImage}
+  title={title}
+  description={description}
+  image={heroImage}
+  type="article"
+  article={{
+    publishedTime: pubDate,
+    modifiedTime: updatedDate,
+    author: AUTHOR.name,
+    tags: categories,
+  }}
+  jsonLd={jsonLd}
 >
   <article class="post">
     <header>
       <div class="header-meta">
-        <time datetime={post.data.pubDate.toISOString()}>
-          {
-            post.data.pubDate.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
-          }
-        </time>
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
         <a href="/blog/" class="back-link">&larr; All posts</a>
       </div>
       {
-        post.data.updatedDate && (
-          <span class="updated">
-            (Updated:{" "}
-            {post.data.updatedDate.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-            )
-          </span>
+        updatedDate && (
+          <span class="updated">(Updated: {formatDate(updatedDate)})</span>
         )
       }
-      <h1 class="title">{post.data.title}</h1>
+      <h1 class="title">{title}</h1>
+      <div class="post-categories">
+        <CategoryChips categories={categories} />
+      </div>
       {
-        post.data.heroImage && (
-          <img src={post.data.heroImage.src} alt="" width="960" height="480" />
+        heroImage && (
+          <img src={heroImage.src} alt={title} width="960" height="480" />
         )
       }
     </header>
@@ -120,6 +164,24 @@ const { Content } = await render(post);
       </p>
       <a href="/#contactForm" class="cta-button">Get in touch</a>
     </aside>
+
+    {
+      related.length > 0 && (
+        <aside class="more-posts" aria-labelledby="more-posts-heading">
+          <h2 id="more-posts-heading">More posts</h2>
+          <ul>
+            {related.map((item) => (
+              <li>
+                <a href={postHref(item)}>{item.data.title}</a>
+                <time datetime={item.data.pubDate.toISOString()}>
+                  {formatDate(item.data.pubDate)}
+                </time>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
 
     <footer>
       <a href="/blog/">&larr; Back to all posts</a>
@@ -201,6 +263,10 @@ const { Content } = await render(post);
     font-size: var(--font-3xl);
     font-weight: var(--font-weight-bold);
     margin: 0.5rem 0 1.5rem;
+  }
+
+  .post-categories {
+    margin: -0.5rem 0 1.5rem;
   }
 
   header img {
@@ -477,6 +543,46 @@ const { Content } = await render(post);
   .cta-button:hover {
     background: #fff;
     transform: translateY(-1px);
+  }
+
+  /* --- More posts --- */
+
+  .more-posts {
+    margin-top: 3rem;
+  }
+
+  .more-posts h2 {
+    font-family: "chillax", sans-serif;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semi-bold);
+    margin: 0 0 1rem;
+  }
+
+  .more-posts ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .more-posts li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+  }
+
+  .more-posts a {
+    color: var(--color-accent-ink);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .more-posts a:hover {
+    color: var(--color-accent-strong);
   }
 
   /* --- Footer --- */

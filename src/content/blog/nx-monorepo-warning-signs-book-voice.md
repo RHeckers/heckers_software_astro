@@ -3,6 +3,7 @@ title: "7 Signs Your Angular Nx Monorepo Is Slowing Your Team Down"
 description: "Your Nx monorepo was meant to make you faster. Learn 7 signs it's quietly slowing your Angular team down, what each one costs, and where to start fixing it."
 pubDate: "2026-06-13"
 heroImage: "../../assets/blog-images/7-signs-your-nx-monorepo-is-slowing-you-down.png"
+categories: ["Nx", "Architecture"]
 ---
 
 *Some of these signs come from recent developments in Angular and Nx; others have been slowing teams down for years. Together, they share a single cause.*

@@ -6,7 +6,12 @@ import rehypeWrapTables from "./src/plugins/rehype-wrap-tables.mjs";
 // https://astro.build/config
 export default defineConfig({
   site: "https://heckerssoftware.com",
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // Legal pages carry no search value; keep them out of the sitemap.
+      filter: (page) => !page.includes("/legal/"),
+    }),
+  ],
   markdown: {
     rehypePlugins: [rehypeWrapTables],
   },

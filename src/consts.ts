@@ -12,3 +12,8 @@ export const COMPANY = {
   kvk: "90652479",
   btw: "NL0048.32.507.B79",
 } as const;
+
+export const AUTHOR = {
+  name: "Roberto Heckers",
+  url: "https://heckerssoftware.com",
+} as const;

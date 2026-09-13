@@ -3,6 +3,7 @@ title: "Signal Forms in Angular v22: One Source of Truth for Your Form State"
 description: "Angular v22 ships Signal Forms as a stable API. Learn what problem they solve, how they differ from Reactive Forms, and how to build a clean, validated form step by step."
 pubDate: "2026-08-11"
 heroImage: "../../assets/blog-images/signal-forms-onme-source-of-truth.png"
+categories: ["Angular", "Forms"]
 ---
 
 If you have built forms in Angular for any length of time, you have felt a particular kind of friction. Your data lives in one place (a model object, maybe fetched from an API) and your form lives in another, a `FormGroup` full of `FormControl` instances. Two versions of the same truth, and it is your job to keep them in sync: patch the form when the model changes, read the value back out when you submit, wire up `valueChanges` when you need to react to edits. It works, but it is a lot of plumbing for something that should feel simple.

@@ -1,0 +1,47 @@
+---
+import BlogListing from "../../../components/BlogListing.astro";
+import PageLayout from "../../../layouts/PageLayout.astro";
+import {
+  categoriesWithPosts,
+  getSortedPosts,
+  postsInCategory,
+  type BlogPost,
+} from "../../../lib/blog";
+import { categoryToSlug, type BlogCategory } from "../../../lib/categories";
+
+interface Props {
+  category: BlogCategory;
+  posts: BlogPost[];
+  categories: BlogCategory[];
+}
+
+export async function getStaticPaths() {
+  const allPosts = await getSortedPosts();
+  const categories = categoriesWithPosts(allPosts);
+
+  // One page per category that actually has posts; empty categories get no page.
+  return categories.map((category) => ({
+    params: { slug: categoryToSlug(category) },
+    props: {
+      category,
+      posts: postsInCategory(allPosts, category),
+      categories,
+    } satisfies Props,
+  }));
+}
+
+const { category, posts, categories } = Astro.props;
+const count = posts.length;
+const title = `${category} articles — Heckers Software`;
+const description = `${count} ${count === 1 ? "article" : "articles"} about ${category} from Heckers Software: practical guidance on Angular, Nx monorepos, and frontend architecture.`;
+---
+
+<PageLayout title={title} description={description}>
+  <BlogListing
+    heading={`${category} articles`}
+    intro={`Everything we have written about ${category}.`}
+    posts={posts}
+    categories={categories}
+    active={category}
+  />
+</PageLayout>
