@@ -114,8 +114,8 @@ const services = [
 
     <ul class="trio">
       {
-        services.map((service, index) => (
-          <li class="panel" style={`--i: ${index}`}>
+        services.map((service) => (
+          <li class="panel">
             <a class="panel__link" href={service.href}>
               <svg
                 class="panel__art"
@@ -178,10 +178,6 @@ const services = [
     color: var(--color-ink-light);
     box-shadow: 0 24px 50px rgba(11, 18, 32, 0.18);
     isolation: isolate;
-    /* Rise in as the trio scrolls into view; the fallback is simply visible. */
-    animation: panel-rise linear both;
-    animation-timeline: view();
-    animation-range: entry calc(5% + var(--i) * 8%) entry calc(45% + var(--i) * 8%);
   }
 
   .panel:nth-child(2) {
@@ -190,17 +186,6 @@ const services = [
 
   .panel:nth-child(3) {
     background: linear-gradient(180deg, #1d2f4a 0%, #16243a 100%);
-  }
-
-  @keyframes panel-rise {
-    from {
-      opacity: 0;
-      transform: translateY(2.5rem);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   /* Soft glow behind the diagram, like the glass cards elsewhere. */
@@ -313,9 +298,6 @@ const services = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .panel {
-      animation: none;
-    }
     .panel__art,
     .panel__cta {
       transition: none;

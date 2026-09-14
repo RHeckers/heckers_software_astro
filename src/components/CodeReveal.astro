@@ -10,7 +10,10 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
   <!--
     Anchor target for #code-analysis. It sits at the end of the scroll
     distance, so a link to this section lands with every step already
-    revealed instead of at the start of the reveal animation.
+    revealed instead of at the start of the reveal animation. When the
+    panel is taller than the viewport (mobile), it moves up to the last
+    point where the panel is still pinned at the top, so the link lands on
+    the title rather than on the bottom of the panel.
   -->
   <div class="code-reveal-anchor" id="code-analysis" aria-hidden="true"></div>
   <section id="code-reveal" class="code-reveal-section code-reveal--sticky">
@@ -111,6 +114,14 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     ) as HTMLElement[];
     const total = cards.length;
 
+    // Set before the first frame so a page opened directly on #code-analysis
+    // scrolls to the corrected anchor position rather than the fallback.
+    let knownSectionHeight = section.offsetHeight;
+    scrollContainer.style.setProperty(
+      "--section-height",
+      knownSectionHeight + "px",
+    );
+
     requestAnimationFrame(() => {
       let spacerHeight = "";
 
@@ -129,6 +140,14 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
           const threshold = (i + 1) / (total + 1);
           card.classList.toggle("card-visible", progress >= threshold);
         });
+
+        if (sectionHeight !== knownSectionHeight) {
+          knownSectionHeight = sectionHeight;
+          scrollContainer.style.setProperty(
+            "--section-height",
+            sectionHeight + "px",
+          );
+        }
 
         const nextHeight = progress >= 1 ? sectionHeight + "px" : "0px";
         if (nextHeight !== spacerHeight) {
@@ -158,12 +177,19 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Container height is 100svh + the scroll distance, so this lands where
-     the reveal progress reaches 100%. */
+  /* Container height is 100svh + the scroll distance, so the first value
+     lands where the reveal progress reaches 100%. The second value is the
+     last scroll position where the sticky panel still sits at its pinned
+     top (container padding 2rem + sticky top 2.5rem); it wins only when the
+     panel is taller than the viewport, which is the stacked mobile layout.
+     The script sets --section-height; without it the first value wins. */
   .code-reveal-anchor {
     position: absolute;
     left: 0;
-    top: calc(100% - 100svh);
+    top: min(
+      calc(100% - 100svh),
+      calc(100% - var(--section-height, 0px) - 4.5rem)
+    );
     width: 1px;
     height: 1px;
     pointer-events: none;
