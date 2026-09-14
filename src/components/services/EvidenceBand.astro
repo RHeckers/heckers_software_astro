@@ -35,7 +35,9 @@ const { title, intro, stats, meaning } = Astro.props;
       {
         stats.map((stat) => (
           <li class="stat">
-            <p class="stat__value"><CountUp value={stat.value} /></p>
+            <p class="stat__value">
+              <CountUp value={stat.value} />
+            </p>
             <p class="stat__label">{stat.label}</p>
             <p class="stat__source">{stat.source}</p>
           </li>
@@ -147,6 +149,7 @@ const { title, intro, stats, meaning } = Astro.props;
   }
 
   .stat__label {
+    align-self: center;
     font-family: synonym, sans-serif;
     font-size: var(--font-lg);
     line-height: 1.4;

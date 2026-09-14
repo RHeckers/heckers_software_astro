@@ -104,10 +104,14 @@ const position = proof.company
     color: var(--ink);
   }
 
+  /* Pinned to the bottom so that, when cards in a row are stretched to the
+     same height, every attribution sits on the same line regardless of how
+     long the quote above it is. */
   .proof__by {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    margin-top: auto;
     padding-top: 0.9rem;
     border-top: 1px solid var(--rule);
   }
