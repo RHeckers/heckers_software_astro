@@ -1,0 +1,110 @@
+---
+/**
+ * Three short client quotes in a row, as a band between two sections.
+ * Used where a reader is weighing a decision: after the tiers on a service
+ * page, and between the workshops and application development on the home
+ * page.
+ */
+import ProofQuote from "./ProofQuote.astro";
+import type { SnippetKey } from "../lib/testimonials";
+
+interface Props {
+  title?: string;
+  /** One line under the title that frames personal recommendations as a
+   *  claim about the company. */
+  lede?: string;
+  snippets: SnippetKey[];
+  tone?: "light" | "dark";
+}
+
+const {
+  title = "From the people we have worked with",
+  lede = "Every engagement is led by founder Roberto Heckers. These are the words of people who worked with him.",
+  snippets,
+  tone = "light",
+} = Astro.props;
+---
+
+<section class:list={["proof-row", `proof-row--${tone}`]} aria-label={title}>
+  <div class="proof-row__inner">
+    <header class="proof-row__head">
+      <h2 class="proof-row__title">{title}</h2>
+      <p class="proof-row__lede">{lede}</p>
+    </header>
+    <ul class="proof-row__list">
+      {
+        snippets.map((snippet) => (
+          <li>
+            <ProofQuote snippet={snippet} tone={tone} class="proof-row__item" />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .proof-row {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: 0 clamp(1.25rem, 6vw, 5rem) clamp(4rem, 10vw, 7.5rem);
+  }
+
+  .proof-row--dark {
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+    padding-top: clamp(3rem, 7vw, 5rem);
+  }
+
+  .proof-row__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-xl);
+  }
+
+  .proof-row__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .proof-row__title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .proof-row__lede {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 60ch;
+  }
+
+  .proof-row--dark .proof-row__lede {
+    color: rgba(232, 237, 246, 0.7);
+  }
+
+  .proof-row__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+    align-items: stretch;
+  }
+
+  .proof-row__list li {
+    display: flex;
+  }
+
+  .proof-row__list :global(.proof-row__item) {
+    flex: 1;
+  }
+
+  @media (min-width: 900px) {
+    .proof-row__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

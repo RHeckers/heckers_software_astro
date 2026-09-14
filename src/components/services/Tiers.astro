@@ -1,0 +1,376 @@
+---
+/**
+ * Three ways to buy the service. The first tier is framed as the least any
+ * team should do, the middle one is the recommended default and gets the
+ * dark panel, the last is for teams that want it done for them. No prices:
+ * every tier is quoted after a short call, and the note under the grid
+ * says so.
+ *
+ * Each button preselects the contact form subject and drops a one-line
+ * message naming the tier, so the enquiry arrives with context.
+ */
+interface Tier {
+  name: string;
+  /** Under the name: who this is the right choice for. */
+  tagline: string;
+  /** Small pill above the name, e.g. "The bare minimum". */
+  badge?: string;
+  duration: string;
+  /**
+   * What it costs. `amount` is a fixed price ("€4,900") for bounded work,
+   * or a short phrase ("On quote") where the work is ongoing; `detail`
+   * qualifies it ("excl. VAT", "after the roadmap").
+   */
+  price: { amount: string; detail?: string };
+  summary: string;
+  includes: string[];
+  excludes?: string[];
+  recommended?: boolean;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  intro: string;
+  serviceName: string;
+  subject: string;
+  tiers: Tier[];
+  note: string;
+}
+
+const {
+  id = "tiers",
+  title,
+  intro,
+  serviceName,
+  subject,
+  tiers,
+  note,
+} = Astro.props;
+---
+
+<section class="tiers" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="tiers__inner">
+    <header class="tiers__head">
+      <h2 class="tiers__title" id={`${id}-heading`}>{title}</h2>
+      <p class="tiers__intro">{intro}</p>
+    </header>
+
+    <ul class="tier-grid">
+      {
+        tiers.map((tier) => (
+          <li class:list={["tier", { "tier--recommended": tier.recommended }]}>
+            <h3 class="tier__name">{tier.name}</h3>
+            {
+              tier.badge ? (
+                <p class="tier__badge">{tier.badge}</p>
+              ) : (
+                <p class="tier__badge tier__badge--empty" aria-hidden="true" />
+              )
+            }
+            <p class="tier__tagline">{tier.tagline}</p>
+            <p class="tier__duration">{tier.duration}</p>
+            <p class="tier__price">
+              <span class="tier__price-amount">{tier.price.amount}</span>
+              {tier.price.detail && (
+                <span class="tier__price-detail">{tier.price.detail}</span>
+              )}
+            </p>
+            <p class="tier__summary">{tier.summary}</p>
+
+            <ul class="tier__list">
+              {tier.includes.map((item) => (
+                <li class="tier__item">{item}</li>
+              ))}
+              {tier.excludes?.map((item) => (
+                <li class="tier__item tier__item--excluded">{item}</li>
+              ))}
+            </ul>
+
+            <a
+              href="#contactForm"
+              class="tier__cta"
+              data-subject={subject}
+              data-message={`I am interested in the ${tier.name} tier of the ${serviceName}.`}
+            >
+              Ask about {tier.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="tiers__note">{note}</p>
+  </div>
+</section>
+
+<style>
+  .tiers {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .tiers__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .tiers__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 60ch;
+  }
+
+  .tiers__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .tiers__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .tier-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+    align-items: stretch;
+  }
+
+  .tier {
+    --ink: var(--color-ink);
+    --muted: var(--color-ink-muted);
+    --rule: var(--color-stroke);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--color-light-raised);
+    border: 1px solid var(--color-stroke);
+    border-radius: 22px;
+    color: var(--ink);
+  }
+
+  .tier--recommended {
+    --ink: var(--color-ink-light);
+    --muted: rgba(232, 237, 246, 0.72);
+    --rule: rgba(232, 237, 246, 0.14);
+    background: var(--background-gradient-secondary);
+    border-color: transparent;
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+  }
+
+  .tier__badge {
+    align-self: flex-start;
+    justify-self: start;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-stroke-strong);
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .tier--recommended .tier__badge {
+    border-color: var(--color-accent);
+    background: rgba(47, 125, 209, 0.18);
+    color: var(--color-light-raised);
+  }
+
+  /* Cards without a badge keep the row so the taglines line up. */
+  .tier__badge--empty {
+    display: none;
+  }
+
+  .tier__name {
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .tier__tagline {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .tier__duration {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-ink);
+    margin-top: 0.5rem;
+  }
+
+  .tier--recommended .tier__duration {
+    color: var(--color-accent);
+  }
+
+  .tier__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    padding: 0.4rem 0 0.9rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .tier__price-amount {
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .tier__price-detail {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--muted);
+  }
+
+  .tier__summary {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--ink);
+    padding: 0.25rem 0 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .tier__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.5rem 0 1.5rem;
+    flex: 1;
+  }
+
+  .tier__item {
+    position: relative;
+    padding-left: 1.6rem;
+    font-family: synonym, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .tier__item::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 0.5rem;
+    width: 0.55rem;
+    height: 0.3rem;
+    border-left: 2px solid var(--color-success);
+    border-bottom: 2px solid var(--color-success);
+    transform: rotate(-45deg);
+  }
+
+  .tier__item--excluded {
+    color: var(--muted);
+  }
+
+  .tier__item--excluded::before {
+    width: 0.6rem;
+    height: 0;
+    top: 0.75rem;
+    border-left: 0;
+    border-bottom: 2px solid var(--color-stroke-strong);
+    transform: none;
+  }
+
+  .tier__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.6rem;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-bold);
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--color-accent-ink);
+    border: 1.5px solid var(--color-accent-strong);
+    background: transparent;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  .tier__cta:hover {
+    background: var(--color-accent-strong);
+    color: var(--color-light-raised);
+  }
+
+  .tier__cta:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .tier--recommended .tier__cta {
+    color: var(--color-accent);
+    background: var(--color-ink-light);
+    border-color: var(--color-ink-light);
+  }
+
+  .tier--recommended .tier__cta:hover {
+    color: var(--color-accent-strong);
+    outline: 4px solid var(--color-accent-strong);
+  }
+
+  .tiers__note {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+    max-width: 62ch;
+  }
+
+  @media (min-width: 900px) {
+    .tier-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--spacer-xl);
+    }
+
+    /* Name, badge, tagline, duration, price, summary, list and button each
+       share one row across the three cards, so the same element sits at
+       the same height in every card. */
+    @supports (grid-template-rows: subgrid) {
+      .tier-grid {
+        grid-template-rows: auto auto auto auto auto auto 1fr auto;
+      }
+
+      .tier {
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: span 8;
+        row-gap: 0.5rem;
+      }
+
+      .tier__badge--empty {
+        display: block;
+        visibility: hidden;
+      }
+
+      .tier__list {
+        padding-bottom: 0;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+</style>

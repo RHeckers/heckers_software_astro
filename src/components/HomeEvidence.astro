@@ -1,0 +1,434 @@
+---
+/**
+ * The home page's one piece of education-based marketing: a single outside
+ * number translated into money, and a four-question self-check that hands
+ * the reader to the full fourteen-question check on the assessment page.
+ *
+ * Deliberately small. The service pages do the teaching; this band exists
+ * so the home page has one moment of evidence and one of self-recognition
+ * before the story block makes the emotional case.
+ */
+import CountUp from "./CountUp.astro";
+
+const questions = [
+  "A one-line change rebuilds and retests the whole workspace instead of only what it touched.",
+  "Bugs get fixed in one place and reappear in another.",
+  "Certain files are only touched by one person, because nobody else dares.",
+  'The words "we should refactor" have been said about the same module for over a year.',
+];
+
+/**
+ * One verdict per score, each with its own call to action. The action
+ * escalates with the score: a quiet link to the full check, then a button
+ * to run it, then the assessment page, then the contact form with the
+ * assessment preselected.
+ */
+const verdicts = [
+  {
+    min: 0,
+    title: "Nothing ticked.",
+    copy: "Either you are in good shape, or you have not looked closely. The full check has fourteen signs and a verdict for each stage.",
+    level: "quiet",
+    cta: "See all fourteen signs",
+    href: "/services/architecture-assessment#self-check",
+  },
+  {
+    min: 1,
+    title: "One is a symptom.",
+    copy: "One sign on its own is normal. The full check tells you whether it is isolated or the first of a pattern.",
+    level: "outline",
+    cta: "Run the full check",
+    href: "/services/architecture-assessment#self-check",
+  },
+  {
+    min: 2,
+    title: "Two is where most teams we assess start.",
+    copy: "The cost is still invisible in your planning, which is exactly when it is cheapest to fix. In a year it will not be.",
+    level: "solid",
+    cta: "See what an assessment would find",
+    href: "/services/architecture-assessment",
+  },
+  {
+    min: 3,
+    title: "You are paying for this every sprint.",
+    copy: "Three or more of these together are the maintenance tax in the number on the left, and it compounds. Every quarter you wait, the fix gets larger and the people who understand the code get fewer.",
+    level: "urgent",
+    cta: "Book an assessment before the next sprint",
+    href: "#contactForm",
+    subject: "Code Review",
+  },
+];
+---
+
+<section class="home-evidence" aria-labelledby="home-evidence-heading">
+  <div class="home-evidence__inner">
+    <div class="home-evidence__fact">
+      <h2 class="home-evidence__title" id="home-evidence-heading">
+        The number don't lie: technical debt is expensive, and it is everywhere
+      </h2>
+      <p class="home-evidence__value"><CountUp value="42%" /></p>
+      <p class="home-evidence__label">
+        of a developer's week goes to maintenance, debugging and technical debt
+        instead of new work. That is the average team, and the average team
+        believes its own situation is better than average.
+      </p>
+      <p class="home-evidence__source">Stripe, The Developer Coefficient</p>
+      <p class="home-evidence__meaning">
+        For a team of eight at a fully loaded ninety thousand euro per engineer,
+        that is over three hundred thousand euro a year that buys no new
+        features. It is spent whether you measure it or not. Every service on
+        this page exists to get some of it back.
+      </p>
+    </div>
+
+    <div class="mini-check" data-mini-check>
+      <p class="mini-check__title">Four signs, thirty seconds</p>
+      <p class="mini-check__intro">
+        Tick what is true for your team. Honest answers only; nobody is
+        watching.
+      </p>
+      <ul class="mini-check__list">
+        {
+          questions.map((question, index) => (
+            <li>
+              <label class="mini-check__item">
+                <input
+                  class="mini-check__input"
+                  type="checkbox"
+                  name={`home-check-${index}`}
+                />
+                <span class="mini-check__box" aria-hidden="true" />
+                <span>{question}</span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mini-check__result" aria-live="polite">
+        {
+          verdicts.map((verdict, index) => (
+            <div
+              class="mini-check__verdict"
+              data-verdict
+              data-min={verdict.min}
+              hidden={index !== 0}
+            >
+              <p class="mini-check__verdict-title">{verdict.title}</p>
+              <p class="mini-check__verdict-copy">{verdict.copy}</p>
+              <a
+                class:list={[
+                  "mini-check__cta",
+                  `mini-check__cta--${verdict.level}`,
+                ]}
+                href={verdict.href}
+                data-subject={verdict.subject}
+              >
+                {verdict.cta}
+              </a>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document
+    .querySelectorAll<HTMLElement>("[data-mini-check]")
+    .forEach((panel) => {
+      const inputs = Array.from(
+        panel.querySelectorAll<HTMLInputElement>(".mini-check__input"),
+      );
+      const verdicts = Array.from(
+        panel.querySelectorAll<HTMLElement>("[data-verdict]"),
+      );
+
+      function update() {
+        const checked = inputs.filter((input) => input.checked).length;
+        let active: HTMLElement | null = null;
+        for (const verdict of verdicts) {
+          if (checked >= Number(verdict.dataset.min ?? "0")) active = verdict;
+        }
+        verdicts.forEach((verdict) => {
+          verdict.hidden = verdict !== active;
+        });
+      }
+
+      inputs.forEach((input) => input.addEventListener("change", update));
+      update();
+    });
+</script>
+
+<style>
+  .home-evidence {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 3rem);
+  }
+
+  .home-evidence__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  /* --- The number --- */
+
+  .home-evidence__fact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .home-evidence__title {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.75rem;
+  }
+
+  .home-evidence__value {
+    font-size: clamp(4rem, 9vw, 6.5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--color-accent-ink);
+  }
+
+  .home-evidence__label {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--color-ink);
+    max-width: 44ch;
+  }
+
+  .home-evidence__source {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .home-evidence__meaning {
+    margin-top: 0.75rem;
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink);
+    max-width: 48ch;
+    padding-left: 1.1rem;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  /* --- The mini check --- */
+
+  .mini-check {
+    background: var(--color-light-raised);
+    border: 1px solid var(--color-stroke);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.1);
+  }
+
+  .mini-check__title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+  }
+
+  .mini-check__intro {
+    font-family: synonym, sans-serif;
+    color: var(--color-ink-muted);
+    line-height: 1.5;
+  }
+
+  .mini-check__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .mini-check__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    padding: 0.85rem 0.25rem;
+    border-bottom: 1px solid var(--color-stroke);
+    cursor: pointer;
+    font-family: synonym, sans-serif;
+    line-height: 1.45;
+    color: var(--color-ink);
+  }
+
+  .mini-check__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  .mini-check__box {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.05rem;
+    border-radius: 6px;
+    border: 1.5px solid var(--color-stroke-strong);
+    background: var(--color-light);
+    display: inline-grid;
+    place-items: center;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+
+  .mini-check__box::after {
+    content: "";
+    width: 0.55rem;
+    height: 0.3rem;
+    border-left: 2px solid var(--color-light-raised);
+    border-bottom: 2px solid var(--color-light-raised);
+    transform: rotate(-45deg) translate(1px, -1px) scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .mini-check__input:checked + .mini-check__box {
+    background: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
+  }
+
+  .mini-check__input:checked + .mini-check__box::after {
+    transform: rotate(-45deg) translate(1px, -1px) scale(1);
+  }
+
+  .mini-check__input:focus-visible + .mini-check__box {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .mini-check__result {
+    min-height: 9rem;
+  }
+
+  .mini-check__verdict {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .mini-check__verdict[hidden] {
+    display: none;
+  }
+
+  .mini-check__verdict-title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+  }
+
+  .mini-check__verdict-copy {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+  }
+
+  /* The call to action grows with the score: link, outlined button, filled
+     button, then a filled button with the shadow the site's primary
+     buttons carry. */
+  .mini-check__cta {
+    margin-top: 0.6rem;
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .mini-check__cta--quiet {
+    color: var(--color-accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  .mini-check__cta--quiet:hover,
+  .mini-check__cta--quiet:focus-visible {
+    color: var(--color-accent-strong);
+  }
+
+  .mini-check__cta--outline,
+  .mini-check__cta--solid,
+  .mini-check__cta--urgent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--color-accent-strong);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .mini-check__cta--outline {
+    color: var(--color-accent-ink);
+    background: transparent;
+  }
+
+  .mini-check__cta--outline:hover,
+  .mini-check__cta--outline:focus-visible {
+    background: var(--color-accent-strong);
+    color: var(--color-light-raised);
+  }
+
+  .mini-check__cta--solid,
+  .mini-check__cta--urgent {
+    color: var(--color-light-raised);
+    background: var(--color-accent-strong);
+  }
+
+  .mini-check__cta--solid:hover,
+  .mini-check__cta--solid:focus-visible,
+  .mini-check__cta--urgent:hover,
+  .mini-check__cta--urgent:focus-visible {
+    background: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
+  }
+
+  .mini-check__cta--urgent {
+    padding: 0.9rem 1.8rem;
+    font-size: 1.05rem;
+    box-shadow: 0 14px 30px rgba(37, 99, 168, 0.28);
+  }
+
+  .mini-check__cta:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 900px) {
+    .home-evidence__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mini-check__box,
+    .mini-check__box::after {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,417 @@
+---
+/**
+ * How the engagement runs, step by step, next to what the client receives.
+ * The stepped panel is the same one the home page uses for application
+ * development (rail draws down, phases light up as they scroll into view),
+ * so a reader moving between pages meets one idiom.
+ */
+interface Step {
+  title: string;
+  when: string;
+  copy: string;
+  optional?: boolean;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  intro: string;
+  steps: Step[];
+  deliverablesTitle: string;
+  deliverables: string[];
+  ctaLabel: string;
+  subject: string;
+}
+
+const {
+  id = "how-it-works",
+  title,
+  intro,
+  steps,
+  deliverablesTitle,
+  deliverables,
+  ctaLabel,
+  subject,
+} = Astro.props;
+---
+
+<section class="process" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="process__inner">
+    <div class="process__copy">
+      <header class="process__head">
+        <h2 class="process__title" id={`${id}-heading`}>{title}</h2>
+        <p class="process__intro">{intro}</p>
+      </header>
+
+      <div class="deliverables-block">
+        <h3 class="deliverables__title">{deliverablesTitle}</h3>
+        <ul class="deliverables">
+          {deliverables.map((item) => <li class="deliverable">{item}</li>)}
+        </ul>
+      </div>
+
+      {
+        Astro.slots.has("proof") && (
+          <div class="process__proof">
+            <slot name="proof" />
+          </div>
+        )
+      }
+
+      <div class="process__actions">
+        <a href="#contactForm" class="process__cta" data-subject={subject}>
+          {ctaLabel}
+        </a>
+        <p class="process__note">
+          No obligation. A short call to see whether we are the right fit.
+        </p>
+      </div>
+    </div>
+
+    <aside class="plan" aria-label="Step by step">
+      <ol class="phases">
+        {
+          steps.map((step, index) => (
+            <li class="phase" style={`--i: ${index}`}>
+              <span class="phase__marker" aria-hidden="true">
+                {index + 1}
+              </span>
+              <div class="phase__body">
+                <div class="phase__row">
+                  <h4 class="phase__title">
+                    {step.title}
+                    {step.optional && (
+                      <em class="phase__optional">optional</em>
+                    )}
+                  </h4>
+                  <span class="phase__when">{step.when}</span>
+                </div>
+                <p class="phase__copy">{step.copy}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .process {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .process__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .process__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-xl);
+  }
+
+  .process__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 60ch;
+  }
+
+  .process__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .process__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .deliverables-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-md);
+  }
+
+  .deliverables__title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-ink);
+  }
+
+  .deliverables {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .deliverable {
+    position: relative;
+    padding: 0.9rem 0 0.9rem 2rem;
+    border-bottom: 1px solid var(--color-stroke);
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--color-ink);
+    max-width: 52ch;
+  }
+
+  .deliverable::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 1.15rem;
+    width: 0.6rem;
+    height: 0.32rem;
+    border-left: 2px solid var(--color-success);
+    border-bottom: 2px solid var(--color-success);
+    transform: rotate(-45deg);
+  }
+
+  .process__proof:empty {
+    display: none;
+  }
+
+  .process__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacer-md);
+  }
+
+  .process__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.95em 2.2em;
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-light-raised);
+    background-color: var(--color-accent-strong);
+    border: 1px solid var(--color-accent-strong);
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 14px 30px rgba(37, 99, 168, 0.28);
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      transform 0.2s;
+  }
+
+  .process__cta:hover {
+    background-color: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
+    transform: translateY(-1px);
+  }
+
+  .process__cta:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .process__note {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  /* --- Stepped panel --- */
+
+  .plan {
+    background: var(--background-gradient-secondary);
+    color: var(--color-ink-light);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    view-timeline-name: --plan-reveal;
+  }
+
+  .phases {
+    list-style: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    --marker: 2rem;
+  }
+
+  .phase {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--marker) 1fr;
+    gap: var(--spacer-md);
+    align-items: start;
+  }
+
+  .phase:not(:last-child)::before,
+  .phase:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--marker) / 2 - 1px);
+    top: calc(var(--marker) / 2);
+    bottom: calc(-1 * var(--spacer-lg) - var(--marker) / 2);
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  .phase:not(:last-child)::before {
+    background: rgba(232, 237, 246, 0.14);
+  }
+
+  .phase:not(:last-child)::after {
+    background: var(--color-accent);
+    transform-origin: top;
+    transform: scaleY(1);
+  }
+
+  .phase__marker {
+    width: var(--marker);
+    height: var(--marker);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-light-raised);
+    background: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-dark-strong);
+    position: relative;
+    z-index: 1;
+  }
+
+  .phase__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.2rem;
+  }
+
+  .phase__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+  }
+
+  .phase__title {
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .phase__optional {
+    font-style: normal;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(47, 125, 209, 0.5);
+    color: rgba(232, 237, 246, 0.8);
+    vertical-align: middle;
+  }
+
+  .phase__when {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .phase__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.78);
+    max-width: 48ch;
+  }
+
+  @supports (animation-timeline: view()) {
+    .phase:not(:last-child)::after {
+      transform: scaleY(0);
+      animation: plan-rail linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(35% + var(--i) * 12%)
+        entry calc(60% + var(--i) * 12%);
+    }
+
+    .phase {
+      opacity: 0.35;
+      animation: plan-phase linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(20% + var(--i) * 12%)
+        entry calc(45% + var(--i) * 12%);
+    }
+
+    .phase__marker {
+      background: var(--color-dark-soft);
+      animation: plan-marker linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(20% + var(--i) * 12%)
+        entry calc(45% + var(--i) * 12%);
+    }
+
+    @media (min-width: 960px) {
+      .phase,
+      .phase__marker {
+        animation-range: cover calc(14% + var(--i) * 9%)
+          cover calc(26% + var(--i) * 9%);
+      }
+
+      .phase:not(:last-child)::after {
+        animation-range: cover calc(20% + var(--i) * 9%)
+          cover calc(34% + var(--i) * 9%);
+      }
+    }
+  }
+
+  @keyframes plan-rail {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes plan-phase {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes plan-marker {
+    to {
+      background: var(--color-accent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phase:not(:last-child)::after {
+      transform: scaleY(1);
+    }
+    .phase {
+      opacity: 1;
+    }
+    .phase__marker {
+      background: var(--color-accent);
+    }
+  }
+
+  @media (min-width: 960px) {
+    .process__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    }
+  }
+</style>

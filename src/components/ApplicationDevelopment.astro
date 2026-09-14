@@ -9,6 +9,7 @@
  * (CSS scroll-driven animation, no script; fully drawn where unsupported).
  */
 import Accent from "./Accent.astro";
+import ProofQuote from "./ProofQuote.astro";
 
 const engagements = [
   {
@@ -72,12 +73,12 @@ const commitments = [
         <header class="app-dev__header">
           <h2 class="app-dev__title">Application development</h2>
           <p class="app-dev__lede">
-            We take on application development for enterprise teams: a
-            section of your existing software, or a complete new application
-            within your suite. Full stack, from the screens your users see to
+            We take on your application development: a section of your existing
+            software, or a complete new application within your suite or as your
+            first application. Full stack, from the screens your users see to
             the backend and deployment behind them, delivered by
-            <Accent range="entry 40% cover 35%">one senior team</Accent> that
-            fits into how you already work.
+            <Accent range="entry 40% cover 35%">one senior team</Accent> that fits
+            into how you already work.
           </p>
         </header>
 
@@ -96,6 +97,7 @@ const commitments = [
           <span class="app-dev__scope-label">What that covers</span>
           {scope}
         </p>
+        <ProofQuote snippet="ferdiDelivery" />
       </div>
 
       <aside class="plan" aria-labelledby="plan-title">
@@ -125,8 +127,8 @@ const commitments = [
         </ol>
         <div class="plan__stack">
           <span class="plan__stack-label">
-            Our default stack. Where your platform requires another, we work
-            in yours.
+            Our default stack. Where your platform requires another, we work in
+            yours.
           </span>
           <ul class="stack">
             {stack.map((tool) => <li class="stack__item">{tool}</li>)}
@@ -141,6 +143,9 @@ const commitments = [
         <p class="app-dev__note">
           No obligation. A short call to see whether we are the right fit.
         </p>
+        <a href="/services/application-development" class="app-dev__details">
+          How we run projects, and three ways to work with us
+        </a>
       </div>
     </div>
 
@@ -310,6 +315,21 @@ const commitments = [
     color: var(--color-ink-muted);
   }
 
+  .app-dev__details {
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  .app-dev__details:hover,
+  .app-dev__details:focus-visible {
+    color: var(--color-accent-strong);
+  }
+
   /* --- Project plan panel --- */
 
   .plan {
@@ -468,24 +488,24 @@ const commitments = [
       transform: scaleY(0);
       animation: plan-rail linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(35% + var(--i) * 15%)
-        entry calc(60% + var(--i) * 15%);
+      animation-range: entry calc(35% + var(--i) * 15%) entry
+        calc(60% + var(--i) * 15%);
     }
 
     .phase {
       opacity: 0.35;
       animation: plan-phase linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 15%)
-        entry calc(45% + var(--i) * 15%);
+      animation-range: entry calc(20% + var(--i) * 15%) entry
+        calc(45% + var(--i) * 15%);
     }
 
     .phase__marker {
       background: var(--color-dark-soft);
       animation: plan-marker linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 15%)
-        entry calc(45% + var(--i) * 15%);
+      animation-range: entry calc(20% + var(--i) * 15%) entry
+        calc(45% + var(--i) * 15%);
     }
 
     /* On wide screens the panel enters quickly, so pace the reveal over its
@@ -493,13 +513,13 @@ const commitments = [
     @media (min-width: 960px) {
       .phase,
       .phase__marker {
-        animation-range: cover calc(18% + var(--i) * 11%)
-          cover calc(30% + var(--i) * 11%);
+        animation-range: cover calc(18% + var(--i) * 11%) cover
+          calc(30% + var(--i) * 11%);
       }
 
       .phase:not(:last-child)::after {
-        animation-range: cover calc(24% + var(--i) * 11%)
-          cover calc(38% + var(--i) * 11%);
+        animation-range: cover calc(24% + var(--i) * 11%) cover
+          calc(38% + var(--i) * 11%);
       }
     }
   }

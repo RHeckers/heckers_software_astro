@@ -1,5 +1,6 @@
 ---
 import { COMPANY } from "../consts";
+import ProofQuote from "./ProofQuote.astro";
 
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
@@ -37,6 +38,7 @@ const nextSteps = [
         Prefer email? Write to
         <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
       </p>
+      <ProofQuote snippet="nicoTeam" />
     </div>
 
 <form
@@ -153,9 +155,15 @@ const nextSteps = [
 <script>
   // Links such as "Plan your project" or "Book workshop" carry a
   // data-subject attribute; preselect that subject when they are followed.
+  // A data-message attribute (tier and workshop buttons) is dropped into
+  // the message field when it is still empty, so the enquiry names what
+  // the visitor was looking at.
   const subjectSelect = document.getElementById(
     "subject",
   ) as HTMLSelectElement | null;
+  const messageField = document.getElementById(
+    "content",
+  ) as HTMLTextAreaElement | null;
   if (subjectSelect) {
     document
       .querySelectorAll<HTMLAnchorElement>('a[href="#contactForm"][data-subject]')
@@ -168,6 +176,11 @@ const nextSteps = [
           if (exists) {
             subjectSelect.value = subject;
             subjectSelect.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+          const message = link.dataset.message;
+          if (message && messageField && messageField.value.trim() === "") {
+            messageField.value = message + "\n\n";
+            messageField.dispatchEvent(new Event("input", { bubbles: true }));
           }
         });
       });

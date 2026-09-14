@@ -1,0 +1,342 @@
+---
+/**
+ * Service page: workshops. The argument is that training only sticks when
+ * it happens on the team's own code and ends in written rules, so the page
+ * teaches that before it shows the catalogue.
+ */
+import PageLayout from "../../layouts/PageLayout.astro";
+import ServiceHero from "../../components/services/ServiceHero.astro";
+import EvidenceBand from "../../components/services/EvidenceBand.astro";
+import SymptomCheck from "../../components/services/SymptomCheck.astro";
+import Insights from "../../components/services/Insights.astro";
+import WorkshopCatalog from "../../components/services/WorkshopCatalog.astro";
+import ProcessSteps from "../../components/services/ProcessSteps.astro";
+import Tiers from "../../components/services/Tiers.astro";
+import Faq from "../../components/services/Faq.astro";
+import OtherServices from "../../components/services/OtherServices.astro";
+import ProofQuote from "../../components/ProofQuote.astro";
+import ProofRow from "../../components/ProofRow.astro";
+import Reviews from "../../components/Reviews.astro";
+import Contact from "../../components/Contact.astro";
+import { AUTHOR, COMPANY } from "../../consts";
+import { getService } from "../../lib/services";
+import { TAILORED_WORKSHOP, WORKSHOPS } from "../../lib/workshops";
+import { PRICING, VAT_NOTE, euro } from "../../lib/pricing";
+
+const service = getService("workshops");
+const price = PRICING.workshops;
+
+const title =
+  "Angular and Nx workshops for enterprise teams — Heckers Software";
+const description =
+  "Hands-on workshops on enterprise Angular patterns, Nx monorepos, AI-assisted development and UI libraries, run on your own codebase and ending in rules your build enforces.";
+
+const tiers = [
+  {
+    name: "Minimum",
+    tagline:
+      "The least any team maintaining an Angular product should do once a year.",
+    duration: "One day, twelve seats included",
+    price: { amount: euro(price.oneDay), detail: `fixed, ${VAT_NOTE}` },
+    summary:
+      "One workshop from the catalogue, or one built around your team, prepared on your own codebase and closed with the decisions written down.",
+    includes: [
+      "Intake call and a read of your repository beforehand",
+      "One full day, on site or remote",
+      "Exercises built from your own code, not slides",
+      "A one-page decision record the team agreed on",
+    ],
+    excludes: [
+      "Implementing the rules in lint and CI together",
+      "Follow-up after the day",
+    ],
+  },
+  {
+    name: "Standard",
+    badge: "Most teams choose this",
+    recommended: true,
+    tagline:
+      "For teams that want the rules not just agreed, but enforced before we leave.",
+    duration: "Two days, twelve seats included",
+    price: { amount: euro(price.twoDays), detail: `fixed, ${VAT_NOTE}` },
+    summary:
+      "A two-day deep dive with half a day reserved for your own codebase, so the team leaves with changes already merged.",
+    includes: [
+      "Everything in Minimum",
+      "A second day, with half of it on your own codebase",
+      "Module boundary and lint rules implemented together",
+      "Architecture decision records committed to the repository",
+      "Thirty days of follow-up questions",
+    ],
+  },
+  {
+    name: "Advanced",
+    tagline:
+      "For teams with a goal to hit, or a whole department to bring onto the same rules: an upgrade, a migration, CI under ten minutes.",
+    duration: "Two days, then one quarter, any group size",
+    price: {
+      amount: "On quote",
+      detail: `Standard at ${euro(price.twoDays)}, the quarter priced per goal and group`,
+    },
+    summary:
+      "The Standard workshop followed by three months of enablement towards one measurable goal your team picks, for as many developers as you have.",
+    includes: [
+      "Everything in Standard",
+      "Unlimited seats, run as parallel groups so every session stays hands-on",
+      "A measurable goal agreed at the start, reviewed at the end",
+      "Monthly half-day sessions with the team",
+      "Review of pull requests that touch the agreed rules",
+      "A second workshop topic in month three",
+    ],
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Angular and Nx workshops",
+  serviceType: "Software development training",
+  description,
+  url: new URL(service.href, Astro.site).toString(),
+  provider: {
+    "@type": "Organization",
+    name: COMPANY.name,
+    url: AUTHOR.url,
+    email: COMPANY.email,
+    telephone: COMPANY.phone,
+  },
+  areaServed: "Europe",
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Workshops",
+    itemListElement: [...WORKSHOPS, TAILORED_WORKSHOP].map((workshop) => ({
+      "@type": "Offer",
+      name: workshop.title,
+      description: workshop.description,
+    })),
+  },
+};
+---
+
+<PageLayout title={title} description={description} jsonLd={jsonLd}>
+  <ServiceHero
+    eyebrow="Angular and Nx workshops for enterprise teams"
+    title="Your team is not short of talent. It is short of shared rules."
+    lead="Hands-on workshops on enterprise Angular patterns, Nx monorepos, AI-assisted development and UI libraries, run on your own codebase. One or two days that change how your team works, not a slide deck they forget by Friday."
+    ctaLabel={service.cta}
+    subject={service.subject}
+    secondaryLabel="See the workshops"
+    secondaryHref="#catalog"
+    fact={{
+      value: "1 in 5",
+      copy: "Angular teams are already more than two major versions behind, by Angular's own survey. From version 22 each major carries a full year of change, so the gap does not hold still: it doubles with every release you skip, the upgrade you keep postponing gets more expensive every sprint, and the developers who know it are the first to look elsewhere.",
+      source: "Angular developer survey 2024, close to 10,000 responses",
+    }}
+  />
+
+  <EvidenceBand
+    title="What the numbers say about how teams learn"
+    intro="None of these numbers are ours. They come from the Angular team, from LinkedIn and from Stack Overflow, and together they describe the team that has not trained together in a while."
+    stats={[
+      {
+        value: "79%",
+        label:
+          "of Angular developers are on the latest two major versions, which leaves one team in five further behind. Each of those versions carries a year of change: signals, standalone, zoneless, signal forms.",
+        source: "Angular developer survey 2024, close to 10,000 responses",
+      },
+      {
+        value: "94%",
+        label:
+          "of employees say they would stay at a company longer if it invested in their learning. For developers, that investment is training on the stack they use every day, not a course library nobody opens.",
+        source: "LinkedIn Workplace Learning Report, 2018",
+      },
+      {
+        value: "76%",
+        label:
+          "of professional developers use or plan to use AI tools in their work, while fewer than half trust the output. Everyone uses them; almost no team has agreed on the rules.",
+        source: "Stack Overflow Developer Survey 2024",
+      },
+    ]}
+    meaning="Put those together and you get the state of most Angular teams today: developers who learned different versions of the framework, use AI tools in their own way, and review each other's code against rules that exist only in their heads. The codebase is where those differences land, one pull request at a time. And the developers who notice it first are the ones who leave first."
+  >
+    <ProofQuote slot="proof" snippet="ferdiDepth" />
+  </EvidenceBand>
+
+  <SymptomCheck
+    title="Twelve signs your team is learning on production"
+    intro="Each of these is a symptom of missing shared rules, not of missing talent. Tick the ones you recognise."
+    items={[
+      "Two developers would structure the same feature two different ways, and both would pass review.",
+      "The last Angular upgrade took more than a sprint, or is still planned.",
+      "Signals, standalone components or the new control flow are used in some places and avoided in others, with no decision behind it.",
+      "Code review comments are mostly about style and rarely about structure.",
+      "Pull requests written with AI assistance look nothing like the rest of the codebase.",
+      "Nobody has written down which libraries may import which.",
+      "Onboarding a new developer means pairing them with the same senior for a month.",
+      "Conference talks are watched, discussed in chat, and change nothing.",
+      "The shared component library gets copied rather than used.",
+      "The same class of bug (subscription leaks, change detection, duplicated state) keeps returning under different names.",
+      "CI time per pull request has doubled in two years and nobody owns the number.",
+      "Your most experienced developer is also your biggest bottleneck.",
+    ]}
+    verdicts={[
+      {
+        min: 0,
+        title: "Aligned.",
+        copy: "Your team has rules and follows them. A workshop here is about the next thing: the upgrade you have not planned yet, or the AI workflow before it drifts.",
+      },
+      {
+        min: 3,
+        title: "Drifting.",
+        copy: "There are two or three ways of doing everything, and each has a defender. One workshop on your own code, ending in written decisions, closes most of this gap in a day.",
+      },
+      {
+        min: 6,
+        title: "Fragmented.",
+        copy: "The codebase has become the training material, and every mistake ships. This is where teams start losing their best people to frustration. Two days with rules enforced in the build is the minimum that changes the trajectory.",
+      },
+      {
+        min: 9,
+        title: "Dependent on individuals.",
+        copy: "Knowledge lives in one or two heads and the rest of the team routes around them. Training alone will not fix this; a workshop followed by a quarter of enablement will, and it will show in your CI times and review queues.",
+      },
+    ]}
+    ctaLabel="Talk about your score"
+    subject={service.subject}
+  />
+
+  <Insights
+    title="Why most training changes nothing, and what does"
+    intro="We have given workshops at conferences and inside companies for years. The ones that changed a team had four things in common."
+    items={[
+      {
+        title: "Slides do not survive contact with your codebase.",
+        copy: "A course built on a demo app teaches how the demo app should be structured. Your app has an ERP integration, a legacy module nobody touches and a deadline. Every exercise in our workshops is built from your own repository, so the answer to how do we apply this is worked out in the room.",
+        takeaway:
+          "Next time someone on your team follows a course, ask them to apply one thing to a real module within a week and demo it to the team. That single step is most of the difference.",
+      },
+      {
+        title: "Knowledge without rules evaporates.",
+        copy: "A team can agree on a pattern on Thursday and drift from it by the next sprint, because agreement lives in memory and memory is busy. What survives is a decision written down and a lint rule that fails the build. Every workshop we give ends with both.",
+        takeaway:
+          "Pick one convention your team argues about most. Write the decision down today, add a lint rule for it tomorrow. Repeat once a month.",
+      },
+      {
+        title:
+          "AI multiplies whatever conventions you have, including the bad ones.",
+        copy: "Coding agents learn from the code in front of them. If your codebase has three ways of managing state, the agent will pick one at random and add a fourth. Teams that wrote down their rules get consistent AI output; teams that did not get faster inconsistency.",
+        takeaway:
+          "Put a short instructions file for coding agents in your repository this week, with your five non-negotiable rules. Even five lines change what the tools produce.",
+      },
+      {
+        title: "The team is the unit of learning, not the individual.",
+        copy: "Sending one developer to a conference creates a translator: one person who knows, explaining to people who did not see it. Training the whole team together creates a shared vocabulary in two days, and shared vocabulary is what makes code review fast.",
+        takeaway:
+          "Book learning per team, not per person. When budgets force a choice, one workshop for eight people beats eight conference tickets.",
+      },
+    ]}
+  >
+    <ProofQuote slot="proof" snippet="peterLasting" tone="dark" />
+  </Insights>
+
+  <WorkshopCatalog
+    title="The workshops"
+    intro="Four fixed topics and one we build around your team. One or two days, on site or remote. Twelve seats are included and larger groups are welcome, per seat or as parallel groups. Each workshop is prepared on your own codebase and ends with decisions your build can enforce."
+    subject={service.subject}
+  />
+
+  <ProcessSteps
+    title="How a workshop runs"
+    intro="Preparation is where a workshop is won. We spend more time reading your code before the day than we spend in the room."
+    deliverablesTitle="What your team leaves with"
+    deliverables={[
+      "Exercises and examples built from your own codebase, yours to keep",
+      "A written decision record: the rules the team agreed on and why",
+      "Lint rules and module boundaries that enforce those rules in the build",
+      "A ranked list of the places in your code that break the rules today",
+      "The recording and the material, so new hires get the same story later",
+      "Thirty days of follow-up questions",
+    ]}
+    steps={[
+      {
+        title: "Intake",
+        when: "Two weeks before",
+        copy: "A call with the lead and the people who will attend: what the team struggles with, what has been tried, where the app is going. We get read access to the repository.",
+      },
+      {
+        title: "Preparation",
+        when: "The week before",
+        copy: "We read your code and build the exercises from it: your project graph, your state handling, your CI. The workshop is about your app from the first minute.",
+      },
+      {
+        title: "The workshop",
+        when: "One or two days",
+        copy: "Short explanations, long exercises, all in your codebase. Every block ends with a decision: what will we do from now on, and what enforces it.",
+      },
+      {
+        title: "Decisions in the build",
+        when: "Last afternoon",
+        copy: "The rules the team agreed on are written down and, where possible, enforced with lint rules and module boundaries before we leave. Merged, not planned.",
+      },
+      {
+        title: "Follow-up",
+        when: "The month after",
+        copy: "Questions by email while the team applies what it learned. In the Advanced tier, monthly sessions and pull request reviews until the agreed goal is met.",
+      },
+    ]}
+    ctaLabel={service.cta}
+    subject={service.subject}
+  >
+    <ProofQuote slot="proof" snippet="ferdiDelivery" />
+  </ProcessSteps>
+
+  <Tiers
+    title="Three ways to do this"
+    intro="Pick by how far you want the change to go: agreed, enforced, or measured."
+    serviceName="workshops"
+    subject={service.subject}
+    tiers={tiers}
+    note={`Minimum and Standard are fixed prices for twelve seats, ${VAT_NOTE}, on site or remote; travel outside the Netherlands is added at cost. Each extra seat is ${euro(price.extraSeatPerDay)} per workshop day, and larger groups run in parallel. Advanced is quoted per goal and group size. Combining topics across days is common; we will tell you honestly what fits in the time.`}
+  />
+
+  <ProofRow snippets={["nicoAngular", "peterApproach", "marcChallenges"]} />
+
+  <Faq
+    title="Questions we hear before every workshop"
+    items={[
+      {
+        question: "Our developers are senior. Is this too basic for them?",
+        answer:
+          "The workshops are for teams that already ship Angular in production; that is the assumption behind every exercise. Senior teams get the most out of them, because the work happens on their own code and the discussion is about their own decisions, not about the basics.",
+      },
+      {
+        question: "On site or remote?",
+        answer:
+          "Both work. On site is better for the whole-team discussions, remote is easier to schedule across locations. For two-day workshops we prefer on site for at least one of the days.",
+      },
+      {
+        question: "How many people?",
+        answer: `As many as you have. Twelve seats are included in every tier; each extra seat is ${euro(price.extraSeatPerDay)} per workshop day, ${VAT_NOTE}. Above roughly fifteen people we split into parallel groups, so the exercises stay hands-on and each group can work on its own part of the codebase. Bringing a whole department onto the same rules is what the Advanced tier is for.`,
+      },
+      {
+        question: "Do we need to prepare anything?",
+        answer:
+          "Read access to the repository two weeks before, an intake call, and a room or a video link. We do the rest. Attendees should bring a laptop that can run the project.",
+      },
+      {
+        question: "Can we combine topics?",
+        answer:
+          "Yes, and most two-day workshops do. Enterprise Angular Patterns and Nx Monorepo Enablement pair naturally; so do the AI workshop and any of the others. We will say honestly what fits in the time.",
+      },
+      {
+        question: "Which language?",
+        answer:
+          "English or Dutch, whichever the team prefers. The material is in English.",
+      },
+    ]}
+  />
+
+  <OtherServices current="workshops" />
+  <Reviews />
+  <Contact />
+</PageLayout>

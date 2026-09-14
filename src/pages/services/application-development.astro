@@ -1,0 +1,347 @@
+---
+/**
+ * Service page: application development. For founders building a first
+ * version, scale-ups adding a product, and enterprise teams adding a
+ * module. The lesson is that projects are won or lost in how they are set
+ * up, so the page teaches the reader how to judge any supplier, including
+ * us, before it explains how we work.
+ */
+import PageLayout from "../../layouts/PageLayout.astro";
+import ServiceHero from "../../components/services/ServiceHero.astro";
+import EvidenceBand from "../../components/services/EvidenceBand.astro";
+import SymptomCheck from "../../components/services/SymptomCheck.astro";
+import Insights from "../../components/services/Insights.astro";
+import ProcessSteps from "../../components/services/ProcessSteps.astro";
+import Tiers from "../../components/services/Tiers.astro";
+import Faq from "../../components/services/Faq.astro";
+import OtherServices from "../../components/services/OtherServices.astro";
+import ProofQuote from "../../components/ProofQuote.astro";
+import ProofRow from "../../components/ProofRow.astro";
+import Reviews from "../../components/Reviews.astro";
+import Contact from "../../components/Contact.astro";
+import { AUTHOR, COMPANY } from "../../consts";
+import { getService } from "../../lib/services";
+
+const service = getService("application-development");
+
+const title = "Application development — Heckers Software";
+const description =
+  "Your first application from scratch, a new product for your scale-up, or a section of your enterprise software: built full stack by one senior team, in your repositories and your standards, with working software every two weeks.";
+
+const tiers = [
+  {
+    name: "Minimum",
+    tagline:
+      "The least you should do when a deadline depends on one overloaded team, or when you need a senior engineer before you can hire one.",
+    duration: "One senior engineer, from three months",
+    price: { amount: "Monthly rate", detail: "quoted per engagement" },
+    summary:
+      "A senior full-stack engineer inside your team, accountable for a defined outcome, not just for hours.",
+    includes: [
+      "One senior Angular and .NET or Node engineer, part-time or full-time",
+      "A defined outcome agreed at the start",
+      "Works in your repositories, pipelines and rituals",
+      "Architecture input in your refinements and reviews",
+    ],
+    excludes: [
+      "A delivery team and a project lead",
+      "Fixed scope and fixed price",
+    ],
+  },
+  {
+    name: "Standard",
+    badge: "Most teams choose this",
+    recommended: true,
+    tagline:
+      "For the first version of a new product, or a module, portal or integration your own team has no room to build.",
+    duration: "Fixed scope, two-week increments",
+    price: {
+      amount: "On quote",
+      detail: "a fixed price for the build, set after discovery",
+    },
+    summary:
+      "A scoped application or section, delivered by our team in your codebase, with working software to click through every two weeks.",
+    includes: [
+      "Everything in Minimum",
+      "Discovery, scoped plan and estimate before you commit",
+      "Front end, API and data, built to your standards or set up from scratch",
+      "Automated tests and deployment through a pipeline from sprint one",
+      "A demo every two weeks, reviewed with your stakeholders or first users",
+      "Documentation and a handover session with your developers",
+    ],
+  },
+  {
+    name: "Advanced",
+    tagline:
+      "For a complete application from first sketch to production: the platform your startup runs on, or a new product in your suite.",
+    duration: "From discovery to go-live, and beyond",
+    price: {
+      amount: "On quote",
+      detail: "scoped and priced after discovery",
+    },
+    summary:
+      "Architecture, front end, backend, deployment and handover by one accountable team, with the option to keep building it together.",
+    includes: [
+      "Everything in Standard",
+      "Architecture designed for where you are going, not just for version one",
+      "Integrations with payments, identity, ERP, CRM and whatever else you run",
+      "Infrastructure as code in your own cloud account",
+      "Go-live support and a first quarter of maintenance",
+      "Optional: we keep building and running it with you",
+    ],
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Application development",
+  serviceType: "Custom software development",
+  description,
+  url: new URL(service.href, Astro.site).toString(),
+  provider: {
+    "@type": "Organization",
+    name: COMPANY.name,
+    url: AUTHOR.url,
+    email: COMPANY.email,
+    telephone: COMPANY.phone,
+  },
+  areaServed: "Europe",
+  audience: [
+    { "@type": "Audience", audienceType: "Startups" },
+    { "@type": "Audience", audienceType: "Scale-ups" },
+    { "@type": "Audience", audienceType: "Enterprise teams" },
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Engagement models",
+    itemListElement: tiers.map((tier) => ({
+      "@type": "Offer",
+      name: tier.name,
+      description: tier.summary,
+    })),
+  },
+};
+---
+
+<PageLayout title={title} description={description} jsonLd={jsonLd}>
+  <ServiceHero
+    eyebrow="Application development for startups, scale-ups and enterprises"
+    title="Most software projects do not fail at the end. They fail in week one, quietly."
+    lead="We build your first application from scratch, a new product for your scale-up, or a section of your enterprise software. Full stack, one senior team, working software every two weeks, from the first sketch to production and a clean handover."
+    ctaLabel={service.cta}
+    subject={service.subject}
+    secondaryLabel="Check your next project"
+    secondaryHref="#self-check"
+    fact={{
+      value: "45%",
+      copy: "over budget is the average for large IT projects, which also deliver 56% less value than promised.",
+      source: "McKinsey and University of Oxford",
+    }}
+  />
+
+  <EvidenceBand
+    title="What the numbers say about software projects"
+    intro="Whether you are a founder with an idea, a scale-up adding its second product or an enterprise adding a module, the gap between projects that land and projects that drag is the same. It is not talent or budget. It is practice, and practice shows in the first two weeks."
+    stats={[
+      {
+        value: "45%",
+        label:
+          "over budget, on average, for large IT projects, while delivering 56% less value than predicted.",
+        source:
+          "McKinsey and University of Oxford, Delivering large-scale IT projects",
+      },
+      {
+        value: "973×",
+        label:
+          "more frequent deployments for elite engineering teams compared with low performers, with a three times lower change failure rate.",
+        source: "DORA, Accelerate State of DevOps 2021",
+      },
+      {
+        value: "6,570×",
+        label:
+          "faster lead time from commit to production for those same teams. Not because they work harder: because they release small changes through automated pipelines.",
+        source: "DORA, Accelerate State of DevOps 2021",
+      },
+    ]}
+    meaning="Those gaps come from habits a project either has from day one or never gets: automated tests, deployment through a pipeline, small releases, and a demo every two weeks. That is as true for a two-person startup as for a bank. A supplier who plans the first demo for month three has already told you which side of the numbers your project will be on."
+  >
+    <ProofQuote slot="proof" snippet="peterLasting" />
+  </EvidenceBand>
+
+  <SymptomCheck
+    title="Ten signs your next project will cost more than the quote"
+    intro="Run any proposal on your desk through this list, including ours. It works for a first app as well as for an enterprise module. Tick every statement that is true."
+    items={[
+      "The first demo of working software is scheduled more than a month after kickoff.",
+      "There is no version a real user could use within the first three months.",
+      "Integration with payments, identity or the ERP is a single line in the plan.",
+      "Security and compliance are consulted at the end, for sign-off.",
+      "The proposal does not name the people who will write the code.",
+      "Nobody has written down who decides when requirements conflict.",
+      "Deployment is handled later, by someone else.",
+      "The estimate has no range, or a range nobody believes.",
+      "The code will live in the supplier's repository until go-live.",
+      "The last project with this supplier ended in a maintenance contract nobody planned for.",
+    ]}
+    verdicts={[
+      {
+        min: 0,
+        title: "Well set up.",
+        copy: "This project has the habits that keep it on the right side of the numbers. Hold the supplier to the two-week demos and it will stay there.",
+      },
+      {
+        min: 2,
+        title: "Typical.",
+        copy: "This is how most projects start, and most projects run over. Each ticked item is a question to put to the supplier before you sign, not after.",
+      },
+      {
+        min: 4,
+        title: "Exposed.",
+        copy: "The risk is already in the plan. Integrations, security and deployment left for later are where the overrun will come from, and it will come after the budget is committed.",
+      },
+      {
+        min: 7,
+        title: "Do not sign this.",
+        copy: "Not with anyone. A project set up like this cannot be rescued by good developers; it needs a different setup. Discovery first, then a scope, then a price.",
+      },
+    ]}
+    ctaLabel="Talk about your project"
+    subject={service.subject}
+  />
+
+  <Insights
+    title="What separates the projects that land from the ones that drag"
+    intro="We have built applications for utilities, healthcare, industry and government, and first versions for companies that had nothing yet. The ones that went well shared five habits, and none of them are secret."
+    items={[
+      {
+        title: "A first version is a question, not a product.",
+        copy: "The most expensive mistake a founder can make is to build the whole idea before anyone has used part of it. The first version exists to find out whether real users do the one thing you believe they will do. Everything that does not serve that question waits. Version one should be in users' hands in weeks, not quarters.",
+        takeaway:
+          "Write down the one thing a user must be able to do in version one, in a single sentence. Anything not needed for that sentence goes on a list for later, and stays there until the first users have spoken.",
+      },
+      {
+        title: "Integrations are the project.",
+        copy: "Screens are the easy part. The payment provider, the identity provider with the group mapping nobody owns, the ERP with the undocumented API: these decide the timeline. Every overrun we have seen up close was an integration that was one line in the plan.",
+        takeaway:
+          "List every outside system the application touches and who owns the credentials for each, before signing anything. If a name is missing, that integration is your first risk.",
+      },
+      {
+        title: "Working software every two weeks is your only early warning.",
+        copy: "Status reports are green until they are red. A clickable increment cannot lie: either you can walk through the flow or you cannot. Two-week demos also move decisions earlier, which is where they are cheap.",
+        takeaway:
+          "Ask for a clickable demo in week three of any project. A supplier who cannot deliver one has told you how the rest will go.",
+      },
+      {
+        title: "Handover starts on day one.",
+        copy: "Code in your repositories, pipelines in your CI, infrastructure in your cloud account, from the first sprint. That holds for a startup without a single developer yet: the accounts are yours, we work inside them. The alternative is lock-in disguised as convenience, and it shows up at exactly the moment you want to change something.",
+        takeaway:
+          "Ask three questions: whose repository, whose pipeline, whose cloud account? All three answers should be you.",
+      },
+      {
+        title: "Senior hands are cheaper.",
+        copy: "A small senior team writes less code, takes fewer wrong turns, needs fewer meetings and leaves less to maintain. The day rate on a proposal is not the cost of the project; the cost is everything up to production plus the years after it.",
+        takeaway:
+          "Compare proposals on the total cost to production plus twelve months of maintenance, not on the day rate. The cheapest rate rarely wins that comparison.",
+      },
+    ]}
+  >
+    <ProofQuote slot="proof" snippet="ferdiDepth" tone="dark" />
+  </Insights>
+
+  <ProcessSteps
+    title="How a project runs"
+    intro="Fixed steps, short feedback loops, no long silences. The same structure whether we build a first version, a new product or a module in an existing suite."
+    deliverablesTitle="What you can count on"
+    deliverables={[
+      "A scoped plan and a realistic estimate before you commit to the build",
+      "Code, documentation and infrastructure in your repositories and accounts from day one",
+      "Automated tests and deployment through a pipeline from the first sprint",
+      "Working software you can click through every two weeks",
+      "Your coding guidelines, security and compliance requirements, and release process, followed; or set up with you if you have none yet",
+      "The people you talk to are the people who build; no handoff to a junior team",
+    ]}
+    steps={[
+      {
+        title: "Discovery",
+        when: "Week 1–2",
+        copy: "We map the goals, the users and every system the application must talk to. For a first version, this is where we cut the idea down to the smallest thing a real user can use. For an existing landscape, this is where we align with your architects and security requirements. You get a scoped plan and a realistic estimate.",
+      },
+      {
+        title: "Foundation",
+        when: "Week 2–3",
+        copy: "Data model, integrations and code structure are designed to fit where you are going, so version two does not mean starting over, and so a new module slots into your suite instead of beside it.",
+      },
+      {
+        title: "Build in short cycles",
+        when: "Every 2 weeks",
+        copy: "Working software you and your first users can click through, reviewed together. Automated tests and deployments through the pipeline from the first sprint.",
+      },
+      {
+        title: "Launch and handover",
+        when: "Final weeks",
+        copy: "Go-live, documentation and a working session with your developers, or with the developers you hire next. We stay available for support, or keep building it with you.",
+      },
+    ]}
+    ctaLabel={service.cta}
+    subject={service.subject}
+  >
+    <ProofQuote slot="proof" snippet="peterApproach" />
+  </ProcessSteps>
+
+  <Tiers
+    title="Three ways to work with us"
+    intro="Pick by how much of the work you want to keep in-house, and how much of it exists yet."
+    serviceName="application development"
+    subject={service.subject}
+    tiers={tiers}
+    note="Every project is quoted on its own. Discovery is short and priced separately, and ends in a scoped plan and an estimate, so you commit to the build knowing scope and price. Our default stack is Angular, TypeScript, .NET, Node.js, SQL and Azure; where your platform requires another, we work in yours."
+  />
+
+  <ProofRow snippets={["ferdiDelivery", "marcFramework", "nicoTeam"]} />
+
+  <Faq
+    title="Questions we hear before every project"
+    items={[
+      {
+        question: "We are a startup with an idea and no developers yet. Is that too early?",
+        answer:
+          "No. That is the moment where the most money is saved or wasted. Discovery cuts the idea down to a first version real users can try, and we set up the repositories, pipeline and cloud account in your name from day one, so whoever you hire later walks into a working project instead of a supplier's black box.",
+      },
+      {
+        question: "Fixed price or time and materials?",
+        answer:
+          "Fixed price for a fixed scope, after discovery. Discovery itself is short and priced separately, and ends in a scoped plan and an estimate, so you never pay for a build you have not scoped. For the Minimum tier, an embedded engineer, it is a monthly rate with an agreed outcome.",
+      },
+      {
+        question: "Who owns the code?",
+        answer:
+          "You do, from the first commit. Everything lives in your repositories, your pipelines and your cloud account. If we part ways tomorrow, you lose nothing but us.",
+      },
+      {
+        question: "How does this fit with our security and compliance teams?",
+        answer:
+          "We involve them in discovery, not at sign-off. Your guidelines, review process and release gates apply to us as they apply to your own developers. We have worked under the requirements of utilities, healthcare and government. If you have no such requirements yet, we set up the sensible defaults so you are not the company that adds security after the breach.",
+      },
+      {
+        question: "What happens after go-live?",
+        answer:
+          "Your developers get a handover session, not just documentation. After that you choose: run it yourself, keep us on call, or keep building with us. There is no maintenance contract you did not plan for.",
+      },
+      {
+        question: "How big is the team?",
+        answer:
+          "Small and senior: usually two to four people, including the person you talked to first. That is enough for most applications, and it keeps communication direct.",
+      },
+      {
+        question: "Can you work inside our existing Nx workspace?",
+        answer:
+          "That is the most common case for enterprise clients. We build inside your workspace, respect its module boundaries and, where they are missing, help put them in.",
+      },
+    ]}
+  />
+
+  <OtherServices current="application-development" />
+  <Reviews />
+  <Contact />
+</PageLayout>

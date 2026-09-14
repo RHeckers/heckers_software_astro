@@ -1,0 +1,112 @@
+---
+/**
+ * A number that counts up to its value when it scrolls into view.
+ *
+ * Every digit run in the text animates and everything else stays: "42%"
+ * counts 0 to 42, "10–20%" counts both numbers, "6,570×" keeps its
+ * thousands separator. While counting, an invisible copy of the final text
+ * holds the layout and the changing digits are painted over it, so nothing
+ * around the number moves. Without JavaScript the final text renders
+ * as-is; under prefers-reduced-motion the animation is skipped.
+ *
+ * Short on purpose: nine hundred milliseconds with a strong ease-out, so
+ * the number lands almost at once and settles on the last few digits.
+ */
+interface Props {
+  value: string;
+  class?: string;
+}
+
+const { value, class: className } = Astro.props;
+---
+
+<span class={className} data-count-up>{value}</span>
+
+<script>
+  const DURATION = 900;
+  const NUMBER = /\d[\d,]*/g;
+
+  type Token = { text: string; value: number | null };
+
+  function tokenize(text: string): Token[] {
+    const tokens: Token[] = [];
+    let last = 0;
+    for (const match of text.matchAll(NUMBER)) {
+      const index = match.index ?? 0;
+      tokens.push({ text: text.slice(last, index), value: null });
+      tokens.push({
+        text: match[0],
+        value: Number(match[0].replace(/,/g, "")),
+      });
+      last = index + match[0].length;
+    }
+    tokens.push({ text: text.slice(last), value: null });
+    return tokens;
+  }
+
+  function format(value: number, template: string): string {
+    const rounded = Math.round(value);
+    return template.includes(",")
+      ? rounded.toLocaleString("en-US")
+      : String(rounded);
+  }
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  document.querySelectorAll<HTMLElement>("[data-count-up]").forEach((el) => {
+    const final = el.textContent ?? "";
+    const tokens = tokenize(final);
+    if (reduceMotion || !tokens.some((token) => token.value !== null)) return;
+
+    // Layout is taken by an invisible copy of the final text; the counting
+    // copy is painted over it, so nothing around the number ever moves.
+    const sizer = document.createElement("span");
+    sizer.textContent = final;
+    sizer.setAttribute("aria-hidden", "true");
+    sizer.style.visibility = "hidden";
+
+    const live = document.createElement("span");
+    live.style.position = "absolute";
+    live.style.left = "0";
+    live.style.top = "0";
+    live.style.whiteSpace = "nowrap";
+
+    el.style.position = "relative";
+    el.style.display = "inline-block";
+    el.replaceChildren(sizer, live);
+
+    const render = (progress: number) => {
+      live.textContent = tokens
+        .map((token) =>
+          token.value === null
+            ? token.text
+            : format(token.value * progress, token.text),
+        )
+        .join("");
+    };
+
+    render(0);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        const start = performance.now();
+        const tick = (now: number) => {
+          const progress = Math.min(1, (now - start) / DURATION);
+          render(1 - Math.pow(1 - progress, 3));
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            el.replaceChildren(final);
+          }
+        };
+        requestAnimationFrame(tick);
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(el);
+  });
+</script>

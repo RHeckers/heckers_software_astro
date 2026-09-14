@@ -1,0 +1,394 @@
+---
+/**
+ * The self-diagnosis. A list of statements the reader ticks for their own
+ * team, and a score panel that names the stage they are at. It works as a
+ * plain checklist without JavaScript; with it, the meter and the verdict
+ * update as they tick.
+ *
+ * This is the one place on the page that asks the reader to do something,
+ * so it gets the dark rounded panel treatment the home page uses for the
+ * assessment, and nothing else on the page competes with it.
+ */
+interface Verdict {
+  /** Lowest score (inclusive) at which this verdict applies. */
+  min: number;
+  title: string;
+  copy: string;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  intro: string;
+  items: string[];
+  verdicts: Verdict[];
+  ctaLabel: string;
+  subject: string;
+}
+
+const {
+  id = "self-check",
+  title,
+  intro,
+  items,
+  verdicts,
+  ctaLabel,
+  subject,
+} = Astro.props;
+
+const total = items.length;
+const sorted = [...verdicts].sort((a, b) => a.min - b.min);
+---
+
+<section class="check-wrap" id={id}>
+  <div class="check" aria-labelledby={`${id}-heading`}>
+    <div class="check__copy">
+      <h2 class="check__title" id={`${id}-heading`}>{title}</h2>
+      <p class="check__intro">{intro}</p>
+
+      <ul class="symptoms">
+        {
+          items.map((item, index) => (
+            <li class="symptom">
+              <label class="symptom__label">
+                <input
+                  class="symptom__input"
+                  type="checkbox"
+                  name={`${id}-${index}`}
+                />
+                <span class="symptom__box" aria-hidden="true" />
+                <span class="symptom__text">{item}</span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <aside class="score" data-score aria-live="polite">
+      <p class="score__count">
+        <span class="score__n" data-count>0</span>
+        <span class="score__of">of {total}</span>
+      </p>
+      <div class="meter" aria-hidden="true">
+        <span class="meter__fill" data-meter></span>
+      </div>
+
+      <div class="verdict" data-initial>
+        <p class="verdict__title">Tick what is true for your team.</p>
+        <p class="verdict__copy">
+          Be honest. Nobody is watching, and the list is worth more than the
+          score.
+        </p>
+      </div>
+      {
+        sorted.map((verdict) => (
+          <div class="verdict" data-verdict data-min={verdict.min} hidden>
+            <p class="verdict__title">{verdict.title}</p>
+            <p class="verdict__copy">{verdict.copy}</p>
+          </div>
+        ))
+      }
+
+      <a href="#contactForm" class="score__cta" data-subject={subject}>
+        {ctaLabel}
+      </a>
+    </aside>
+  </div>
+</section>
+
+<script>
+  document
+    .querySelectorAll<HTMLElement>(".check-wrap")
+    .forEach((section) => {
+      const inputs = Array.from(
+        section.querySelectorAll<HTMLInputElement>(".symptom__input"),
+      );
+      const count = section.querySelector<HTMLElement>("[data-count]");
+      const meter = section.querySelector<HTMLElement>("[data-meter]");
+      const initial = section.querySelector<HTMLElement>("[data-initial]");
+      const verdicts = Array.from(
+        section.querySelectorAll<HTMLElement>("[data-verdict]"),
+      );
+      const score = section.querySelector<HTMLElement>("[data-score]");
+      if (!count || !meter || !initial || !score) return;
+
+      const total = inputs.length;
+      let touched = false;
+
+      function update() {
+        const checked = inputs.filter((input) => input.checked).length;
+        count.textContent = String(checked);
+        meter.style.width = `${(checked / total) * 100}%`;
+        score.style.setProperty("--ratio", String(checked / total));
+
+        if (!touched) return;
+        initial.hidden = true;
+        let active: HTMLElement | null = null;
+        for (const verdict of verdicts) {
+          const min = Number(verdict.dataset.min ?? "0");
+          if (checked >= min) active = verdict;
+        }
+        verdicts.forEach((verdict) => {
+          verdict.hidden = verdict !== active;
+        });
+      }
+
+      inputs.forEach((input) =>
+        input.addEventListener("change", () => {
+          touched = true;
+          update();
+        }),
+      );
+      update();
+    });
+</script>
+
+<style>
+  .check-wrap {
+    background: var(--color-light);
+    padding: 0 clamp(1rem, 3vw, 2rem) clamp(4rem, 10vw, 7.5rem);
+  }
+
+  .check {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--background-gradient-primary);
+    color: var(--color-ink-light);
+    border-radius: 15px;
+    padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+  }
+
+  .check__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .check__title {
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--color-light-raised);
+  }
+
+  .check__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: rgba(232, 237, 246, 0.72);
+    max-width: 52ch;
+  }
+
+  .symptoms {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--spacer-base);
+    border-top: 1px solid rgba(232, 237, 246, 0.12);
+  }
+
+  .symptom {
+    border-bottom: 1px solid rgba(232, 237, 246, 0.1);
+  }
+
+  .symptom__label {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 1rem;
+    align-items: start;
+    padding: 0.9rem 0.25rem;
+    cursor: pointer;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.85);
+    transition: color 0.2s;
+  }
+
+  .symptom__label:hover {
+    color: var(--color-light-raised);
+  }
+
+  .symptom__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  .symptom__box {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.05rem;
+    border-radius: 6px;
+    border: 1.5px solid rgba(232, 237, 246, 0.35);
+    background: rgba(255, 255, 255, 0.04);
+    display: inline-grid;
+    place-items: center;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+
+  .symptom__box::after {
+    content: "";
+    width: 0.55rem;
+    height: 0.3rem;
+    border-left: 2px solid var(--color-light-raised);
+    border-bottom: 2px solid var(--color-light-raised);
+    transform: rotate(-45deg) translate(1px, -1px) scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .symptom__input:checked + .symptom__box {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .symptom__input:checked + .symptom__box::after {
+    transform: rotate(-45deg) translate(1px, -1px) scale(1);
+  }
+
+  .symptom__input:focus-visible + .symptom__box {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .symptom__input:checked ~ .symptom__text {
+    color: var(--color-light-raised);
+  }
+
+  /* --- Score panel --- */
+
+  .score {
+    --ratio: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    align-self: start;
+  }
+
+  .score__count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .score__n {
+    font-size: clamp(3.5rem, 7vw, 5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-light-raised);
+  }
+
+  .score__of {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    color: rgba(232, 237, 246, 0.6);
+  }
+
+  .meter {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(232, 237, 246, 0.14);
+    overflow: hidden;
+  }
+
+  .meter__fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 3px;
+    background: linear-gradient(
+      90deg,
+      var(--color-accent) 0%,
+      var(--color-danger) 100%
+    );
+    /* The gradient spans the full meter, so the visible end shifts from
+       blue to red as the score climbs. */
+    background-size: calc(100% / max(var(--ratio), 0.01)) 100%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .verdict {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .verdict[hidden] {
+    display: none;
+  }
+
+  .verdict__title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+    color: var(--color-light-raised);
+  }
+
+  .verdict__copy {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: rgba(232, 237, 246, 0.75);
+  }
+
+  .score__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    margin-top: var(--spacer-base);
+    padding: 0.85rem 2rem;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    background-color: var(--color-ink-light);
+    border-radius: 50px;
+    text-decoration: none;
+    transition:
+      color 0.2s,
+      outline-color 0.2s;
+  }
+
+  .score__cta:hover,
+  .score__cta:focus-visible {
+    outline: 4px solid var(--color-accent-strong);
+    color: var(--color-accent-strong);
+  }
+
+  @media (min-width: 900px) {
+    .check {
+      grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
+      align-items: start;
+    }
+
+    .score {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .meter__fill,
+    .symptom__box,
+    .symptom__box::after {
+      transition: none;
+    }
+  }
+</style>

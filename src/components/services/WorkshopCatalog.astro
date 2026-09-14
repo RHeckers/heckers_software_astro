@@ -1,0 +1,349 @@
+---
+/**
+ * The four workshops, each with its own anchor so the home page can link
+ * straight to one. Same card idiom as the home carousel (white card, tag,
+ * arrow bullets), laid out as a plain stack here so every workshop is
+ * readable without scrolling through a wheel.
+ */
+import { Image } from "astro:assets";
+import effectiveAngular from "../../assets/workshop/effective_angular.jpg";
+import ngPoland from "../../assets/workshop/ng_poland.jpg";
+import talk1 from "../../assets/workshop/talk_1.jpg";
+import talk2 from "../../assets/workshop/talk_2.png";
+import {
+  TAILORED_WORKSHOP,
+  WORKSHOPS,
+  type WorkshopId,
+} from "../../lib/workshops";
+
+interface Props {
+  id?: string;
+  title: string;
+  intro: string;
+  subject: string;
+}
+
+const { id = "catalog", title, intro, subject } = Astro.props;
+
+const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
+  "enterprise-angular": { src: talk1, position: "center" },
+  "nx-monorepo": { src: ngPoland, position: "left" },
+  ai: { src: talk2, position: "center" },
+  "ui-libraries": { src: effectiveAngular, position: "top center" },
+};
+---
+
+<section class="catalog" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="catalog__inner">
+    <header class="catalog__head">
+      <h2 class="catalog__title" id={`${id}-heading`}>{title}</h2>
+      <p class="catalog__intro">{intro}</p>
+    </header>
+
+    <div class="catalog__list">
+      {
+        WORKSHOPS.map((workshop, index) => (
+          <article
+            class:list={["workshop", { "workshop--flip": index % 2 === 1 }]}
+            id={workshop.id}
+          >
+            <figure class="workshop__media">
+              <Image
+                src={images[workshop.id].src}
+                alt={workshop.title}
+                width={960}
+                loading="lazy"
+                style={`object-position: ${images[workshop.id].position};`}
+              />
+            </figure>
+            <div class="workshop__body">
+              <p class="workshop__tag">{workshop.tag}</p>
+              <h3 class="workshop__title">{workshop.title}</h3>
+              <p class="workshop__description">{workshop.description}</p>
+              <ul class="workshop__bullets">
+                {workshop.bullets.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+              <p class="workshop__outcome">
+                <span class="workshop__outcome-label">You leave with</span>
+                {workshop.outcome}
+              </p>
+              <a
+                class="workshop__cta"
+                href="#contactForm"
+                data-subject={subject}
+                data-message={`I am interested in the ${workshop.title} workshop.`}
+              >
+                Book this workshop
+              </a>
+            </div>
+          </article>
+        ))
+      }
+
+      <article class="workshop workshop--tailored" id={TAILORED_WORKSHOP.id}>
+        <div class="workshop__body">
+          <p class="workshop__tag">{TAILORED_WORKSHOP.tag}</p>
+          <h3 class="workshop__title">{TAILORED_WORKSHOP.title}</h3>
+          <p class="workshop__description">{TAILORED_WORKSHOP.description}</p>
+        </div>
+        <div class="workshop__body workshop__body--second">
+          <ul class="workshop__bullets">
+            {TAILORED_WORKSHOP.bullets.map((point) => <li>{point}</li>)}
+          </ul>
+          <p class="workshop__outcome">
+            <span class="workshop__outcome-label">You leave with</span>
+            {TAILORED_WORKSHOP.outcome}
+          </p>
+          <a
+            class="workshop__cta"
+            href="#contactForm"
+            data-subject={subject}
+            data-message="I am interested in a workshop built around my team. Here is what is slowing us down:"
+          >
+            Plan a tailored workshop
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .catalog {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .catalog__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .catalog__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 64ch;
+  }
+
+  .catalog__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .catalog__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .catalog__list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .workshop {
+    scroll-margin-top: calc(56px + 2rem);
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--color-light-raised);
+    border: 1px solid var(--color-stroke);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.08);
+  }
+
+  .workshop__media {
+    position: relative;
+    min-height: 220px;
+    background: var(--color-light-alt);
+  }
+
+  .workshop__media :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .workshop__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .workshop__tag {
+    color: var(--color-accent-ink);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.08em;
+    font-size: var(--font-sm);
+  }
+
+  .workshop__title {
+    font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+    line-height: 1.13;
+  }
+
+  .workshop__description {
+    color: var(--color-ink-muted);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-family: synonym, sans-serif;
+  }
+
+  .workshop__bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0.6rem 0 0.4rem;
+  }
+
+  .workshop__bullets li {
+    display: flex;
+    gap: 0.5em;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
+    font-family: synonym, sans-serif;
+    line-height: 1.45;
+  }
+
+  .workshop__bullets li::before {
+    content: "→";
+    color: var(--color-accent-ink);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+  }
+
+  .workshop__outcome {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink);
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(46, 139, 111, 0.08);
+    border: 1px solid rgba(46, 139, 111, 0.3);
+    margin-top: 0.5rem;
+  }
+
+  .workshop__outcome-label {
+    font-family: chillax, sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-success);
+    margin-right: 0.35rem;
+  }
+
+  .workshop__cta {
+    align-self: flex-start;
+    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2rem;
+    font-size: 1.05rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-light-raised);
+    background-color: var(--color-accent-strong);
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .workshop__cta:hover {
+    background-color: var(--color-accent-ink);
+  }
+
+  .workshop__cta:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* The tailored workshop has no photo: two text columns on the dark
+     panel gradient, so it reads as the open-ended option after the fixed
+     four. */
+  .workshop--tailored {
+    background: var(--background-gradient-secondary);
+    color: var(--color-ink-light);
+    border-color: transparent;
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+  }
+
+  .workshop--tailored .workshop__tag {
+    color: var(--color-accent);
+  }
+
+  .workshop--tailored .workshop__title {
+    color: var(--color-light-raised);
+  }
+
+  .workshop--tailored .workshop__description {
+    color: rgba(232, 237, 246, 0.75);
+  }
+
+  .workshop--tailored .workshop__bullets li {
+    color: var(--color-ink-light);
+  }
+
+  .workshop--tailored .workshop__bullets li::before {
+    color: var(--color-accent);
+  }
+
+  .workshop--tailored .workshop__outcome {
+    color: var(--color-ink-light);
+    background: rgba(46, 139, 111, 0.14);
+    border-color: rgba(46, 139, 111, 0.4);
+  }
+
+  .workshop--tailored .workshop__cta {
+    color: var(--color-accent);
+    background-color: var(--color-ink-light);
+  }
+
+  .workshop--tailored .workshop__cta:hover {
+    background-color: var(--color-light-raised);
+    color: var(--color-accent-strong);
+  }
+
+  .workshop__body--second {
+    padding-top: 0;
+  }
+
+  @media (min-width: 900px) {
+    .workshop {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+
+    .workshop--tailored {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+
+    .workshop__body--second {
+      padding-top: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    /* Flipped cards keep the narrow column for the image, on the right. */
+    .workshop--flip {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+
+    .workshop--flip .workshop__media {
+      order: 2;
+    }
+
+    .workshop__media {
+      min-height: 100%;
+    }
+  }
+</style>

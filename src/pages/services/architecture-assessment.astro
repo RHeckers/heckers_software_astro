@@ -1,0 +1,340 @@
+---
+/**
+ * Service page: the architecture assessment. Built to teach first and sell
+ * second: the market data, a self-check the reader scores for their own
+ * codebase, what we have learned reading other people's code, and only
+ * then how the assessment runs and what it costs in time.
+ */
+import PageLayout from "../../layouts/PageLayout.astro";
+import ServiceHero from "../../components/services/ServiceHero.astro";
+import EvidenceBand from "../../components/services/EvidenceBand.astro";
+import SymptomCheck from "../../components/services/SymptomCheck.astro";
+import Insights from "../../components/services/Insights.astro";
+import ProcessSteps from "../../components/services/ProcessSteps.astro";
+import Tiers from "../../components/services/Tiers.astro";
+import Faq from "../../components/services/Faq.astro";
+import OtherServices from "../../components/services/OtherServices.astro";
+import ProofQuote from "../../components/ProofQuote.astro";
+import ProofRow from "../../components/ProofRow.astro";
+import Reviews from "../../components/Reviews.astro";
+import Contact from "../../components/Contact.astro";
+import { AUTHOR, COMPANY } from "../../consts";
+import { getService } from "../../lib/services";
+import { PRICING, VAT_NOTE, euro } from "../../lib/pricing";
+
+const service = getService("architecture-assessment");
+const price = PRICING.assessment;
+
+const title = "Architecture assessment for Angular and Nx — Heckers Software";
+const description =
+  "A fixed-scope assessment of your Angular or Nx codebase by senior engineers: every finding ranked by what it costs you, with the fix, and a roadmap your own team can execute.";
+
+const tiers = [
+  {
+    name: "Minimum",
+    tagline:
+      "The least any team running Angular in production should do once a year.",
+    duration: "One week",
+    price: { amount: euro(price.minimum), detail: `fixed, ${VAT_NOTE}` },
+    summary:
+      "A structural scan of the workspace: enough to know where you stand and what to do first.",
+    includes: [
+      "Project graph, dependency and boundary analysis",
+      "Bundle size and build time analysis",
+      "The ten findings that cost you most, ranked, each with its fix",
+      "A 60-minute walkthrough with your lead developers",
+    ],
+    excludes: [
+      "Interviews with your developers and product owners",
+      "Roadmap session and estimates",
+    ],
+  },
+  {
+    name: "Standard",
+    badge: "Most teams choose this",
+    recommended: true,
+    tagline:
+      "For teams that want the full picture and a plan they can run themselves.",
+    duration: "Two to three weeks",
+    price: { amount: euro(price.standard), detail: `fixed, ${VAT_NOTE}` },
+    summary:
+      "The complete assessment: code, workflows and people, with a ranked report and a roadmap built together with your team.",
+    includes: [
+      "Everything in Minimum",
+      "Interviews with developers, leads and product",
+      "Testing strategy: what is tested at which level, what is missing, and what the gaps cost you",
+      "Nx setup: affected commands, caching and Nx Cloud, so builds and CI only run what changed",
+      "Full written report: every finding ranked by impact, with fix and effort",
+      "Roadmap session with your team, sized to your capacity",
+      "Upgrade path for Angular and Nx versions",
+      "Thirty days of follow-up questions",
+    ],
+  },
+  {
+    name: "Advanced",
+    tagline:
+      "For teams that want the highest-impact fixes done, not just found.",
+    duration: "Three weeks, then execution in sprints",
+    price: {
+      amount: "On quote",
+      detail: `Standard at ${euro(price.standard)}, execution priced after the roadmap`,
+    },
+    summary:
+      "The Standard assessment, followed by hands-on execution of the top findings with your developers.",
+    includes: [
+      "Everything in Standard",
+      "We implement the top findings, or pair with your developers on them",
+      "Module boundaries enforced in lint and in the build",
+      "Review of the first pull requests after the roadmap",
+      "Monthly check-in for one quarter",
+    ],
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Architecture assessment for Angular and Nx",
+  serviceType: "Software architecture assessment",
+  description,
+  url: new URL(service.href, Astro.site).toString(),
+  provider: {
+    "@type": "Organization",
+    name: COMPANY.name,
+    url: AUTHOR.url,
+    email: COMPANY.email,
+    telephone: COMPANY.phone,
+  },
+  areaServed: "Europe",
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Assessment tiers",
+    itemListElement: tiers.map((tier) => ({
+      "@type": "Offer",
+      name: `${tier.name} assessment`,
+      description: tier.summary,
+    })),
+  },
+};
+---
+
+<PageLayout title={title} description={description} jsonLd={jsonLd}>
+  <ServiceHero
+    eyebrow="Architecture assessment for Angular and Nx"
+    title="Technical debt does not announce itself. It sends the bill later."
+    lead="Senior engineers read your Angular or Nx codebase from the outside, rank every finding by what it costs you, and hand you a roadmap your own team can execute. Fixed scope, two to three weeks."
+    ctaLabel={service.cta}
+    subject={service.subject}
+    secondaryLabel="Score your codebase first"
+    secondaryHref="#self-check"
+    fact={{
+      value: "42%",
+      copy: "of a developer's week goes to maintenance, debugging and technical debt instead of new work.",
+      source: "Stripe, The Developer Coefficient",
+    }}
+  />
+
+  <EvidenceBand
+    title="What the numbers say about a codebase left alone"
+    intro="None of these figures come from us. They describe the average team, and the average team believes its own situation is better than average."
+    stats={[
+      {
+        value: "42%",
+        label:
+          "of developer time is spent on maintenance issues such as debugging, refactoring and dealing with bad code.",
+        source: "Stripe, The Developer Coefficient",
+      },
+      {
+        value: "10–20%",
+        label:
+          "of the technology budget meant for new products is diverted to resolving problems related to technical debt.",
+        source: "McKinsey, Tech debt: reclaiming tech equity",
+      },
+      {
+        value: "20–40%",
+        label:
+          "of the value of a company's entire technology estate is technical debt, by the estimate of the CIOs McKinsey surveyed. Most of them could not say where in the code it sat.",
+        source: "McKinsey, Tech debt: reclaiming tech equity",
+      },
+    ]}
+    meaning="Take a team of eight at a fully loaded cost of ninety thousand euro per engineer. Forty-two percent of their time is over three hundred thousand euro a year that buys no new features. That money is spent whether you measure it or not. The only question is whether you know where it goes."
+  >
+    <ProofQuote slot="proof" snippet="peterApproach" />
+  </EvidenceBand>
+
+  <SymptomCheck
+    title="Fourteen signs your architecture is quietly costing you"
+    intro="Every one of these is something we have found in a codebase whose owners thought it was fine. Tick the ones that are true for yours."
+    items={[
+      "A one-line change rebuilds and retests the whole workspace instead of only what it touched.",
+      "Nobody can say with confidence which libraries an app depends on without opening the code.",
+      "Barrel files (index.ts) re-export whole folders for convenience.",
+      "There is a shared or utils library that almost everything imports from.",
+      "Bugs get fixed in one place and reappear in another.",
+      "The Angular upgrade has been planned for after this release, for the third release in a row.",
+      "The same piece of state lives in a service, a store and a component input at once.",
+      "Tests are green, yet production incidents come from code that had tests.",
+      "New developers need more than a month before their first confident merge.",
+      "Estimates for small changes are consistently wrong by a factor of two or more.",
+      "Certain files are only touched by one person, because nobody else dares.",
+      "Lazy loading exists on paper, but the initial bundle keeps growing.",
+      "Lint rules exist, but nothing in the build enforces which library may import which.",
+      'The words "we should refactor" have been said about the same module for over a year.',
+    ]}
+    verdicts={[
+      {
+        min: 0,
+        title: "Healthy, for now.",
+        copy: "Keep the discipline that got you here. An assessment at this stage is preventive: quick, mostly confirmation, and the cheapest one you will ever buy.",
+      },
+      {
+        min: 3,
+        title: "Early decay.",
+        copy: "The cost is still invisible in your planning, which is exactly when it is cheapest to fix. Most of our assessments happen at this stage, and they are the ones with the highest return.",
+      },
+      {
+        min: 6,
+        title: "Compounding.",
+        copy: "Your team is paying the maintenance tax every sprint. Every quarter you wait, the fix gets larger and the number of people who understand the codebase gets smaller.",
+      },
+      {
+        min: 10,
+        title: "Critical.",
+        copy: "Feature work is now mostly archaeology. Teams at this stage usually talk about a rewrite. Almost none of them need one, but all of them need an outside diagnosis before deciding anything.",
+      },
+    ]}
+    ctaLabel="Talk about your score"
+    subject={service.subject}
+  />
+
+  <Insights
+    title="What we have learned reading other people's code"
+    intro="Years of assessing Angular and Nx codebases for enterprises come down to four observations. They are yours to use, with or without us."
+    items={[
+      {
+        title: "The people inside cannot see it, and it is not their fault.",
+        copy: "A codebase changes one pull request at a time, and every one of those steps was reasonable. The result is not. Familiarity hides structure: you stop seeing the workaround the way you stop seeing the crack in your own wall. That is why the most experienced developer on the team is often the least able to describe what is wrong with it.",
+        takeaway:
+          "Ask the developer who joined most recently which parts of the app they avoid touching, and why. Write the answers down without arguing. That list is your first finding.",
+      },
+      {
+        title: "Architecture decays in a fixed order.",
+        copy: "First the boundaries blur: an import that should not have been allowed. Then ownership blurs: nobody knows who owns the shared library. Then knowledge concentrates in one or two people. Only then does velocity drop, and only after that does quality. Most teams notice at step four and treat step five.",
+        takeaway:
+          "Open your project graph (nx graph, or draw it by hand) and count the arrows pointing at your shared library. If more than half of everything depends on it, you are past step one.",
+      },
+      {
+        title:
+          "A rewrite is the most expensive way to learn what your current code already knows.",
+        copy: "Every rewrite we have been asked to assess re-implemented the same domain rules and rediscovered the same edge cases in its second year. Restructuring in place inside an Nx workspace almost always wins, because releases keep shipping while the structure improves.",
+        takeaway:
+          "Before any rewrite discussion, list the ten business rules only the old code knows. If nobody can write that list, you are not ready to replace it.",
+      },
+      {
+        title: "A ranked list beats a long one.",
+        copy: "A sixty-page report of everything that is wrong is a way to change nothing. What moves a team is the five findings that cost the most, with the fix and the effort next to each. Ranking is the hard part, and it is the part most reviews skip.",
+        takeaway:
+          "Whatever you find, sort it by what it costs per month, not by how ugly it looks. The ugliest code is rarely the most expensive.",
+      },
+    ]}
+  >
+    <ProofQuote slot="proof" snippet="nicoAngular" tone="dark" />
+  </Insights>
+
+  <ProcessSteps
+    title="How the assessment runs"
+    intro="Fixed scope, fixed duration, and nothing that takes your team out of their sprint for more than a few hours in total."
+    deliverablesTitle="What you receive"
+    deliverables={[
+      "A written report with every finding ranked by impact, each with the concrete fix and an effort estimate",
+      "A dependency and boundary map of your workspace, with the violations marked",
+      "An upgrade path for your Angular and Nx versions",
+      "A roadmap agreed with your team, sized to your capacity and release calendar",
+      "The recorded roadmap session, so people who were not in the room get the same story",
+      "Thirty days of follow-up questions while you start executing",
+    ]}
+    steps={[
+      {
+        title: "Kickoff",
+        when: "Day 1",
+        copy: "A short session with your lead and product owner: what hurts, what is planned, what we may not touch. We get read access to the repository. That is all the access we need.",
+      },
+      {
+        title: "Deep dive",
+        when: "Week 1–2",
+        copy: "We read the code: the architecture patterns, the project graph, the state handling, the tests and where the bottlenecks sit. Then we talk to the people who work in it daily; interviews take about an hour per person. That is where the real problems surface.",
+      },
+      {
+        title: "Report",
+        when: "Week 2–3",
+        copy: "Every finding ranked by what it costs you, with the concrete fix and the effort next to it. No generic advice, nothing you could have read in the documentation.",
+      },
+      {
+        title: "Roadmap with your team",
+        when: "Week 3",
+        copy: "We present the findings to your developers and turn them into an execution plan that fits your goals, timeline and capacity. You can run it yourself from here. Most teams do.",
+      },
+      {
+        title: "Hands-on execution",
+        when: "After the roadmap",
+        optional: true,
+        copy: "Want it done? We implement the improvements ourselves or guide your developers through every change, pairing and reviewing as we go.",
+      },
+    ]}
+    ctaLabel={service.cta}
+    subject={service.subject}
+  >
+    <ProofQuote slot="proof" snippet="ferdiDelivery" />
+  </ProcessSteps>
+
+  <Tiers
+    title="Three ways to do this"
+    intro="Pick by how much certainty you need. The assessment itself is a fixed price you see here; only hands-on execution is quoted, once we know the size of the work."
+    serviceName="architecture assessment"
+    subject={service.subject}
+    tiers={tiers}
+    note={`Minimum and Standard are fixed prices, ${VAT_NOTE}, for workspaces up to roughly fifty projects; larger workspaces get a fixed quote after a thirty-minute call. The number does not change during the assessment. Advanced adds execution in sprints, quoted after the roadmap.`}
+  />
+
+  <ProofRow snippets={["ferdiDepth", "peterLasting", "marcChallenges"]} />
+
+  <Faq
+    title="Questions we hear before every assessment"
+    items={[
+      {
+        question: "We already have senior developers. Why an outside look?",
+        answer:
+          "Because they built it, and nobody can proofread their own writing. Your seniors know the history behind every decision, which is exactly what makes the decision invisible. An outside reader has no history, only the code and the cost. The best assessments we have done were for teams with strong seniors: the report gave them the mandate to fix what they already suspected.",
+      },
+      {
+        question: "Will this disrupt the team?",
+        answer:
+          "We need read access to the repository, a kickoff session, and about an hour per interviewed person. In total, three to five hours of your team's time across the whole assessment, plus the roadmap session at the end. No feature freeze, no branch we block.",
+      },
+      {
+        question:
+          "Our codebase is not on Nx, or runs an older Angular version.",
+        answer:
+          "That is common and not a problem. We assess plain Angular workspaces as often as Nx ones, and older versions usually make the upgrade path one of the most valuable parts of the report.",
+      },
+      {
+        question: "Is this a way to sell us the execution tier?",
+        answer:
+          "No. The roadmap is written so your own team can run it, and most teams do. The Advanced tier exists for teams who have no capacity to execute, not as the intended next step.",
+      },
+      {
+        question: "What about confidentiality?",
+        answer:
+          "We sign your NDA before we see a line of code. Access is revoked at the end, and the report is yours alone.",
+      },
+      {
+        question: "What does it cost?",
+        answer: `The Minimum assessment is ${euro(price.minimum)} and the Standard assessment is ${euro(price.standard)}, both ${VAT_NOTE} and fixed for workspaces up to roughly fifty projects. Larger workspaces get a fixed quote after a thirty-minute call. Either way you know the number before we start, and it does not change during the assessment. Execution in the Advanced tier is quoted after the roadmap, when the size of the work is known.`,
+      },
+    ]}
+  />
+
+  <OtherServices current="architecture-assessment" />
+  <Reviews />
+  <Contact />
+</PageLayout>

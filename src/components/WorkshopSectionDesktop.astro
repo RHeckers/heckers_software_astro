@@ -5,74 +5,20 @@ import ngPoland from "../assets/workshop/ng_poland.jpg";
 import talk1 from "../assets/workshop/talk_1.jpg";
 import talk2 from "../assets/workshop/talk_2.png";
 import { HOME_CATEGORY_LINKS, resolveHomeLink } from "../lib/home-links";
+import { WORKSHOPS } from "../lib/workshops";
 
-const workshops = [
-  {
-    id: "enterprise-angular",
-    image: talk1,
-    objectPosition: "center",
-    title: "Enterprise Angular Patterns",
-    tag: "Architecture • Angular",
-    description:
-      "For teams whose Angular app has grown faster than its structure. We find where it hurts, including the places you have stopped noticing, and show you the way out.",
-    bullets: [
-      "Every change breaks something else: bringing dependency rules to a grown codebase",
-      "State scattered everywhere, and the bugs nobody can reproduce",
-      "The app feels slow but nothing looks wrong: finding the real cause",
-      "Signals, standalone and zoneless adopted in place, with no big-bang rewrite",
-      "Tests that pass while production breaks: what to test at which level",
-      "Your own codebase, reviewed together: the problems you have stopped seeing",
-    ],
-  },
-  {
-    image: ngPoland,
-    objectPosition: "left",
-    id: "nx-monorepo",
-    title: "Nx Monorepo Enablement",
-    tag: "Platform • Nx",
-    description:
-      "For teams whose builds and CI keep getting slower, and whose apps have quietly grown into each other.",
-    bullets: [
-      "An hour of CI for a one-line change: affected commands and caching that only run what changed",
-      "Apps and libraries that import each other freely: module boundaries the build enforces",
-      "Moving your existing apps into one workspace in stages, while releases keep shipping",
-      "Nx Cloud, remote caching and distributed tasks for pipelines that are fast and stay fast",
-      "A look at your own project graph: the hidden coupling and duplicated code you did not know were there",
-    ],
-  },
-  {
-    image: talk2,
-    objectPosition: "center",
-    id: "ai",
-    title: "Using AI Effectively in Angular and Nx Projects",
-    tag: "AI • Productivity",
-    description: "For teams where AI use is spreading unevenly: some developers fly, others distrust every suggestion, and nobody has agreed on the rules.",
-    bullets: [
-      "Why AI code drifts from your conventions, and how to stop it",
-      "Setting up coding agents such as Claude Code or Copilot with your project graph, conventions and guardrails",
-      "Shared instructions and skills so everyone benefits, not just the early adopters",
-      "Refactors, tests and migrations with AI, while your team stays in control",
-      "The risks already in your workflow today, and the policies that close them",
-    ],
-  },
-  {
-    image: effectiveAngular,
-    objectPosition: "top center",
-    id: "ui-libraries",
-    title: "Building Enterprise-Grade UI Libraries",
-    tag: "UI Libraries • Angular",
-    description:
-      "For teams whose shared components get copied instead of reused, and where every brand tweak turns into a fork.",
-    bullets: [
-      "Why teams fork your components instead of using them, and the fix",
-      "The same button built four times: deciding what belongs in the library",
-      "Design tokens so a new brand does not mean a new copy of the library",
-      "The accessibility gaps you cannot see: keyboard, focus and screen readers",
-      "One release breaks every consumer: safe versioning in an Nx workspace",
-      "Your library, reviewed: the hidden coupling that keeps teams from using it",
-    ],
-  },
-];
+const images = {
+  "enterprise-angular": { src: talk1, objectPosition: "center" },
+  "nx-monorepo": { src: ngPoland, objectPosition: "left" },
+  ai: { src: talk2, objectPosition: "center" },
+  "ui-libraries": { src: effectiveAngular, objectPosition: "top center" },
+} as const;
+
+const workshops = WORKSHOPS.map((item) => ({
+  ...item,
+  image: images[item.id].src,
+  objectPosition: images[item.id].objectPosition,
+}));
 
 // Blog link per workshop, resolved at build time from HOME_CATEGORY_LINKS.
 const workshopLinks = await Promise.all(
@@ -110,6 +56,9 @@ const workshopLinks = await Promise.all(
                   <div class="card-actions">
                     <a class="card-cta" href="#contactForm" data-subject="Workshop">
                       Book workshop
+                    </a>
+                    <a class="card-link" href={`/services/workshops#${item.id}`}>
+                      Workshop details &rarr;
                     </a>
                     {workshopLinks[index] && (
                       <a class="card-link" href={workshopLinks[index].href}>

@@ -1,51 +1,15 @@
 ---
 import { Image } from "astro:assets";
 import desktop from "../assets/desktop_lookup.svg";
-import ferdi from "../assets/testimonials/ferdi.jpg";
-import peter from "../assets/testimonials/peter.jpg";
-import marc from "../assets/testimonials/marc.jpg";
-import nico from "../assets/testimonials/nico.jpg";
 import cicd from "../assets/ci_cd.svg";
+import { TESTIMONIALS } from "../lib/testimonials";
 
-interface Review {
-  image: ImageMetadata; // Path to customer image
-  name: string;
-  title: string;
-  content: string;
-}
-
-const reviews: Review[] = [
-  {
-    image: ferdi,
-    name: "Ferdi Havenaar",
-    title: "Manager IT Web & App, Vattenfall",
-    content:
-      "Roberto worked with us within the Loyalty team, and I can strongly recommend him as a full-stack developer. His knowledge of Angular is exceptionally deep; it’s clear in everything he does that he understands exactly what is happening and why. He delivers quickly, makes well-considered decisions, and actively contributes to architectural discussions.",
-  },
-  {
-    image: nico,
-    name: "Nico Vandenbroucke",
-    title: "IT-Directeur, Wit-Gele Kruis West Vlaanderen",
-    content:
-      "It was a pleasure working with Heckers Software and having Roberto on our team. He knows Angular very well, and no task was too difficult for him. I would highly recommend him for your Angular project.",
-  },
-  {
-    image: marc,
-    name: "Marc Caessens",
-    title: "Senior Software Program Manager, Marel",
-    content: `
-      Roberto really was a great addition to his team for several years at Marel and has developed a big front-end angular data visualisation framework for us, going from the earliest versions of Angular to the most recent versions and he was able to tackle all challenges that you can encounter in a technology that is continuously improving.
-      `,
-  },
-  {
-    image: peter,
-    name: "Peter Nieuwenhuyse",
-    title: "Software architect & Angular coach",
-    content: `
-In January 2025 Roberto from Heckers Software joined our team. Not by immediately bulldozing through the code, but by carefully and thoughtfully paving the right paths with insight and calm. Many of the choices he made back then still contribute today to the stability and quality of the project.
-      `,
-  },
-];
+// Full recommendations; the short quotes elsewhere on the site are cut
+// from these same texts (see lib/testimonials.ts).
+const reviews = TESTIMONIALS.map((item) => ({
+  ...item,
+  title: item.company ? `${item.title}, ${item.company}` : item.title,
+}));
 ---
 
 <section class="reviews-section" id="testimonials">

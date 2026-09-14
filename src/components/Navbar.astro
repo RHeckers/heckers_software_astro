@@ -1,3 +1,7 @@
+---
+import { SERVICES } from "../lib/services";
+---
+
 <nav class="nav" aria-label="Main Navigation">
   <div id="pill" class="pill">
     <a class="brand" href="/">HECKERS SOFTWARE</a>
@@ -12,11 +16,15 @@
     <div class="menu" id="main-menu">
       <ul>
         <li><a href="/">Home</a></li>
+        {
+          SERVICES.map((service) => (
+            <li>
+              <a href={service.href}>{service.navLabel}</a>
+            </li>
+          ))
+        }
         <li><a href="/blog">Blog</a></li>
-        <li><a href="/#code-analysis">Architecture Review</a></li>
-        <li><a href="/#workshops">Workshops</a></li>
-        <li><a href="/#app-development">App Development</a></li>
-        <li><a href="/#contactForm">Contact</a></li>
+        <li><a href="/#contactForm" data-contact-link>Contact</a></li>
       </ul>
     </div>
   </div>
@@ -216,6 +224,16 @@
     window.requestAnimationFrame(() => {
       pill.classList.remove("no-close-animation");
     });
+  }
+
+  // The contact form sits on the home page and on every service page. On
+  // pages that have it, link to it in place; elsewhere the link falls back
+  // to the home page form.
+  const contactLink = pill.querySelector<HTMLAnchorElement>(
+    "[data-contact-link]",
+  );
+  if (contactLink && document.getElementById("contactForm")) {
+    contactLink.setAttribute("href", "#contactForm");
   }
 
   hamburger.addEventListener("click", openMenu);

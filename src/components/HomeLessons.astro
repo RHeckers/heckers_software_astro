@@ -1,0 +1,273 @@
+---
+/**
+ * The home page's second education element: three lessons, one per
+ * service. Each pairs a sourced statistic (what the problem costs a team
+ * that ignores it) with something the reader can do today without us.
+ * The number band earlier on the page shows the overall cost; this shows
+ * we know the cure, proves each part of it with a number, and gives part
+ * of it away. Each lesson links to the page that goes deeper.
+ */
+import CountUp from "./CountUp.astro";
+import { getService } from "../lib/services";
+
+/**
+ * Each lesson follows the same arc: a claim, one outside number that shows
+ * what the claim costs a team that ignores it, a short explanation of why
+ * the number is what it is, and one step the reader can take today that
+ * starts to recover it. The stat is the hook, the copy is the lesson, the
+ * takeaway is the gift.
+ *
+ * Sources to verify before publishing:
+ * - Xia et al., "Measuring Program Comprehension: A Large-Scale Field
+ *   Study with Professionals", IEEE Transactions on Software Engineering,
+ *   2018: developers spend about 58% of their time on comprehension.
+ * - DORA, Accelerate State of DevOps 2023: teams with high-quality internal
+ *   documentation are 2.4× more likely to be high performers.
+ * - Standish Group, CHAOS Report 2015: projects delivered in small
+ *   increments succeed about three times as often as projects delivered
+ *   in one release (39% against 11%), and fail a third as often
+ *   (9% against 29%).
+ */
+const lessons = [
+  {
+    service: getService("architecture-assessment"),
+    title: "The people inside cannot see it, and it is not their fault.",
+    stat: {
+      value: "58%",
+      label:
+        "of a developer's working time goes to understanding existing code before a single line is changed. Writing the change is the small part.",
+      source: "Xia et al., IEEE Transactions on Software Engineering",
+    },
+    copy: "That number is the true price of your architecture, and the people who built it cannot see it: they carry the map in their heads and no longer notice the detours. The developer who joined last pays the full price on every task, which makes them your most accurate measuring instrument.",
+    takeaway:
+      "Ask the developer who joined most recently which parts of the app they avoid touching, and why. Write the answers down without arguing. That list is your first finding, and each item on it is a share of that 58% you can name.",
+    link: "Why an outside read finds what yours cannot",
+  },
+  {
+    service: getService("workshops"),
+    title: "Knowledge without rules evaporates.",
+    stat: {
+      value: "2.4×",
+      label:
+        "more likely to be a high-performing team when the decisions that shape the code are written down and easy to find, compared with teams that keep them in people's heads.",
+      source: "DORA, Accelerate State of DevOps",
+    },
+    copy: "A team can agree on a pattern on Thursday and drift from it by the next sprint, because agreement lives in memory and memory is busy. Documentation is not the wiki nobody reads: it is the decision written down and the lint rule that fails the build when someone forgets. The teams in the study did not perform better because they wrote more. They performed better because nobody had to guess.",
+    takeaway:
+      "Pick the one convention your team argues about most. Write the decision down today, add a lint rule for it tomorrow. Repeat once a month, and the arguments in code review stop being about taste.",
+    link: "How a workshop turns rules into code",
+  },
+  {
+    service: getService("application-development"),
+    title: "Working software every two weeks is your only early warning.",
+    stat: {
+      value: "3×",
+      label:
+        "more likely to succeed when a project is delivered in small working increments than when it is delivered in one big release. The big-release projects fail outright three times as often: 29% against 9%.",
+      source: "Standish Group, CHAOS Report",
+    },
+    copy: "Status reports are green until they are red. A clickable increment cannot lie: either you can walk through the flow or you cannot. That is the whole reason behind the number. Small increments do not make developers faster; they move every wrong assumption to the week it was made, where correcting it costs an afternoon instead of a quarter.",
+    takeaway:
+      "Ask for a clickable demo in week three of any project, from any supplier. One who cannot deliver it has told you which side of that 3× your project is on, while there is still time to change it.",
+    link: "How we run a project so you always see it working",
+  },
+];
+---
+
+<section class="lessons" aria-labelledby="lessons-heading">
+  <div class="lessons__inner">
+    <header class="lessons__head">
+      <h2 class="lessons__title" id="lessons-heading">
+        Three things we tell every team, whether they hire us or not
+      </h2>
+      <p class="lessons__intro">
+        Each comes with the number that shows what ignoring it costs, and one
+        step you can take today without us. Start there; the service is what you
+        call when the step is not enough.
+      </p>
+    </header>
+
+    <ol class="lesson-list">
+      {
+        lessons.map((lesson) => (
+          <li class="lesson">
+            <h3 class="lesson__title">{lesson.title}</h3>
+            <div class="lesson__stat">
+              <p class="lesson__stat-value">
+                <CountUp value={lesson.stat.value} />
+              </p>
+              <p class="lesson__stat-label">{lesson.stat.label}</p>
+              <p class="lesson__stat-source">{lesson.stat.source}</p>
+            </div>
+            <p class="lesson__copy">{lesson.copy}</p>
+            <p class="lesson__takeaway">
+              <span class="lesson__takeaway-label">Do this today.</span>
+              {lesson.takeaway}
+            </p>
+            <a class="lesson__link" href={lesson.service.href}>
+              {lesson.link}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .lessons {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .lessons__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .lessons__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 64ch;
+  }
+
+  .lessons__title {
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+  }
+
+  .lessons__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .lesson-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+  }
+
+  .lesson {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.5rem, 3vw, 2rem);
+    background: var(--color-light-raised);
+    border: 1px solid var(--color-stroke);
+    border-radius: 22px;
+  }
+
+  .lesson__title {
+    font-size: clamp(1.3rem, 2vw, 1.55rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.18;
+  }
+
+  .lesson__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.9rem 0 1rem;
+    border-top: 1px solid var(--color-stroke);
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .lesson__stat-value {
+    font-size: clamp(2.4rem, 4vw, 3.2rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-accent-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lesson__stat-label {
+    font-family: synonym, sans-serif;
+    line-height: 1.45;
+    color: var(--color-ink);
+  }
+
+  .lesson__stat-source {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .lesson__copy {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .lesson__takeaway {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink);
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(47, 125, 209, 0.08);
+    border: 1px solid rgba(47, 125, 209, 0.28);
+  }
+
+  .lesson__takeaway-label {
+    font-family: chillax, sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-accent-ink);
+    margin-right: 0.35rem;
+  }
+
+  .lesson__link {
+    margin-top: auto;
+    padding-top: 0.4rem;
+    align-self: flex-start;
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  .lesson__link:hover,
+  .lesson__link:focus-visible {
+    color: var(--color-accent-strong);
+  }
+
+  @media (min-width: 900px) {
+    .lesson-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--spacer-xl);
+    }
+
+    /* Title, stat, copy, takeaway and link each share one row across the
+       three cards, so the numbers, takeaway boxes and links sit at the same
+       height. */
+    @supports (grid-template-rows: subgrid) {
+      .lesson-list {
+        grid-template-rows: auto auto auto auto auto;
+      }
+
+      .lesson {
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: span 5;
+        row-gap: 0.9rem;
+      }
+
+      .lesson__link {
+        margin-top: 0;
+      }
+    }
+  }
+</style>

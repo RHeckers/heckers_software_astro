@@ -11,12 +11,16 @@ import WorkshopSection from "../components/WorkshopSection.astro";
 import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
 import Reviews from "../components/Reviews.astro";
 import Contact from "../components/Contact.astro";
+import ProofRow from "../components/ProofRow.astro";
+import HomeEvidence from "../components/HomeEvidence.astro";
+import HomeLessons from "../components/HomeLessons.astro";
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
   <section class="section-1">
     <ServicesOverview />
+    <HomeEvidence />
     <StoryBlock />
   </section>
 
@@ -32,8 +36,13 @@ import Contact from "../components/Contact.astro";
   </div>
 
   <WorkshopSection />
+  <ProofRow
+    tone="dark"
+    snippets={["peterApproach", "ferdiDepth", "marcFramework"]}
+  />
 
   <ApplicationDevelopment />
+  <HomeLessons />
   <Reviews />
   <Contact />
 </PageLayout>

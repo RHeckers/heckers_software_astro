@@ -1,0 +1,241 @@
+---
+/**
+ * Opening of a service page: the problem stated in one line, the service in
+ * one paragraph, and a single piece of evidence in a glass card. Same dark
+ * ground and type scale as the home hero so the page reads as part of the
+ * site, but without the animated graph: here the words carry the weight.
+ */
+interface Props {
+  /** Short name of the service, shown above the title. */
+  eyebrow: string;
+  title: string;
+  lead: string;
+  ctaLabel: string;
+  /** Contact form subject preselected when the call to action is followed. */
+  subject: string;
+  secondaryLabel: string;
+  secondaryHref: string;
+  fact: {
+    value: string;
+    copy: string;
+    source: string;
+  };
+}
+
+const {
+  eyebrow,
+  title,
+  lead,
+  ctaLabel,
+  subject,
+  secondaryLabel,
+  secondaryHref,
+  fact,
+} = Astro.props;
+---
+
+<section class="service-hero">
+  <div class="service-hero__inner">
+    <div class="service-hero__copy">
+      <p class="service-hero__eyebrow">{eyebrow}</p>
+      <h1 class="service-hero__title">{title}</h1>
+      <p class="service-hero__lead">{lead}</p>
+      <div class="service-hero__actions">
+        <a href="#contactForm" class="btn btn-primary" data-subject={subject}>
+          {ctaLabel}
+        </a>
+        <a href={secondaryHref} class="btn btn-ghost">{secondaryLabel}</a>
+      </div>
+    </div>
+
+    <aside class="fact" aria-label="A number worth knowing">
+      <p class="fact__value">{fact.value}</p>
+      <p class="fact__copy">{fact.copy}</p>
+      <p class="fact__source">{fact.source}</p>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .service-hero {
+    background: linear-gradient(
+      to bottom,
+      var(--color-dark) 0%,
+      var(--color-dark-alt) 100%
+    );
+    color: var(--color-ink-light);
+    padding: clamp(7rem, 14vw, 10rem) clamp(1.25rem, 6vw, 5rem)
+      clamp(4rem, 8vw, 6rem);
+  }
+
+  .service-hero__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+  }
+
+  .service-hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .service-hero__eyebrow {
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  /* A short rule in place of a label: it says "this is a service" without
+     shouting. */
+  .service-hero__eyebrow::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0.75rem;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: 2px;
+  }
+
+  .service-hero__title {
+    font-weight: var(--font-weight-light);
+    font-size: clamp(2.4rem, 5.4vw, 4.5rem);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    color: var(--color-light-raised);
+    max-width: 16ch;
+  }
+
+  .service-hero__lead {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    line-height: 1.6;
+    color: rgba(232, 237, 246, 0.74);
+    max-width: 50ch;
+  }
+
+  .service-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85em 1.8em;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-medium);
+    border-radius: 100px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-light-raised);
+    outline-offset: 3px;
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
+    color: var(--color-light-raised);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
+  }
+
+  .btn-ghost {
+    color: var(--color-ink-light);
+    border-color: rgba(232, 237, 246, 0.3);
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(232, 237, 246, 0.7);
+  }
+
+  /* --- Evidence card --- */
+
+  .fact {
+    position: relative;
+    isolation: isolate;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 30rem;
+    box-shadow: 0 30px 60px rgba(5, 10, 20, 0.35);
+    overflow: hidden;
+  }
+
+  .fact::before {
+    content: "";
+    position: absolute;
+    right: -30%;
+    top: -40%;
+    width: 80%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(47, 125, 209, 0.28) 0%,
+      rgba(47, 125, 209, 0) 70%
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .fact__value {
+    font-size: clamp(3.5rem, 8vw, 5.5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--color-light-raised);
+  }
+
+  .fact__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.45;
+    color: var(--color-ink-light);
+  }
+
+  .fact__source {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: rgba(232, 237, 246, 0.55);
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(232, 237, 246, 0.12);
+  }
+
+  @media (min-width: 900px) {
+    .service-hero__inner {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    }
+
+    .fact {
+      justify-self: end;
+    }
+  }
+</style>

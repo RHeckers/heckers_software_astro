@@ -1,0 +1,166 @@
+---
+/**
+ * The teaching part of the page: what we have learned, what it means, and
+ * one thing the reader can do today without us. Each insight is a row on a
+ * dark ground, title on the left, argument and takeaway on the right, so it
+ * reads like an essay rather than a feature grid.
+ */
+interface Insight {
+  title: string;
+  copy: string;
+  /** Something the reader can do this week on their own. */
+  takeaway: string;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  intro: string;
+  items: Insight[];
+}
+
+const { id = "insights", title, intro, items } = Astro.props;
+---
+
+<section class="insights" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="insights__inner">
+    <header class="insights__head">
+      <h2 class="insights__title" id={`${id}-heading`}>{title}</h2>
+      <p class="insights__intro">{intro}</p>
+    </header>
+
+    <ul class="insight-list">
+      {
+        items.map((item) => (
+          <li class="insight">
+            <h3 class="insight__title">{item.title}</h3>
+            <div class="insight__body">
+              <p class="insight__copy">{item.copy}</p>
+              <p class="insight__takeaway">
+                <span class="insight__takeaway-label">Do this today.</span>
+                {item.takeaway}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      Astro.slots.has("proof") && (
+        <div class="insights__proof">
+          <slot name="proof" />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .insights {
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .insights__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .insights__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 64ch;
+  }
+
+  .insights__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    color: var(--color-light-raised);
+  }
+
+  .insights__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: rgba(232, 237, 246, 0.72);
+  }
+
+  .insight-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(232, 237, 246, 0.16);
+  }
+
+  .insight {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem 3rem;
+    padding: clamp(1.75rem, 4vw, 2.75rem) 0;
+    border-bottom: 1px solid rgba(232, 237, 246, 0.12);
+  }
+
+  .insight__title {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+    color: var(--color-light-raised);
+    max-width: 22ch;
+  }
+
+  .insight__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .insight__copy {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.6;
+    color: rgba(232, 237, 246, 0.8);
+    max-width: 62ch;
+  }
+
+  .insight__takeaway {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink-light);
+    max-width: 58ch;
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(47, 125, 209, 0.1);
+    border: 1px solid rgba(47, 125, 209, 0.25);
+  }
+
+  .insight__takeaway-label {
+    font-family: chillax, sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-accent);
+    margin-right: 0.35rem;
+  }
+
+  .insights__proof:empty {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .insight {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    /* Sits under the right-hand column, where the arguments were. */
+    .insights__proof {
+      margin-left: 40%;
+      max-width: 40rem;
+    }
+  }
+</style>

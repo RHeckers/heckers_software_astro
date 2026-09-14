@@ -1,0 +1,149 @@
+---
+/**
+ * The objections, answered before they are raised. Native details/summary,
+ * so it works everywhere and the open state is the browser's.
+ */
+interface Item {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  items: Item[];
+}
+
+const { id = "faq", title, items } = Astro.props;
+---
+
+<section class="faq" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="faq__inner">
+    <h2 class="faq__title" id={`${id}-heading`}>{title}</h2>
+    <div class="faq__list">
+      {
+        items.map((item) => (
+          <details class="faq__item">
+            <summary class="faq__question">
+              <span>{item.question}</span>
+              <span class="faq__icon" aria-hidden="true" />
+            </summary>
+            <p class="faq__answer">{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .faq__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .faq__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    max-width: 12ch;
+  }
+
+  .faq__list {
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .faq__question {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.2rem 0.25rem;
+    cursor: pointer;
+    font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+
+  .faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__question:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .faq__question:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .faq__icon {
+    position: relative;
+    flex: 0 0 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-stroke-strong);
+  }
+
+  .faq__icon::before,
+  .faq__icon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.65rem;
+    height: 1.5px;
+    background: var(--color-ink);
+    transform: translate(-50%, -50%);
+    transition: transform 0.25s ease;
+  }
+
+  .faq__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .faq__item[open] .faq__icon::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  .faq__answer {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    max-width: 66ch;
+    padding: 0 0.25rem 1.4rem;
+  }
+
+  @media (min-width: 900px) {
+    .faq__inner {
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq__icon::before,
+    .faq__icon::after {
+      transition: none;
+    }
+  }
+</style>
