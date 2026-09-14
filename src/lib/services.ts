@@ -32,7 +32,7 @@ export const SERVICES: readonly Service[] = [
     navLabel: "Architecture Assessment",
     name: "Architecture assessment",
     summary:
-      "Senior engineers read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks.",
+      "Industry leading experts read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks for a full review.",
     subject: "Code Review",
     cta: "Book assessment",
   },

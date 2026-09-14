@@ -3,7 +3,7 @@
  * The three services in one glance, right under the hero. Three equal dark
  * panels in the same style as the story cards below, each a link to its
  * section. Static on purpose: nothing resizes on hover, only the diagram
- * lifts and the link brightens.
+ * lifts, one detail inside it moves, and the link brightens.
  *
  * The diagrams are inline SVG in the same idiom as the hero's project graph
  * (rounded nodes, thin edges, one accent), so all three share one size and
@@ -23,7 +23,7 @@ const FONT = 'font-family="chillax, sans-serif" text-anchor="middle"';
 const services = [
   {
     title: "Architecture assessment",
-    copy: "Senior engineers read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks.",
+    copy: "Industry leading experts read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks for a full review.",
     href: "/services/architecture-assessment",
     label: "Everything about the assessment",
     /* A dependency graph with one circular dependency flagged. */
@@ -38,7 +38,7 @@ const services = [
         <path d="M 125 86 C 125 98, 152 98, 152 110" />
         <path d="M 190 86 C 190 98, 166 98, 166 110" />
       </g>
-      <path d="M 172 110 C 210 96, 212 46, 186 30" fill="none" stroke="${DANGER}" stroke-width="1.75" stroke-linecap="round" stroke-dasharray="5 4" />
+      <path class="art-loop" d="M 172 110 C 210 96, 212 46, 186 30" fill="none" stroke="${DANGER}" stroke-width="1.75" stroke-linecap="round" stroke-dasharray="5 4" />
       <g ${NODES}>
         <rect x="62" y="18" width="56" height="22" rx="6" />
         <rect x="132" y="18" width="56" height="22" rx="6" />
@@ -48,8 +48,10 @@ const services = [
         <rect x="66" y="110" width="56" height="22" rx="6" />
         <rect x="131" y="110" width="56" height="22" rx="6" />
       </g>
-      <circle cx="206" cy="46" r="11" fill="${DANGER}" />
-      <text x="206" y="50.5" fill="#ffffff" ${FONT} font-size="15" font-weight="700">!</text>
+      <g class="art-flag">
+        <circle cx="206" cy="46" r="11" fill="${DANGER}" />
+        <text x="206" y="50.5" fill="#ffffff" ${FONT} font-size="15" font-weight="700">!</text>
+      </g>
     `,
   },
   {
@@ -57,28 +59,33 @@ const services = [
     copy: "Hands-on training for your team in enterprise Angular patterns, Nx monorepos and AI-assisted development.",
     href: "/services/workshops",
     label: "See all workshops",
-    /* One trainer node feeding three team nodes, each with a growing bar. */
+    /* A classroom: a screen with code being walked through, three
+       attendees in front of it, and a check on the one who just got it. */
     art: `
+      <g ${NODES}>
+        <rect x="30" y="14" width="160" height="72" rx="8" ${ACCENT_NODE} />
+      </g>
+      <g fill="rgba(232, 237, 246, 0.55)">
+        <rect class="art-line" x="44" y="28" width="60" height="5" rx="2.5" />
+        <rect class="art-line" x="56" y="41" width="88" height="5" rx="2.5" />
+        <rect class="art-line" x="56" y="54" width="52" height="5" rx="2.5" />
+        <rect class="art-line" x="44" y="67" width="34" height="5" rx="2.5" />
+      </g>
       <g ${EDGES}>
-        <path d="M 110 42 C 110 58, 48 58, 48 74" />
-        <path d="M 110 42 L 110 74" />
-        <path d="M 110 42 C 110 58, 172 58, 172 74" />
+        <path d="M 110 86 L 110 94" />
+        <path d="M 98 95.5 L 122 95.5" stroke-width="3" />
       </g>
       <g ${NODES}>
-        <rect x="82" y="16" width="56" height="26" rx="7" ${ACCENT_NODE} />
-        <rect x="20" y="74" width="56" height="26" rx="7" />
-        <rect x="82" y="74" width="56" height="26" rx="7" />
-        <rect x="144" y="74" width="56" height="26" rx="7" />
+        <circle cx="55" cy="112" r="7" />
+        <path d="M 41 136 C 41 122, 69 122, 69 136" />
+        <circle cx="110" cy="112" r="7" />
+        <path d="M 96 136 C 96 122, 124 122, 124 136" />
+        <circle cx="165" cy="112" r="7" />
+        <path d="M 151 136 C 151 122, 179 122, 179 136" />
       </g>
-      <g fill="rgba(232, 237, 246, 0.14)">
-        <rect x="20" y="112" width="56" height="6" rx="3" />
-        <rect x="82" y="112" width="56" height="6" rx="3" />
-        <rect x="144" y="112" width="56" height="6" rx="3" />
-      </g>
-      <g fill="${ACCENT}">
-        <rect x="20" y="112" width="24" height="6" rx="3" />
-        <rect x="82" y="112" width="38" height="6" rx="3" />
-        <rect x="144" y="112" width="50" height="6" rx="3" />
+      <g class="art-spark">
+        <circle cx="174" cy="105" r="6.5" fill="${ACCENT}" />
+        <path d="M 170.8 105.2 L 173.2 107.6 L 177.4 102.8" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
       </g>
     `,
   },
@@ -90,13 +97,13 @@ const services = [
     /* Three connected layers: front end, API, data. */
     art: `
       <g ${EDGES}>
-        <path d="M 110 48 L 110 62" />
-        <path d="M 110 92 L 110 106" />
+        <path class="art-flow" d="M 110 48 L 110 62" />
+        <path class="art-flow" d="M 110 92 L 110 106" />
       </g>
       <g ${NODES}>
         <rect x="40" y="16" width="140" height="32" rx="8" ${ACCENT_NODE} />
-        <rect x="40" y="62" width="140" height="30" rx="8" />
-        <rect x="40" y="106" width="140" height="30" rx="8" />
+        <rect class="art-layer" x="40" y="62" width="140" height="30" rx="8" />
+        <rect class="art-layer" x="40" y="106" width="140" height="30" rx="8" />
       </g>
       <g ${FONT} font-size="12.5" font-weight="500" fill="rgba(232, 237, 246, 0.8)">
         <text x="110" y="36.5" fill="#ffffff">Front end</text>
@@ -136,8 +143,8 @@ const services = [
     </ul>
 
     <p class="services__next">
-      Each page has the full story: the numbers, a self-check for your own
-      team, how it runs and what it costs in time. Most teams start with the
+      Each page has the full story: the numbers, a self-check for your own team,
+      how it runs and what it costs in time. Most teams start with the
       assessment. Here is why.
     </p>
   </div>
@@ -291,6 +298,115 @@ const services = [
     transform: translateY(-4px);
   }
 
+  /* --- Small movements inside each diagram on hover ---
+     The SVG markup is injected, so these rules are global by necessity.
+     Each diagram animates the one thing it is about: the flagged cycle,
+     the growing skill bars, the data moving between layers. */
+
+  /* Assessment: the circular dependency marches and its badge pops. */
+  .panel__link:hover .panel__art :global(.art-loop) {
+    animation: art-march 0.9s linear infinite;
+  }
+
+  .panel__art :global(.art-flag) {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .panel__link:hover .panel__art :global(.art-flag) {
+    transform: scale(1.18);
+  }
+
+  /* Workshops: the code on the screen types in line by line, then the
+     check on the attendee who got it pops. */
+  .panel__art :global(.art-line) {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+
+  .panel__link:hover .panel__art :global(.art-line) {
+    animation: art-type 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .panel__link:hover .panel__art :global(.art-line:nth-child(2)) {
+    animation-delay: 0.12s;
+  }
+
+  .panel__link:hover .panel__art :global(.art-line:nth-child(3)) {
+    animation-delay: 0.24s;
+  }
+
+  .panel__link:hover .panel__art :global(.art-line:nth-child(4)) {
+    animation-delay: 0.36s;
+  }
+
+  .panel__art :global(.art-spark) {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .panel__link:hover .panel__art :global(.art-spark) {
+    transform: scale(1.25);
+    transition-delay: 0.55s;
+  }
+
+  @keyframes art-type {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Application development: the edges redraw top to bottom and each
+     layer lights up as the data reaches it. */
+  .panel__art :global(.art-flow) {
+    stroke-dasharray: 14;
+    stroke-dashoffset: 0;
+  }
+
+  .panel__link:hover .panel__art :global(.art-flow) {
+    animation: art-draw 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .panel__link:hover .panel__art :global(.art-flow:nth-child(2)) {
+    animation-delay: 0.3s;
+  }
+
+  .panel__art :global(.art-layer) {
+    transition: fill 0.3s;
+  }
+
+  .panel__link:hover .panel__art :global(.art-layer) {
+    fill: rgba(232, 237, 246, 0.14);
+  }
+
+  .panel__link:hover .panel__art :global(.art-layer:nth-child(2)) {
+    transition-delay: 0.3s;
+  }
+
+  .panel__link:hover .panel__art :global(.art-layer:nth-child(3)) {
+    transition-delay: 0.6s;
+  }
+
+  @keyframes art-march {
+    to {
+      stroke-dashoffset: -18;
+    }
+  }
+
+  @keyframes art-draw {
+    from {
+      stroke-dashoffset: 14;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
   .services__next {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
@@ -301,8 +417,22 @@ const services = [
 
   @media (prefers-reduced-motion: reduce) {
     .panel__art,
-    .panel__cta {
+    .panel__cta,
+    .panel__art :global(.art-flag),
+    .panel__art :global(.art-spark),
+    .panel__art :global(.art-layer) {
       transition: none;
+    }
+
+    .panel__link:hover .panel__art :global(.art-loop),
+    .panel__link:hover .panel__art :global(.art-line),
+    .panel__link:hover .panel__art :global(.art-flow) {
+      animation: none;
+    }
+
+    .panel__link:hover .panel__art :global(.art-flag),
+    .panel__link:hover .panel__art :global(.art-spark) {
+      transform: none;
     }
   }
 
