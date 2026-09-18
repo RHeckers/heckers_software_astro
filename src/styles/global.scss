@@ -93,7 +93,7 @@
   /* Optional “status” tones (kept muted & on-brand) */
   --color-danger: #c2413b; /* controlled, professional error state */
   --color-warning: #b0892f;
-  --color-success: #2e8b6f;
+  --color-success: #27775f; /* darkened from #2e8b6f: 4.5:1+ as text on the light surfaces */
 
 --background-gradient-primary:
   linear-gradient(180deg, #0f1a2b 0%, #0b1220 100%);

@@ -314,12 +314,11 @@ const reviews = TESTIMONIALS.map((item) => ({
     const desktopLookup = document.querySelector(".parallax-desktop-lookup");
     const cicdImage = document.querySelector(".parallax-cicd");
     if (!section || (!desktopLookup && !cicdImage)) return;
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      // 0 when the section top reaches the viewport bottom, growing as it
-      // scrolls up; stays small so the drift is subtle.
-      const offset = window.innerHeight - section.getBoundingClientRect().top;
+
+    // 0 when the section top reaches the viewport bottom, growing as it
+    // scrolls up; stays small so the drift is subtle.
+    const apply = (sectionTop) => {
+      const offset = window.innerHeight - sectionTop;
       if (desktopLookup) {
         desktopLookup.style.transform = `translateY(${offset * 0.08}px)`;
       }
@@ -327,14 +326,41 @@ const reviews = TESTIMONIALS.map((item) => ({
         cicdImage.style.transform = `translateY(${-offset * 0.09}px)`;
       }
     };
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      apply(section.getBoundingClientRect().top);
+    };
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(update);
     };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+
+    let listening = false;
+    const listen = (on) => {
+      if (on === listening) return;
+      listening = on;
+      const method = on ? "addEventListener" : "removeEventListener";
+      window[method]("scroll", onScroll, { passive: true });
+      window[method]("resize", onScroll);
+    };
+
+    // Only follow the scroll position while the section is within one
+    // viewport of the screen. Reading getBoundingClientRect() while this
+    // inline script runs would force a synchronous layout of the half-parsed
+    // page; the observer hands us the section's rectangle for free instead.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) apply(entry.boundingClientRect.top);
+          listen(entry.isIntersecting);
+        }
+      },
+      { rootMargin: "100% 0px" },
+    );
+    observer.observe(section);
   })();
   // Card scroll logic for reviews
   const reviewShells = document.querySelectorAll(".reviews-card-shell");

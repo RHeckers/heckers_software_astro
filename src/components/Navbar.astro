@@ -266,11 +266,14 @@ import { SERVICES } from "../lib/services";
     });
   });
 
-  let lastScrollY = window.scrollY;
+  // Read lazily: touching scrollY while this module runs (before the first
+  // frame) forces a synchronous layout of the whole page.
+  let lastScrollY: number | null = null;
   let ticking = false;
 
   function onScroll() {
     const currentScrollY = window.scrollY;
+    if (lastScrollY === null) lastScrollY = currentScrollY;
 
     if (!pill.classList.contains("open")) {
       if (currentScrollY > lastScrollY && currentScrollY > 80) {

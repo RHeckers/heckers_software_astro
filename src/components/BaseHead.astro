@@ -37,7 +37,12 @@ const {
 const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
 ---
 
-<!-- Preload critical fonts -->
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<!-- Preload the fonts used above the fold (navbar and hero). Every other
+     weight is discovered through the inlined CSS and swaps in afterwards. -->
 <link
   rel="preload"
   href="/fonts/Chillax-Medium.woff2"
@@ -73,10 +78,13 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
   type="font/woff2"
   crossorigin
 />
-
-<!-- Global Metadata -->
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link
+  rel="preload"
+  href="/fonts/Synonym-Medium.woff2"
+  as="font"
+  type="font/woff2"
+  crossorigin
+/>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
