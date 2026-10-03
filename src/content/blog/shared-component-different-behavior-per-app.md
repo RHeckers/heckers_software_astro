@@ -10,7 +10,7 @@ In the [error handler article](https://www.heckerssoftware.com/blog/angular-glob
 
 It can, and in a large Nx workspace you will need it sooner than you expect. This article walks through the problem, the three solutions most teams try first, why each of them fails in a way that is not immediately visible, and the approach I use instead. At the end we will check the production bundle, because the whole point is what ends up in it.
 
-> This article uses the zoo workspace from my talk at Angular Zürich: a `visitor` web application, a `keeper-mobile` Capacitor application, a `ticket-kiosk`, and a set of shared libraries they all use. It assumes Angular's `application` builder with esbuild.
+> This article uses the zoo workspace from my talk at Angular Zürich: a `visitor` web application, a `keeper-mobile` Capacitor application, a `ticket-kiosk`, and a set of shared libraries they all use. The whole thing is on GitHub at [RHeckers/zoopervisor-nx-demo](https://github.com/RHeckers/zoopervisor-nx-demo), including the photo picker from this article, so you can run the bundle check yourself. If it is useful to you, a star is appreciated 😄. The examples assume Angular's `application` builder with esbuild.
 
 ## The requirement
 
