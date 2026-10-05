@@ -3,7 +3,7 @@ title: "One Store per Entity: Granular Signal Stores for Code You Actually Want 
 description: "A store that answers two questions drags both into every application that needs one. Here is why I keep NgRx Signal Stores to a single entity, how composition replaces merging, and how one store method can serve very different callers without branching."
 pubDate: "2026-10-05"
 heroImage: "../../assets/blog-images/one-store-per-entity.png"
-categories: ["Angular", "Nx", "Architecture", "NgRx"]
+categories: ["Angular", "Nx", "Architecture"]
 ---
 
 In the [previous article](https://www.heckerssoftware.com/blog/shared-component-different-behavior-per-app/) the problem was a shared component that needed to behave differently in every application. This one is about the problem right next to it, and in my experience the more common of the two: a shared store that does more than any single application wants from it.
