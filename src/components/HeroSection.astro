@@ -1,4 +1,6 @@
 ---
+import LogoBanner from "./LogoBanner.astro";
+
 /**
  * Hero: headline + a stylised Nx project graph.
  *
@@ -224,6 +226,10 @@ const hoverCss = nodes
       </figcaption>
     </figure>
   </div>
+
+  <div class="logo-banner-container">
+    <LogoBanner placement="hero" />
+  </div>
 </section>
 
 <!-- Reset the default highlight while a node is hovered, then the
@@ -243,11 +249,12 @@ ${hoverCss}`}
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* Keeps the hero's absolutely positioned layers in one stacking
-       context. */
+    /* The logo reel's blend panels must composite against this opaque
+       background, not against a transparent group (see LogoBanner). */
     isolation: isolate;
-    /* The gradient settles on --color-light before the bottom edge, so the
-       hero hands over to the client logos below it without a seam. */
+    /* On phones the reel starts 75px above the bottom edge. The gradient
+       must be flat by then, so the stop is in pixels from the bottom
+       rather than a percentage of the viewport-dependent hero height. */
     --hero-fade-end: 90px;
     background: linear-gradient(
       to bottom,
@@ -597,6 +604,21 @@ ${hoverCss}`}
   /* No z-index here: that would make this a stacking context, and the
      banner's mix-blend-mode panels would then blend against a transparent
      backdrop and leave a grey line along the top of the reel. */
+  /* Phones only: the reel sits in the hero so the client logos are inside
+     the first screenful. Wider screens get the titled band below instead
+     (see LogoBanner). */
+  .logo-banner-container {
+    position: absolute;
+    bottom: -10px;
+    width: 100%;
+  }
+
+  @media (min-width: 769px) {
+    .logo-banner-container {
+      display: none;
+    }
+  }
+
   /* --- Layout breakpoints --- */
 
   /* On phones the graph shrinks below legibility and lands on the light

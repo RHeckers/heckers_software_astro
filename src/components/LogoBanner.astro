@@ -9,6 +9,20 @@ import dh_automation from "../assets/logos/dh_automation_logo.svg";
 import ministerie_van_defensie from "../assets/logos/ministerie_van_defensie_logo.png";
 import lamp from "../assets/lamp.png";
 
+interface Props {
+  /**
+   * "band" is its own titled section below the hero, which is what wide
+   * screens get. "hero" pins the reel to the bottom of the hero with no
+   * title, the way phones saw it before the band existed: on a small
+   * screen the proof is worth more inside the first screenful than as a
+   * section the reader has to reach.
+   */
+  placement?: "band" | "hero";
+}
+
+const { placement = "band" } = Astro.props;
+
+
 const logosBase = [
   {
     src: vattenfall,
@@ -49,10 +63,18 @@ const lampHeight = isMobile ? 150 : 300;
 const logoWidth = isMobile ? 100 : 135;
 ---
 
-<section class="clients" aria-labelledby="clients-heading">
-  <h2 class="clients__title" id="clients-heading">
-    Enterprises we helped before you
-  </h2>
+<section
+  class:list={["clients", `clients--${placement}`]}
+  aria-labelledby={placement === "band" ? "clients-heading" : undefined}
+  aria-label={placement === "hero" ? "Trusted clients" : undefined}
+>
+  {
+    placement === "band" && (
+      <h2 class="clients__title" id="clients-heading">
+        Enterprises we helped before you
+      </h2>
+    )
+  }
 
   <div class="lamp-frame">
     <Image
@@ -91,13 +113,6 @@ const logoWidth = isMobile ? 100 : 135;
 </section>
 
 <style>
-  /*
-    Its own band below the hero, so the logos are something the reader
-    scrolls to rather than part of the first screen.
-
-    The reel's blend panels composite against this section's own opaque
-    background, so it carries the isolation the hero used to provide.
-  */
   .clients {
     max-width: 100%;
     width: 100%;
@@ -106,9 +121,29 @@ const logoWidth = isMobile ? 100 : 135;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+  }
+
+  /*
+    Its own band below the hero, so the logos are something the reader
+    scrolls to rather than part of the first screen. Wide screens only;
+    phones get the hero placement instead, so this one is off by default
+    and switched on at the breakpoint below.
+
+    The reel's blend panels composite against this section's own opaque
+    background, so it carries the isolation the hero provides for the
+    other placement.
+  */
+  .clients--band {
+    display: none;
     background: var(--color-light-alt);
     isolation: isolate;
     padding-bottom: clamp(3rem, 7vw, 5.5rem);
+  }
+
+  @media (min-width: 769px) {
+    .clients--band {
+      display: flex;
+    }
   }
 
   .clients__title {
