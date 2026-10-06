@@ -1,17 +1,28 @@
 ---
+import ThemeToggle from "./ThemeToggle.astro";
 import { SERVICES } from "../lib/services";
+
+interface Props {
+  /** Show the light/dark switch. Set by PageLayout on themed pages. */
+  themeToggle?: boolean;
+}
+
+const { themeToggle = false } = Astro.props;
 ---
 
 <nav class="nav" aria-label="Main Navigation">
   <div id="pill" class="pill">
     <a class="brand" href="/">HECKERS SOFTWARE</a>
-    <button
-      type="button"
-      class="hamburger"
-      aria-label="Open menu"
-      aria-expanded="false"
-      aria-controls="main-menu">☰</button
-    >
+    <div class="pill__actions">
+      {themeToggle && <ThemeToggle />}
+      <button
+        type="button"
+        class="hamburger"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="main-menu">☰</button
+      >
+    </div>
     <button type="button" class="close" aria-label="Close menu">×</button>
     <div class="menu" id="main-menu">
       <ul>
@@ -173,8 +184,15 @@ import { SERVICES } from "../lib/services";
     transition: opacity 300ms ease 450ms;
   }
 
+  /* Theme switch (themed pages only) sits next to the hamburger. */
+  .pill__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   .pill.open .brand,
-  .pill.open .hamburger {
+  .pill.open .pill__actions {
     display: none;
   }
 

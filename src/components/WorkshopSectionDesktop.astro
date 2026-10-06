@@ -1,12 +1,16 @@
 ---
 import { Image } from "astro:assets";
 import effectiveAngular from "../assets/workshop/effective_angular.jpg";
-import ngPoland from "../assets/workshop/ng_poland.jpg";
+import ngPoland from "../assets/workshop/ng-poland-2024.jpg";
 import talk1 from "../assets/workshop/talk_1.jpg";
 import talk2 from "../assets/workshop/talk_2.png";
-import { HOME_CATEGORY_LINKS, resolveHomeLink } from "../lib/home-links";
+import ngPolandCode from "../assets/workshop/ng-poland-2024.6.jpg";
+import ngPolandStage from "../assets/workshop/ng-poland-2024.5.jpg";
+import ngPolandHall from "../assets/workshop/ng-poland-2024.4.jpg";
+import zurichWorkshop from "../assets/workshop/angular-zurich.png";
 import { WORKSHOPS } from "../lib/workshops";
 
+// Portraits for the wheel on the right.
 const images = {
   "enterprise-angular": { src: talk1, objectPosition: "center" },
   "nx-monorepo": { src: ngPoland, objectPosition: "left" },
@@ -14,26 +18,28 @@ const images = {
   "ui-libraries": { src: effectiveAngular, objectPosition: "top center" },
 } as const;
 
+// A second photograph inside each card, one per workshop and each from a
+// different room: the point is that these are taught in public and
+// in-house, not that they look nice.
+const cardImages = {
+  "enterprise-angular": { src: ngPolandCode, objectPosition: "center" },
+  "nx-monorepo": { src: ngPolandStage, objectPosition: "center" },
+  ai: { src: zurichWorkshop, objectPosition: "center" },
+  "ui-libraries": { src: ngPolandHall, objectPosition: "center" },
+} as const;
+
 const workshops = WORKSHOPS.map((item) => ({
   ...item,
   image: images[item.id].src,
   objectPosition: images[item.id].objectPosition,
+  cardImage: cardImages[item.id].src,
+  cardObjectPosition: cardImages[item.id].objectPosition,
 }));
-
-// Blog link per workshop, resolved at build time from HOME_CATEGORY_LINKS.
-const workshopLinks = await Promise.all(
-  workshops.map((item) =>
-    resolveHomeLink(
-      HOME_CATEGORY_LINKS.workshops[
-        item.id as keyof typeof HOME_CATEGORY_LINKS.workshops
-      ],
-    ),
-  ),
-);
 ---
 
 <div class="workshops-scroll-container">
   <section class="workshops workshops--sticky">
+    <h2 class="workshops__heading">Workshops</h2>
     <div class="wheel-pin" data-carousel>
       <div class="wheel-layout">
         <div class="wheel wheel--left">
@@ -45,26 +51,32 @@ const workshopLinks = await Promise.all(
                   data-index={index}
                   style={`--card-stagger: ${index * 120}ms`}
                 >
+                  <div class="card-media">
+                    <Image
+                      src={item.cardImage}
+                      alt={`Heckers Software teaching ${item.title}`}
+                      width={720}
+                      loading="lazy"
+                      style={`--object-position: ${item.cardObjectPosition}; object-position: var(--object-position);`}
+                    />
+                  </div>
                   <p class="card-tag">{item.tag}</p>
                   <h3>{item.title}</h3>
                   <p class="card-description">{item.description}</p>
-                  <ul>
-                    {item.bullets.map((point) => (
-                      <li>{point}</li>
-                    ))}
-                  </ul>
                   <div class="card-actions">
-                    <a class="card-cta" href="#contactForm" data-subject="Workshop">
+                    <a
+                      class="card-cta"
+                      href="#contactForm"
+                      data-subject="Workshop"
+                    >
                       Book workshop
                     </a>
-                    <a class="card-link" href={`/services/workshops#${item.id}`}>
+                    <a
+                      class="card-link"
+                      href={`/services/workshops#${item.id}`}
+                    >
                       Workshop details &rarr;
                     </a>
-                    {workshopLinks[index] && (
-                      <a class="card-link" href={workshopLinks[index].href}>
-                        {workshopLinks[index].label} &rarr;
-                      </a>
-                    )}
                   </div>
                 </article>
               ))
@@ -105,11 +117,34 @@ const workshopLinks = await Promise.all(
     transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* The whole section is pinned while the carousel advances, so the title
+     simply sits at the top of it and stays centred on screen for the whole
+     pinned scroll. Clear of the navbar pill, which floats at the very top. */
+  .workshops__heading {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--color-ink-light);
+    margin-bottom: clamp(1rem, 2vw, 2rem);
+  }
+
   .workshops--sticky {
     position: sticky;
     top: 0;
     z-index: 10;
-    will-change: transform;
+    /* No will-change here: a compositing layer makes the browser paint a
+       fixed-attachment background against the layer instead of the
+       viewport, which is exactly what this background needs. */
+    /* Same viewport-painted gradient as the fact band above, so the two
+       blocks are the same colour at the same point on screen. */
+    background-color: var(--color-dark);
+    background-image: var(--background-gradient-primary);
+    background-attachment: fixed;
+    background-size: 100% 100svh;
+    background-repeat: no-repeat;
   }
   .workshops {
     color: var(--color-ink);
@@ -192,8 +227,11 @@ const workshopLinks = await Promise.all(
   .wheel-card {
     width: min(660px, 98vw);
     max-width: 700px;
+    overflow: hidden;
     background: rgba(255, 255, 255, 0.96);
-    border: 1px solid var(--color-stroke);
+    /* No border: overflow clips children at the padding edge, so a framed
+       card would always show a hairline above the photo that bleeds to
+       its top corners. The shadow carries the edge instead. */
     border-radius: 18px;
     padding: 2.2rem 2.6rem 2.1rem 2.4rem;
     box-shadow: 0 26px 60px rgba(40, 12, 19, 0.16);
@@ -226,6 +264,21 @@ const workshopLinks = await Promise.all(
     transform: scale(1.03);
   }
 
+  /* Bleeds to the card's edges; the card clips it to the rounded corner. */
+  .card-media {
+    margin: -2.2rem -2.6rem 1.5rem -2.4rem;
+    height: clamp(150px, 15vw, 200px);
+    overflow: hidden;
+    background: var(--color-light-alt);
+  }
+
+  .card-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--object-position, center);
+  }
+
   .card-tag {
     color: var(--color-accent-ink);
     font-weight: var(--font-weight-bold);
@@ -246,31 +299,6 @@ const workshopLinks = await Promise.all(
     font-size: 1.18rem;
     margin-top: 0.15rem;
     font-family: synonym;
-  }
-
-  .wheel-card ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.32rem;
-    margin-top: 0.7rem;
-    margin-left: 0.5rem;
-    padding: 0;
-  }
-
-  .wheel-card li {
-    display: flex;
-    gap: 0.5em;
-    color: var(--color-ink);
-    font-weight: var(--font-weight-medium);
-    margin-bottom: 0.13rem;
-    font-family: synonym;
-  }
-
-  .wheel-card li::before {
-    content: "→";
-    color: var(--color-accent-ink);
-    font-weight: var(--font-weight-bold);
   }
 
   .card-actions {

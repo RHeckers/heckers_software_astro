@@ -1,0 +1,234 @@
+---
+/**
+ * One outside number, what it means for the reader, and a photograph of the
+ * work behind the claim.
+ *
+ * The home page's education-based marketing runs on four of these, one per
+ * argument, each placed directly after the section it supports. The image
+ * side alternates down the page, as does the surface, so no two bands in a
+ * row look the same.
+ */
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import CountUp from "./CountUp.astro";
+
+interface Props {
+  /** The claim, as a sentence. Doubles as the section's accessible name. */
+  title: string;
+  /** The number that proves it, e.g. "42%". Counts up when scrolled into view. */
+  stat: string;
+  /** Reads as the continuation of the number: "42%" + "of a developer's week…". */
+  lead: string;
+  source: string;
+  /** What the number means for the reader, set off by an accent rule. */
+  note: string;
+  link: { href: string; label: string };
+  image: ImageMetadata;
+  alt: string;
+  /** Which side the photograph sits on from 900px up. */
+  side?: "left" | "right";
+  /** Which of the two light grounds this band uses. */
+  surface?: "alt" | "raised";
+  /**
+   * Drop the band below 900px, where it would stack into a tall column on
+   * a phone. For arguments the page can afford to make only on wide screens.
+   */
+  hideOnMobile?: boolean;
+}
+
+const {
+  title,
+  stat,
+  lead,
+  source,
+  note,
+  link,
+  image,
+  alt,
+  side = "right",
+  surface = "alt",
+  hideOnMobile = false,
+} = Astro.props;
+
+const headingId = `fact-${stat.replace(/[^a-z0-9]/gi, "").toLowerCase()}`;
+---
+
+<section
+  class:list={[
+    "fact",
+    `fact--${side}`,
+    `fact--${surface}`,
+    hideOnMobile && "fact--wide-only",
+  ]}
+  aria-labelledby={headingId}
+>
+  <div class="fact__inner">
+    <div class="fact__copy">
+      <h2 class="fact__title" id={headingId}>{title}</h2>
+      <p class="fact__value"><CountUp value={stat} /></p>
+      <p class="fact__lead">{lead}</p>
+      <p class="fact__source">{source}</p>
+      <p class="fact__note">{note}</p>
+      <a class="fact__link" href={link.href}>{link.label}</a>
+    </div>
+
+    <div class="fact__proof">
+      <Image
+        src={image}
+        alt={alt}
+        widths={[560, 840, 1120]}
+        sizes="(min-width: 900px) 46vw, 92vw"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .fact {
+    color: var(--color-ink);
+    /* Generous on both sides: each band has to feel separate from the
+       section it follows and the one it introduces. */
+    padding: clamp(4rem, 9vw, 7rem) clamp(1rem, 4vw, 3rem);
+  }
+
+  /* Hidden rather than reflowed: on a phone this band's argument is worth
+     less than the scroll it costs. */
+  .fact--wide-only {
+    display: none;
+  }
+
+  .fact--alt {
+    background: var(--color-light-alt);
+  }
+
+  .fact--raised {
+    /* Painted from the viewport rather than from this box, so this band
+       and the workshops section below it show the same colour at the same
+       point on screen. Stretching the gradient over each box instead makes
+       a short band and a 2,400px one look nothing alike. */
+    background-color: var(--color-dark);
+    background-image: var(--background-gradient-primary);
+    background-attachment: fixed;
+    background-size: 100% 100svh;
+    background-repeat: no-repeat;
+
+    .fact__title,
+    .fact__copy,
+    .fact__lead,
+    .fact__note {
+      color: var(--color-ink-light);
+    }
+
+    .fact__value,
+    .fact__link {
+      color: rgb(47, 125, 209);
+    }
+  }
+
+  .fact__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .fact__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .fact__title {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+  }
+
+  .fact__value {
+    font-size: clamp(4rem, 9vw, 6.5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--color-accent-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fact__lead {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--color-ink);
+    max-width: 46ch;
+  }
+
+  .fact__source {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .fact__note {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink);
+    max-width: 48ch;
+    padding-left: 1.1rem;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .fact__link {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  .fact__link:hover,
+  .fact__link:focus-visible {
+    color: var(--color-accent-strong);
+  }
+
+  .fact__proof :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.18);
+  }
+
+  @media (min-width: 900px) {
+    .fact--wide-only {
+      display: block;
+    }
+
+    /* Two equal columns that also end level: the photograph takes whatever
+       height the argument beside it needs, rather than a fixed crop. */
+    .fact__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+    }
+
+    .fact--left .fact__copy {
+      order: 2;
+    }
+
+    .fact__proof,
+    .fact__proof :global(img) {
+      height: 100%;
+    }
+
+    .fact__proof :global(img) {
+      aspect-ratio: auto;
+    }
+  }
+</style>

@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import CategoryChips from "./CategoryChips.astro";
 import { formatDate, postHref, type BlogPost } from "../lib/blog";
 
@@ -8,24 +7,11 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, pubDate, heroImage, categories } = post.data;
+const { title, description, pubDate, categories } = post.data;
 const href = postHref(post);
 ---
 
 <article class="post-card">
-  {
-    heroImage && (
-      <a class="post-card__media" href={href} tabindex="-1">
-        <Image
-          src={heroImage}
-          alt={title}
-          width={720}
-          loading="lazy"
-          decoding="async"
-        />
-      </a>
-    )
-  }
   <div class="post-card__body">
     <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
     <h2><a href={href}>{title}</a></h2>
@@ -36,29 +22,23 @@ const href = postHref(post);
 
 <style>
   .post-card {
-    display: grid;
-    grid-template-columns: 1fr;
     border: 1px solid var(--color-stroke);
     border-radius: 12px;
     background: var(--color-light-raised);
     overflow: hidden;
-    transition: box-shadow 200ms ease;
+    transition:
+      box-shadow 200ms ease,
+      border-color 200ms ease;
   }
 
   .post-card:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
 
-  .post-card__media {
-    display: block;
-  }
-
-  .post-card__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: left center;
-    display: block;
+  /* A soft shadow is invisible on a dark page; lift the border instead. */
+  :global(:root[data-theme="dark"]) .post-card:hover {
+    border-color: var(--color-stroke-strong);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
   }
 
   .post-card__body {
@@ -89,7 +69,7 @@ const href = postHref(post);
 
   h2 a:hover,
   h2 a:focus-visible {
-    color: var(--color-accent-ink);
+    color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
@@ -101,10 +81,6 @@ const href = postHref(post);
   }
 
   @media (min-width: 769px) {
-    .post-card {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    }
-
     .post-card__body {
       padding: 2rem;
     }

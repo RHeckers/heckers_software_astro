@@ -1,9 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import code_img from "../assets/code_img.svg";
-import { HOME_CATEGORY_LINKS, resolveHomeLink } from "../lib/home-links";
 
-const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
 ---
 
 <div class="code-reveal-scroll-container">
@@ -87,15 +85,8 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
         Book assessment
       </a>
       <a href="/services/architecture-assessment" class="details-link">
-        Tiers, process and a self-check for your codebase
+        More information
       </a>
-      {
-        articlesLink && (
-          <a href={articlesLink.href} class="articles-link">
-            {articlesLink.label}
-          </a>
-        )
-      }
     </div>
   </section>
   <div id="code-reveal-spacer" style="height:0;"></div>
@@ -168,10 +159,15 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
 
 <style>
   /* ─── Scroll container ─── */
+
+  /* The last card in the story stack. Transparent and unpadded so the two
+     pinned cards stay visible behind it and this one simply rises over
+     them, the way they rose over each other; z-index 3 puts it above their
+     sticky wrappers (z-index 2). Its gutter and sticky top match theirs,
+     so the three cards sit in exactly the same frame. */
   .code-reveal-scroll-container {
-    background-color: var(--color-light);
-    padding: 2rem 0;
     position: relative;
+    z-index: 3;
     height: calc(100svh + 1800px);
   }
 
@@ -183,15 +179,15 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
   /* Container height is 100svh + the scroll distance, so the first value
      lands where the reveal progress reaches 100%. The second value is the
      last scroll position where the sticky panel still sits at its pinned
-     top (container padding 2rem + sticky top 2.5rem); it wins only when the
-     panel is taller than the viewport, which is the stacked mobile layout.
+     top; it wins only when the panel is taller than the viewport, which is
+     the stacked mobile layout.
      The script sets --section-height; without it the first value wins. */
   .code-reveal-anchor {
     position: absolute;
     left: 0;
     top: min(
       calc(100% - 100svh),
-      calc(100% - var(--section-height, 0px) - 4.5rem)
+      calc(100% - var(--section-height, 0px) - 60px)
     );
     width: 1px;
     height: 1px;
@@ -201,9 +197,9 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
   /* ─── Sticky section ─── */
   .code-reveal-section.code-reveal--sticky {
     position: sticky;
-    margin: 0 1rem;
+    margin: 0 var(--spacer-md);
     border-radius: 15px;
-    top: 2.5rem;
+    top: 15svh;
     z-index: 10;
     will-change: transform;
     view-timeline-name: --section-timeline;
@@ -424,30 +420,6 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
     text-decoration-color: var(--color-light-raised);
   }
 
-  .details-link + .articles-link {
-    margin-top: var(--spacer-md);
-  }
-
-  /* Deliberately quiet so it never competes with the CTA above it. */
-  .articles-link {
-    margin-top: var(--spacer-lg);
-    text-align: center;
-    text-wrap: balance;
-    font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-normal);
-    color: rgba(232, 237, 246, 0.55);
-    text-decoration: none;
-    letter-spacing: 0.01em;
-  }
-
-  .articles-link:hover,
-  .articles-link:focus-visible {
-    color: var(--color-ink-light);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
   /* ─── Desktop ─── */
   @media (min-width: 641px) {
     .content-reveal {
@@ -457,8 +429,10 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
       justify-content: center;
     }
 
+    /* Same gutter and pinned top as the story cards this one stacks onto. */
     .code-reveal-section.code-reveal--sticky {
-      margin: 0 2rem;
+      margin: 0 var(--spacer-2xl);
+      top: 60px;
     }
 
     .reveal-title {
@@ -533,10 +507,6 @@ const articlesLink = await resolveHomeLink(HOME_CATEGORY_LINKS.codeAnalysis);
       margin-top: var(--spacer-lg);
       padding: var(--spacer-md) var(--spacer-2xl);
       font-size: var(--font-xl);
-    }
-
-    .articles-link {
-      margin-top: var(--spacer-md);
     }
 
     /* Short desktop viewports: keep the whole panel visible while sticky. */

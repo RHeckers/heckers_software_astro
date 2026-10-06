@@ -1,6 +1,6 @@
 ---
-import ExpandingWord from "../components/ExpandingWord.astro";
 import HeroSection from "../components/HeroSection.astro";
+import LogoBanner from "../components/LogoBanner.astro";
 import StoryBlock from "../components/StoryBlock.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import PageLayout from "../layouts/PageLayout.astro";
@@ -9,50 +9,101 @@ import CodeReveal from "../components/CodeReveal.astro";
 import ServicesOverview from "../components/ServicesOverview.astro";
 import WorkshopSection from "../components/WorkshopSection.astro";
 import ApplicationDevelopment from "../components/ApplicationDevelopment.astro";
-import Reviews from "../components/Reviews.astro";
 import Contact from "../components/Contact.astro";
 import ProofRow from "../components/ProofRow.astro";
-import HomeEvidence from "../components/HomeEvidence.astro";
-import HomeLessons from "../components/HomeLessons.astro";
+import FactBand from "../components/FactBand.astro";
+
+import ngPolandCode from "../assets/workshop/ng-poland-2024.6.jpg";
+import ngPolandHall from "../assets/workshop/ng-poland-2024.4.jpg";
+import ngPolandStage from "../assets/workshop/ng-poland-2024.7.jpg";
+import zurichWorkshop from "../assets/workshop/angular-zurich.png";
+
+/**
+ * The page alternates two light grounds and two dark ones, and never puts
+ * the same one twice in a row. Each service block is followed by the fact
+ * band that argues for it, with the photograph swapping sides as you go.
+ *
+ * Sources:
+ * - Stripe, The Developer Coefficient, 2018.
+ * - Xia et al., "Measuring Program Comprehension: A Large-Scale Field Study
+ *   with Professionals", IEEE TSE 2018: ~58% of time on comprehension.
+ * - DORA, Accelerate State of DevOps 2023: good internal documentation,
+ *   2.4x more likely to be a high performer.
+ * - Standish Group, CHAOS Report 2015: incremental delivery succeeds about
+ *   three times as often as one big release (39% against 11%).
+ */
 ---
 
 <PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <HeroSection />
-  <section class="section-1">
-    <ServicesOverview />
-    <HomeEvidence />
-    <StoryBlock />
-  </section>
+  <LogoBanner />
+  <ServicesOverview />
 
-  <div class="expanding">
-    <ExpandingWord
-      word="Fix Your app"
-      callToAction="Book assessment"
-      subject="Code Review"
-      size="large"
-      reversedAnimation={true}
-    />
+  <FactBand
+    title="The numbers don't lie: technical debt is expensive, and it is everywhere"
+    stat="42%"
+    lead="of a developer's week goes to maintenance, debugging and technical debt instead of new work. That is the average team, and the average team believes its own situation is better than average."
+    source="Stripe, The Developer Coefficient"
+    note="For a team of eight at a fully loaded ninety thousand euro per engineer, that is over three hundred thousand euro a year that buys no new features. It is spent whether you measure it or not. Every service on this page exists to get some of it back."
+    link={{
+      href: "/services/architecture-assessment#self-check",
+      label: "Fourteen signs your architecture is costing you",
+    }}
+    image={ngPolandCode}
+    alt="Roberto Heckers presenting Angular architecture on the main stage at ngPoland"
+    side="right"
+    surface="alt"
+  />
+
+  {
+    /* The assessment panel is the last card of the story stack, so it is
+      slotted into it rather than placed after it. */
+  }
+  <StoryBlock>
     <CodeReveal />
-  </div>
+  </StoryBlock>
+
+  <FactBand
+    title="Knowledge without rules evaporates"
+    stat="2.4×"
+    lead="more likely to be a high-performing team when the decisions that shape the code are written down and easy to find, instead of kept in people's heads."
+    source="DORA, Accelerate State of DevOps"
+    note="A team can agree on a pattern on Thursday and drift from it by the next sprint, because agreement lives in memory and memory is busy. Documentation is not the wiki nobody reads: it is the decision written down and the lint rule that fails the build when someone forgets."
+    link={{
+      href: "/services/workshops",
+      label: "How a workshop turns rules into code",
+    }}
+    image={zurichWorkshop}
+    alt="Roberto Heckers running an Angular workshop for a development team in Zurich"
+    side="left"
+    surface="raised"
+    hideOnMobile
+  />
 
   <WorkshopSection />
+
+  <FactBand
+    title="The people inside cannot see it, and it is not their fault"
+    stat="58%"
+    lead="of a developer's time goes to understanding existing code before a single line of it changes. Writing the change is the small part."
+    source="Xia et al., IEEE Transactions on Software Engineering"
+    note="The people who built the system carry the map in their heads and no longer notice the detours. The developer who joined last pays the full price on every task, which makes them your most accurate measuring instrument."
+    link={{
+      href: "/services/architecture-assessment",
+      label: "Why an outside read finds what yours cannot",
+    }}
+    image={ngPolandHall}
+    alt="A full auditorium at ngPoland during a Heckers Software talk on Angular architecture"
+    side="right"
+    surface="alt"
+  />
+
   <ProofRow
-    tone="dark"
     snippets={["peterApproach", "ferdiDepth", "marcFramework"]}
+    tone="light"
   />
 
   <ApplicationDevelopment />
-  <HomeLessons />
-  <Reviews />
+
   <Contact />
 </PageLayout>
-
-<style>
-  .section-1 {
-    background-color: var(--color-light);
-  }
-
-  .expanding {
-    background-color: var(--color-dark-alt);
-  }
-</style>

@@ -1,8 +1,8 @@
-import { categoryHref, type BlogCategory } from "./categories";
+import { categoryHref, type KnownBlogCategory } from "./categories";
 import { getSortedPosts, postHref, postsInCategory } from "./blog";
 
 export interface HomeLinkTarget {
-  category: BlogCategory;
+  category: KnownBlogCategory;
   /** Human wording for the anchor text, e.g. "Nx monorepo". */
   topic: string;
 }

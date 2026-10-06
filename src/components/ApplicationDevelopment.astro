@@ -164,7 +164,7 @@ const commitments = [
 
 <style>
   .app-dev {
-    background: var(--color-light);
+    background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
@@ -333,7 +333,7 @@ const commitments = [
   /* --- Project plan panel --- */
 
   .plan {
-    background: var(--background-gradient-secondary);
+    background: var(--background-gradient-primary);
     color: var(--color-ink-light);
     border-radius: 22px;
     padding: clamp(1.5rem, 3.5vw, 2.5rem);
@@ -482,30 +482,35 @@ const commitments = [
     color: var(--color-ink-light);
   }
 
-  /* Scroll-driven reveal: rail draws down, phases fade in in order. */
+  /* Scroll-driven reveal: rail draws down, phases fade in in order.
+
+     Phone pacing lives here: the panel fills most of a small screen, so the
+     first step holds off until it is a third of the way in and each step then
+     takes a longer stretch of scroll. Every offset stays inside the entry
+     range, so nothing extrapolates past it. Wide screens override below. */
   @supports (animation-timeline: view()) {
     .phase:not(:last-child)::after {
       transform: scaleY(0);
       animation: plan-rail linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(35% + var(--i) * 15%) entry
-        calc(60% + var(--i) * 15%);
+      animation-range: entry calc(50% + var(--i) * 11%) entry
+        calc(78% + var(--i) * 11%);
     }
 
     .phase {
       opacity: 0.35;
       animation: plan-phase linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 15%) entry
-        calc(45% + var(--i) * 15%);
+      animation-range: entry calc(35% + var(--i) * 11%) entry
+        calc(65% + var(--i) * 11%);
     }
 
     .phase__marker {
       background: var(--color-dark-soft);
       animation: plan-marker linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 15%) entry
-        calc(45% + var(--i) * 15%);
+      animation-range: entry calc(35% + var(--i) * 11%) entry
+        calc(65% + var(--i) * 11%);
     }
 
     /* On wide screens the panel enters quickly, so pace the reveal over its

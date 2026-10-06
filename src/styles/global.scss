@@ -85,6 +85,11 @@
   --color-accent-strong: #2563a8;  /* hover / emphasis */
   --color-accent-ink: #1f4f87;     /* links on light */
 
+  /* Link slots — the dark theme remaps these two (see "Dark theme" below)
+     while the accents above stay fixed. */
+  --color-link: #1f4f87;       /* link text on a surface */
+  --color-link-hover: #2563a8; /* link text, hovered */
+
   /* Optional secondary accent (very controlled) */
   --color-accent-secondary: #3aa3a0; /* diagrams, highlights */
 
@@ -107,7 +112,7 @@
     rgba(255,255,255,0.02)
   );
 
-  --background-gradient-white: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%)
+  --background-gradient-white: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
 
   
   --font-xs: 0.75rem; /* 12px */
@@ -136,6 +141,58 @@
   --spacer-xl: 2rem; /* 32px */
   --spacer-2xl: 3rem; /* 48px */
   --spacer-3xl: 4rem; /* 64px */
+}
+
+/* --------------------------------------------------------------------------
+   Dark theme
+   --------------------------------------------------------------------------
+   Opt-in per page: PageLayout only sets data-theme on <html> for pages that
+   render the theme toggle (the blog), so every other page keeps the single
+   light palette above. ThemeScript.astro writes the attribute in <head>,
+   before first paint: dark unless the reader has switched to light.
+
+   Only the surface, text, line and link slots flip. --color-dark*, the
+   accents and --color-ink-light keep their light-theme values on purpose, so
+   anything authored as a "dark panel on a light page" — code blocks, table
+   headers, the article CTA, the footer — still reads as a recessed panel once
+   the page itself goes dark.
+   -------------------------------------------------------------------------- */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces: the light foundation's slots, with dark values */
+  --color-light: #0f1726;        /* main background */
+  --color-light-alt: #182131;    /* cards / sections */
+  --color-light-raised: #1d283b; /* modals / elevated surfaces */
+
+  /* Text */
+  --color-ink: #e6ecf7;       /* primary text */
+  --color-ink-muted: #9fadc4; /* secondary text, 7.5:1 on the background */
+
+  /* Lines & structure */
+  --color-stroke: #2c3a52;
+  --color-stroke-strong: #3d4c68;
+
+  /* Links lift off the dark background. --color-accent itself stays put so
+     the filled buttons keep the contrast they were tuned for. */
+  --color-link: #7fb6ef;
+  --color-link-hover: #a8d0f8;
+
+  /* Status tones, lightened for a dark surface */
+  --color-danger: #e5756e;
+  --color-warning: #d2a84f;
+  --color-success: #4fb492;
+}
+
+/* Only themed pages take their background from the body; elsewhere the
+   sections paint their own. */
+:root[data-theme="dark"] body {
+  background: var(--color-light);
 }
 
 @media (prefers-reduced-motion: reduce) {

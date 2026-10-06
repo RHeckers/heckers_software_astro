@@ -3,6 +3,7 @@ import BaseHead, { type ArticleMeta } from "../components/BaseHead.astro";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import CookieConsent from "../components/CookieConsent.astro";
+import ThemeScript from "../components/ThemeScript.astro";
 
 interface Props {
   title: string;
@@ -11,9 +12,23 @@ interface Props {
   type?: "website" | "article";
   article?: ArticleMeta;
   jsonLd?: Record<string, unknown>;
+  /**
+   * Opt the page into light/dark theming: resolves the stored theme before
+   * the first paint and puts the switch in the navbar. Pages that leave this
+   * off never get a `data-theme` attribute and keep the light palette.
+   */
+  themeToggle?: boolean;
 }
 
-const { title, description, image, type, article, jsonLd } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  type,
+  article,
+  jsonLd,
+  themeToggle = false,
+} = Astro.props;
 ---
 
 <html lang="en">
@@ -26,10 +41,11 @@ const { title, description, image, type, article, jsonLd } = Astro.props;
       article={article}
       jsonLd={jsonLd}
     />
+    {themeToggle && <ThemeScript />}
   </head>
 
   <body>
-    <Navbar />
+    <Navbar themeToggle={themeToggle} />
     <main>
       <slot />
     </main>

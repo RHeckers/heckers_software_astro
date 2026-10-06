@@ -1,18 +1,10 @@
 ---
-import ExpandingWord from "./ExpandingWord.astro";
 import WorkshopSectionDesktop from "./WorkshopSectionDesktop.astro";
 import WorkshopSectionMobile from "./WorkshopSectionMobile.astro";
 ---
 
 <section id="workshops">
-  <h2 class="sr-only">Workshops</h2>
   <div class="workshop-section-desktop">
-    <ExpandingWord
-      word="Workshops"
-      callToAction="BOOK NOW"
-      subject="Workshop"
-      size="large"
-    />
     <WorkshopSectionDesktop />
   </div>
   <div class="workshop-section-mobile">
@@ -21,9 +13,13 @@ import WorkshopSectionMobile from "./WorkshopSectionMobile.astro";
 </section>
 
 <style>
-  section,
-  .workshop-section-desktop {
-    background: var(--color-dark-soft);
+  /* Flat here; the gradient goes on the boxes that are actually a
+     viewport tall (see both child components). This section is ~2,400px
+     high, so a gradient stretched over it would only ever show a flat
+     slice on screen. The colour is the gradient's end, so the two meet
+     without a seam. */
+  section {
+    background: var(--color-dark);
   }
   .workshop-section-desktop {
     display: none;

@@ -75,6 +75,7 @@ const jsonLd = {
     tags: categories,
   }}
   jsonLd={jsonLd}
+  themeToggle
 >
   <article class="post">
     <header>
@@ -246,7 +247,7 @@ const jsonLd = {
   }
 
   .back-link {
-    color: var(--color-accent-ink);
+    color: var(--color-link);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
   }
@@ -308,13 +309,13 @@ const jsonLd = {
   }
 
   .prose :global(a) {
-    color: var(--color-accent-ink);
+    color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
   .prose :global(a:hover) {
-    color: var(--color-accent-strong);
+    color: var(--color-link-hover);
   }
 
   .prose :global(blockquote) {
@@ -441,7 +442,7 @@ const jsonLd = {
     width: 100%;
     max-width: 460px;
     padding: 0.8rem 1rem;
-    background: #fff;
+    background: var(--color-light-raised);
     border: 1px solid var(--color-stroke-strong);
     border-radius: 8px;
     outline: none;
@@ -460,7 +461,7 @@ const jsonLd = {
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid var(--color-stroke-strong);
-    background: #fff;
+    background: var(--color-light-raised);
   }
 
   .input-group input {
@@ -468,6 +469,7 @@ const jsonLd = {
     border: none;
     padding: 0.8rem 1rem;
     background: transparent;
+    color: var(--color-ink);
     outline: none;
     min-width: 0;
   }
@@ -544,6 +546,17 @@ const jsonLd = {
     transform: translateY(-1px);
   }
 
+  /* The CTA keeps its brand-dark panel in both themes, so only the pill
+     inside it needs help: --color-light is the dark page now. */
+  :global(:root[data-theme="dark"]) .cta {
+    border: 1px solid var(--color-stroke);
+  }
+
+  :global(:root[data-theme="dark"]) .cta-button {
+    color: var(--color-dark);
+    background: var(--color-ink);
+  }
+
   /* --- More posts --- */
 
   .more-posts {
@@ -575,14 +588,14 @@ const jsonLd = {
   }
 
   .more-posts a {
-    color: var(--color-accent-ink);
+    color: var(--color-link);
     font-weight: var(--font-weight-medium);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
 
   .more-posts a:hover {
-    color: var(--color-accent-strong);
+    color: var(--color-link-hover);
   }
 
   /* --- Footer --- */
@@ -594,7 +607,7 @@ const jsonLd = {
   }
 
   footer a {
-    color: var(--color-accent-ink);
+    color: var(--color-link);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
   }

@@ -1,17 +1,18 @@
 ---
 import { Image } from "astro:assets";
-import effectiveAngular from "../assets/workshop/effective_angular.jpg";
-import ngPoland from "../assets/workshop/ng_poland.jpg";
-import talk1 from "../assets/workshop/talk_1.jpg";
-import talk2 from "../assets/workshop/talk_2.png";
-import { HOME_CATEGORY_LINKS, resolveHomeLink } from "../lib/home-links";
+import ngPolandCode from "../assets/workshop/ng-poland-2024.6.jpg";
+import ngPolandSponsors from "../assets/workshop/ng-poland-2024.7.jpg";
+import ngPolandHall from "../assets/workshop/ng-poland-2024.4.jpg";
+import zurichWorkshop from "../assets/workshop/angular-zurich.png";
 import { WORKSHOPS } from "../lib/workshops";
 
+// One photograph per workshop, each from a different room. The wide card
+// crops differently from the round desktop one, so the framing differs too.
 const images = {
-  "enterprise-angular": { src: talk2, objectPosition: "center" },
-  "nx-monorepo": { src: ngPoland, objectPosition: "left" },
-  ai: { src: talk1, objectPosition: "center" },
-  "ui-libraries": { src: effectiveAngular, objectPosition: "top center" },
+  "enterprise-angular": { src: ngPolandCode, objectPosition: "center" },
+  "nx-monorepo": { src: ngPolandHall, objectPosition: "center" },
+  ai: { src: zurichWorkshop, objectPosition: "center" },
+  "ui-libraries": { src: ngPolandSponsors, objectPosition: "center" },
 } as const;
 
 const workshops = WORKSHOPS.map((item) => ({
@@ -19,20 +20,10 @@ const workshops = WORKSHOPS.map((item) => ({
   image: images[item.id].src,
   objectPosition: images[item.id].objectPosition,
 }));
-
-// Blog link per workshop, resolved at build time from HOME_CATEGORY_LINKS.
-const workshopLinks = await Promise.all(
-  workshops.map((item) =>
-    resolveHomeLink(
-      HOME_CATEGORY_LINKS.workshops[
-        item.id as keyof typeof HOME_CATEGORY_LINKS.workshops
-      ],
-    ),
-  ),
-);
 ---
 
 <section>
+  <h2 class="workshops__heading">Workshops</h2>
   <div class="workshops">
     <div class="workshops__list">
       {
@@ -53,11 +44,6 @@ const workshopLinks = await Promise.all(
               <p class="card-tag">{item.tag}</p>
               <h3>{item.title}</h3>
               <p class="card-description">{item.description}</p>
-              <ul>
-                {item.bullets.map((point) => (
-                  <li>{point}</li>
-                ))}
-              </ul>
               <div class="card-actions">
                 <a class="card-cta" href="#contactForm" data-subject="Workshop">
                   Book workshop
@@ -65,11 +51,6 @@ const workshopLinks = await Promise.all(
                 <a class="card-link" href={`/services/workshops#${item.id}`}>
                   Workshop details &rarr;
                 </a>
-                {workshopLinks[index] && (
-                  <a class="card-link" href={workshopLinks[index].href}>
-                    {workshopLinks[index].label} &rarr;
-                  </a>
-                )}
               </div>
             </div>
           </article>
@@ -81,14 +62,27 @@ const workshopLinks = await Promise.all(
 
 <style>
   section {
-    /* color: var(--color-ink); */
     padding: clamp(3rem, 7vw, 6rem) clamp(1.5rem, 6vw, 5rem);
     overflow: hidden;
+    /* Same treatment as the pinned desktop panel: one sweep per viewport
+       height, then the gradient's end colour. */
+    background-color: var(--color-dark);
+    background-image: var(--background-gradient-primary);
+    background-attachment: fixed;
+    background-size: 100% 100svh;
+    background-repeat: no-repeat;
   }
 
-  .workshops__title.is-visible {
-    opacity: 1;
-    transform: translateY(0);
+  /* Same treatment as the title over the pinned desktop carousel. */
+  .workshops__heading {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--color-ink-light);
+    margin-bottom: clamp(1.5rem, 6vw, 2.5rem);
   }
 
   .workshops {
@@ -216,14 +210,6 @@ const workshopLinks = await Promise.all(
     font-family: synonym;
   }
 
-  .card-body ul {
-    list-style: none;
-    display: grid;
-    gap: var(--spacer-sm);
-    margin-top: 0.7rem;
-    margin-left: 0.25rem;
-  }
-
   .card-actions {
     display: flex;
     flex-wrap: wrap;
@@ -273,20 +259,6 @@ const workshopLinks = await Promise.all(
     transform: translateY(0);
   }
 
-  .card-body li {
-    display: flex;
-    gap: var(--spacer-sm);
-    color: var(--color-ink);
-    font-weight: var(--font-weight-medium);
-    font-family: synonym;
-  }
-
-  .card-body li::before {
-    content: "→";
-    color: var(--color-accent-ink);
-    font-weight: var(--font-weight-bold);
-  }
-
   @media (min-width: 769px) {
     .workshops__list {
       gap: clamp(1.5rem, 3vw, 2.5rem);
@@ -310,10 +282,6 @@ const workshopLinks = await Promise.all(
       gap: var(--spacer-base);
     }
 
-    .card-body ul {
-      gap: var(--spacer-base);
-    }
-
     .card-actions {
       padding-top: var(--spacer-lg);
     }
@@ -321,7 +289,7 @@ const workshopLinks = await Promise.all(
 </style>
 
 <script>
-  const cards = document.querySelectorAll(".workshop-card, .workshops__title");
+  const cards = document.querySelectorAll(".workshop-card");
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {

@@ -44,46 +44,25 @@ import Accent from "./Accent.astro";
     </g>
   </svg> -->
 
-  <div class="sticky-wrapper">
-    <div class="story-block story-block-1">
-      <p class="story-text">
-        Angular bugs <Accent tone="danger" range="cover 20% cover 60%"
-          >increasing</Accent
-        >
-      </p>
-      <p class="story-text">
-        Nx builds <Accent tone="danger" range="cover 20% cover 60%"
-          >slowing down</Accent
-        >
-      </p>
-      <p class="story-text">
-        Architecture <span class="danger-3 falling-word"
-          ><Accent tone="danger" range="cover 20% cover 60%">crumbling?</Accent
-          ></span
-        >
-      </p>
-    </div>
-    <div class="sticky-spacer"></div>
-  </div>
   <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-2">
       <div class="stacked-text">
         <p class="small-text">
           With our <Accent
-            range="cover 14% cover 34%"
-            mobileRange="cover 2% cover 32%">Architecture assessment</Accent
+            range="cover 3% cover 10%"
+            mobileRange="cover 0.5% cover 6.3%">Architecture assessment</Accent
           >
           <br />
           Angular and Nx <Accent
-            range="cover 18% cover 38%"
-            mobileRange="cover 6% cover 36%">experts</Accent
+            range="cover 4% cover 9.5%"
+            mobileRange="cover 0.8% cover 6.5%">experts</Accent
           >
           <br />
           Show you how to
           <br />
         </p>
         <p class="large-text">
-          <Accent range="cover 20% cover 44%" mobileRange="cover 12% cover 44%"
+          <Accent range="cover 6% cover 11%" mobileRange="cover 0.9% cover 6.3%"
             >IMPROVE</Accent
           >
         </p>
@@ -94,17 +73,17 @@ import Accent from "./Accent.astro";
   <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-3">
       <p class="story-text line-4">
-        <Accent range="cover 30% cover 54%" mobileRange="cover 20% cover 60%"
+        <Accent range="cover 8% cover 14%" mobileRange="cover 2% cover 7.5%"
           >Find</Accent
         > the real problems
       </p>
       <p class="story-text line-5">
-        <Accent range="cover 38% cover 58%" mobileRange="cover 30% cover 70%"
+        <Accent range="cover 6.5% cover 12%" mobileRange="cover 1.2% cover 6.6%"
           >Fix</Accent
         > what matters
       </p>
       <p class="story-text line-5">
-        <Accent range="cover 42% cover 62%" mobileRange="cover 40% cover 80%"
+        <Accent range="cover 5% cover 10%" mobileRange="cover 1.4% cover 7%"
           >Train</Accent
         > your team
       </p>
@@ -114,13 +93,27 @@ import Accent from "./Accent.astro";
     </div>
     <div class="sticky-spacer"></div>
   </div>
+
+  <!--
+    Anything slotted here scrolls inside .story, which is the containing
+    block of the sticky cards above. They therefore stay pinned while the
+    slotted content rises over them as the next card in the stack.
+  -->
+  <slot />
 </div>
 
 <style>
   .story {
     position: relative;
     width: 100%;
-    background-color: var(--color-light);
+    /* Lighter than the cards it holds, so they read as panels on it, and
+       darker than the band above: this is where the page turns. */
+    background: var(--color-light-alt);
+    /* Air on both sides of the stack: the evidence band above must not
+       run into the first card, and the last card must not end flush
+       against the section that follows. */
+    padding-top: clamp(4rem, 10vw, 7rem);
+    padding-bottom: clamp(4rem, 10vw, 7rem);
     /* margin-bottom: 20px; */
 
     .story-block {
@@ -140,32 +133,23 @@ import Accent from "./Accent.astro";
           font-weight: var(--font-weight-light);
         }
       }
-      .danger-3 {
-        animation-name: word-fall;
-        animation-timeline: view();
-        animation-fill-mode: both;
-        animation-range: cover 6% cover 34%;
-      }
     }
 
     /*
-      The accent wipes and the falling word run on each word's own view
-      timeline, in the lower part of the viewport (cover 6% to 45%). That
-      maps to the same on-screen moment on phones and desktops, unlike a
-      range on the block itself, since the blocks are much shorter than the
-      viewport on phones. The blocks pin once they reach the top and the
-      words stop moving, so every range finishes before that point.
-    */
-    .story-block-1 {
-      background-color: var(--color-light);
-      position: sticky;
-      top: 0;
-      padding-bottom: 20svh;
+      The accent wipes run on each word's own view timeline, in the lower
+      part of the viewport. That maps to the same on-screen moment on phones
+      and desktops, unlike a range on the block itself, since the blocks are
+      much shorter than the viewport on phones.
 
-      .story-text {
-        color: var(--color-ink);
-      }
-    }
+      The percentages look tiny because a sticky ancestor stretches the
+      view timeline: the browser keeps the word "in view" for as long as
+      the pinned card holds it there, so the cover range spans several
+      thousand pixels of scroll while the word is only uncovered for a few
+      hundred of them. Every range therefore has to finish inside the first
+      tenth or so of its pass, before the next card rises over this one. A
+      wipe still running when the card is covered reads as broken, so the
+      ranges are measured against that moment rather than eyeballed.
+    */
 
     /* Brighter green on the dark cards, the light-page token is too muddy there. */
     .story-block-2 :global(.accent__copy),
@@ -185,7 +169,7 @@ import Accent from "./Accent.astro";
       --sticky-tail: 5svh;
 
       &:has(.story-block-2) {
-        background-color: var(--color-light);
+        background-color: var(--color-light-alt);
       }
     }
 
@@ -277,25 +261,9 @@ import Accent from "./Accent.astro";
     animation-fill-mode: forwards;
   }
 
-  .falling-word {
-    display: inline-block;
-    animation-name: word-fall;
-    animation-timeline: view();
-    animation-range: entry 400% cover 100%;
-  }
-
   @keyframes line-draw {
     to {
       stroke-dashoffset: 0;
-    }
-  }
-
-  @keyframes word-fall {
-    from {
-      transform: rotate(0deg) translateY(0) translateX(0);
-    }
-    to {
-      transform: rotate(15deg) translateY(3rem) translateX(1rem);
     }
   }
 
@@ -303,10 +271,6 @@ import Accent from "./Accent.astro";
     .story .story-block {
       height: 60svh;
       min-height: 500px;
-    }
-
-    .story .story-block-1 {
-      padding-bottom: 0;
     }
 
     /*
@@ -371,10 +335,6 @@ import Accent from "./Accent.astro";
 
     .story .sticky-wrapper,
     .story .sticky-wrapper-long {
-      top: 15svh;
-    }
-
-    .story .story-block-1 {
       top: 15svh;
     }
   }

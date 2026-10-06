@@ -2,12 +2,11 @@
 import BlogListing from "../../../components/BlogListing.astro";
 import PageLayout from "../../../layouts/PageLayout.astro";
 import {
-  categoriesWithPosts,
+  categoryGroups,
   getSortedPosts,
-  postsInCategory,
   type BlogPost,
 } from "../../../lib/blog";
-import { categoryToSlug, type BlogCategory } from "../../../lib/categories";
+import type { BlogCategory } from "../../../lib/categories";
 
 interface Props {
   category: BlogCategory;
@@ -16,15 +15,16 @@ interface Props {
 }
 
 export async function getStaticPaths() {
-  const allPosts = await getSortedPosts();
-  const categories = categoriesWithPosts(allPosts);
+  // Routes come straight from the categories the posts use, so adding a new
+  // label to a post's frontmatter is all it takes to get a category page.
+  const groups = categoryGroups(await getSortedPosts());
+  const categories = groups.map((group) => group.category);
 
-  // One page per category that actually has posts; empty categories get no page.
-  return categories.map((category) => ({
-    params: { slug: categoryToSlug(category) },
+  return groups.map((group) => ({
+    params: { slug: group.slug },
     props: {
-      category,
-      posts: postsInCategory(allPosts, category),
+      category: group.category,
+      posts: group.posts,
       categories,
     } satisfies Props,
   }));
@@ -36,7 +36,7 @@ const title = `${category} articles — Heckers Software`;
 const description = `${count} ${count === 1 ? "article" : "articles"} about ${category} from Heckers Software: practical guidance on Angular, Nx monorepos, and frontend architecture.`;
 ---
 
-<PageLayout title={title} description={description}>
+<PageLayout title={title} description={description} themeToggle>
   <BlogListing
     heading={`${category} articles`}
     intro={`Everything we have written about ${category}.`}

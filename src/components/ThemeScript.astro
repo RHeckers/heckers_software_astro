@@ -1,0 +1,28 @@
+---
+/**
+ * Resolves the colour theme before the first paint.
+ *
+ * Rendered in <head> by PageLayout for pages that opt into theming, so the
+ * `data-theme` attribute is on <html> by the time the inlined CSS paints and
+ * a reader never sees a flash of the wrong palette. Keep it inline and
+ * unbundled: a deferred module would run after the first frame.
+ *
+ * Dark is the default. Only a reader who has used the switch gets anything
+ * else, and their choice is remembered.
+ */
+---
+
+<script is:inline>
+  (function () {
+    var theme = "dark";
+    try {
+      var stored = localStorage.getItem("theme");
+      if (stored === "dark" || stored === "light") {
+        theme = stored;
+      }
+    } catch (error) {
+      /* Private mode or blocked storage: stay on the default. */
+    }
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>

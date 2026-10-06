@@ -1,9 +1,12 @@
 ---
 /**
- * Three short client quotes in a row, as a band between two sections.
- * Used where a reader is weighing a decision: after the tiers on a service
- * page, and between the workshops and application development on the home
- * page.
+ * Three short client quotes in a row: the one place every page gives the
+ * floor to clients, so it is a dark band between two lighter sections and
+ * reads as its own block. Sits where a reader is weighing a decision:
+ * after the tiers on a service page, and between the workshops and
+ * application development on the home page.
+ *
+ * It also carries the #testimonials anchor the hero links to.
  */
 import ProofQuote from "./ProofQuote.astro";
 import type { SnippetKey } from "../lib/testimonials";
@@ -21,11 +24,15 @@ const {
   title = "From the people we have worked with",
   lede = "Every engagement is led by founder Roberto Heckers. These are the words of people who worked with him.",
   snippets,
-  tone = "light",
+  tone = "dark",
 } = Astro.props;
 ---
 
-<section class:list={["proof-row", `proof-row--${tone}`]} aria-label={title}>
+<section
+  id="testimonials"
+  class:list={["proof-row", `proof-row--${tone}`]}
+  aria-label={title}
+>
   <div class="proof-row__inner">
     <header class="proof-row__head">
       <h2 class="proof-row__title">{title}</h2>
@@ -44,16 +51,18 @@ const {
 </section>
 
 <style>
+  /* Dark by default: --color-dark is darker than the workshop band above
+     it on the home page and far from the light sections it sits between
+     on the service pages, so the block reads as a break either way. */
   .proof-row {
-    background: var(--color-light-alt);
-    color: var(--color-ink);
-    padding: 0 clamp(1.25rem, 6vw, 5rem) clamp(4rem, 10vw, 7.5rem);
-  }
-
-  .proof-row--dark {
     background: var(--color-dark-soft);
     color: var(--color-ink-light);
-    padding-top: clamp(3rem, 7vw, 5rem);
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .proof-row--light {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
   }
 
   .proof-row__inner {
@@ -82,8 +91,12 @@ const {
     max-width: 60ch;
   }
 
-  .proof-row--dark .proof-row__lede {
+  .proof-row__lede {
     color: rgba(232, 237, 246, 0.7);
+  }
+
+  .proof-row--light .proof-row__lede {
+    color: var(--color-ink-muted);
   }
 
   .proof-row__list {

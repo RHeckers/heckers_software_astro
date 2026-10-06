@@ -60,12 +60,19 @@ const { categories, active } = Astro.props;
   .filter-bar a:hover,
   .filter-bar a:focus-visible {
     border-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-link);
   }
 
   .filter-bar a[aria-current="page"] {
     background: var(--color-dark);
     border-color: var(--color-dark);
     color: var(--color-ink-light);
+  }
+
+  /* The dark page is already navy, so invert the active chip instead. */
+  :global(:root[data-theme="dark"]) .filter-bar a[aria-current="page"] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-dark);
   }
 </style>

@@ -80,9 +80,7 @@ const {
                 <div class="phase__row">
                   <h4 class="phase__title">
                     {step.title}
-                    {step.optional && (
-                      <em class="phase__optional">optional</em>
-                    )}
+                    {step.optional && <em class="phase__optional">optional</em>}
                   </h4>
                   <span class="phase__when">{step.when}</span>
                 </div>
@@ -230,7 +228,7 @@ const {
   /* --- Stepped panel --- */
 
   .plan {
-    background: var(--background-gradient-secondary);
+    background: var(--background-gradient-primary);
     color: var(--color-ink-light);
     border-radius: 22px;
     padding: clamp(1.5rem, 3.5vw, 2.5rem);
@@ -345,36 +343,36 @@ const {
       transform: scaleY(0);
       animation: plan-rail linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(35% + var(--i) * 12%)
-        entry calc(60% + var(--i) * 12%);
+      animation-range: entry calc(35% + var(--i) * 12%) entry
+        calc(60% + var(--i) * 12%);
     }
 
     .phase {
       opacity: 0.35;
       animation: plan-phase linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 12%)
-        entry calc(45% + var(--i) * 12%);
+      animation-range: entry calc(20% + var(--i) * 12%) entry
+        calc(45% + var(--i) * 12%);
     }
 
     .phase__marker {
       background: var(--color-dark-soft);
       animation: plan-marker linear both;
       animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 12%)
-        entry calc(45% + var(--i) * 12%);
+      animation-range: entry calc(20% + var(--i) * 12%) entry
+        calc(45% + var(--i) * 12%);
     }
 
     @media (min-width: 960px) {
       .phase,
       .phase__marker {
-        animation-range: cover calc(14% + var(--i) * 9%)
-          cover calc(26% + var(--i) * 9%);
+        animation-range: cover calc(14% + var(--i) * 9%) cover
+          calc(26% + var(--i) * 9%);
       }
 
       .phase:not(:last-child)::after {
-        animation-range: cover calc(20% + var(--i) * 9%)
-          cover calc(34% + var(--i) * 9%);
+        animation-range: cover calc(20% + var(--i) * 9%) cover
+          calc(34% + var(--i) * 9%);
       }
     }
   }
