@@ -22,41 +22,52 @@ If you have not met the pattern under these names, here it is in full. Dan Abram
 
 A **container component** owns a screen. In an Angular application it is almost always the routed component, which is why I usually just say *page*. The page injects what it needs, decides what to load and when, and hands the results to the components beneath it. It is the one place on a screen that knows where data comes from.
 
-In a workspace with more than a handful of pages, the page does not compute its lookups itself. They are shared, through a facade service or, in signal-based code, an **inject function**: a plain function that runs in an injection context and returns the composed signals.
+In a workspace with more than a handful of pages, the page does not compute its lookups itself. They are shared, through a facade service or, in signal-based code, an **inject function**: a plain function that runs in an injection context and returns the composed signals. Every page that needs an animal calls the same one, the lookup lives once in `data-access`, and the page's job is reduced to declaring which animal it is about and binding the result:
 
 ```ts
-// libs/animals/data-access/src/lib/inject-animal-status.ts
-export function injectAnimalStatus(animalId: Signal<string>): Signal<AnimalStatus | undefined> {
-  assertInInjectionContext(injectAnimalStatus);
-  const store = inject(animalStore);
-  return computed(() => store.entities().find((a) => a.id === animalId())?.status);
-}
-```
+import { input as routeBinding } from '@angular/core';
 
-Every page that needs the status calls it in one line. The lookup lives once, in `data-access`, and the page's job is reduced to deciding what to load and binding the results:
-
-```ts
 @Component({
   selector: 'keeper-animal-detail',
   imports: [AnimalProfileCardComponent],
   template: `
-    @if (store.selected(); as animal) {
-      <zoo-animal-profile-card [animal]="animal" [status]="status()" />
+    @if (animal.value(); as a) {
+      <zoo-animal-profile-card [animal]="a" />
     }
   `,
 })
 export class AnimalDetailComponent {
-  protected readonly store = inject(animalStore);
-  private readonly route = inject(ActivatedRoute);
+  // bound from the :id route parameter via withComponentInputBinding()
+  readonly id = routeBinding.required<string>();
 
-  private readonly id = signal(this.route.snapshot.paramMap.get('id')!);
-  protected readonly status = injectAnimalStatus(this.id);
-
-  constructor() {
-    this.store.load(this.id());
-  }
+  protected readonly animal = injectAnimal(this.id);
 }
 ```
+
+There is no `load()` call and no `effect`. `injectAnimal` gives this consumer a resource keyed on the id, backed by the store so that a second consumer asking for the same animal does not fetch it again:
+
+```ts
+// libs/animals/data-access/src/lib/inject-animal.ts
+export function injectAnimal(animalId: Signal<string>) {
+  assertInInjectionContext(injectAnimal);
+  const store = inject(animalStore);
+
+  const request = resource({
+    params: () => animalId(),
+    loader: ({ params: id }) => store.ensure(id),
+  });
+
+  return {
+    value: computed(() => store.entities().find((a) => a.id === animalId())),
+    isLoading: request.isLoading,
+    error: request.error,
+  };
+}
+```
+
+Two details carry the design. `value` reads live from the store rather than from the resource's result, so a change written to that animal elsewhere on the screen shows up here too; the resource only decides *when* to fetch and exposes `isLoading` and `error`. And `store.ensure(id)` resolves immediately if the entity is already present, returns the same in-flight promise if a request for that id is already running, and only otherwise calls the API. That is what lets any number of consumers ask for the same animal and produce at most one request between them.
+
+Navigating from one animal to the next on the same component changes the id, and the resource follows. Aliasing `input` to `routeBinding` is a habit I picked up to make it obvious at the declaration that the value comes from the router rather than a parent template.
 
 **Presentational components** are everything the page is built from. They receive data through inputs, report events through outputs, and inject nothing. Give one the same inputs twice and it renders the same thing twice. They live in your `ui` libraries, and I organize them the way atomic design does, because the vocabulary matters below:
 
@@ -68,56 +79,56 @@ A page composes whatever it needs, usually organisms but just as often a molecul
 
 ```ts
 @Component({
-  selector: 'zoo-status-badge',
-  template: `<span class="badge" [class]="tone()">{{ label() }}</span>`,
+  selector: 'zoo-feeding-badge',
+  template: `<span class="badge" [class.overdue]="overdue()">{{ label() }}</span>`,
 })
-export class StatusBadgeComponent {
-  readonly status = input.required<AnimalStatus>();
+export class FeedingBadgeComponent {
+  readonly next = input.required<Date>();
 
-  protected readonly label = computed(() => STATUS_LABELS[this.status()]);
-  protected readonly tone = computed(() => STATUS_TONES[this.status()]);
+  protected readonly overdue = computed(() => this.next() < new Date());
+  protected readonly label = computed(() => formatRelative(this.next()));
 }
 ```
 
-That badge is an atom. It is trivially testable and renders anywhere there is a status. If you are building one application with a dozen screens, this will serve you for years, and I would not change it.
+That badge is an atom. It is trivially testable and renders anywhere there is a feeding time. If you are building one application with a dozen screens, this will serve you for years, and I would not change it.
 
 The trouble is not with the split, and it is not with the lookups. It is with what happens to the levels in between when a component three layers down needs something the page has.
 
 ## Where it starts to hurt
 
-The badge should show *live* status: an animal in surgery, recently moved, or with a feeding overdue. The page has that, from `injectAnimalStatus`, in one line. The badge needs it. Between them sit the organism and the molecule that make up the card.
+The card's header should show when the animal is next fed, and turn red when that time has passed. The feeding time is not on the animal record. It lives in the feeding domain, and the page gets it the same way it got the animal, from `injectNextFeeding(this.id)` in `libs/feeding/data-access`, in one line. The badge needs it. Between them sit the organism and the molecule that make up the card.
 
 Under the split, nothing between the page and the badge may inject anything, so the page passes the value down:
 
 ```html
 <!-- page -->
-<zoo-animal-profile-card [animal]="animal" [status]="status()" />
+<zoo-animal-profile-card [animal]="animal" [nextFeeding]="nextFeeding()" />
 
 <!-- organism: zoo-animal-profile-card -->
-<zoo-card-header [name]="animal().name" [status]="status()" />
+<zoo-card-header [name]="animal().name" [nextFeeding]="nextFeeding()" />
 
 <!-- molecule: zoo-card-header -->
 <h2>{{ name() }}</h2>
-<zoo-status-badge [status]="status()" />
+<zoo-feeding-badge [next]="nextFeeding()" />
 ```
 
-Three components carry `status`. One uses it. The card and the header each gained an input purely so the badge can have one. The lookup was one line; the wiring is three inputs across three components. That is prop drilling, and the wiring is the whole problem.
+Three components carry `nextFeeding`. One uses it. The card and the header each gained an input purely so the badge can have one. The lookup was one line; the wiring is three inputs across three components. That is prop drilling, and the wiring is the whole problem.
 
-It spreads. The feeding row needs the next feeding, the header needs the enclosure name, the footer needs the last sighting. Each is one value the page obtains in one line and then carries through the same organism and molecule to reach a leaf. The organism that started with an `animal` input now has five and uses one of them. Nobody designed it that way. It happened one leaf at a time.
+It spreads. The header also wants the enclosure name, from the enclosures domain. The footer wants the last sighting, from the keeper log. Each is one value the page obtains in one line and then carries through the same organism and molecule to reach a leaf. The organism that started with an `animal` input now has four and uses one of them. Nobody designed it that way. It happened one leaf at a time.
 
-It repeats. Every page that renders the card calls the same four inject functions and writes the same four bindings: the detail page, the keeper list with thirty cards, the signage screens, the map popover. The lookups live once; the plumbing that carries their results is rewritten on every page.
+It repeats. Every page that renders the card calls the same inject functions and writes the same bindings: the detail page, the keeper list with thirty cards, the signage screens, the map popover. The lookups live once; the plumbing that carries their results is rewritten on every page.
 
-You might collapse the four calls into one `injectAnimalProfileCardData()`. The four values come from four domains, though: status from animals, the next feeding from feeding, the enclosure from enclosures, the sighting from the keeper log. A function that reads all four cannot live in any of them, because a domain may not import another domain. It can only live in an application. So the composite exists, per application, and it does nothing for the bindings underneath. I will come back to where it belongs.
+You might collapse the calls into one `injectAnimalProfileCardData()`. The values come from different domains, though: the animal from animals, the feeding from feeding, the enclosure from enclosures, the sighting from the keeper log. A function that reads all of them cannot live in any one domain, because a domain may not import another domain. It can only live in an application. So the composite exists, per application, and it does nothing for the bindings underneath. I will come back to where it belongs.
 
-And reuse is only half real. The card is in `libs/animals/ui` and any page may render it. Rendering it *correctly* means supplying four live values and threading them through two levels, and that part is rebuilt by every new screen and copied into every new application. The reusable part is the component. The part that keeps getting rewritten is everything that connects it to its data.
+And reuse is only half real. The card is in `libs/animals/ui` and any page may render it. Rendering it *correctly* means supplying three live values and threading them through two levels, and that part is rebuilt by every new screen and copied into every new application. The reusable part is the component. The part that keeps getting rewritten is everything that connects it to its data.
 
-Module boundaries make the shape explicit. `type:ui` may not depend on `type:data-access`, so neither the card, the header nor the badge may call `injectAnimalStatus`; the wiring is forced into the page. And `type:feature` may not depend on `type:feature`, so one page cannot reuse another page's template. The only legal place for "a card that knows how to find its own live status" is a page, and pages are not reusable by rule. When code has no legal home it ends up somewhere illegal: a `ui` library that quietly imports a store, or a shared library that imports a domain. Both are boundary violations with a good excuse, and good excuses are how boundaries die.
+Module boundaries make the shape explicit. `type:ui` may not depend on `type:data-access`, so neither the card, the header nor the badge may call `injectNextFeeding`; the wiring is forced into the page. And `type:feature` may not depend on `type:feature`, so one page cannot reuse another page's template. The only legal place for "a card that knows when its animal is next fed" is a page, and pages are not reusable by rule. When code has no legal home it ends up somewhere illegal: a `ui` library that quietly imports a store, or a shared library that imports a domain. Both are boundary violations with a good excuse, and good excuses are how boundaries die.
 
 ## The thing the model has no word for
 
 Every one of those symptoms comes from the same assumption: **data enters at the page and flows down through every level.** That assumption is right for a screen. It is wrong for a widget.
 
-A widget is a self-contained piece of UI that is meaningful on its own. An animal's status. An animal's feeding schedule. A ticket's validity. These are not pages, and they are not pure presentation. They are small units that know how to find their own data for one entity and get dropped into many screens across many applications. The two-category model has no word for them, so it either forces them to be presentational, with the drilling that follows, or forces them to be pages, which puts them in features where nothing else can reach them.
+A widget is a self-contained piece of UI that is meaningful on its own. An animal's next feeding. An enclosure's occupancy. A ticket's validity. These are not pages, and they are not pure presentation. They are small units that know how to find their own data for one entity and get dropped into many screens across many applications. The two-category model has no word for them, so it either forces them to be presentational, with the drilling that follows, or forces them to be pages, which puts them in features where nothing else can reach them.
 
 Before naming the third category, it is fair to ask whether an existing technique already solves this. Teams usually try three.
 
@@ -131,7 +142,7 @@ Keep the layout components dumb and let the page project the wired element into 
 <zoo-list>
   @for (animal of store.entities(); track animal.id) {
     <zoo-list-row [title]="animal.name">
-      <zoo-status-badge badge [status]="statusById()[animal.id]" />
+      <zoo-feeding-badge badge [next]="nextFeedingById()[animal.id]" />
     </zoo-list-row>
   }
 </zoo-list>
@@ -145,11 +156,11 @@ Projection is the right tool for layout: cards with header and footer slots, dia
 
 ### Everything smart
 
-The opposite instinct: let every component inject what it needs. The badge injects the animal store. So does the row. So does the card. There is no drilling, because nothing is passed down.
+The opposite instinct: let every component inject what it needs. The badge injects the feeding store. So does the row. So does the card. There is no drilling, because nothing is passed down.
 
 For a small application with one team and no shared libraries, this is fine. The problems arrive with size, and they arrive together.
 
-**Every component needs a store to render**, so none of them can be shown in a test, a story or a docs page with plain data, and `<zoo-status-badge />` with no inputs reads as if it needs nothing while needing a store and an API client.
+**Every component needs a store to render**, so none of them can be shown in a test, a story or a docs page with plain data, and `<zoo-feeding-badge />` with no inputs reads as if it needs nothing while needing a store and an API client.
 
 **The `ui` to `data-access` boundary is gone**, so `libs/shared/ui` imports domain stores and every application that uses a shared button carries whatever store the button reads.
 
@@ -157,7 +168,7 @@ For a small application with one team and no shared libraries, this is fine. The
 
 **Cycles become possible.** In a layered graph a cycle between `ui` and `data-access` cannot happen, because `ui` never imports `data-access`. Everything-smart removes that guarantee, and stores acquire reverse imports easily: a store that shows an error toast or injects a dialog service. The transitive version is the common one. `zoo-dialog` in `shared/ui` injects the notification store; the notification store imports `zoo-toast` from `shared/ui` to render notifications. Dialog and toast never mention each other, but they share a project and a barrel, so `shared-ui` and `shared-data-access` depend on each other. Lint reports it if boundaries are on; otherwise you meet it at runtime as `Cannot access 'X' before initialization`. The layered rule is what makes a whole class of cycles impossible rather than merely discouraged.
 
-**And it cannot render what is not in the store.** A form for registering a new animal wants to show the status badge for the draft. The draft has no id and is not in the store, so a badge that looks itself up cannot render it. The team writes a second badge with a status input, which is the presentational component they deleted. Now there are two badges and they drift.
+**And it cannot render what is not in the store.** A form for scheduling a new feeding wants to show the badge for the draft time before it is saved. The draft has no id and is not in the store, so a badge that looks itself up cannot render it. The team writes a second badge with a `next` input, which is the presentational component they deleted. Now there are two badges and they drift.
 
 Everything-smart removes drilling by removing the one thing that made components reusable in a different context: that their inputs fully describe them.
 
@@ -166,19 +177,19 @@ Everything-smart removes drilling by removing the one thing that made components
 The careful version. The badge injects an abstraction, and the host decides what it resolves to:
 
 ```ts
-export abstract class AnimalStatusSource {
-  abstract statusOf(animalId: Signal<string>): Signal<AnimalStatus | undefined>;
+export abstract class NextFeedingSource {
+  abstract nextFeedingOf(animalId: Signal<string>): Signal<Date | undefined>;
 }
 
-@Component({ selector: 'zoo-status-badge', /* ... */ })
-export class StatusBadgeComponent {
-  private readonly source = inject(AnimalStatusSource);
+@Component({ selector: 'zoo-feeding-badge', /* ... */ })
+export class FeedingBadgeComponent {
+  private readonly source = inject(NextFeedingSource);
   readonly animalId = input.required<string>();
-  protected readonly status = this.source.statusOf(this.animalId);
+  protected readonly next = this.source.nextFeedingOf(this.animalId);
 }
 ```
 
-The detail page provides a store-backed source, the register form a draft-backed one, a test a stub. One badge, three sources. This is the same dependency inversion as the photo picker, and when the source genuinely varies per host it is the right design.
+The detail page provides a store-backed source, the scheduling form a draft-backed one, a test a stub. One badge, three sources. This is the same dependency inversion as the photo picker, and when the source genuinely varies per host it is the right design.
 
 The pain comes when it does not. Every host must provide it, and a missing provider is a `NullInjectorError` at runtime rather than a compile error. The provider has to sit above every consumer, so two badges on one screen with different sources need an intermediate host whose only job is a `providers` array. And in most screens the source is the store, full stop; paying the abstraction on every badge so that one form can supply a draft puts the abstraction everywhere instead of where the variation is.
 
@@ -188,50 +199,41 @@ It is a precision tool. It solves the draft problem, and nothing else in this ar
 
 A **slice** is a component that owns its own data wiring for one concern and is reusable across screens and applications. Its public surface is fixed by rule: it may take one input naming which entity it is about, and it has no outputs.
 
-Here is the animal status as a slice, wrapping the badge:
+Here is the next feeding as a slice, wrapping the badge:
 
 ```ts
-// libs/animals/slices/animal-status/src/lib/animal-status.component.ts
+// libs/feeding/slices/next-feeding/src/lib/next-feeding.component.ts
 @Component({
-  selector: 'zoo-animal-status',
-  imports: [StatusBadgeComponent],
+  selector: 'zoo-next-feeding',
+  imports: [FeedingBadgeComponent],
   template: `
-    @if (status(); as s) {
-      <zoo-status-badge [status]="s" />
+    @if (next.value(); as n) {
+      <zoo-feeding-badge [next]="n" />
     }
   `,
 })
-export class AnimalStatusComponent {
+export class NextFeedingComponent {
   readonly animalId = input.required<string>();
 
-  protected readonly status = injectAnimalStatus(this.animalId);
+  protected readonly next = injectNextFeeding(this.animalId);
 }
 ```
 
-Where `injectAnimalStatus` now also ensures the animal is present, so that the slice works whether or not the page loaded it:
-
-```ts
-export function injectAnimalStatus(animalId: Signal<string>): Signal<AnimalStatus | undefined> {
-  assertInInjectionContext(injectAnimalStatus);
-  const store = inject(animalStore);
-  effect(() => store.ensure(animalId()));
-  return computed(() => store.entities().find((a) => a.id === animalId())?.status);
-}
-```
+`injectNextFeeding` has the same shape as `injectAnimal` from the baseline: a resource keyed on the id whose loader calls `feedingStore.ensure(animalId)`, and a `value` read live from the store. Because it ensures, the slice works whether or not the page loaded any feedings.
 
 The **presentational badge is untouched.** The slice uses it; it does not replace it.
 
-The **slice injects its data**, which is the line a presentational component may not cross. It calls the same `injectAnimalStatus` the pages use, so the lookup stays written once; the difference is that it is called next to the component that needs it instead of three levels above.
+The **slice injects its data**, which is the line a presentational component may not cross. It calls the same `injectNextFeeding` the pages use, so the lookup stays written once; the difference is that it is called next to the component that needs it instead of three levels above.
 
-The **surface is one input and no outputs.** A screen writes `<zoo-animal-status [animalId]="id" />` and is done. Nothing between it and the badge carries an input it does not use, and because there are no outputs, nothing has to react to it either: if the slice's actions have consequences, it writes them to the store, and whatever cares reads the store.
+The **surface is one input and no outputs.** A screen writes `<zoo-next-feeding [animalId]="id" />` and is done. Nothing between it and the badge carries an input it does not use, and because there are no outputs, nothing has to react to it either: if the slice's actions have consequences, it writes them to the store, and whatever cares reads the store.
 
-The **slice is named for, and tied to, the data it fetches.** It is `zoo-animal-status`, not `zoo-status`, because it is bound to the animal store. A badge that could show the status of anything is an atom with a `status` input, which `zoo-status-badge` already is. The slice is the thing that commits to one source, decided when it is written and never varied by the page.
+The **slice is named for, and tied to, the data it fetches.** It is `zoo-next-feeding`, not `zoo-feeding-badge`, because it is bound to the feeding store. A badge that could show any time is an atom with a `next` input, which `zoo-feeding-badge` already is. The slice is the thing that commits to one source, decided when it is written and never varied by the page.
 
-The **slice ensures its own data.** It does not assume the page loaded the animal first; that would be a hidden precondition, and a component with a hidden precondition is not self-contained. Instead it asks the store to make sure the entity is present, through something like `store.ensure(animalId)`, and the store makes that cheap: an entity already in the store costs nothing, and thirty requests for thirty missing ids are deduplicated or batched by the store, not by the slice. The page may still bulk-load a list for efficiency, and when it does, every slice on it finds its data present and nothing fires. When it does not, the slices still work. This is the property people get wrong most, in both directions, and I will come back to it.
+The **slice ensures its own data.** It does not assume the page loaded the feedings first; that would be a hidden precondition, and a component with a hidden precondition is not self-contained. Instead it asks the store to make sure the data is present, through `feedingStore.ensure(animalId)`, and the store makes that cheap: an entity already in the store costs nothing, and thirty requests for thirty missing ids are deduplicated or batched by the store, not by the slice. The page may still bulk-load a list for efficiency, and when it does, every slice on it finds its data present and nothing fires. When it does not, the slices still work. This is the property people get wrong most, in both directions, and I will come back to it.
 
 ### Applied to the card
 
-The status slice is the smallest possible example, and on its own it does not fix the card. The badge sits inside `zoo-card-header`, a molecule in `libs/animals/ui`, and a `ui` library may not import a slice. The page cannot drop `<zoo-animal-status>` into a header it does not render.
+The feeding slice is the smallest possible example, and on its own it does not fix the card. The badge sits inside `zoo-card-header`, a molecule in `libs/animals/ui`, and a `ui` library may not import a slice. The page cannot drop `<zoo-next-feeding>` into a header it does not render.
 
 So the unit that becomes the slice is the card. It is the thing dropped onto pages, the thing that knows which animal it is about, and the thing whose wiring was being repeated. Make *it* the slice, and let it own the one level of drilling that remains:
 
@@ -239,12 +241,12 @@ So the unit that becomes the slice is the card. It is the thing dropped onto pag
 // apps/keeper-mobile/slices/animal-profile-card/src/lib/animal-profile-card.component.ts
 @Component({
   selector: 'keeper-animal-profile-card',
-  imports: [CardHeaderComponent, FeedingRowComponent, EnclosureChipComponent],
+  imports: [CardHeaderComponent, EnclosureChipComponent, SightingRowComponent],
   template: `
     @if (data(); as d) {
-      <zoo-card-header [name]="d.name" [status]="d.status" />
+      <zoo-card-header [name]="d.name" [nextFeeding]="d.nextFeeding" />
       <zoo-enclosure-chip [name]="d.enclosureName" />
-      <zoo-feeding-row [next]="d.nextFeeding" [lastSeen]="d.lastSeenAt" />
+      <zoo-sighting-row [lastSeen]="d.lastSeenAt" />
     }
   `,
 })
@@ -265,26 +267,24 @@ export function injectAnimalProfileCardData(animalId: Signal<string>) {
   assertInInjectionContext(injectAnimalProfileCardData);
 
   const animal = injectAnimal(animalId);                   // libs/animals/data-access
-  const status = injectAnimalStatus(animalId);             // libs/animals/data-access
   const nextFeeding = injectNextFeeding(animalId);         // libs/feeding/data-access
   const enclosure = injectEnclosureOf(animalId);           // libs/enclosures/data-access
   const lastSeenAt = injectLastSighting(animalId);         // apps/keeper-mobile/data-access
 
-  return computed(() => animal() && ({
-    name: animal()!.name,
-    status: status(),
-    nextFeeding: nextFeeding(),
-    enclosureName: enclosure()?.name,
-    lastSeenAt: lastSeenAt(),
+  return computed(() => animal.value() && ({
+    name: animal.value()!.name,
+    nextFeeding: nextFeeding.value(),
+    enclosureName: enclosure.value()?.name,
+    lastSeenAt: lastSeenAt.value(),
   }));
 }
 ```
 
-It is in the application because it reads four domains, and the application is the only place allowed to. The domain inject functions it calls each live in their own domain and know nothing of each other. Five lines of composition on top of four lookups that are each written once; that is the whole duplication cost of the rule.
+It is in the application because it reads several domains, and the application is the only place allowed to. The domain inject functions it calls each live in their own domain and know nothing of each other. A few lines of composition on top of lookups that are each written once; that is the whole duplication cost of the rule.
 
 Note that `apps/keeper-mobile/data-access` is not the application project. It is a library in the application's folder, tagged `app:keeper-mobile` and `type:data-access`, like `apps/keeper-mobile/slices` beside it. The shell is the only application project, and nothing imports from it. The keeper's features import the composite under both the app rule and the type rule; no other application and no domain can see it.
 
-That also settles what kind of slice the card is. It reads four domains, so it cannot be a domain slice. It is a feature slice. If several applications need the same card, there are three honest answers: a feature slice and a five-line composite per application; a split into domain slices, `zoo-animal-status`, `zoo-next-feeding`, `zoo-enclosure-chip`, that the page arranges side by side; or composition moved to the API as a read model, so one domain owns the card's data and a domain slice can render it. What is not an option is a library that reaches into four domains.
+That also settles what kind of slice the card is. It reads several domains, so it cannot be a domain slice. It is a feature slice. If several applications need the same card, there are three honest answers: a feature slice and a short composite per application; a split into domain slices, `zoo-next-feeding`, `zoo-enclosure-chip`, `zoo-last-sighting`, that the page arranges side by side; or composition moved to the API as a read model, so one domain owns the card's data and a domain slice can render it. What is not an option is a library that reaches into several domains.
 
 ### A type and a rule
 
@@ -310,7 +310,7 @@ A feature composes slices and presentational components. A slice composes presen
 
 There are two places a slice can live, and the difference is what it is allowed to know.
 
-A **domain slice** lives in `libs/<domain>/slices` and knows one domain. `animal-status` reads the animal store and renders a badge. It does not know which application it is in or anything about tickets or enclosures. Tagged `domain:animals` and `type:slice`, every application may use it. The test: **could this component be dropped into an application that does not exist yet, with no changes?**
+A **domain slice** lives in `libs/<domain>/slices` and knows one domain. `next-feeding` reads the feeding store and renders a badge. It does not know which application it is in or anything about tickets or enclosures. Tagged `domain:feeding` and `type:slice`, every application may use it. The test: **could this component be dropped into an application that does not exist yet, with no changes?**
 
 A **feature slice** lives in `apps/<app>/slices` and may know things a domain slice may not. `shift-summary` shows the zoo keeper how many animals are fed, how many are overdue, and which enclosure to go to next. It reads the animals, feeding and enclosures stores, and it applies a rule only the keeper app has: feedings are overdue relative to the keeper's shift start. That combination is not allowed in a domain, because `libs/animals` may not import `libs/feeding`. The application may import both, so a slice in the application can compose them. Tagged `app:keeper-mobile` and `type:slice`, it is reusable within that application, across its screens, and not beyond. The test: **is this reusable within one application, but either combines domains or applies a rule only that application has?** If it could live in a domain with no loss, move it there.
 
@@ -360,7 +360,7 @@ The folder tells you which rules apply, which is the principle the [folder struc
 
 No row is a clean sweep. **Container and presentational** wins for anything describable by its inputs and stays the default; slices sit beside it, not in place of it. **Projection** wins for layout. **Everything smart** wins only while testability, bundles and boundaries cost nothing. **The abstract dependency** wins when the source genuinely varies, and is overkill elsewhere. **The slice** wins the widget case: a self-contained unit for one entity, used in several places, with a source that does not vary.
 
-And they compose. A slice whose source does need to vary injects an abstract source instead of a concrete store; the slice decides *where the wiring lives*, and the token decides *what it wires to*. The register form's draft badge is a slice that injects `AnimalStatusSource`, provided once at the form, while every other screen uses the same slice with the store-backed source provided at the root.
+And they compose. A slice whose source does need to vary injects an abstract source instead of a concrete store; the slice decides *where the wiring lives*, and the token decides *what it wires to*. The scheduling form's draft badge is a slice that injects `NextFeedingSource`, provided once at the form, while every other screen uses the same slice with the store-backed source provided at the root.
 
 In one sentence: **drilling, projection and everything-smart remove the symptom by moving the cost somewhere else; slices and tokens remove it by giving the wiring a home.**
 
@@ -370,7 +370,7 @@ Not every component with a store injected is a slice. I check five things.
 
 **It is used in more than one place.** A component used once belongs in the feature that uses it. The moment a second screen needs the same wiring, it becomes a slice.
 
-**It is about one entity, or one tightly coupled concept.** The profile card reads four stores, but every one is about the same animal; it is the subject that must be singular, not the store. A dashboard that reads animals, enclosures and staff is a feature that forgot to be one.
+**It is about one entity, or one tightly coupled concept.** `next-feeding` reads one animal's feeding. The profile card reads several stores, but every one is about the same animal; it is the subject that must be singular, not the store. A dashboard that reads animals, enclosures and staff is a feature that forgot to be one.
 
 **Its surface is one identity input and nothing else.** The input says *which*, never *what* or *how*, and there are no outputs. A data input means the source is still in the page. An output means the slice is handing its consequences back up, which is drilling in the other direction.
 
@@ -384,7 +384,7 @@ Once a team has the pattern, they use it for everything. Here is what that looks
 
 **Slices that fetch unconditionally.** A slice calls `load(id)` on init rather than `ensure(id)`. The thirty-row keeper list renders thirty slices and thirty requests go out, every one redundant, because the page already loaded all thirty animals in one call. Thirty rows show thirty spinners for data that was already there. The fix is not to forbid loading, which would make the slice depend on the page again. It is to put the deduplication in the store: `ensure` skips entities it already has and batches the ones it does not, so thirty calls produce zero or one request, and the slice stays self-contained either way.
 
-**Slices in slices.** The feeding schedule renders the animal status; the enclosure summary renders the feeding schedule. Rendering an enclosure summary now reaches three levels down into the animal store, and nothing in its signature says so. The constraint forbids it: `type:slice` may not depend on `type:slice`. If a slice needs what another slice shows, it composes the same presentational component and reads the same store. The graph stays one level deep.
+**Slices in slices.** The enclosure summary renders the next-feeding slice; a shift overview slice renders the enclosure summary. Rendering a shift overview now reaches three levels down into the feeding store, and nothing in its signature says so. The constraint forbids it: `type:slice` may not depend on `type:slice`. If a slice needs what another slice shows, it composes the same presentational component and reads the same store. The graph stays one level deep.
 
 **Everything becomes a slice.** A team that has felt the drilling over-corrects and injects stores into components that were fine as presentational. Every component now needs a store in its test setup and is coupled to the store's shape. If a component can be fully described by its inputs, it is presentational. Keep it that way.
 
@@ -398,7 +398,7 @@ Before slices, a workspace with enforced boundaries has features at the top, `ui
 
 After slices, there is a middle layer. Features get thin, because their job returns to routing, loading and composition. Slices hold the wiring, once. The `ui` layer stays pure, because the pressure to inject into it is gone. And the edges tell the truth: a feature depends on the slices it composes, a slice depends on the stores it reads, and nothing reaches sideways.
 
-This is also why a slice should be its own Nx project, not a folder inside a `ui` library. The edge from a slice to its store is real and belongs in the graph, on a project that contains only the slice. `animals-slices-animal-status` depends on `animals-data-access` and nothing else does. `affected` on a store change reaches the slices that read it and the features that compose them, and stops. The coupling is recorded exactly where it exists, at exactly the size it is.
+This is also why a slice should be its own Nx project, not a folder inside a `ui` library. The edge from a slice to its store is real and belongs in the graph, on a project that contains only the slice. `feeding-slices-next-feeding` depends on `feeding-data-access` and nothing else does. `affected` on a store change reaches the slices that read it and the features that compose them, and stops. The coupling is recorded exactly where it exists, at exactly the size it is.
 
 Run `nx graph` on a workspace that has adopted this and you can see the three bands. Run it on one that has not and you see a wide feature layer with suspiciously similar nodes, which is what duplicated wiring looks like from above.
 
