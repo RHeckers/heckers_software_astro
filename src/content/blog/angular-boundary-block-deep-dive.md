@@ -165,19 +165,21 @@ The docs say "initialization or change detection". Here is the list, each confir
 | A component **inserted dynamically** via `ViewContainerRef` inside the block | yes |
 | A **nested boundary's `@error` block** | yes, by the outer boundary |
 
-The `effect()` row deserves a note, because it is not obvious from the docs. Component effects are "view effects": they run inside `refreshView`, via `runEffectsInView`, as part of the view's update pass. An error thrown there propagates out of `refreshView` like any other and hits the same catch. That is why the table says yes.
+The `effect()` row deserves a note, because it is not obvious from the docs. Whether an effect is a "view effect" or a "root effect" is decided in one line of `packages/core/src/render3/reactivity/effect.ts`: `effect()` asks its injector for `ViewContext`. If that resolves, the effect is tied to the view and runs inside `refreshView`, via `runEffectsInView`, as part of the view's update pass. An error thrown there propagates out of `refreshView` like any other and hits the same catch. That is why the table says yes.
+
+The rule is about the injector, not about whether the code is a component or a service. A service listed in a component's `providers` is created by that component's node injector, so `ViewContext` resolves and its effects are view effects too, caught by any boundary that contains the component. A service provided in root, in an environment injector, or at route level has no view in reach, so its effects are root effects. The same is true of an effect created inside a component but given an environment injector explicitly through the `injector` option.
 
 Now the other list. These are not edge cases; they are the common ways an error leaves a component, and the boundary does not see any of them.
 
 | Error thrown in | Caught by `@boundary`? |
 | --- | --- |
 | An **event listener**, `(click)="save()"` where `save` throws | **no** |
-| A **root effect**, one created in a service rather than a component | **no** |
+| A **root effect**: an `effect()` created where no component injector is in reach, such as a `providedIn: 'root'` or route-level service | **no** |
 | An **`afterRender` / `afterNextRender`** callback | **no** |
 | **Async code**: a promise, a `setTimeout`, an HTTP callback | **no** |
 | **Projected content**, errors in children projected into a component whose own template has the boundary | **no** |
 
-The first three are structural. Event listeners run through `executeListenerWithErrorHandling` in `packages/core/src/render3/view/listeners.ts`, which catches the error and sends it straight to `handleUncaughtError` and from there to the application `ErrorHandler`. Root effects use `ROOT_EFFECT_NODE`, scheduled outside any view's refresh. `afterRender` hooks run in the `AfterRenderManager`, which has its own `try`/`catch` that calls `ErrorHandler.handleError`. None of these pass through `refreshView`, so none can reach `ON_ERROR`.
+The first three are structural. Event listeners run through `executeListenerWithErrorHandling` in `packages/core/src/render3/view/listeners.ts`, which catches the error and sends it straight to `handleUncaughtError` and from there to the application `ErrorHandler`. Root effects use `ROOT_EFFECT_NODE`, scheduled outside any view's refresh, which is why it matters which injector created the effect rather than which kind of class it lives in. `afterRender` hooks run in the `AfterRenderManager`, which has its own `try`/`catch` that calls `ErrorHandler.handleError`. None of these pass through `refreshView`, so none can reach `ON_ERROR`.
 
 Async code is not caught because nothing is: an error thrown in a `.then` callback is thrown on a later microtask with no Angular frame on the stack. Zone.js will route it to the `ErrorHandler`, and a zoneless app will see it as an unhandled rejection. A boundary cannot help with either.
 
@@ -302,9 +304,11 @@ The feature is well built. The two catch sites cover creation and update complet
 
 **Do not use `$reset` as a bare retry.** It recreates the failed view with no changes. Pair it with the thing that might fix the problem: a refetch, a token refresh, a cleared cache. If there is nothing to change, offer navigation instead of retry.
 
-**Know what it does not cover.** Event handlers, async code, root effects, and `afterRender` go straight to the `ErrorHandler`. A boundary protects rendering, not behavior. If `save()` throws when the user clicks, the component stays on screen and the boundary never fires. That is the correct behavior, because a failed click should not destroy the form, but it means the boundary is not a general error strategy. You still need the global handler.
+**Know what it does not cover.** Event handlers, async code, root effects created by environment-level services, and `afterRender` go straight to the `ErrorHandler`. A boundary protects rendering, not behavior. If `save()` throws when the user clicks, the component stays on screen and the boundary never fires. That is the correct behavior, because a failed click should not destroy the form, but it means the boundary is not a general error strategy. You still need the global handler.
 
 **Put the boundary where the content is declared.** The projected-content rule bites every team once. If a shared layout component wraps `<ng-content>` in a boundary, it is protecting nothing. The boundary goes in the template that wrote the risky component.
+
+It is also clearly a first step rather than the whole story. The same `ON_ERROR` mechanism that powers the template block and the programmatic `onError` option is general enough to sit underneath other layers of the framework, and the router is the obvious next candidate: a failed route rendering a fallback instead of a failed component. The Angular team has hinted that router-level boundaries may arrive in a coming minor release, which would give you a natural place to put the coarse, page-level boundary that I argued against wrapping by hand above.
 
 Used that way, `@boundary` closes a gap that Angular has had since the beginning: a way to say "this part of the screen may fail, and here is what to show when it does," in the template, type-checked, with the failed view cleanly torn down. The mechanics underneath are small and readable, which is usually the sign of a feature that will stay stable once it leaves preview.
 
