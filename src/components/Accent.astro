@@ -30,9 +30,16 @@ interface Props {
   mobileRange?: string;
   /** Named scroll/view timeline to drive the reveal; defaults to the element's own view timeline. */
   timeline?: string;
+  /**
+   * Let the phrase wrap onto several lines. By default an Accent never
+   * wraps, which is right for a word or two but pushes a whole sentence
+   * past the edge of a phone screen. Both copies share the same box, so
+   * they break at the same places and the wipe still lines up.
+   */
+  wrap?: boolean;
 }
 
-const { tone = "accent", range, mobileRange, timeline } = Astro.props;
+const { tone = "accent", range, mobileRange, timeline, wrap = false } = Astro.props;
 
 const style = [
   range && `--accent-range: ${range}`,
@@ -43,7 +50,7 @@ const style = [
   .join("; ");
 ---
 
-<span class={tone} style={style || undefined}>
+<span class:list={[tone, { "accent--wrap": wrap }]} style={style || undefined}>
   <span class="accent__base">
     <span class="accent__base-copy"><slot /></span>
   </span>

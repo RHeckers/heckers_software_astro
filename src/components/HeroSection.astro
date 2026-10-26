@@ -113,12 +113,22 @@ const hoverCss = nodes
   <div class="hero-inner">
     <div class="hero-copy">
       <h1>Software and AI that reach production.</h1>
+      <!-- Two versions of the lead; CSS shows one. The phone version says
+           the same in half the words so the buttons stay in the first
+           screenful. -->
       <p class="hero-lead">
-        Most software and AI initiatives stall between a promising pilot and a
-        product people use. Heckers Software comes into your company and
-        closes that gap: we run the discovery, build the software, integrate
-        the AI and ship it into production, at a fixed price per outcome. Hand
-        us the backlog, or let us find the highest-impact work first.
+        <span class="hero-lead__full">
+          Most software and AI initiatives stall between a promising pilot and
+          a product people use. Heckers Software comes into your company and
+          closes that gap: we run the discovery, build the software, integrate
+          the AI and ship it into production, at a fixed price per outcome.
+          Hand us the backlog, or let us find the highest-impact work first.
+        </span>
+        <span class="hero-lead__short">
+          Most software and AI initiatives stall between pilot and production.
+          We come into your company and close that gap: discovery, build, AI
+          integration and deployment, at a fixed price per outcome.
+        </span>
       </p>
       <div class="hero-actions">
         <a href="#contactForm" class="btn btn-primary" data-subject="Development"
@@ -300,6 +310,10 @@ ${hoverCss}`}
     color: rgba(232, 237, 246, 0.74);
     max-width: 44ch;
     margin: 0 0 2rem;
+  }
+
+  .hero-lead__short {
+    display: none;
   }
 
   .hero-actions {
@@ -636,6 +650,18 @@ ${hoverCss}`}
 
     .hero-graph {
       display: none;
+    }
+
+    .hero-lead__full {
+      display: none;
+    }
+
+    .hero-lead__short {
+      display: inline;
+    }
+
+    .hero-lead {
+      margin-bottom: 1.5rem;
     }
   }
 

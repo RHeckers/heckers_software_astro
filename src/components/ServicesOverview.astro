@@ -449,6 +449,33 @@ const services = [
     }
   }
 
+  /* --- Phones: the diagram sits above the text instead of beside it, so
+     the copy gets the full card width instead of a narrow column. --- */
+  @media (max-width: 639px) {
+    .panel__link {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 0;
+      gap: var(--spacer-base);
+    }
+
+    .panel__art {
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: start;
+      width: 52%;
+      max-width: 190px;
+      margin-bottom: var(--spacer-sm);
+    }
+
+    .panel__body {
+      grid-row: 2;
+    }
+
+    .panel__copy {
+      max-width: none;
+    }
+  }
+
   /* --- Wide screens: three equal panels, diagram above the text --- */
   @media (min-width: 900px) {
     .trio {

@@ -270,6 +270,17 @@
   color: var(--color-success);
 }
 
+/* <Accent wrap>: a phrase long enough to need line breaks. */
+.accent--wrap,
+.accent--wrap .accent__base-copy,
+.accent--wrap .accent__copy {
+  white-space: normal;
+}
+
+.accent--wrap {
+  max-width: 100%;
+}
+
 .danger .accent__copy {
   color: var(--color-danger);
 }

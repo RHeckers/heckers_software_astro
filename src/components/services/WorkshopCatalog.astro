@@ -251,8 +251,8 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.85rem 2rem;
-    font-size: 1.05rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
     font-weight: var(--font-weight-bold);
     color: var(--color-light-raised);
     background-color: var(--color-accent-strong);
@@ -318,6 +318,13 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
 
   .workshop__body--second {
     padding-top: 0;
+  }
+
+  @media (min-width: 720px) {
+    .workshop__cta {
+      padding: 0.85rem 2rem;
+      font-size: 1.05rem;
+    }
   }
 
   @media (min-width: 900px) {

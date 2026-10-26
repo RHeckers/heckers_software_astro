@@ -394,8 +394,8 @@ const initialVerdict = preChecked
     justify-content: center;
     align-self: flex-start;
     margin-top: var(--spacer-base);
-    padding: 0.85rem 2rem;
-    font-size: var(--font-lg);
+    padding: 0.8rem 1.6rem;
+    font-size: var(--font-md);
     font-weight: var(--font-weight-bold);
     color: var(--color-accent);
     background-color: var(--color-ink-light);
@@ -410,6 +410,22 @@ const initialVerdict = preChecked
   .score__cta:focus-visible {
     outline: 4px solid var(--color-accent-strong);
     color: var(--color-accent-strong);
+  }
+
+  /* Narrow phones: the score panel is a slim column, so the button takes
+     its full width instead of wrapping its label onto two lines. */
+  @media (max-width: 400px) {
+    .score__cta {
+      align-self: stretch;
+      padding-inline: 1rem;
+    }
+  }
+
+  @media (min-width: 720px) {
+    .score__cta {
+      padding: 0.85rem 2rem;
+      font-size: var(--font-lg);
+    }
   }
 
   @media (min-width: 900px) {

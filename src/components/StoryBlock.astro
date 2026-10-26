@@ -290,7 +290,7 @@ import Accent from "./Accent.astro";
     */
     .story .story-block-2,
     .story .story-block-3 {
-      padding: var(--spacer-xl) var(--spacer-lg);
+      padding: var(--spacer-xl) var(--spacer-md);
       /* clip, not hidden: hidden makes the card a scroll container, which
          would pin the accent words' view timelines to the card instead of
          the page and freeze their wipe. */
@@ -298,7 +298,7 @@ import Accent from "./Accent.astro";
     }
 
     .story .story-block .story-text {
-      font-size: clamp(1.75rem, 8.5vw, 2.5rem);
+      font-size: clamp(1.5rem, 7.6vw, 2.5rem);
       font-weight: var(--font-weight-normal);
       max-width: 100%;
       text-wrap: balance;
@@ -315,7 +315,7 @@ import Accent from "./Accent.astro";
       }
 
       .small-text {
-        font-size: clamp(0.9rem, 4.6vw, 1.5rem);
+        font-size: clamp(0.85rem, 4.3vw, 1.5rem);
         padding-bottom: 0px;
 
         span {
@@ -324,7 +324,7 @@ import Accent from "./Accent.astro";
       }
 
       .large-text {
-        font-size: clamp(3rem, 16vw, 5rem);
+        font-size: clamp(2.75rem, 15vw, 5rem);
         line-height: 1;
       }
     }

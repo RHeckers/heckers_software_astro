@@ -158,4 +158,19 @@ const position = proof.company
   .proof--dark .proof__logo {
     opacity: 1;
   }
+
+  @media (max-width: 480px) {
+    .proof__by {
+      flex-wrap: wrap;
+    }
+
+    .proof__who {
+      flex-basis: 11rem;
+    }
+
+    /* Wrapped under the name, aligned with it. */
+    .proof__logo {
+      margin-left: calc(44px + 0.75rem);
+    }
+  }
 </style>

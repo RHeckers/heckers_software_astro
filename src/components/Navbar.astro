@@ -205,9 +205,12 @@ const { themeToggle = false } = Astro.props;
   }
 
   .menu li {
-    font-size: 32px;
+    /* Scales with the screen so the longest label ("Forward-Deployed
+       Engineering") stays on one line on a phone; 32px from tablets up. */
+    font-size: clamp(1.2rem, 5.4vw, 2rem);
     font-weight: 700;
-    margin: 16px 0;
+    line-height: 1.2;
+    margin: clamp(10px, 2.5vw, 16px) 0;
   }
 
   .menu a {
