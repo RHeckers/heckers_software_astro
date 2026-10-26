@@ -6,7 +6,7 @@ heroImage: "../../assets/blog-images/fetch-without-effect.png"
 categories: ["Angular"]
 ---
 
-Every application with a detail page has the same five lines somewhere. The page gets an id from the route, and something has to turn *the id changed* into *go fetch the thing*. For most of Angular's life that something was a subscription; since signals it has mostly been an `effect`. Both work. Both have bothered me, for the same reason, and it took `resource()` arriving for me to put a finger on what that reason was.
+Every application with a detail page has the same five lines somewhere. The page gets an id from the route, and something has to turn _the id changed_ into _go fetch the thing_. For most of Angular's life that something was a subscription; since signals it has mostly been an `effect`. Both work. Both have bothered me, for the same reason, and it took `resource()` arriving for me to put a finger on what that reason was.
 
 This article is about replacing that effect. The replacement is not quite as simple as "use `resource()`", because the obvious way to use it quietly takes your data out of the global store and hands you component-scoped state instead, which is half of what you want and half of what you do not. The interesting part is combining the two.
 
@@ -23,11 +23,13 @@ export class AnimalDetailComponent {
 
   protected readonly animal = toSignal(
     this.route.paramMap.pipe(
-      map((p) => p.get('id')!),
+      map((p) => p.get("id")!),
       tap((id) => this.store.load(id)),
-      switchMap((id) => toObservable(this.store.animals).pipe(
-        map((animals) => animals.find((a) => a.id === id)),
-      )),
+      switchMap((id) =>
+        toObservable(this.store.animals).pipe(
+          map((animals) => animals.find((a) => a.id === id)),
+        ),
+      ),
     ),
   );
 }
@@ -60,7 +62,7 @@ Cleaner. No `ActivatedRoute`, no `paramMap`, no subscription to clean up. And th
 
 On the surface it is three lines, and it is hard to argue with three lines. Underneath, it is the one piece of imperative glue left in an otherwise declarative component: a stream of ids with a side effect hanging off it, whether the stream is an observable or a signal. It has four habits that have cost me real debugging hours, and the subscription version had every one of them first.
 
-**It tracks more than the id.** An effect reruns when *anything* it reads changes, not just the id. The day someone adds `this.store.filter()` or a query-parameter signal to the body, to pass it along to `load`, the animal reloads every time the filter changes. The subscription version grows the same way, one `combineLatest` at a time, until the load fires for reasons nobody can name without reading the whole pipe.
+**It tracks more than the id.** An effect reruns when _anything_ it reads changes, not just the id. The day someone adds `this.store.filter()` or a query-parameter signal to the body, to pass it along to `load`, the animal reloads every time the filter changes. The subscription version grows the same way, one `combineLatest` at a time, until the load fires for reasons nobody can name without reading the whole pipe.
 
 **It cannot cancel.** Tap through three animals quickly and three loads are in flight. Neither the effect nor the `tap` has any idea the first two are stale. Whichever response lands last writes to the store last, and if the network reorders them, the page shows the wrong animal with the right URL.
 
@@ -72,7 +74,7 @@ The right one exists now.
 
 ## `resource()`, and the first attempt
 
-`resource()` is Angular's primitive for *a value that depends on a signal and arrives asynchronously*. It takes a `params` function that reads signals, and a `loader` that runs whenever those signals change:
+`resource()` is Angular's primitive for _a value that depends on a signal and arrives asynchronously_. It takes a `params` function that reads signals, and a `loader` that runs whenever those signals change:
 
 ```ts
 export class AnimalDetailComponent {
@@ -81,7 +83,8 @@ export class AnimalDetailComponent {
 
   private readonly request = resource({
     params: () => this.id(),
-    loader: ({ params: id, abortSignal }) => this.api.getAnimal(id, { signal: abortSignal }),
+    loader: ({ params: id, abortSignal }) =>
+      this.api.getAnimal(id, { signal: abortSignal }),
   });
 
   protected readonly animal = this.request.value;
@@ -100,7 +103,7 @@ Read that component again and notice what it no longer touches. `AnimalStore` is
 
 That is component-scoped state. For a lot of screens it is perfectly fine, and the obvious objections to it are easier to answer than they look. Every widget fetching its own copy, the detail page refetching an animal the list already had, a fresh request every time you navigate back: those are all the same problem, repeated GET requests, and caching at the HTTP level solves them. A decorator like `ts-cacheable` on the API method, or an `HttpInterceptor` with a short-lived cache, and the twelve components asking for animal `a1` cost one request between them.
 
-What an HTTP cache does not give you is one owner. It caches the *response*, and every consumer still holds its own copy of it.
+What an HTTP cache does not give you is one owner. It caches the _response_, and every consumer still holds its own copy of it.
 
 **Each copy is a snapshot.** `request.value` is whatever the loader resolved with, frozen at that moment. If a keeper logs a health check on this screen, the header widget showing the same animal does not change, because it is holding its own copy. Neither does the detail page, unless it reloads. So after every write you bust the cache and call `reload()` on every resource that might be showing that animal, and now the write path has to know who is reading. That is the two-owners problem wearing a new hat.
 
@@ -108,17 +111,17 @@ What an HTTP cache does not give you is one owner. It caches the *response*, and
 
 If your data is read-only, or changes rarely and a reload is acceptable, plain `resource()` plus an HTTP cache is a complete answer and you can stop here. For data that gets written to while it is on screen, you want the store back.
 
-Here is the honest part: *some* of what `resource()` gave us is exactly what you want. Loading and error state should be per consumer; a row in a list should spin on its own, not whenever any animal anywhere is loading. And a resource that dies with its component is correct, because the component owns the id signal and nothing should outlive the thing that drives it. The mistake is letting the resource own the *data* along with the request.
+Here is the honest part: _some_ of what `resource()` gave us is exactly what you want. Loading and error state should be per consumer; a row in a list should spin on its own, not whenever any animal anywhere is loading. And a resource that dies with its component is correct, because the component owns the id signal and nothing should outlive the thing that drives it. The mistake is letting the resource own the _data_ along with the request.
 
 ## The fix: let the resource ask, let the store answer
 
-Split the two responsibilities. The resource decides *when* to fetch, and tracks how that one fetch is going. The store decides *what is present*, and holds it. The loader is the hand-off between them, and it does not return the data; it returns a promise that the data is in the store.
+Split the two responsibilities. The resource decides _when_ to fetch, and tracks how that one fetch is going. The store decides _what is present_, and holds it. The loader is the hand-off between them, and it does not return the data; it returns a promise that the data is in the store.
 
 The store gets one method, `ensure(id)`, with a small contract: resolve immediately if the entity is already present, return the same in-flight promise if a request for that id is already running, and only otherwise fetch and write into the store.
 
 ```ts
 export const AnimalStore = signalStore(
-  { providedIn: 'root' },
+  { providedIn: "root" },
   withState({ animals: [] as Animal[] }),
   withMethods((store, api = inject(ANIMAL_API)) => {
     const inFlight = new Map<string, Promise<void>>();
@@ -151,7 +154,7 @@ export const AnimalStore = signalStore(
 );
 ```
 
-The `inFlight` map lives in a closure rather than in state because nothing renders from it. `ensure` returns `Promise<void>` deliberately: it means *done*, and nothing more. Returning the animal would invite callers to use it, and a caller that uses the resolved value has a snapshot again.
+The `inFlight` map lives in a closure rather than in state because nothing renders from it. `ensure` returns `Promise<void>` deliberately: it means _done_, and nothing more. Returning the animal would invite callers to use it, and a caller that uses the resolved value has a snapshot again.
 
 Now the component points its resource at `ensure` and reads its data from the store:
 
@@ -177,7 +180,7 @@ Walk through what each line now gives you.
 
 `animal` is a `computed` over `store.animals()`, keyed on the id. It is live: a health check logged on this screen, an update from a websocket, a bulk load from the list page, all show up here with no reload. It reads the id inside the `computed` too, so a navigation switches `animal` the instant the new entity is in the store, without waiting for the resource to notice.
 
-`isLoading` and `error` still come from the resource, so they are per consumer. The detail page spins only while *its* current id is being ensured. The status slice next to it, asking for the same id, shares the in-flight promise through the store but has its own `isLoading`, which it probably does not even show.
+`isLoading` and `error` still come from the resource, so they are per consumer. The detail page spins only while _its_ current id is being ensured. The status slice next to it, asking for the same id, shares the in-flight promise through the store but has its own `isLoading`, which it probably does not even show.
 
 `request.value` is now `undefined` forever, because `ensure` resolves with nothing. That is on purpose; nothing reads it. If it bothers you, type the resource as `resource<void, string>` and the intent is in the signature.
 
@@ -191,8 +194,6 @@ And the effect is still gone. The resource reruns the loader when the id changes
 
 ## In short
 
-The subscription or effect that fetches on a route parameter was never wrong in a way that showed up in a demo; it was wrong in the ways that show up three weeks later. `resource()` is the primitive that replaces it, but used naively it also replaces your store with component state. The way out is to make the resource responsible only for *when* and *how it is going*, make the store responsible only for *what is present*, and connect them with an `ensure` method that promises the data is there rather than returning it. Live data from the store, per-consumer loading from the resource, no effect anywhere.
+The subscription or effect that fetches on a route parameter was never wrong in a way that showed up in a demo; it was wrong in the ways that show up three weeks later. `resource()` is the primitive that replaces it, but used naively it also replaces your store with component state. The way out is to make the resource responsible only for _when_ and _how it is going_, make the store responsible only for _what is present_, and connect them with an `ensure` method that promises the data is there rather than returning it. Live data from the store, per-consumer loading from the resource, no effect anywhere.
 
-If you find yourself writing that component more than a few times, the resource-plus-store pair packages neatly into a small function, which is what [the inject functions article](https://www.heckerssoftware.com/blog/inject-functions-functional-data-access/) is about. You do not need it for any of the above to work.
-
-If your codebase has a lot of these subscriptions and effects and you want help deciding where `resource()` fits, that is the kind of question I take on. I run Angular and Nx architecture reviews and workshops; if you would like a second opinion, [get in touch](https://www.heckerssoftware.com/#contactForm).
+If your codebase has a lot of these subscriptions and effects and you want help deciding where `resource()` fits, that is the kind of question I take on. I run Angular and Nx architecture reviews and workshops; if you would like a second opinion, [get in touch](https://heckerssoftware.com/#contactForm).

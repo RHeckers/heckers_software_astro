@@ -6,7 +6,7 @@ heroImage: "../../assets/blog-images/one-store-per-entity.png"
 categories: ["Angular", "Nx", "Architecture"]
 ---
 
-In the [previous article](https://www.heckerssoftware.com/blog/shared-component-different-behavior-per-app/) the problem was a shared component that needed to behave differently in every application. This one is about the problem right next to it, and in my experience the more common of the two: a shared store that does more than any single application wants from it.
+In the [previous article](https://heckerssoftware.com/blog/shared-component-different-behavior-per-app/) the problem was a shared component that needed to behave differently in every application. This one is about the problem right next to it, and in my experience the more common of the two: a shared store that does more than any single application wants from it.
 
 The symptom is easy to recognize. A developer on the kiosk team injects a store to read one list, and finds that the store also fetches a second thing, tracks a second loading flag, and exposes methods they will never call. They do not need any of it, but it arrives anyway, and it arrives in their bundle.
 
@@ -35,32 +35,30 @@ export const orderStore = signalStore(
     error: null,
   }),
 
-  withMethods((
-    store,
-    orderApi = inject(ORDER_API),
-    ticketApi = inject(TICKET_API),
-  ) => ({
-    async loadOrder(id: string) {
-      patchState(store, { isLoading: true });
-      const order = await orderApi.getOrder(id);
-      patchState(store, { order, isLoading: false });
-    },
+  withMethods(
+    (store, orderApi = inject(ORDER_API), ticketApi = inject(TICKET_API)) => ({
+      async loadOrder(id: string) {
+        patchState(store, { isLoading: true });
+        const order = await orderApi.getOrder(id);
+        patchState(store, { order, isLoading: false });
+      },
 
-    async loadTickets(orderId: string) {
-      patchState(store, { isLoading: true });
-      const tickets = await ticketApi.getTickets(orderId);
-      patchState(store, { tickets, isLoading: false });
-    },
+      async loadTickets(orderId: string) {
+        patchState(store, { isLoading: true });
+        const tickets = await ticketApi.getTickets(orderId);
+        patchState(store, { tickets, isLoading: false });
+      },
 
-    async loadOrderWithTickets(id: string) {
-      patchState(store, { isLoading: true });
-      const [order, tickets] = await Promise.all([
-        orderApi.getOrder(id),
-        ticketApi.getTickets(id),
-      ]);
-      patchState(store, { order, tickets, isLoading: false });
-    },
-  })),
+      async loadOrderWithTickets(id: string) {
+        patchState(store, { isLoading: true });
+        const [order, tickets] = await Promise.all([
+          orderApi.getOrder(id),
+          ticketApi.getTickets(id),
+        ]);
+        patchState(store, { order, tickets, isLoading: false });
+      },
+    }),
+  ),
 );
 ```
 
@@ -72,11 +70,11 @@ The problem is not visible from the order detail screen. It is visible from ever
 
 Three screens in three different applications use this domain:
 
-| screen | application | needs |
-| --- | --- | --- |
-| order detail | `visitor` | orders **and** tickets |
-| gate scan | `keeper-mobile` | tickets only |
-| order history | `visitor-mobile` | orders only |
+| screen        | application      | needs                  |
+| ------------- | ---------------- | ---------------------- |
+| order detail  | `visitor`        | orders **and** tickets |
+| gate scan     | `keeper-mobile`  | tickets only           |
+| order history | `visitor-mobile` | orders only            |
 
 Only one of the three wants the pair. The gate scanner needs to validate a ticket; it has no interest in the order the ticket came from, and the zoo keeper holding the phone would not know what to do with it. The order history page lists past orders with dates and totals; it does not render a single ticket.
 
@@ -86,7 +84,7 @@ The merged store gives all three screens the same object, and two of them pay fo
 
 ### Applications drag in both, wanted or not
 
-This is the cost that connects to the [barrel article](https://www.heckerssoftware.com/blog/nx-monorepo-barrel-issues/) and the [shared component article](https://www.heckerssoftware.com/blog/shared-component-different-behavior-per-app/), and it is the one people underestimate.
+This is the cost that connects to the [barrel article](https://heckerssoftware.com/blog/nx-monorepo-barrel-issues/) and the [shared component article](https://heckerssoftware.com/blog/shared-component-different-behavior-per-app/), and it is the one people underestimate.
 
 The gate scanner imports `orderStore` to get tickets. `orderStore` references `ORDER_API`, `orderApi.getOrder`, the `Order` type, and whatever the order half of the state depends on. The bundler cannot know that `keeper-mobile` never calls `loadOrder`, because a method on an object is reachable the moment the object is. So the order code ships to the scanner.
 
@@ -126,10 +124,19 @@ Two root stores, one per entity, and a third file I will come to in a moment.
 ```ts
 // order.store.ts
 export const orderStore = signalStore(
-  withState<OrderState>({ selected: null, history: [], isLoading: false, error: null }),
+  withState<OrderState>({
+    selected: null,
+    history: [],
+    isLoading: false,
+    error: null,
+  }),
   withMethods((store, api = inject(ORDER_API)) => ({
-    async getOrder(id: string) { /* ... */ },
-    async getOrders() { /* ... */ },
+    async getOrder(id: string) {
+      /* ... */
+    },
+    async getOrders() {
+      /* ... */
+    },
   })),
 );
 ```
@@ -139,8 +146,12 @@ export const orderStore = signalStore(
 export const ticketStore = signalStore(
   withState<TicketState>({ tickets: [], isLoading: false, error: null }),
   withMethods((store, api = inject(TICKET_API)) => ({
-    async getTickets(orderId: string) { /* ... */ },
-    async buyTickets(/* ... */) { /* ... */ },
+    async getTickets(orderId: string) {
+      /* ... */
+    },
+    async buyTickets(/* ... */) {
+      /* ... */
+    },
   })),
 );
 ```
@@ -168,10 +179,10 @@ A store **should not**:
 - Fetch a second entity. If it needs two endpoints to answer a question, the question belongs to a feature.
 - Hold feature UI state. Which tab is open, whether a dialog is showing, what the search box contains: that is the feature's state, not the entity's.
 - Toast, navigate, or close dialogs. Those are reactions to what the store did, and they belong to the caller.
-- Import another domain's store. The module boundaries from the [tags article](https://www.heckerssoftware.com/blog/four-dimensions-of-nx-tags/) will refuse it, and they are right to.
+- Import another domain's store. The module boundaries from the [tags article](https://heckerssoftware.com/blog/four-dimensions-of-nx-tags/) will refuse it, and they are right to.
 - Branch on which application is calling. The moment a store checks `isKiosk`, it has stopped being domain code.
 
-The test I use for the first "should not", because it is the one that gets broken most: *if this store needs two endpoints to answer, it is a feature.* A store answers one question about one entity. A feature answers the question a screen is asking, and screens routinely ask about two things.
+The test I use for the first "should not", because it is the one that gets broken most: _if this store needs two endpoints to answer, it is a feature._ A store answers one question about one entity. A feature answers the question a screen is asking, and screens routinely ask about two things.
 
 ## Composition, not merging
 
@@ -180,21 +191,25 @@ The order detail screen still needs both. The answer is the third file:
 ```ts
 // order-with-tickets.store.ts
 export const orderWithTicketsStore = signalStore(
-  withComputed((_, tickets = inject(ticketStore), orders = inject(orderStore)) => ({
-    tickets: computed(() => tickets.tickets()),
-    order: computed(() => orders.selected()),
-    isLoading: computed(() => tickets.isLoading() || orders.isLoading()),
-  })),
+  withComputed(
+    (_, tickets = inject(ticketStore), orders = inject(orderStore)) => ({
+      tickets: computed(() => tickets.tickets()),
+      order: computed(() => orders.selected()),
+      isLoading: computed(() => tickets.isLoading() || orders.isLoading()),
+    }),
+  ),
 
-  withMethods((_, tickets = inject(ticketStore), orders = inject(orderStore)) => ({
-    async checkout(order: NewOrder) {
-      const bought = await tickets.buyTickets({ order });
+  withMethods(
+    (_, tickets = inject(ticketStore), orders = inject(orderStore)) => ({
+      async checkout(order: NewOrder) {
+        const bought = await tickets.buyTickets({ order });
 
-      if (bought) {
-        await orders.getOrders();
-      }
-    },
-  })),
+        if (bought) {
+          await orders.getOrders();
+        }
+      },
+    }),
+  ),
 );
 ```
 
@@ -206,7 +221,7 @@ Look at the `withComputed` block. It exposes `tickets`, `order` and `isLoading`,
 
 The alternative, which I see often, is `withState` with its own `tickets` array, kept in sync by subscribing to the root store. That is a second source of truth. The kiosk buys through `ticketStore`, the composed store's copy goes stale, and someone writes synchronization code to fix it. Reading through with `computed` means there is still exactly one owner per entity. The composed store is a view, not a copy.
 
-Notice the `isLoading` line specifically. *One `isLoading` for two requests* was listed as a cost of merging. Here it is a **derived** flag over two independent ones. Each root still tracks its own request and fails on its own, and the composed store ORs them for screens that want a single spinner. Same convenience for the order detail screen, none of the coupling for anyone else.
+Notice the `isLoading` line specifically. _One `isLoading` for two requests_ was listed as a cost of merging. Here it is a **derived** flag over two independent ones. Each root still tracks its own request and fails on its own, and the composed store ORs them for screens that want a single spinner. Same convenience for the order detail screen, none of the coupling for anyone else.
 
 ### The roots stay
 
@@ -310,7 +325,10 @@ Here is the kiosk, overriding three of the four:
 store.buyTickets({
   order,
   updater: (tickets, state) => ({
-    tickets: [...state.tickets.filter((t) => t.status !== 'printed'), ...tickets],
+    tickets: [
+      ...state.tickets.filter((t) => t.status !== "printed"),
+      ...tickets,
+    ],
     isLoading: false,
   }),
   onSuccess: () => this.printer.queue(),
@@ -330,7 +348,7 @@ The method returns `Promise<Ticket[] | null>`: the tickets on success, `null` on
 
 The first is the composed store above. `checkout` awaits `buyTickets` and only refreshes orders if the purchase succeeded. Without a return value, the composed store would have to subscribe to a loading flag and guess when the operation finished, which is fragile and ugly.
 
-The second is about *not* throwing. A store method that rethrows will produce an unhandled rejection whenever a caller fires it without awaiting, which the kiosk does. Returning `null` keeps fire-and-forget callers safe, at the cost of making awaiting callers check the result. That is the right trade for a store method, where most calls are fire-and-forget and the few that await know they are awaiting.
+The second is about _not_ throwing. A store method that rethrows will produce an unhandled rejection whenever a caller fires it without awaiting, which the kiosk does. Returning `null` keeps fire-and-forget callers safe, at the cost of making awaiting callers check the result. That is the right trade for a store method, where most calls are fire-and-forget and the few that await know they are awaiting.
 
 ## Features and tokens
 
@@ -338,7 +356,7 @@ Two smaller decisions in the code above deserve a sentence each.
 
 The method lives in a `signalStoreFeature`, as shown above. Beyond letting applications compose their own stores, that also means the behavior can be tested in isolation against a minimal state, without constructing the full store.
 
-The API client comes in through `inject(TICKET_API)`, a token, rather than a concrete class, and `orderStore` has its own `ORDER_API` in the same way. That is the fifth "should" from the list. One token per entity means a test can stub exactly the client it needs, a Storybook story can provide fixtures for one store without the other, and if the backend is ever split, neither store changes. It is also what keeps the merged store's tell from reappearing: a store that finds itself injecting two API tokens is a store that has started answering two questions. The same reasoning as the [shared component article](https://www.heckerssoftware.com/blog/shared-component-different-behavior-per-app/), applied one layer down.
+The API client comes in through `inject(TICKET_API)`, a token, rather than a concrete class, and `orderStore` has its own `ORDER_API` in the same way. That is the fifth "should" from the list. One token per entity means a test can stub exactly the client it needs, a Storybook story can provide fixtures for one store without the other, and if the backend is ever split, neither store changes. It is also what keeps the merged store's tell from reappearing: a store that finds itself injecting two API tokens is a store that has started answering two questions. The same reasoning as the [shared component article](https://heckerssoftware.com/blog/shared-component-different-behavior-per-app/), applied one layer down.
 
 ## Two words to be careful with
 
@@ -348,7 +366,7 @@ If you discuss this design with other teams, two terms will come up, and one of 
 
 **Facade** is the right word for the composed store and for the application-level objects that orchestrate across domains. It is a facade in the classic sense: one surface over several things, with no logic of its own that the underlying things do not already provide.
 
-What I actually say, if asked for one line: *one store per entity, composed at the edges.*
+What I actually say, if asked for one line: _one store per entity, composed at the edges._
 
 ## What this does and does not solve
 
@@ -358,4 +376,4 @@ What they do not solve is where the composition and the orchestration live once 
 
 If you recognize the two-headed store from your own workspace, the split is usually a day's work per domain and it tends to pay for itself the first time somebody needs only half. If you recognize several of them, that is the kind of thing I help teams work through.
 
-I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://www.heckerssoftware.com/#contactForm).
+I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://heckerssoftware.com/#contactForm).

@@ -6,7 +6,7 @@ heroImage: "../../assets/blog-images/shared-component-per-app.png"
 categories: ["Angular", "Nx", "Architecture"]
 ---
 
-In the [error handler article](https://www.heckerssoftware.com/blog/angular-global-error-handler-nx-monorepo/) I showed how a shared service can let each application contribute its own behavior through a multi-provider token, without the shared code knowing which applications exist. That pattern works well for services. The question I get most often afterwards is whether the same thing can be done for a component.
+In the [error handler article](https://heckerssoftware.com/blog/angular-global-error-handler-nx-monorepo/) I showed how a shared service can let each application contribute its own behavior through a multi-provider token, without the shared code knowing which applications exist. That pattern works well for services. The question I get most often afterwards is whether the same thing can be done for a component.
 
 It can, and in a large Nx workspace you will need it sooner than you expect. This article walks through the problem, the three solutions most teams try first, why each of them fails in a way that is not immediately visible, and the approach I use instead. At the end we will check the production bundle, because the whole point is what ends up in it.
 
@@ -48,7 +48,7 @@ The first instinct is a boolean. Give the component an `isMobile` input, or inje
 
 ```ts
 @Component({
-  selector: 'zoo-photo-picker',
+  selector: "zoo-photo-picker",
   imports: [CameraCaptureComponent],
   template: `
     <button type="button" (click)="open()">Add photo</button>
@@ -74,7 +74,7 @@ This works. It does what it says in both applications. The problem is in the lin
 
 In other words, **both implementations ship to both applications, and the flag decides which one runs.** The visitor application carries a camera it can never open.
 
-This is the same mechanism I described in the [barrel article](https://www.heckerssoftware.com/blog/nx-monorepo-barrel-issues/), from a different angle. There, a top-level call kept a module alive. Here, a compile-time reference keeps a component alive. In both cases the bundler is doing exactly what it is supposed to do with the information it has.
+This is the same mechanism I described in the [barrel article](https://heckerssoftware.com/blog/nx-monorepo-barrel-issues/), from a different angle. There, a top-level call kept a module alive. Here, a compile-time reference keeps a component alive. In both cases the bundler is doing exactly what it is supposed to do with the information it has.
 
 I will show the measurement at the end, but the short version is that the reduced reproduction comes out roughly three times larger with both branches than with one.
 
@@ -97,9 +97,11 @@ Suppose you make it required, because a picker without an implementation is usel
 ```ts
 // libs/shared/ui/media-row
 @Component({
-  selector: 'zoo-media-row',
+  selector: "zoo-media-row",
   template: `
-    @for (photo of photos(); track photo.id) { <zoo-thumb [photo]="photo" /> }
+    @for (photo of photos(); track photo.id) {
+      <zoo-thumb [photo]="photo" />
+    }
     <zoo-photo-picker [implementation]="picker()" (selected)="add($event)" />
   `,
 })
@@ -179,7 +181,7 @@ A month later the web team writes theirs, from the same verbal description:
 ```ts
 export class FilePhotoPickerComponent {
   readonly maxFiles = input(1);
-  readonly accept = input('image/*');
+  readonly accept = input("image/*");
   readonly selected = output<File[]>();
 }
 ```
@@ -200,7 +202,12 @@ So there are two interfaces. In `libs/shared/ui/photo-picker`:
 
 ```ts
 // libs/shared/ui/photo-picker/src/lib/photo-picker.contract.ts
-import { InjectionToken, InputSignal, OutputEmitterRef, Type } from '@angular/core';
+import {
+  InjectionToken,
+  InputSignal,
+  OutputEmitterRef,
+  Type,
+} from "@angular/core";
 
 /** Every implementation must provide these. */
 export interface PhotoPickerContract {
@@ -214,16 +221,19 @@ export interface PhotoPickerOptions {
   readonly cancelled?: OutputEmitterRef<void>;
 }
 
-export type PhotoPickerImplementation = PhotoPickerContract & PhotoPickerOptions;
+export type PhotoPickerImplementation = PhotoPickerContract &
+  PhotoPickerOptions;
 
 /** What a template may bind on <zoo-photo-picker>: everything, and none of it optional. */
 export type PhotoPicker = Required<PhotoPickerImplementation>;
 
 export const PHOTO_PICKER = new InjectionToken<Type<PhotoPickerImplementation>>(
-  'PHOTO_PICKER',
+  "PHOTO_PICKER",
 );
 
-export function providePhotoPicker(implementation: Type<PhotoPickerImplementation>) {
+export function providePhotoPicker(
+  implementation: Type<PhotoPickerImplementation>,
+) {
   return { provide: PHOTO_PICKER, useValue: implementation };
 }
 ```
@@ -238,7 +248,7 @@ The **third type**, `PhotoPicker`, is `Required<PhotoPickerImplementation>`: the
 
 Notice that all three types use `InputSignal` and `OutputEmitterRef`, which are the types Angular gives you for signal inputs and the `output()` function. That is what lets us wire the implementation up later without knowing its concrete class.
 
-The **token** is an `InjectionToken` whose value is a *component class*, not a component instance. `Type<PhotoPickerImplementation>` means "a constructor for something that satisfies the contract". We are not injecting a picker. We are injecting the knowledge of which picker to create.
+The **token** is an `InjectionToken` whose value is a _component class_, not a component instance. `Type<PhotoPickerImplementation>` means "a constructor for something that satisfies the contract". We are not injecting a picker. We are injecting the knowledge of which picker to create.
 
 The **provider function** is a small convenience that I recommend for every token like this. `providePhotoPicker(CameraPhotoPicker)` reads better in an application config than a raw provider object, and the parameter type means TypeScript refuses a class that does not implement the contract. That check is the main reason to write the helper rather than letting people write `{ provide: PHOTO_PICKER, useValue: ... }` by hand.
 
@@ -258,12 +268,12 @@ import {
   inject,
   input,
   output,
-} from '@angular/core';
-import { PHOTO_PICKER, PhotoPicker } from './photo-picker.contract';
+} from "@angular/core";
+import { PHOTO_PICKER, PhotoPicker } from "./photo-picker.contract";
 
 @Component({
-  selector: 'zoo-photo-picker',
-  template: '',
+  selector: "zoo-photo-picker",
+  template: "",
 })
 export class PhotoPickerComponent implements PhotoPicker {
   private readonly viewContainer = inject(ViewContainerRef);
@@ -271,7 +281,7 @@ export class PhotoPickerComponent implements PhotoPicker {
 
   // the full surface, required and optional, so any template can bind it
   readonly maxCount = input(1);
-  readonly accept = input('image/*');
+  readonly accept = input("image/*");
   readonly selected = output<File[]>();
   readonly cancelled = output<void>();
 
@@ -280,12 +290,12 @@ export class PhotoPickerComponent implements PhotoPicker {
     const picker = ref.instance;
 
     // required: always forwarded
-    effect(() => ref.setInput('maxCount', this.maxCount()));
+    effect(() => ref.setInput("maxCount", this.maxCount()));
     picker.selected.subscribe((files) => this.selected.emit(files));
 
     // optional: forwarded only if this implementation has them
     if (picker.accept) {
-      effect(() => ref.setInput('accept', this.accept()));
+      effect(() => ref.setInput("accept", this.accept()));
     }
     picker.cancelled?.subscribe(() => this.cancelled.emit());
 
@@ -336,12 +346,12 @@ On `keeper-mobile`:
 
 ```ts
 // apps/keeper-mobile/ui/camera-photo-picker/src/lib/camera-photo-picker.component.ts
-import { Component, input, output, signal } from '@angular/core';
-import { Camera, CameraResultType } from '@capacitor/camera';
-import { PhotoPickerImplementation } from '@zoo/shared/ui/photo-picker';
+import { Component, input, output, signal } from "@angular/core";
+import { Camera, CameraResultType } from "@capacitor/camera";
+import { PhotoPickerImplementation } from "@zoo/shared/ui/photo-picker";
 
 @Component({
-  selector: 'keeper-camera-photo-picker',
+  selector: "keeper-camera-photo-picker",
   template: `
     <button type="button" (click)="take()">Take photo</button>
 
@@ -361,7 +371,7 @@ import { PhotoPickerImplementation } from '@zoo/shared/ui/photo-picker';
 export class CameraPhotoPickerComponent implements PhotoPickerImplementation {
   readonly maxCount = input(1);
   readonly selected = output<File[]>();
-  readonly cancelled = output<void>();          // optional, and this one has it
+  readonly cancelled = output<void>(); // optional, and this one has it
 
   protected readonly taken = signal<TakenPhoto[]>([]);
 
@@ -370,7 +380,9 @@ export class CameraPhotoPickerComponent implements PhotoPickerImplementation {
     // convert, append to taken(), and emit as soon as maxCount() is reached
   }
 
-  protected remove(photo: TakenPhoto) { /* ... */ }
+  protected remove(photo: TakenPhoto) {
+    /* ... */
+  }
 
   protected done() {
     this.selected.emit(this.taken().map((p) => p.file));
@@ -382,11 +394,11 @@ On `visitor`:
 
 ```ts
 // apps/visitor/ui/file-photo-picker/src/lib/file-photo-picker.component.ts
-import { Component, input, output } from '@angular/core';
-import { PhotoPickerImplementation } from '@zoo/shared/ui/photo-picker';
+import { Component, input, output } from "@angular/core";
+import { PhotoPickerImplementation } from "@zoo/shared/ui/photo-picker";
 
 @Component({
-  selector: 'visitor-file-photo-picker',
+  selector: "visitor-file-photo-picker",
   template: `
     <button type="button" (click)="fileInput.click()">Add photo</button>
     <input
@@ -401,7 +413,7 @@ import { PhotoPickerImplementation } from '@zoo/shared/ui/photo-picker';
 })
 export class FilePhotoPickerComponent implements PhotoPickerImplementation {
   readonly maxCount = input(1);
-  readonly accept = input('image/*');           // optional, and this one has it
+  readonly accept = input("image/*"); // optional, and this one has it
   readonly selected = output<File[]>();
 
   protected onChange(files: FileList | null) {
@@ -424,8 +436,8 @@ Each application registers its implementation once, in its application config:
 
 ```ts
 // apps/keeper-mobile/shell/src/app/app.config.ts
-import { providePhotoPicker } from '@zoo/shared/ui/photo-picker';
-import { CameraPhotoPickerComponent } from '@zoo/keeper-mobile/ui/camera-photo-picker';
+import { providePhotoPicker } from "@zoo/shared/ui/photo-picker";
+import { CameraPhotoPickerComponent } from "@zoo/keeper-mobile/ui/camera-photo-picker";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -437,8 +449,8 @@ export const appConfig: ApplicationConfig = {
 
 ```ts
 // apps/visitor/shell/src/app/app.config.ts
-import { providePhotoPicker } from '@zoo/shared/ui/photo-picker';
-import { FilePhotoPickerComponent } from '@zoo/visitor/ui/file-photo-picker';
+import { providePhotoPicker } from "@zoo/shared/ui/photo-picker";
+import { FilePhotoPickerComponent } from "@zoo/visitor/ui/file-photo-picker";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -464,7 +476,7 @@ If you genuinely want a fallback, make it explicit. Give the token a `providedIn
 
 ## How this fits the boundaries
 
-If you have read the [tags article](https://www.heckerssoftware.com/blog/four-dimensions-of-nx-tags/), you will have noticed that this design is not only compatible with module boundaries but is shaped by them.
+If you have read the [tags article](https://heckerssoftware.com/blog/four-dimensions-of-nx-tags/), you will have noticed that this design is not only compatible with module boundaries but is shaped by them.
 
 The camera picker lives in `apps/keeper-mobile/ui/camera-photo-picker`, tagged `app:keeper-mobile`, `type:ui`, and `platform:mobile`. The shared placeholder lives in `libs/shared/ui/photo-picker`, tagged `domain:shared` and `type:ui`.
 
@@ -480,7 +492,7 @@ A side effect of this design is that the shared placeholder and its consumers be
 
 ```ts
 @Component({
-  selector: 'test-photo-picker',
+  selector: "test-photo-picker",
   template: '<button (click)="emit()">pick</button>',
 })
 class StubPhotoPicker implements PhotoPickerImplementation {
@@ -488,7 +500,7 @@ class StubPhotoPicker implements PhotoPickerImplementation {
   readonly selected = output<File[]>();
 
   emit() {
-    this.selected.emit([new File([''], 'test.jpg')]);
+    this.selected.emit([new File([""], "test.jpg")]);
   }
 }
 
@@ -507,10 +519,10 @@ Three modules: a camera component that imports a deliberately large mobile-only 
 
 Built with esbuild, minified, measured by grepping the output for a marker that only the camera module contains:
 
-| | bytes | camera code in output |
-| --- | --- | --- |
-| picker with `@if` on both branches | 252 | yes |
-| file input imported directly | 74 | no |
+|                                    | bytes | camera code in output |
+| ---------------------------------- | ----- | --------------------- |
+| picker with `@if` on both branches | 252   | yes                   |
+| file input imported directly       | 74    | no                    |
 
 The flag was `false` in every build, and the camera shipped anyway. That is what "the flag is runtime, the import is compile time" means in practice.
 
@@ -520,7 +532,7 @@ In the real workspace the difference is not 178 bytes. It is the Capacitor camer
 
 It is worth being precise about the boundary of this pattern, because it is easy to over-apply.
 
-**It is not for whether something appears.** If the question is "should the picker show at all on this screen", that is a boolean, and a boolean input is the right answer. The question DI answers is *which* implementation, not *whether*. A read-only timeline that never shows a picker does not need a token; it needs to not render the placeholder.
+**It is not for whether something appears.** If the question is "should the picker show at all on this screen", that is a boolean, and a boolean input is the right answer. The question DI answers is _which_ implementation, not _whether_. A read-only timeline that never shows a picker does not need a token; it needs to not render the placeholder.
 
 **It is not for small variations.** If two applications want the same picker with a different button label, that is an input. If they want the same picker with a different color, that is a CSS custom property. Reach for a token when the implementations genuinely share nothing but the contract, which is the case here and is rarer than it looks.
 
@@ -536,8 +548,8 @@ The details that make it hold up are the ones that are easy to skip. The contrac
 
 And it costs nothing in the bundle, because the only compile-time reference to each implementation is in the one application that uses it.
 
-This is the third article in a series about keeping a large Nx workspace honest. The [folder structure](https://www.heckerssoftware.com/blog/your-tooling-should-not-dictate-your-folder-structure/) decides where code lives, the [tags](https://www.heckerssoftware.com/blog/four-dimensions-of-nx-tags/) decide who may import whom, and the [barrel article](https://www.heckerssoftware.com/blog/nx-monorepo-barrel-issues/) explains what reaches your bundle. This one is about what to do once a piece of shared code turns out not to be shared after all.
+This is the third article in a series about keeping a large Nx workspace honest. The [folder structure](https://heckerssoftware.com/blog/your-tooling-should-not-dictate-your-folder-structure/) decides where code lives, the [tags](https://heckerssoftware.com/blog/four-dimensions-of-nx-tags/) decide who may import whom, and the [barrel article](https://heckerssoftware.com/blog/nx-monorepo-barrel-issues/) explains what reaches your bundle. This one is about what to do once a piece of shared code turns out not to be shared after all.
 
 If you recognize the flag-based picker from your own workspace, it is worth a build and a grep. And if the grep finds something, that is usually the first of several, which is the kind of thing I help teams work through.
 
-I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://www.heckerssoftware.com/#contactForm).
+I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://heckerssoftware.com/#contactForm).

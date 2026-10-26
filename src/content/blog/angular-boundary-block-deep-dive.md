@@ -20,13 +20,13 @@ If you have not seen it yet, here is the whole surface:
 
 ```html
 @boundary {
-  <app-chart-dashboard />
+<app-chart-dashboard />
 } @error (let err; retry = $reset; when isNetworkError(err)) {
-  <p>Network issue. Check your connection.</p>
-  <button (click)="retry()">Retry</button>
+<p>Network issue. Check your connection.</p>
+<button (click)="retry()">Retry</button>
 } @error {
-  <p>Something went wrong: {{ $error.message }}</p>
-  <button (click)="$reset()">Try again</button>
+<p>Something went wrong: {{ $error.message }}</p>
+<button (click)="$reset()">Try again</button>
 }
 ```
 
@@ -108,7 +108,7 @@ while (currentLView !== null) {
       handled = true;
       break;
     } catch (boundaryError) {
-      errorToHandle = boundaryError;   // handler threw: keep walking with the new error
+      errorToHandle = boundaryError; // handler threw: keep walking with the new error
     }
   }
   currentLView = currentLView[PARENT];
@@ -126,7 +126,7 @@ When the walk reaches a `@boundary`'s `ON_ERROR`, it does four things in order:
 3. **Immediately destroys the primary view.** `removeLViewFromLContainer` runs right there in the handler, before the fallback has been chosen.
 4. Marks the host view for refresh, so that on the next targeted pass the update instruction sees a stored error and renders an `@error` branch.
 
-Step three is worth pausing on. The component that threw is gone the moment the boundary catches. Its `ngOnDestroy` runs, its subscriptions are cleaned up, its DOM is removed. The `@error` block does not render *over* a broken view; it renders *instead of* a view that no longer exists. If you were hoping to inspect the failed component from the fallback, you cannot. It has been torn down.
+Step three is worth pausing on. The component that threw is gone the moment the boundary catches. Its `ngOnDestroy` runs, its subscriptions are cleaned up, its DOM is removed. The `@error` block does not render _over_ a broken view; it renders _instead of_ a view that no longer exists. If you were hoping to inspect the failed component from the fallback, you cannot. It has been torn down.
 
 ### What `$reset` does
 
@@ -153,17 +153,17 @@ Before the boundary's handler is invoked, the caught value passes through `encap
 
 The docs say "initialization or change detection". Here is the list, each confirmed by a test in the spec file.
 
-| Error thrown in | Caught by `@boundary`? |
-| --- | --- |
-| A component or directive **constructor** inside the block | yes, at creation |
-| `ngOnInit`, `ngDoCheck`, `ngAfterViewInit` and the other **lifecycle hooks** | yes |
-| A **template binding** expression, `{{ foo.bar }}` where `foo` is undefined | yes |
-| A **child view created during update**, such as an `@if` branch or `@for` item | yes |
-| A `@for` **track expression** or iteration | yes |
-| A component **`effect()`** declared inside the block | yes |
-| A **lazily loaded** component inside `@defer` within the block | yes |
-| A component **inserted dynamically** via `ViewContainerRef` inside the block | yes |
-| A **nested boundary's `@error` block** | yes, by the outer boundary |
+| Error thrown in                                                                | Caught by `@boundary`?     |
+| ------------------------------------------------------------------------------ | -------------------------- |
+| A component or directive **constructor** inside the block                      | yes, at creation           |
+| `ngOnInit`, `ngDoCheck`, `ngAfterViewInit` and the other **lifecycle hooks**   | yes                        |
+| A **template binding** expression, `{{ foo.bar }}` where `foo` is undefined    | yes                        |
+| A **child view created during update**, such as an `@if` branch or `@for` item | yes                        |
+| A `@for` **track expression** or iteration                                     | yes                        |
+| A component **`effect()`** declared inside the block                           | yes                        |
+| A **lazily loaded** component inside `@defer` within the block                 | yes                        |
+| A component **inserted dynamically** via `ViewContainerRef` inside the block   | yes                        |
+| A **nested boundary's `@error` block**                                         | yes, by the outer boundary |
 
 The `effect()` row deserves a note, because it is not obvious from the docs. Whether an effect is a "view effect" or a "root effect" is decided in one line of `packages/core/src/render3/reactivity/effect.ts`: `effect()` asks its injector for `ViewContext`. If that resolves, the effect is tied to the view and runs inside `refreshView`, via `runEffectsInView`, as part of the view's update pass. An error thrown there propagates out of `refreshView` like any other and hits the same catch. That is why the table says yes.
 
@@ -171,31 +171,31 @@ The rule is about the injector, not about whether the code is a component or a s
 
 Now the other list. These are not edge cases; they are the common ways an error leaves a component, and the boundary does not see any of them.
 
-| Error thrown in | Caught by `@boundary`? |
-| --- | --- |
-| An **event listener**, `(click)="save()"` where `save` throws | **no** |
-| A **root effect**: an `effect()` created where no component injector is in reach, such as a `providedIn: 'root'` or route-level service | **no** |
-| An **`afterRender` / `afterNextRender`** callback | **no** |
-| **Async code**: a promise, a `setTimeout`, an HTTP callback | **no** |
-| **Projected content**, errors in children projected into a component whose own template has the boundary | **no** |
+| Error thrown in                                                                                                                         | Caught by `@boundary`? |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| An **event listener**, `(click)="save()"` where `save` throws                                                                           | **no**                 |
+| A **root effect**: an `effect()` created where no component injector is in reach, such as a `providedIn: 'root'` or route-level service | **no**                 |
+| An **`afterRender` / `afterNextRender`** callback                                                                                       | **no**                 |
+| **Async code**: a promise, a `setTimeout`, an HTTP callback                                                                             | **no**                 |
+| **Projected content**, errors in children projected into a component whose own template has the boundary                                | **no**                 |
 
 The first three are structural. Event listeners run through `executeListenerWithErrorHandling` in `packages/core/src/render3/view/listeners.ts`, which catches the error and sends it straight to `handleUncaughtError` and from there to the application `ErrorHandler`. Root effects use `ROOT_EFFECT_NODE`, scheduled outside any view's refresh, which is why it matters which injector created the effect rather than which kind of class it lives in. `afterRender` hooks run in the `AfterRenderManager`, which has its own `try`/`catch` that calls `ErrorHandler.handleError`. None of these pass through `refreshView`, so none can reach `ON_ERROR`.
 
 Async code is not caught because nothing is: an error thrown in a `.then` callback is thrown on a later microtask with no Angular frame on the stack. Zone.js will route it to the `ErrorHandler`, and a zoneless app will see it as an unhandled rejection. A boundary cannot help with either.
 
-Projected content is the subtle one, and the docs do call it out. The boundary is attached to the view that *declares* the content, and projected content is declared by the parent template, not by the component receiving it. So:
+Projected content is the subtle one, and the docs do call it out. The boundary is attached to the view that _declares_ the content, and projected content is declared by the parent template, not by the component receiving it. So:
 
 ```html
 <!-- inside app-wrapper's template: does NOT catch errors from projected children -->
 @boundary {
-  <ng-content />
+<ng-content />
 } @error { ... }
 
 <!-- in the parent: catches errors from app-risky-component -->
 @boundary {
-  <app-wrapper>
-    <app-risky-component />
-  </app-wrapper>
+<app-wrapper>
+  <app-risky-component />
+</app-wrapper>
 } @error { ... }
 ```
 
@@ -215,7 +215,7 @@ if (errorHandler.onViewError) {
 }
 ```
 
-**It is either/or.** If your `ErrorHandler` implements the new optional `onViewError` method, boundary-caught errors go there and *do not* reach `handleError`. If it does not, they go to `handleError` exactly as unhandled errors do, and your existing logging sees them with no way to tell them apart.
+**It is either/or.** If your `ErrorHandler` implements the new optional `onViewError` method, boundary-caught errors go there and _do not_ reach `handleError`. If it does not, they go to `handleError` exactly as unhandled errors do, and your existing logging sees them with no way to tell them apart.
 
 That second case is the default, and it has a consequence worth stating plainly: **out of the box, a caught boundary error looks identical to a crash in your error tracking.** You will see it in Sentry or wherever your `handleError` forwards, with no indication that the user saw a fallback and the application kept running. If you want to distinguish them, implement `onViewError`:
 
@@ -241,7 +241,7 @@ And once you do, remember that `handleError` no longer sees those errors at all.
 
 The details object has four fields, and they mean slightly different things depending on which catch site fired.
 
-- `declarationType` and `declarationInstance`: the component or directive whose view was being refreshed when the error was thrown. For an error during change detection, this is the throwing component. For an error during creation, the source sets this to the component that *declares the boundary*, because the failed view never finished being created and has no instance of its own.
+- `declarationType` and `declarationInstance`: the component or directive whose view was being refreshed when the error was thrown. For an error during change detection, this is the throwing component. For an error during creation, the source sets this to the component that _declares the boundary_, because the failed view never finished being created and has no instance of its own.
 - `boundary`: present only when a `@boundary` caught it. `type` is the component class whose template contains the boundary, and `reset` is the same function as `$reset`. So an `ErrorHandler` can retry a boundary on the user's behalf, which is a strange power to have at the global level but occasionally useful for a "something went wrong, retrying…" pattern.
 - `caughtBy`: the `ON_ERROR` function that handled it. Set on the change detection path, absent on the creation path. Mostly useful for distinguishing a template boundary from a programmatic `onError` callback.
 
@@ -253,16 +253,16 @@ The same `ON_ERROR` slot that `@boundary` uses is exposed as an option on three 
 
 Because it is the same slot and the same walk, a programmatic `onError` participates in the same cascade. A dynamically created component inside a `@boundary` is caught by the boundary; a `@boundary` inside a dynamically created component with `onError` propagates to the `onError` if its own `@error` block throws.
 
-There is one difference, and it is the kind you only find out about by reading the test file. **A constructor error is not caught by `createComponent`'s `onError`.** The test is named exactly that: "should NOT intercept errors thrown during component constructor via createComponent". The reason is ordering. `createComponent` calls the factory first, which runs the constructor, and only *then* assigns `onError` to the resulting view. If the constructor throws, there is no view to assign to, and the error leaves `createComponent` as a thrown exception for you to catch yourself.
+There is one difference, and it is the kind you only find out about by reading the test file. **A constructor error is not caught by `createComponent`'s `onError`.** The test is named exactly that: "should NOT intercept errors thrown during component constructor via createComponent". The reason is ordering. `createComponent` calls the factory first, which runs the constructor, and only _then_ assigns `onError` to the resulting view. If the constructor throws, there is no view to assign to, and the error leaves `createComponent` as a thrown exception for you to catch yourself.
 
 The template block does not have this gap, because `ɵɵboundaryUpdate` wraps the entire view creation in a `try`. So the capability table is:
 
-| | `@boundary` | `createComponent({ onError })` |
-| --- | --- | --- |
-| Constructor errors | caught | **thrown to caller** |
-| Lifecycle hooks, bindings, effects | caught | caught |
-| Nested cascade | yes | yes |
-| Declarative fallback | yes | no, you render it yourself |
+|                                    | `@boundary` | `createComponent({ onError })` |
+| ---------------------------------- | ----------- | ------------------------------ |
+| Constructor errors                 | caught      | **thrown to caller**           |
+| Lifecycle hooks, bindings, effects | caught      | caught                         |
+| Nested cascade                     | yes         | yes                            |
+| Declarative fallback               | yes         | no, you render it yourself     |
 
 If you need constructor coverage from the programmatic API, wrap the `createComponent` call in your own `try`.
 
@@ -277,7 +277,7 @@ The first is an `@error` block that throws. The error propagates up the view tre
 The second is less obvious: **no `@error` block matches.** Suppose you write only conditional blocks and the error satisfies none of the `when` clauses. The update instruction evaluates the chain, finds no branch, and the source does this:
 
 ```ts
-throw new BoundaryError('Unhandled error in @boundary fell through.', {
+throw new BoundaryError("Unhandled error in @boundary fell through.", {
   cause: boundary.error,
 });
 ```
@@ -312,4 +312,4 @@ It is also clearly a first step rather than the whole story. The same `ON_ERROR`
 
 Used that way, `@boundary` closes a gap that Angular has had since the beginning: a way to say "this part of the screen may fail, and here is what to show when it does," in the template, type-checked, with the failed view cleanly torn down. The mechanics underneath are small and readable, which is usually the sign of a feature that will stay stable once it leaves preview.
 
-If your team is deciding where boundaries belong in a large Angular codebase, or how to fit `onViewError` into an existing error pipeline, that is the kind of question I help with. I run Angular architecture reviews and workshops for teams building large applications; if you would like a second opinion, [get in touch](https://www.heckerssoftware.com/#contactForm).
+If your team is deciding where boundaries belong in a large Angular codebase, or how to fit `onViewError` into an existing error pipeline, that is the kind of question I help with. I run Angular architecture reviews and workshops for teams building large applications; if you would like a second opinion, [get in touch](https://heckerssoftware.com/#contactForm).

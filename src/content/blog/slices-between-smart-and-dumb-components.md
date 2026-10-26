@@ -20,15 +20,15 @@ A note on the word before we start. "Slice" is not an official term and you will
 
 If you have not met the pattern under these names, here it is in full. Dan Abramov described it in 2015 as **container and presentational components**, writing about React. The Angular community mostly says **smart and dumb**. Both names describe the same two roles.
 
-A **container component** owns a screen. In an Angular application it is almost always the routed component, which is why I usually just say *page*. The page injects what it needs, decides what to load and when, and hands the results to the components beneath it. It is the one place on a screen that knows where data comes from.
+A **container component** owns a screen. In an Angular application it is almost always the routed component, which is why I usually just say _page_. The page injects what it needs, decides what to load and when, and hands the results to the components beneath it. It is the one place on a screen that knows where data comes from.
 
 In a workspace with more than a handful of pages, the page does not compute its lookups itself. They are shared, through a facade service or, in signal-based code, an **inject function**: a plain function that runs in an injection context and returns the composed signals. Every page that needs an animal calls the same one, the lookup lives once in `data-access`, and the page's job is reduced to declaring which animal it is about and binding the result:
 
 ```ts
-import { input as routeBinding } from '@angular/core';
+import { input as routeBinding } from "@angular/core";
 
 @Component({
-  selector: 'keeper-animal-detail',
+  selector: "keeper-animal-detail",
   imports: [AnimalProfileCardComponent],
   template: `
     @if (animal.value(); as a) {
@@ -65,7 +65,7 @@ export function injectAnimal(animalId: Signal<string>) {
 }
 ```
 
-Two details carry the design. `value` reads live from the store rather than from the resource's result, so a change written to that animal elsewhere on the screen shows up here too; the resource only decides *when* to fetch and exposes `isLoading` and `error`. And `store.ensure(id)` resolves immediately if the entity is already present, returns the same in-flight promise if a request for that id is already running, and only otherwise calls the API. That is what lets any number of consumers ask for the same animal and produce at most one request between them.
+Two details carry the design. `value` reads live from the store rather than from the resource's result, so a change written to that animal elsewhere on the screen shows up here too; the resource only decides _when_ to fetch and exposes `isLoading` and `error`. And `store.ensure(id)` resolves immediately if the entity is already present, returns the same in-flight promise if a request for that id is already running, and only otherwise calls the API. That is what lets any number of consumers ask for the same animal and produce at most one request between them.
 
 Navigating from one animal to the next on the same component changes the id, and the resource follows. Aliasing `input` to `routeBinding` is a habit I picked up to make it obvious at the declaration that the value comes from the router rather than a parent template.
 
@@ -79,8 +79,10 @@ A page composes whatever it needs, usually organisms but just as often a molecul
 
 ```ts
 @Component({
-  selector: 'zoo-feeding-badge',
-  template: `<span class="badge" [class.overdue]="overdue()">{{ label() }}</span>`,
+  selector: "zoo-feeding-badge",
+  template: `<span class="badge" [class.overdue]="overdue()">{{
+    label()
+  }}</span>`,
 })
 export class FeedingBadgeComponent {
   readonly next = input.required<Date>();
@@ -120,7 +122,7 @@ It repeats. Every page that renders the card calls the same inject functions and
 
 You might collapse the calls into one `injectAnimalProfileCardData()`. The values come from different domains, though: the animal from animals, the feeding from feeding, the enclosure from enclosures, the sighting from the keeper log. A function that reads all of them cannot live in any one domain, because a domain may not import another domain. It can only live in an application. So the composite exists, per application, and it does nothing for the bindings underneath. I will come back to where it belongs.
 
-And reuse is only half real. The card is in `libs/animals/ui` and any page may render it. Rendering it *correctly* means supplying three live values and threading them through two levels, and that part is rebuilt by every new screen and copied into every new application. The reusable part is the component. The part that keeps getting rewritten is everything that connects it to its data.
+And reuse is only half real. The card is in `libs/animals/ui` and any page may render it. Rendering it _correctly_ means supplying three live values and threading them through two levels, and that part is rebuilt by every new screen and copied into every new application. The reusable part is the component. The part that keeps getting rewritten is everything that connects it to its data.
 
 Module boundaries make the shape explicit. `type:ui` may not depend on `type:data-access`, so neither the card, the header nor the badge may call `injectNextFeeding`; the wiring is forced into the page. And `type:feature` may not depend on `type:feature`, so one page cannot reuse another page's template. The only legal place for "a card that knows when its animal is next fed" is a page, and pages are not reusable by rule. When code has no legal home it ends up somewhere illegal: a `ui` library that quietly imports a store, or a shared library that imports a domain. Both are boundary violations with a good excuse, and good excuses are how boundaries die.
 
@@ -141,16 +143,16 @@ Keep the layout components dumb and let the page project the wired element into 
 ```html
 <zoo-list>
   @for (animal of store.entities(); track animal.id) {
-    <zoo-list-row [title]="animal.name">
-      <zoo-feeding-badge badge [next]="nextFeedingById()[animal.id]" />
-    </zoo-list-row>
+  <zoo-list-row [title]="animal.name">
+    <zoo-feeding-badge badge [next]="nextFeedingById()[animal.id]" />
+  </zoo-list-row>
   }
 </zoo-list>
 ```
 
 `zoo-list-row` has `<ng-content select="[badge]" />` and knows nothing about animals. This works well under two conditions: the component rendering the slot owns the data, and the slot is one level deep.
 
-Both fail as soon as the widget sits inside something shared. Put the row inside a shared card, inside a shared panel, and the slot has to be threaded through both. Each intermediate component gains an `<ng-content>` it does not use, and a consumer of the panel that does not want a badge still has the hole. That is the threading problem from the photo picker in [my previous article](https://www.heckerssoftware.com/blog/shared-component-different-behavior-per-app/): projection does not solve it, it is the mechanism that causes it. And a slot is filled once; if the dumb component loops internally, you reach for `ng-template` and a context object, and you have reinvented drilling one level more abstractly.
+Both fail as soon as the widget sits inside something shared. Put the row inside a shared card, inside a shared panel, and the slot has to be threaded through both. Each intermediate component gains an `<ng-content>` it does not use, and a consumer of the panel that does not want a badge still has the hole. That is the threading problem from the photo picker in [my previous article](https://heckerssoftware.com/blog/shared-component-different-behavior-per-app/): projection does not solve it, it is the mechanism that causes it. And a slot is filled once; if the dumb component loops internally, you reach for `ng-template` and a context object, and you have reinvented drilling one level more abstractly.
 
 Projection is the right tool for layout: cards with header and footer slots, dialogs, panels where the consumer genuinely owns the content. It is the wrong tool for a widget that needs to appear inside components the consumer does not own.
 
@@ -164,7 +166,7 @@ For a small application with one team and no shared libraries, this is fine. The
 
 **The `ui` to `data-access` boundary is gone**, so `libs/shared/ui` imports domain stores and every application that uses a shared button carries whatever store the button reads.
 
-**The dependency graph turns into a mesh.** Nx records dependencies per *project*. If one component in `libs/animals/ui` injects `animalStore`, the entire `animals-ui` project now depends on `animals-data-access`, though the other twenty-nine components inject nothing. The convenience was one file's; the edge is the library's. Across a workspace, every `ui` library with one smart component points at every store any of its components touch, `nx graph` shows a mesh, and `nx affected` follows every edge: change one store and every `ui` library with a single reader rebuilds, and every application using any of them retests. The narrow affected set that Nx exists to give you is gone.
+**The dependency graph turns into a mesh.** Nx records dependencies per _project_. If one component in `libs/animals/ui` injects `animalStore`, the entire `animals-ui` project now depends on `animals-data-access`, though the other twenty-nine components inject nothing. The convenience was one file's; the edge is the library's. Across a workspace, every `ui` library with one smart component points at every store any of its components touch, `nx graph` shows a mesh, and `nx affected` follows every edge: change one store and every `ui` library with a single reader rebuilds, and every application using any of them retests. The narrow affected set that Nx exists to give you is gone.
 
 **Cycles become possible.** In a layered graph a cycle between `ui` and `data-access` cannot happen, because `ui` never imports `data-access`. Everything-smart removes that guarantee, and stores acquire reverse imports easily: a store that shows an error toast or injects a dialog service. The transitive version is the common one. `zoo-dialog` in `shared/ui` injects the notification store; the notification store imports `zoo-toast` from `shared/ui` to render notifications. Dialog and toast never mention each other, but they share a project and a barrel, so `shared-ui` and `shared-data-access` depend on each other. Lint reports it if boundaries are on; otherwise you meet it at runtime as `Cannot access 'X' before initialization`. The layered rule is what makes a whole class of cycles impossible rather than merely discouraged.
 
@@ -181,7 +183,7 @@ export abstract class NextFeedingSource {
   abstract nextFeedingOf(animalId: Signal<string>): Signal<Date | undefined>;
 }
 
-@Component({ selector: 'zoo-feeding-badge', /* ... */ })
+@Component({ selector: "zoo-feeding-badge" /* ... */ })
 export class FeedingBadgeComponent {
   private readonly source = inject(NextFeedingSource);
   readonly animalId = input.required<string>();
@@ -204,7 +206,7 @@ Here is the next feeding as a slice, wrapping the badge:
 ```ts
 // libs/feeding/slices/next-feeding/src/lib/next-feeding.component.ts
 @Component({
-  selector: 'zoo-next-feeding',
+  selector: "zoo-next-feeding",
   imports: [FeedingBadgeComponent],
   template: `
     @if (next.value(); as n) {
@@ -235,12 +237,12 @@ The **slice ensures its own data.** It does not assume the page loaded the feedi
 
 The feeding slice is the smallest possible example, and on its own it does not fix the card. The badge sits inside `zoo-card-header`, a molecule in `libs/animals/ui`, and a `ui` library may not import a slice. The page cannot drop `<zoo-next-feeding>` into a header it does not render.
 
-So the unit that becomes the slice is the card. It is the thing dropped onto pages, the thing that knows which animal it is about, and the thing whose wiring was being repeated. Make *it* the slice, and let it own the one level of drilling that remains:
+So the unit that becomes the slice is the card. It is the thing dropped onto pages, the thing that knows which animal it is about, and the thing whose wiring was being repeated. Make _it_ the slice, and let it own the one level of drilling that remains:
 
 ```ts
 // apps/keeper-mobile/slices/animal-profile-card/src/lib/animal-profile-card.component.ts
 @Component({
-  selector: 'keeper-animal-profile-card',
+  selector: "keeper-animal-profile-card",
   imports: [CardHeaderComponent, EnclosureChipComponent, SightingRowComponent],
   template: `
     @if (data(); as d) {
@@ -266,17 +268,20 @@ And the composite inject function has a home:
 export function injectAnimalProfileCardData(animalId: Signal<string>) {
   assertInInjectionContext(injectAnimalProfileCardData);
 
-  const animal = injectAnimal(animalId);                   // libs/animals/data-access
-  const nextFeeding = injectNextFeeding(animalId);         // libs/feeding/data-access
-  const enclosure = injectEnclosureOf(animalId);           // libs/enclosures/data-access
-  const lastSeenAt = injectLastSighting(animalId);         // apps/keeper-mobile/data-access
+  const animal = injectAnimal(animalId); // libs/animals/data-access
+  const nextFeeding = injectNextFeeding(animalId); // libs/feeding/data-access
+  const enclosure = injectEnclosureOf(animalId); // libs/enclosures/data-access
+  const lastSeenAt = injectLastSighting(animalId); // apps/keeper-mobile/data-access
 
-  return computed(() => animal.value() && ({
-    name: animal.value()!.name,
-    nextFeeding: nextFeeding.value(),
-    enclosureName: enclosure.value()?.name,
-    lastSeenAt: lastSeenAt.value(),
-  }));
+  return computed(
+    () =>
+      animal.value() && {
+        name: animal.value()!.name,
+        nextFeeding: nextFeeding.value(),
+        enclosureName: enclosure.value()?.name,
+        lastSeenAt: lastSeenAt.value(),
+      },
+  );
 }
 ```
 
@@ -288,7 +293,7 @@ That also settles what kind of slice the card is. It reads several domains, so i
 
 ### A type and a rule
 
-In the [four-axis tagging scheme](https://www.heckerssoftware.com/blog/four-dimensions-of-nx-tags/) I add a fifth value to the `type` axis, `type:slice`, between `feature` and `ui`, with one constraint:
+In the [four-axis tagging scheme](https://heckerssoftware.com/blog/four-dimensions-of-nx-tags/) I add a fifth value to the `type` axis, `type:slice`, between `feature` and `ui`, with one constraint:
 
 ```js
 {
@@ -314,12 +319,12 @@ A **domain slice** lives in `libs/<domain>/slices` and knows one domain. `next-f
 
 A **feature slice** lives in `apps/<app>/slices` and may know things a domain slice may not. `shift-summary` shows the zoo keeper how many animals are fed, how many are overdue, and which enclosure to go to next. It reads the animals, feeding and enclosures stores, and it applies a rule only the keeper app has: feedings are overdue relative to the keeper's shift start. That combination is not allowed in a domain, because `libs/animals` may not import `libs/feeding`. The application may import both, so a slice in the application can compose them. Tagged `app:keeper-mobile` and `type:slice`, it is reusable within that application, across its screens, and not beyond. The test: **is this reusable within one application, but either combines domains or applies a rule only that application has?** If it could live in a domain with no loss, move it there.
 
-| | Domain slice | Feature slice |
-| --- | --- | --- |
-| Lives in | `libs/<domain>/slices` | `apps/<app>/slices` |
-| May inject | that domain's stores | any store, including app-specific ones |
-| May know | one domain | several domains, and the application |
-| Reusable across | all applications | one application |
+|                 | Domain slice           | Feature slice                          |
+| --------------- | ---------------------- | -------------------------------------- |
+| Lives in        | `libs/<domain>/slices` | `apps/<app>/slices`                    |
+| May inject      | that domain's stores   | any store, including app-specific ones |
+| May know        | one domain             | several domains, and the application   |
+| Reusable across | all applications       | one application                        |
 
 Note what is absent: there is no `libs/shared/slices`. A shared slice would need a domain store, and shared may not reach into any domain. If something looks like a shared slice, it is either a domain slice used everywhere, or a presentational component that should not be injecting anything.
 
@@ -335,32 +340,32 @@ Two caveats. Keep the split when the tree is one level deep; the exception earns
 
 That completes the set of places a component can live:
 
-| Lives in | May inject | Reused by |
-| --- | --- | --- |
-| `libs/<domain>/ui`, `libs/shared/ui` | nothing | anything |
-| `libs/<domain>/slices` | that domain's stores | any application |
-| `apps/<app>/slices` | any store, app-specific too | screens in that application |
-| the feature library, page-specific | whatever the page may | that page only |
+| Lives in                             | May inject                  | Reused by                   |
+| ------------------------------------ | --------------------------- | --------------------------- |
+| `libs/<domain>/ui`, `libs/shared/ui` | nothing                     | anything                    |
+| `libs/<domain>/slices`               | that domain's stores        | any application             |
+| `apps/<app>/slices`                  | any store, app-specific too | screens in that application |
+| the feature library, page-specific   | whatever the page may       | that page only              |
 
-The folder tells you which rules apply, which is the principle the [folder structure article](https://www.heckerssoftware.com/blog/your-tooling-should-not-dictate-your-folder-structure/) rests on, applied one level down.
+The folder tells you which rules apply, which is the principle the [folder structure article](https://heckerssoftware.com/blog/your-tooling-should-not-dictate-your-folder-structure/) rests on, applied one level down.
 
 ## The options side by side
 
-| | Container + presentational | Content projection | Everything smart | Abstract dependency | Slice |
-| --- | --- | --- | --- | --- | --- |
-| Drilling | high | low at one level | none | none | none |
-| Hidden dependencies | none | none | everywhere | per host | one store, declared by type |
-| Graph and `affected` | narrow | narrow | mesh; one smart component couples its library | narrow, if the source is in `data-access` | narrow; one edge per slice |
-| Cycles between `ui` and `data-access` | impossible | impossible | possible | possible if the source is in `ui` | impossible |
-| Testable with plain data | yes | yes | no | with a stub | the inner `ui` yes |
-| Reusable across apps | wiring is not | no | yes, with bundle cost | yes | domain slices yes |
-| Handles nesting inside shared components | no | no | yes | yes | yes |
-| Handles a varying data source | no | no | no | **yes** | with a token |
-| Ceremony | low | low | lowest | highest | moderate |
+|                                          | Container + presentational | Content projection | Everything smart                              | Abstract dependency                       | Slice                       |
+| ---------------------------------------- | -------------------------- | ------------------ | --------------------------------------------- | ----------------------------------------- | --------------------------- |
+| Drilling                                 | high                       | low at one level   | none                                          | none                                      | none                        |
+| Hidden dependencies                      | none                       | none               | everywhere                                    | per host                                  | one store, declared by type |
+| Graph and `affected`                     | narrow                     | narrow             | mesh; one smart component couples its library | narrow, if the source is in `data-access` | narrow; one edge per slice  |
+| Cycles between `ui` and `data-access`    | impossible                 | impossible         | possible                                      | possible if the source is in `ui`         | impossible                  |
+| Testable with plain data                 | yes                        | yes                | no                                            | with a stub                               | the inner `ui` yes          |
+| Reusable across apps                     | wiring is not              | no                 | yes, with bundle cost                         | yes                                       | domain slices yes           |
+| Handles nesting inside shared components | no                         | no                 | yes                                           | yes                                       | yes                         |
+| Handles a varying data source            | no                         | no                 | no                                            | **yes**                                   | with a token                |
+| Ceremony                                 | low                        | low                | lowest                                        | highest                                   | moderate                    |
 
 No row is a clean sweep. **Container and presentational** wins for anything describable by its inputs and stays the default; slices sit beside it, not in place of it. **Projection** wins for layout. **Everything smart** wins only while testability, bundles and boundaries cost nothing. **The abstract dependency** wins when the source genuinely varies, and is overkill elsewhere. **The slice** wins the widget case: a self-contained unit for one entity, used in several places, with a source that does not vary.
 
-And they compose. A slice whose source does need to vary injects an abstract source instead of a concrete store; the slice decides *where the wiring lives*, and the token decides *what it wires to*. The scheduling form's draft badge is a slice that injects `NextFeedingSource`, provided once at the form, while every other screen uses the same slice with the store-backed source provided at the root.
+And they compose. A slice whose source does need to vary injects an abstract source instead of a concrete store; the slice decides _where the wiring lives_, and the token decides _what it wires to_. The scheduling form's draft badge is a slice that injects `NextFeedingSource`, provided once at the form, while every other screen uses the same slice with the store-backed source provided at the root.
 
 In one sentence: **drilling, projection and everything-smart remove the symptom by moving the cost somewhere else; slices and tokens remove it by giving the wiring a home.**
 
@@ -372,7 +377,7 @@ Not every component with a store injected is a slice. I check five things.
 
 **It is about one entity, or one tightly coupled concept.** `next-feeding` reads one animal's feeding. The profile card reads several stores, but every one is about the same animal; it is the subject that must be singular, not the store. A dashboard that reads animals, enclosures and staff is a feature that forgot to be one.
 
-**Its surface is one identity input and nothing else.** The input says *which*, never *what* or *how*, and there are no outputs. A data input means the source is still in the page. An output means the slice is handing its consequences back up, which is drilling in the other direction.
+**Its surface is one identity input and nothing else.** The input says _which_, never _what_ or _how_, and there are no outputs. A data input means the source is still in the page. An output means the slice is handing its consequences back up, which is drilling in the other direction.
 
 **It ensures its data through the store, and the store dedupes.** A slice that calls an unconditional `store.load(id)` turns thirty rows into thirty requests. A slice that calls `store.ensure(id)`, against a store that skips what it has and batches what it does not, costs nothing on a page that already loaded the list and still works on a page that did not. The deduplication belongs in the store, once, not in every slice.
 
@@ -404,4 +409,4 @@ Run `nx graph` on a workspace that has adopted this and you can see the three ba
 
 If you are looking at a feature layer that has grown fat with wiring, or a `ui` folder where things have started injecting stores, the slice pattern is a few days of work per domain, and it tends to reveal a lot about where your real boundaries are. That is usually the point at which teams ask me for a second opinion.
 
-I run Angular and Nx architecture reviews and workshops for teams working in large workspaces. If you would like one, [get in touch](https://www.heckerssoftware.com/#contactForm).
+I run Angular and Nx architecture reviews and workshops for teams working in large workspaces. If you would like one, [get in touch](https://heckerssoftware.com/#contactForm).

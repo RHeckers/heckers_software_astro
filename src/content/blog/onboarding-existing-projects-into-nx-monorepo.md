@@ -10,7 +10,7 @@ The worst state an Nx workspace can be in is not "no boundaries". It is "boundar
 
 Nobody plans for that. The migration started with good intentions, somebody moved a few folders, the first lint run reported four hundred violations, every fix cascaded into three more, and the work was parked "until there is time". There is never time. So the workspace carries two conventions indefinitely, and every new developer has to learn both and guess which one applies.
 
-This article is about doing it differently. Not about the target structure, which I have written about [elsewhere](https://www.heckerssoftware.com/blog/your-tooling-should-not-dictate-your-folder-structure/), but about the path from a tangled existing project to that structure, in a way that never leaves the workspace half done. The approach rests on one idea: **you do not restructure the project, you seal it and extract from it, leaves first.** The tangled core stays private while it shrinks, and only what is genuinely about the application stays private at the end.
+This article is about doing it differently. Not about the target structure, which I have written about [elsewhere](https://heckerssoftware.com/blog/your-tooling-should-not-dictate-your-folder-structure/), but about the path from a tangled existing project to that structure, in a way that never leaves the workspace half done. The approach rests on one idea: **you do not restructure the project, you seal it and extract from it, leaves first.** The tangled core stays private while it shrinks, and only what is genuinely about the application stays private at the end.
 
 ## Why migrations stall
 
@@ -40,7 +40,7 @@ The tangled core stays inside the application while this happens, for as long as
 
 The third point deserves emphasis, because it is where I see teams stop too early. It is tempting to extract only what other applications need right now and call the rest application-private. But shared domain code is shared whether or not a second consumer exists yet. A product catalogue model, its store, the presentational components that render a product the same way everywhere: those belong in `libs/products` even if the warehouse is the only application using products today, because the next application that touches products should find them there, already shaped by the rules, rather than build its own copy in `apps/<other>/` with slightly different assumptions. Putting shared domain code where it lives is what makes it visible, and visibility is what makes reuse happen.
 
-Note the word *shared*. A domain folder holds the part of a domain that every application agrees on. It does not hold everything that mentions the domain. An application can and often does have domain logic of its own: validation rules that only apply at the warehouse, a product status that only the kiosk cares about, a computed field that one screen needs. That code is about products and it is still application code, because no other application would want it as it stands. It lives in `apps/warehouse/data-access` or `apps/warehouse/utils`, imports the shared domain, and extends it. The split is not "domain code goes to `libs/`, the rest stays". It is "the shared part of a domain goes to `libs/<domain>`, and each application keeps its own part next to its screens".
+Note the word _shared_. A domain folder holds the part of a domain that every application agrees on. It does not hold everything that mentions the domain. An application can and often does have domain logic of its own: validation rules that only apply at the warehouse, a product status that only the kiosk cares about, a computed field that one screen needs. That code is about products and it is still application code, because no other application would want it as it stands. It lives in `apps/warehouse/data-access` or `apps/warehouse/utils`, imports the shared domain, and extends it. The split is not "domain code goes to `libs/`, the rest stays". It is "the shared part of a domain goes to `libs/<domain>`, and each application keeps its own part next to its screens".
 
 ## Rule one: every step leaves a complete state
 
@@ -175,7 +175,7 @@ apps/warehouse/
 
 The warehouse's routed pages, its orchestration across domains, a receipt layout that only a warehouse terminal prints: these go to `apps/warehouse/features` or `apps/warehouse/ui`, tagged `app:warehouse` and the right `type:`, and the type rules apply to them from that moment. This is the first time the warehouse's interior has had any boundary at all, and it arrived one library at a time rather than all at once.
 
-One honesty check on the domain side. Code that is *about* products but that encodes the warehouse's assumptions, a product store with a `warehouseId` baked into every query, say, is not shared domain code. Moving it to `libs/products` as it stands creates a domain library that knows one application, which every other application will then inherit. Either generalize it first, so the assumption becomes a parameter, or keep it in `apps/warehouse/data-access`, where application-specific domain logic belongs. The domain is for code that any application could use, not for code that one application happens to have written.
+One honesty check on the domain side. Code that is _about_ products but that encodes the warehouse's assumptions, a product store with a `warehouseId` baked into every query, say, is not shared domain code. Moving it to `libs/products` as it stands creates a domain library that knows one application, which every other application will then inherit. Either generalize it first, so the assumption becomes a parameter, or keep it in `apps/warehouse/data-access`, where application-specific domain logic belongs. The domain is for code that any application could use, not for code that one application happens to have written.
 
 ### Knowing when to stop
 
@@ -196,11 +196,11 @@ The baseline is `error` for everything. The warehouse, while it is being untangl
 ```js
 export default [
   {
-    rules: { '@nx/enforce-module-boundaries': ['error', config] },
+    rules: { "@nx/enforce-module-boundaries": ["error", config] },
   },
   {
-    files: ['apps/warehouse/**/*.ts'],
-    rules: { '@nx/enforce-module-boundaries': ['warn', config] },
+    files: ["apps/warehouse/**/*.ts"],
+    rules: { "@nx/enforce-module-boundaries": ["warn", config] },
   },
 ];
 ```
@@ -247,4 +247,4 @@ Most importantly, a team that is not afraid of the next project, because the app
 
 If you have a workspace with a project stuck halfway, the first step is almost always the same: find out whether the interior has cycles, and how many. That one number tells you how much of the above you need. It is the kind of assessment I do with teams regularly, and it tends to take an afternoon.
 
-I run Nx and Angular architecture reviews and workshops for teams working in large workspaces. If you would like a second opinion on yours, [get in touch](https://www.heckerssoftware.com/#contactForm).
+I run Nx and Angular architecture reviews and workshops for teams working in large workspaces. If you would like a second opinion on yours, [get in touch](https://heckerssoftware.com/#contactForm).

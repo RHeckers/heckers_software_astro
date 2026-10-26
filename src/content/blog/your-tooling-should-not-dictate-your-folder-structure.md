@@ -240,4 +240,4 @@ Those are different problems with different answers, and most of them have nothi
 
 If your Nx workspace has grown past the point where the folder structure helps you, this is a good weekend of work with a payoff that compounds. And if that last section described your repository a little too accurately, that is the kind of thing I do for a living.
 
-I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://www.heckerssoftware.com/#contactForm).
+I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://heckerssoftware.com/#contactForm).

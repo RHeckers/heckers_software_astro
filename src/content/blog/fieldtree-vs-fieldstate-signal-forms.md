@@ -6,7 +6,7 @@ heroImage: "../../assets/blog-images/fieldtree-vs-fieldstate.png"
 categories: ["Angular", "Forms"]
 ---
 
-In [my introduction to Signal Forms](https://www.heckerssoftware.com/blog/signal-forms-in-angular-v22-one-source-of-truth/) I showed the API from the outside: a signal holds the model, `form()` wraps it, `[formField]` binds inputs, and `submit()` orchestrates the rest. That is enough to build a form. It is not enough to understand why `loginForm.email().touched()` has parentheses in the middle, or why `loginForm.email.touched()` fails with a confusing error, or why a validator receives a third kind of object that is neither of the two.
+In [my introduction to Signal Forms](https://heckerssoftware.com/blog/signal-forms-in-angular-v22-one-source-of-truth/) I showed the API from the outside: a signal holds the model, `form()` wraps it, `[formField]` binds inputs, and `submit()` orchestrates the rest. That is enough to build a form. It is not enough to understand why `loginForm.email().touched()` has parentheses in the middle, or why `loginForm.email.touched()` fails with a confusing error, or why a validator receives a third kind of object that is neither of the two.
 
 After helping several teams adopt Signal Forms, I am convinced that nearly every mistake traces back to one confusion: **not knowing whether the thing in your hand is a `FieldTree` or a `FieldState`.** The two look similar in the template, they are produced from each other, and the API deliberately makes the conversion between them cheap. Once you can tell them apart at a glance, Signal Forms become predictable. Until then, they feel like a guessing game.
 
@@ -23,20 +23,20 @@ Take a small model:
 ```ts
 interface IncidentReport {
   title: string;
-  severity: 'low' | 'medium' | 'high';
+  severity: "low" | "medium" | "high";
   witnesses: { name: string; contact: string }[];
 }
 ```
 
 Here are the three objects you will meet, side by side.
 
-| | `SchemaPath` | `FieldTree` | `FieldState` |
-| --- | --- | --- | --- |
-| **What it is** | A location in the form, before the form exists | A navigable map of the live form | The state of one field, right now |
-| **When it exists** | Inside the schema function passed to `form()` | After `form()` returns | Whenever you call a `FieldTree` |
-| **How you get it** | The `p` parameter in `form(model, (p) => …)` | `form(model)` and dotting into the result | `tree()` – calling the tree as a function |
-| **What you can do** | Attach rules: `required(p.title)` | Navigate: `tree.witnesses[0].name` | Read and write: `.value()`, `.touched()`, `.errors()` |
-| **What you cannot do** | Read any value or state | Read any value or state | Navigate to children |
+|                        | `SchemaPath`                                   | `FieldTree`                               | `FieldState`                                          |
+| ---------------------- | ---------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| **What it is**         | A location in the form, before the form exists | A navigable map of the live form          | The state of one field, right now                     |
+| **When it exists**     | Inside the schema function passed to `form()`  | After `form()` returns                    | Whenever you call a `FieldTree`                       |
+| **How you get it**     | The `p` parameter in `form(model, (p) => …)`   | `form(model)` and dotting into the result | `tree()` – calling the tree as a function             |
+| **What you can do**    | Attach rules: `required(p.title)`              | Navigate: `tree.witnesses[0].name`        | Read and write: `.value()`, `.touched()`, `.errors()` |
+| **What you cannot do** | Read any value or state                        | Read any value or state                   | Navigate to children                                  |
 
 The last row is the one to memorize. **A `FieldTree` cannot tell you anything about a field. A `FieldState` cannot take you anywhere else.** They are not two views of the same object with overlapping capabilities. They are two different objects with disjoint jobs, and you move between them with a pair of parentheses.
 
@@ -47,8 +47,11 @@ The `SchemaPath` is the odd one out and I will come back to it at the end. For n
 `form()` returns a `FieldTree<IncidentReport>`. Here is the type, lightly trimmed from `packages/forms/signals/src/api/types.ts`:
 
 ```ts
-export type FieldTree<TModel, TKey, TMode> =
-  (() => FieldStateByMode<TModel, TKey, TMode>) &
+export type FieldTree<TModel, TKey, TMode> = (() => FieldStateByMode<
+  TModel,
+  TKey,
+  TMode
+>) &
   (TModel extends ReadonlyArray<infer U>
     ? ReadonlyArrayLike<MaybeFieldTree<U, number, TMode>>
     : TModel extends Record<string, any>
@@ -104,7 +107,7 @@ getError(kind): ValidationError | undefined;
 
 Two traps here that catch people on their first day.
 
-First, **`valid()` is not `!invalid()`**. The source comment spells it out: `valid()` is true when there are no errors *and* no pending async validators. `invalid()` is true when there are errors, regardless of pending ones. With one async validator still running and no errors, both are `false`. If you disable a submit button on `!valid()` it stays disabled while validation is pending, which is what you want. If you disable it on `invalid()`, it enables during the pending window, which is not.
+First, **`valid()` is not `!invalid()`**. The source comment spells it out: `valid()` is true when there are no errors _and_ no pending async validators. `invalid()` is true when there are errors, regardless of pending ones. With one async validator still running and no errors, both are `false`. If you disable a submit button on `!valid()` it stays disabled while validation is pending, which is what you want. If you disable it on `invalid()`, it enables during the pending window, which is not.
 
 Second, **`errors()` is this field's own errors; `errorSummary()` includes descendants.** For a leaf input you want `errors()`. For a form-level error panel you want `report().errorSummary()`. Mixing them up gives you either a field showing its children's errors or a summary that misses everything below the root.
 
@@ -149,7 +152,10 @@ In `packages/forms/signals/src/field/node.ts` there is one class, `FieldNode`, d
 
 ```ts
 export class FieldNode implements FieldState<unknown> {
-  readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as FieldTree<any>;
+  readonly fieldProxy = new Proxy(
+    () => this,
+    FIELD_PROXY_HANDLER,
+  ) as unknown as FieldTree<any>;
   // ...
 }
 ```
@@ -168,7 +174,7 @@ JavaScript sees a call on a Proxy. The handler in `proxy.ts` does not define an 
 
 And what happens when you write `report.title` without the parentheses?
 
-JavaScript sees a property access on a Proxy. This time the handler *does* have a trap, and here is what it does, from `proxy.ts`:
+JavaScript sees a property access on a Proxy. This time the handler _does_ have a trap, and here is what it does, from `proxy.ts`:
 
 ```ts
 get(getTgt: () => FieldNode, property: string | symbol) {
@@ -185,7 +191,7 @@ get(getTgt: () => FieldNode, property: string | symbol) {
 }
 ```
 
-It looks up a child node by the property name and, if one exists, returns *that child's* proxy. So `report.title` is the proxy of the `title` node, and `report.title.touched` asks the `title` node for a child called `touched`, finds none, and returns `undefined`. That is the runtime half of the error you get when you forget the parentheses.
+It looks up a child node by the property name and, if one exists, returns _that child's_ proxy. So `report.title` is the proxy of the `title` node, and `report.title.touched` asks the `title` node for a child called `touched`, finds none, and returns `undefined`. That is the runtime half of the error you get when you forget the parentheses.
 
 This explains two things at once.
 
@@ -266,7 +272,7 @@ export function deepSignal<S, K extends keyof S>(
 }
 ```
 
-Every child field's `value` is a `deepSignal` over its parent's `value`, keyed by the child's key. Reading `report.title().value()` reads `report().value().title`, which reads your model signal and picks out `.title`. Writing `report.title().value.set('Escaped lemur')` calls `update` on the parent's value, which calls `update` on *its* parent's value, all the way up to the signal you passed to `form()`.
+Every child field's `value` is a `deepSignal` over its parent's `value`, keyed by the child's key. Reading `report.title().value()` reads `report().value().title`, which reads your model signal and picks out `.title`. Writing `report.title().value.set('Escaped lemur')` calls `update` on the parent's value, which calls `update` on _its_ parent's value, all the way up to the signal you passed to `form()`.
 
 And look at `valueForWrite`:
 
@@ -277,7 +283,7 @@ function valueForWrite(sourceValue, newPropValue, prop) {
     newValue[prop as number] = newPropValue;
     return newValue;
   } else {
-    return {...(sourceValue as object), [prop]: newPropValue};
+    return { ...(sourceValue as object), [prop]: newPropValue };
   }
 }
 ```
@@ -323,9 +329,11 @@ Everything so far was `FieldTree` and `FieldState`. There is one more object, an
 ```ts
 const report = form(model, (p) => {
   required(p.title);
-  validate(p.severity, (ctx) => ctx.value() === 'high' && ctx.valueOf(p.witnesses).length === 0
-    ? { kind: 'needsWitness', message: 'High severity requires a witness' }
-    : null);
+  validate(p.severity, (ctx) =>
+    ctx.value() === "high" && ctx.valueOf(p.witnesses).length === 0
+      ? { kind: "needsWitness", message: "High severity requires a witness" }
+      : null,
+  );
 });
 ```
 
@@ -405,8 +413,8 @@ Pass the tree: `<app-text-field [field]="report.title" />`. Inside the component
 
 It is fair to ask why the API separates these at all. Reactive Forms had one `FormControl` object that you both navigated and read; why not do the same?
 
-The answer is reactivity granularity. If `report.title` returned an object with `value`, `touched` and the rest as properties, then every property read in a template would have to be a signal read, which they are, but every *navigation* would also have to go through something reactive, which it does. Separating navigation from state lets the proxy make navigation reactive per key, through those `computed` readers, while the state object stays a plain class with signal getters. The template depends on exactly the keys and exactly the signals it touched, nothing more. That is what makes Signal Forms fit the zoneless, fine-grained world Angular has been moving toward, and it is why the parentheses are there.
+The answer is reactivity granularity. If `report.title` returned an object with `value`, `touched` and the rest as properties, then every property read in a template would have to be a signal read, which they are, but every _navigation_ would also have to go through something reactive, which it does. Separating navigation from state lets the proxy make navigation reactive per key, through those `computed` readers, while the state object stays a plain class with signal getters. The template depends on exactly the keys and exactly the signals it touched, nothing more. That is what makes Signal Forms fit the zoneless, fine-grained world Angular has been moving toward, and it is why the parentheses are there.
 
 Once you see the `Proxy` around `() => this`, they stop being an inconvenience and start being the most honest part of the API: a tree is something you walk, a state is something you read, and the call is the moment you stop walking.
 
-If your team is adopting Signal Forms and hitting this wall, or you are deciding whether to adopt them at all, this is the kind of thing I help with. I run Angular architecture reviews and workshops for teams building large applications, and forms are usually where the interesting questions are. If you would like a second opinion, [get in touch](https://www.heckerssoftware.com/#contactForm).
+If your team is adopting Signal Forms and hitting this wall, or you are deciding whether to adopt them at all, this is the kind of thing I help with. I run Angular architecture reviews and workshops for teams building large applications, and forms are usually where the interesting questions are. If you would like a second opinion, [get in touch](https://heckerssoftware.com/#contactForm).

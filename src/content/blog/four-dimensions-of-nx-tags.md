@@ -514,4 +514,4 @@ Every one of those is a problem in code that is correctly placed and correctly t
 
 If you are staring at a single `scope:` dimension and wondering how much of the above applies to you, the tagging step is a day of work and tells you a great deal. And if the last section sounded like a description of your repository rather than a list of hypotheticals, that is the kind of thing I do for a living.
 
-I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://www.heckerssoftware.com/contact).
+I run architecture reviews and workshops for teams working in large Angular and Nx workspaces. If you would like a second opinion on yours, [get in touch](https://heckerssoftware.com/contact).
