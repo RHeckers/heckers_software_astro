@@ -1,108 +1,106 @@
 ---
 /**
- * The forward-deployed expert: the ways to engage, how an engagement runs,
- * and what a client can count on. Sits on a light background so it reads as
- * its own section between the dark proof band and the contact form, and
- * closes the home page's argument for the main offer with the practical
- * details a buyer needs before they write to us.
+ * The architecture assessment on the home page: why teams ask for one,
+ * how it runs, and what they can count on. Sits on a light background
+ * between the dark proof band and the contact form, and gives the third
+ * service its own section, after the band that argues for an outside read.
  *
- * The engagement plan panel is the one animated element: its vertical line
- * draws down and each phase lights up as the panel scrolls into view
- * (CSS scroll-driven animation, no script; fully drawn where unsupported).
+ * The plan panel is the one animated element: its vertical line draws
+ * down and each step lights up as the panel scrolls into view (CSS
+ * scroll-driven animation, no script; fully drawn where unsupported).
  */
 import Accent from "./Accent.astro";
 import ProofQuote from "./ProofQuote.astro";
+import { PRICING, euro } from "../lib/pricing";
 
-const engagements = [
+const reasons = [
   {
-    title: "Hand us the work",
-    copy: "You know what needs building: a backlog your team cannot get to, a module, a portal, an integration, an application. We take it on end to end, inside your codebase and your standards, and deliver it with working software every two weeks.",
+    title: "Before a big decision",
+    copy: "A rewrite, a move to Nx, a new Angular major, an acquisition. You want an outside opinion on the code before the budget is committed, from someone who has read a lot of other people's codebases.",
   },
   {
-    title: "Let us find the work",
-    copy: "You know something should be faster or cheaper but not where to start. A two-week discovery with the people who do the work ends in a ranked list of what software and AI can take off their plate, and a scoped plan for the top of it. Then we build it.",
+    title: "When velocity has quietly dropped",
+    copy: "Releases take longer, estimates miss by a factor of two, the same bugs come back. You want to know which five things cause it, what each costs you per month, and what fixing them takes.",
   },
   {
-    title: "Get an AI pilot into production",
-    copy: "A proof of concept worked on a laptop and stalled at the ERP, the data or security. We take it the rest of the way: integration, evaluation, guardrails, pipeline and monitoring, so it earns its place in the daily workflow.",
+    title: "As the first step before we build",
+    copy: "Every forward-deployed engagement starts with an outside read. On its own, the assessment is the cheapest way to find out whether you need one at all.",
   },
 ];
 
 const scope =
-  "Customer and partner portals, back-office modules, internal tools, reporting, integrations with your ERP and CRM, document and workflow automation, AI assistants on your own data, and the APIs and pipelines behind all of it.";
+  "Project graph and module boundaries, dependency and bundle analysis, build and CI times, state management, the testing strategy, Angular and Nx versions and the upgrade path, and the workflow around the code: reviews, releases, ownership.";
 
 const phases = [
   {
-    title: "Discovery",
-    when: "Week 1–2",
-    copy: "We sit with the people who do the work, read the systems and the code, and find where software and AI save the most. You get a ranked list, a scoped plan and a realistic estimate before you commit to anything.",
+    title: "Kick-off and access",
+    when: "Day 1",
+    copy: "Read access to the repositories and pipelines, a thirty-minute call on what hurts, and the list of people to interview. The price is fixed here, before anything is read.",
   },
   {
-    title: "Foundation",
+    title: "Reading the code",
+    when: "Week 1",
+    copy: "Project graph, dependency and boundary analysis, bundle and build times, tests and upgrade path. Automated where it can be, read by a senior engineer where it matters.",
+  },
+  {
+    title: "Interviews",
+    when: "Week 2",
+    copy: "Developers, leads and product. The code says what is there; the people say why, and which parts they avoid touching.",
+  },
+  {
+    title: "Report and roadmap",
     when: "Week 2–3",
-    copy: "Data model, integrations and code structure designed to fit your landscape and standards, so what we build slots into your suite instead of beside it.",
-  },
-  {
-    title: "Build in short cycles",
-    when: "Every 2 weeks",
-    copy: "Working software your stakeholders can click through, reviewed together. AI wired into the workflow where it earns its place, with evaluation and guardrails. Tests and deployments through your pipelines from the first sprint.",
-  },
-  {
-    title: "Ship, hand over, stay or leave",
-    when: "Final weeks",
-    copy: "Go-live, documentation and a working session with your developers. Then you choose: we keep delivering the next outcome with you, or we leave with everything in your hands.",
+    copy: "Every finding ranked by what it costs per month, with the fix and the effort next to each. A roadmap session with your team, sized to your capacity, and thirty days of follow-up questions.",
   },
 ];
 
 const stack = [
   "Angular",
+  "Nx",
   "TypeScript",
-  ".NET",
-  "Node.js",
-  "SQL",
-  "Azure",
-  "Claude and OpenAI APIs",
+  "NgRx and Signal Store",
+  "RxJS",
+  ".NET and Node.js APIs",
+  "Azure pipelines",
 ];
 
 const commitments = [
   {
-    title: "Outcomes, not hours",
-    copy: "Every engagement is scoped around an outcome you can see in production, with the plan, the team and the price agreed before we start. Hours are how we get there, not what you buy.",
+    title: "A fixed price, up front",
+    copy: `From ${euro(PRICING.assessment.minimum)} for the one-week scan. Minimum and Standard are fixed prices for workspaces up to roughly fifty projects, and the number does not change during the assessment.`,
   },
   {
-    title: "One expert, a team's output",
-    copy: "With coding agents doing the typing, one senior engineer who knows the whole stack now delivers what a team of several did before, with one person accountable. Everything learned about your company is written into your repositories, and when an outcome needs more hands, we bring them.",
+    title: "Ranked, not listed",
+    copy: "Not sixty pages of everything that is wrong. Findings sorted by what they cost you, with the fix next to each, so your team starts at the top and the rest can wait.",
   },
   {
-    title: "You own everything",
-    copy: "Code, documentation, infrastructure and the decisions behind them live in your repositories and accounts from day one. No lock-in, no maintenance contract you did not plan for.",
+    title: "Yours to run",
+    copy: "The roadmap is written so your own developers can execute it, and most teams do. If you would rather have the top findings fixed by us, that is the Advanced tier.",
   },
 ];
 ---
 
-<section class="app-dev" id="app-development">
-  <div class="app-dev__inner">
-    <div class="app-dev__grid">
-      <div class="app-dev__copy">
-        <header class="app-dev__header">
-          <h2 class="app-dev__title">An industry expert inside your company</h2>
-          <p class="app-dev__lede">
-            Forward-deployed engineering is what the AI labs call it when
-            their engineers go to the customer and build until it works. We do
-            the same for companies that cannot hire one: founder Roberto
-            Heckers comes in, finds or takes on the highest-impact work, and
-            delivers it end to end, from the screens your users see to the
-            backend, the AI and the deployment behind them. With AI doing the
-            typing,
-            <Accent range="entry 40% cover 35%">one expert now ships what a team did before</Accent>,
-            and when an outcome needs more hands, a team is built around him.
+<section class="assessment" id="architecture-assessment">
+  <div class="assessment__inner">
+    <div class="assessment__grid">
+      <div class="assessment__copy">
+        <header class="assessment__header">
+          <h2 class="assessment__title">An outside read of your codebase</h2>
+          <p class="assessment__lede">
+            The architecture assessment is the diagnosis before anyone builds.
+            Senior engineers read your Angular or Nx codebase from the
+            outside, talk to the people who work in it every day, and hand
+            you every finding
+            <Accent range="entry 40% cover 35%">ranked by what it costs you, not by how ugly it looks</Accent>,
+            with the fix and the effort next to each. Fixed scope, two to
+            three weeks, and a roadmap your own team can run.
           </p>
         </header>
 
-        <h3 class="app-dev__subtitle">Three ways to bring us in</h3>
+        <h3 class="assessment__subtitle">Three moments teams ask for one</h3>
         <ul class="offerings">
           {
-            engagements.map((item) => (
+            reasons.map((item) => (
               <li class="offering">
                 <span class="offering__title">{item.title}</span>
                 <span class="offering__copy">{item.copy}</span>
@@ -111,19 +109,20 @@ const commitments = [
           }
         </ul>
 
-        <p class="app-dev__scope">
-          <span class="app-dev__scope-label">What that covers</span>
+        <p class="assessment__scope">
+          <span class="assessment__scope-label">What we read</span>
           {scope}
         </p>
 
-        <ProofQuote snippet="ferdiDelivery" />
+        <ProofQuote snippet="ferdiDepth" />
       </div>
 
       <aside class="plan" aria-labelledby="plan-title">
         <div class="plan__head">
-          <h3 class="plan__title" id="plan-title">How an engagement runs</h3>
+          <h3 class="plan__title" id="plan-title">How the assessment runs</h3>
           <p class="plan__intro">
-            Fixed steps, short feedback loops, no long silences.
+            Fixed scope, fixed duration, a few hours of your team's time in
+            total.
           </p>
         </div>
         <ol class="phases">
@@ -146,8 +145,8 @@ const commitments = [
         </ol>
         <div class="plan__stack">
           <span class="plan__stack-label">
-            Our default stack. Where your platform requires another, we work in
-            yours.
+            What we assess. Front end first, with the APIs and pipelines
+            behind it where they shape the front end.
           </span>
           <ul class="stack">
             {stack.map((tool) => <li class="stack__item">{tool}</li>)}
@@ -155,15 +154,16 @@ const commitments = [
         </div>
       </aside>
 
-      <div class="app-dev__actions">
-        <a href="#contactForm" class="app-dev__cta" data-subject="Development">
-          Book a discovery call
+      <div class="assessment__actions">
+        <a href="#contactForm" class="assessment__cta" data-subject="Code Review">
+          Book assessment
         </a>
-        <p class="app-dev__note">
-          No obligation. A short call to see whether we are the right fit.
+        <p class="assessment__note">
+          A short call to scope it. The price is fixed before we start.
         </p>
-        <a href="/services/forward-deployed-engineering" class="app-dev__details">
-          How an engagement runs, and three ways to work with us
+        <a href="/services/architecture-assessment" class="assessment__details">
+          Three tiers, what a finding looks like, and fourteen signs your
+          architecture is costing you
         </a>
       </div>
     </div>
@@ -182,13 +182,13 @@ const commitments = [
 </section>
 
 <style>
-  .app-dev {
+  .assessment {
     background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
 
-  .app-dev__inner {
+  .assessment__inner {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -198,7 +198,7 @@ const commitments = [
 
   /* --- Header --- */
 
-  .app-dev__header {
+  .assessment__header {
     display: flex;
     flex-direction: column;
     gap: var(--spacer-lg);
@@ -206,40 +206,40 @@ const commitments = [
     margin-bottom: var(--spacer-md);
   }
 
-  .app-dev__title {
+  .assessment__title {
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: var(--font-weight-medium);
     line-height: 1.02;
     letter-spacing: -0.01em;
   }
 
-  .app-dev__lede {
+  .assessment__lede {
     font-family: synonym, sans-serif;
     font-size: clamp(1.1rem, 1.6vw, 1.35rem);
     line-height: 1.55;
     color: var(--color-ink-muted);
   }
 
-  .app-dev__lede :global(.accent) {
+  .assessment__lede :global(.accent) {
     color: var(--color-ink);
   }
 
   /* --- Two column body --- */
 
-  .app-dev__grid {
+  .assessment__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
   }
 
-  .app-dev__copy {
+  .assessment__copy {
     display: flex;
     flex-direction: column;
     gap: var(--spacer-xl);
   }
 
-  .app-dev__subtitle {
+  .assessment__subtitle {
     font-size: var(--font-lg);
     font-weight: var(--font-weight-semi-bold);
     color: var(--color-ink);
@@ -274,7 +274,7 @@ const commitments = [
     max-width: 52ch;
   }
 
-  .app-dev__scope {
+  .assessment__scope {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
     line-height: 1.5;
@@ -282,7 +282,7 @@ const commitments = [
     max-width: 52ch;
   }
 
-  .app-dev__scope-label {
+  .assessment__scope-label {
     display: block;
     font-family: chillax, sans-serif;
     font-weight: var(--font-weight-medium);
@@ -290,7 +290,7 @@ const commitments = [
     margin-bottom: 0.2rem;
   }
 
-  .app-dev__actions {
+  .assessment__actions {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -298,7 +298,7 @@ const commitments = [
     margin-top: var(--spacer-base);
   }
 
-  .app-dev__cta {
+  .assessment__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -317,24 +317,24 @@ const commitments = [
       transform 0.2s;
   }
 
-  .app-dev__cta:hover {
+  .assessment__cta:hover {
     background-color: var(--color-accent-ink);
     border-color: var(--color-accent-ink);
     transform: translateY(-1px);
   }
 
-  .app-dev__cta:focus-visible {
+  .assessment__cta:focus-visible {
     outline: 3px solid var(--color-accent);
     outline-offset: 3px;
   }
 
-  .app-dev__note {
+  .assessment__note {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
     color: var(--color-ink-muted);
   }
 
-  .app-dev__details {
+  .assessment__details {
     font-family: synonym, sans-serif;
     font-weight: var(--font-weight-medium);
     color: var(--color-accent-ink);
@@ -344,8 +344,8 @@ const commitments = [
     text-decoration-thickness: 2px;
   }
 
-  .app-dev__details:hover,
-  .app-dev__details:focus-visible {
+  .assessment__details:hover,
+  .assessment__details:focus-visible {
     color: var(--color-accent-strong);
   }
 
@@ -620,7 +620,7 @@ const commitments = [
   }
 
   @media (min-width: 960px) {
-    .app-dev__grid {
+    .assessment__grid {
       grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
       grid-template-rows: auto 1fr;
     }
@@ -630,7 +630,7 @@ const commitments = [
       grid-row: 1 / 3;
     }
 
-    .app-dev__actions {
+    .assessment__actions {
       grid-column: 1;
       margin-top: 0;
     }
