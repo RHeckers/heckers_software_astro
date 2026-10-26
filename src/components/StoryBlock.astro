@@ -277,10 +277,25 @@ import Accent from "./Accent.astro";
     }
   }
 
+  /*
+    Phones. Each card fills the screen below the navigation pill, so the
+    three of them stack in one frame the way they do on wide screens. The
+    text is left-aligned and set larger than on desktop relative to the
+    card, with every phrase on its own line, because a centred cluster of
+    small lines looked lost in a card this tall.
+  */
   @media (max-width: 640px) {
+    .story {
+      /* Pinned just under the navigation pill (bottom edge at ~64px), with
+         the same gap below the card. */
+      --story-card-top: 80px;
+    }
+
     .story .story-block {
-      height: 60svh;
-      min-height: 500px;
+      height: calc(100svh - var(--story-card-top) - var(--spacer-md));
+      min-height: 0;
+      align-items: flex-start;
+      text-align: left;
     }
 
     /*
@@ -290,7 +305,7 @@ import Accent from "./Accent.astro";
     */
     .story .story-block-2,
     .story .story-block-3 {
-      padding: var(--spacer-xl) var(--spacer-md);
+      padding: var(--spacer-xl) clamp(1rem, 5vw, 1.5rem);
       /* clip, not hidden: hidden makes the card a scroll container, which
          would pin the accent words' view timelines to the card instead of
          the page and freeze their wipe. */
@@ -298,14 +313,20 @@ import Accent from "./Accent.astro";
     }
 
     .story .story-block .story-text {
-      font-size: clamp(1.5rem, 7.6vw, 2.5rem);
+      font-size: clamp(1.75rem, 9vw, 2.75rem);
       font-weight: var(--font-weight-normal);
+      line-height: 1.12;
       max-width: 100%;
-      text-wrap: balance;
+    }
+
+    .story .story-block .story-text + .story-text {
+      margin-top: 0.4em;
     }
 
     .story .stacked-text {
       flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
       max-width: 100%;
 
       .small-text,
@@ -314,25 +335,34 @@ import Accent from "./Accent.astro";
         min-width: 0;
       }
 
+      /* "With our" wraps onto its own line above the accent phrase, which
+         is the widest nowrap run on the page: 12em, so 6.4vw keeps it
+         inside the card down to 320px. */
       .small-text {
-        font-size: clamp(0.85rem, 4.3vw, 1.5rem);
-        padding-bottom: 0px;
+        font-size: clamp(1.25rem, 6.4vw, 2rem);
+        line-height: 1.3;
+        padding-bottom: 0;
 
         span {
           font-size: inherit;
         }
       }
 
+      /* DELIVER is about 4.1em wide in this face; 18vw keeps it inside
+         the card gutter on a 320px phone. */
       .large-text {
-        font-size: clamp(2.75rem, 15vw, 5rem);
-        line-height: 1;
+        font-size: clamp(3rem, 18vw, 6rem);
+        line-height: 0.95;
+        margin-top: 0.15em;
       }
     }
 
     .story .story-caption {
-      margin-top: var(--spacer-lg);
-      font-size: 1rem;
+      margin-top: var(--spacer-xl);
+      font-size: clamp(1rem, 4.4vw, 1.15rem);
+      line-height: 1.5;
       padding: 0;
+      max-width: 34ch;
     }
 
     .story svg {
@@ -345,7 +375,7 @@ import Accent from "./Accent.astro";
 
     .story .sticky-wrapper,
     .story .sticky-wrapper-long {
-      top: 15svh;
+      top: var(--story-card-top);
     }
   }
 </style>
