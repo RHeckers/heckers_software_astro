@@ -59,16 +59,19 @@ const credentials: Credential[] = [
   },
   {
     title: "Conference stages",
-    detail: "Architecture, monorepos and AI-driven front ends, most recently at:",
+    detail:
+      "Architecture, monorepos and AI-driven front ends, most recently at:",
     links: PROFILES.talks,
   },
   {
     title: "Enterprise solutions",
-    detail: "Energy, healthcare, industry and government, in codebases with hundreds of projects.",
+    detail:
+      "Energy, healthcare, industry and government, in codebases with hundreds of projects.",
   },
   {
     title: "AI at the source",
-    detail: "Knowledge groups with industry leaders and the conferences where next year's tooling shows first.",
+    detail:
+      "Knowledge groups with industry leaders and the conferences where next year's tooling shows first.",
   },
 ];
 
@@ -142,7 +145,11 @@ const jsonLd = {
         addressCountry: "NL",
       },
       vatID: COMPANY.btw,
-      identifier: { "@type": "PropertyValue", propertyID: "KVK", value: COMPANY.kvk },
+      identifier: {
+        "@type": "PropertyValue",
+        propertyID: "KVK",
+        value: COMPANY.kvk,
+      },
       founder: { "@id": personId },
       areaServed: ["Netherlands", "Belgium", "Europe", "Worldwide"],
       knowsAbout,
@@ -199,15 +206,18 @@ const jsonLd = {
           We exist to get software and AI out of the pilot and into production.
         </h1>
         <p class="hero__lead">
-          Most companies do not lack ideas, budgets or talent. They lack
-          someone who will own an outcome until it is live and the people
-          inside can run it. {COMPANY.name} is built to be that someone: an
-          industry expert who comes in, finds the highest-impact work, builds
-          it end to end, ships it, and leaves the know-how in your
-          repositories.
+          Most companies do not lack ideas, budgets or talent. They lack someone
+          who will own an outcome until it is live and the people inside can run
+          it. {COMPANY.name} is built to be that someone: an industry expert who comes
+          in, finds the highest-impact work, builds it end to end, ships it, and leaves
+          the know-how in your repositories.
         </p>
         <div class="hero__actions">
-          <a href="#contactForm" class="btn btn--primary" data-subject="Development">
+          <a
+            href="#contactForm"
+            class="btn btn--primary"
+            data-subject="Development"
+          >
             Talk to us
           </a>
           <a href={SERVICES[0].href} class="btn btn--ghost">
@@ -224,22 +234,36 @@ const jsonLd = {
           aria-label="Three pilots that stayed demos, and one that is taken through discovery, build and integration into production."
         >
           <g class="ghosts">
-            <rect class="ghost" x="24" y="22" width="120" height="28" rx="7" />
+            <rect class="ghost" x="24" y="22" width="120" height="28" rx="7"
+            ></rect>
             <text class="ghost-label" x="84" y="40">Demo, 2024</text>
-            <rect class="ghost" x="44" y="60" width="120" height="28" rx="7" />
+            <rect class="ghost" x="44" y="60" width="120" height="28" rx="7"
+            ></rect>
             <text class="ghost-label" x="104" y="78">Pilot, 2025</text>
-            <rect class="pick" x="64" y="98" width="120" height="28" rx="7" />
+            <rect class="pick" x="64" y="98" width="120" height="28" rx="7"
+            ></rect>
             <text class="pick-label" x="124" y="116">Proof of concept</text>
           </g>
 
-          <path class="lead" pathLength="1" d="M 124 126 C 124 160, 40 150, 40 190" />
+          <path
+            class="lead"
+            pathLength="1"
+            d="M 124 126 C 124 160, 40 150, 40 190"></path>
 
           <g class="stages">
             {
               stages.map((stage, i) => (
                 <g class={`stage stage--${i}`}>
-                  <rect x={16 + i * 108} y="190" width="94" height="30" rx="8" />
-                  <text x={63 + i * 108} y="209">{stage}</text>
+                  <rect
+                    x={16 + i * 108}
+                    y="190"
+                    width="94"
+                    height="30"
+                    rx="8"
+                  />
+                  <text x={63 + i * 108} y="209">
+                    {stage}
+                  </text>
                 </g>
               ))
             }
@@ -255,16 +279,18 @@ const jsonLd = {
           </g>
 
           <g class="prod">
-            <path class="link link--3" pathLength="1" d="M 434 205 H 450" />
-            <circle class="live" cx="458" cy="205" r="4.5" />
+            <path class="link link--3" pathLength="1" d="M 434 205 H 450"
+            ></path>
+            <circle class="live" cx="458" cy="205" r="4.5"></circle>
           </g>
 
-          <circle class="runner" r="5" />
+          <circle class="runner" r="5"></circle>
 
           <g class="status">
-            <rect x="278" y="236" width="176" height="28" rx="14" />
-            <circle class="status__dot" cx="296" cy="250" r="4" />
-            <text x="310" y="254" text-anchor="start">In production, owned</text>
+            <rect x="278" y="236" width="176" height="28" rx="14"></rect>
+            <circle class="status__dot" cx="296" cy="250" r="4"></circle>
+            <text x="310" y="254" text-anchor="start">In production, owned</text
+            >
           </g>
         </svg>
         <figcaption>
@@ -316,17 +342,17 @@ const jsonLd = {
           <span class="goal__index">02</span>
           <strong>Our own developers can run it.</strong>
           <span>
-            Every decision is written down, every rule is enforced in the
-            build, and the agent instructions that made us fast are in your
-            repository, not in our heads.
+            Every decision is written down, every rule is enforced in the build,
+            and the agent instructions that made us fast are in your repository,
+            not in our heads.
           </span>
         </li>
         <li>
           <span class="goal__index">03</span>
           <strong>We know what to build next.</strong>
           <span>
-            A ranked list of the next outcomes, with what each is worth, so
-            the next quarter starts with a decision instead of a workshop.
+            A ranked list of the next outcomes, with what each is worth, so the
+            next quarter starts with a decision instead of a workshop.
           </span>
         </li>
       </ol>
@@ -368,11 +394,13 @@ const jsonLd = {
                         ({PROFILES.book.publisher}, {PROFILES.book.year}) is a
                         full book on building Angular applications of any size
                         with Nx, RxJS and NgRx, and it is the reason teams
-                        across Europe know the name before he walks in. He
-                        takes the same material on stage:{" "}
+                        across Europe know the name before he walks in. He takes
+                        the same material on stage:{" "}
                         <a href={PROFILES.talks[0].url}>ngPoland</a>,{" "}
                         <a href={PROFILES.talks[1].url}>Angular Zurich</a> and{" "}
-                        <a href={PROFILES.talks[2].url}>The Dutch Angular Group</a>{" "}
+                        <a href={PROFILES.talks[2].url}>
+                          The Dutch Angular Group
+                        </a>{" "}
                         have had him talk about architecture, monorepos and the
                         way AI is changing how front ends are built.
                       </p>
@@ -459,13 +487,16 @@ const jsonLd = {
           <div>
             <dt>AI</dt>
             <dd>
-              Member of AI knowledge groups with industry leaders; regular at
-              AI and Angular conferences
+              Member of AI knowledge groups with industry leaders; regular at AI
+              and Angular conferences
             </dd>
           </div>
           <div>
             <dt>Clients include</dt>
-            <dd>Vattenfall, Marel, Wit-Gele Kruis West-Vlaanderen</dd>
+            <dd>
+              Ministry of Defense, Vattenfall, Marel, Wit-Gele Kruis
+              West-Vlaanderen
+            </dd>
           </div>
           {
             PROFILES.linkedin && (
@@ -789,117 +820,307 @@ const jsonLd = {
   }
 
   @keyframes art-pick {
-    0%, 6% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
-    12%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    0%,
+    6% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    12%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
   }
 
   @keyframes art-lead {
-    0%, 12% { stroke-dashoffset: 1; }
-    22%, 90% { stroke-dashoffset: 0; }
-    96%, 100% { stroke-dashoffset: 1; }
+    0%,
+    12% {
+      stroke-dashoffset: 1;
+    }
+    22%,
+    90% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
   }
 
   @keyframes art-stage-0 {
-    0%, 31% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
-    37%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    0%,
+    31% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    37%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
   }
 
   @keyframes art-label-0 {
-    0%, 31% { fill: rgba(232, 237, 246, 0.8); }
-    37%, 88% { fill: #ffffff; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+    0%,
+    31% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    37%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
   }
 
   @keyframes art-link-0 {
-    0%, 37% { stroke-dashoffset: 1; }
-    43%, 88% { stroke-dashoffset: 0; }
-    96%, 100% { stroke-dashoffset: 1; }
+    0%,
+    37% {
+      stroke-dashoffset: 1;
+    }
+    43%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
   }
 
   @keyframes art-stage-1 {
-    0%, 43% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
-    49%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    0%,
+    43% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    49%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
   }
 
   @keyframes art-label-1 {
-    0%, 43% { fill: rgba(232, 237, 246, 0.8); }
-    49%, 88% { fill: #ffffff; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+    0%,
+    43% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    49%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
   }
 
   @keyframes art-link-1 {
-    0%, 49% { stroke-dashoffset: 1; }
-    55%, 88% { stroke-dashoffset: 0; }
-    96%, 100% { stroke-dashoffset: 1; }
+    0%,
+    49% {
+      stroke-dashoffset: 1;
+    }
+    55%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
   }
 
   @keyframes art-stage-2 {
-    0%, 55% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
-    61%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    0%,
+    55% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    61%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
   }
 
   @keyframes art-label-2 {
-    0%, 55% { fill: rgba(232, 237, 246, 0.8); }
-    61%, 88% { fill: #ffffff; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+    0%,
+    55% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    61%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
   }
 
   @keyframes art-link-2 {
-    0%, 61% { stroke-dashoffset: 1; }
-    67%, 88% { stroke-dashoffset: 0; }
-    96%, 100% { stroke-dashoffset: 1; }
+    0%,
+    61% {
+      stroke-dashoffset: 1;
+    }
+    67%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
   }
 
   @keyframes art-stage-3 {
-    0%, 67% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
-    73%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    0%,
+    67% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    73%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
   }
 
   @keyframes art-label-3 {
-    0%, 67% { fill: rgba(232, 237, 246, 0.8); }
-    73%, 88% { fill: #ffffff; }
-    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+    0%,
+    67% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    73%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
   }
 
   @keyframes art-link-3 {
-    0%, 73% { stroke-dashoffset: 1; }
-    79%, 88% { stroke-dashoffset: 0; }
-    96%, 100% { stroke-dashoffset: 1; }
+    0%,
+    73% {
+      stroke-dashoffset: 1;
+    }
+    79%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
   }
 
   /* The runner reaches each stage just as that stage switches on. */
   @keyframes art-runner {
-    0%, 12% { offset-distance: 0%; opacity: 0; }
-    14% { opacity: 1; }
-    25% { offset-distance: 20%; }
-    34% { offset-distance: 26%; }
-    46% { offset-distance: 47%; }
-    58% { offset-distance: 67%; }
-    70% { offset-distance: 88%; }
-    76% { offset-distance: 100%; opacity: 1; }
-    79%, 100% { offset-distance: 100%; opacity: 0; }
+    0%,
+    12% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    14% {
+      opacity: 1;
+    }
+    25% {
+      offset-distance: 20%;
+    }
+    34% {
+      offset-distance: 26%;
+    }
+    46% {
+      offset-distance: 47%;
+    }
+    58% {
+      offset-distance: 67%;
+    }
+    70% {
+      offset-distance: 88%;
+    }
+    76% {
+      offset-distance: 100%;
+      opacity: 1;
+    }
+    79%,
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
   }
 
   @keyframes art-live {
-    0%, 75% { opacity: 0.25; }
-    79%, 90% { opacity: 1; }
-    96%, 100% { opacity: 0.25; }
+    0%,
+    75% {
+      opacity: 0.25;
+    }
+    79%,
+    90% {
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0.25;
+    }
   }
 
   @keyframes art-status {
-    0%, 76% { opacity: 0; transform: scale(0.9); }
-    82%, 90% { opacity: 1; transform: scale(1); }
-    96%, 100% { opacity: 0; transform: scale(0.9); }
+    0%,
+    76% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    82%,
+    90% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
   }
 
   @keyframes art-pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
   }
 
   /* --- Credentials strip, on the hero's own ground --- */

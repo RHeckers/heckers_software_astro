@@ -34,7 +34,7 @@ export const SERVICES: readonly Service[] = [
     slug: "forward-deployed-engineering",
     href: "/services/forward-deployed-engineering",
     navLabel: "Forward-Deployed Engineering",
-    name: "Forward-deployed engineering",
+    name: "Forward-Deployed Engineering",
     summary:
       "An industry expert who comes into your company and delivers outcomes end to end: discovery, development, AI integration and deployment. With AI, one senior engineer ships what a team did before. Hand over a backlog, or let us find the highest-impact work first.",
     subject: "Development",
