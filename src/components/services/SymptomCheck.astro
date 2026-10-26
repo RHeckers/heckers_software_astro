@@ -8,6 +8,11 @@
  * This is the one place on the page that asks the reader to do something,
  * so it gets the dark rounded panel treatment the home page uses for the
  * assessment, and nothing else on the page competes with it.
+ *
+ * With `preChecked`, every statement starts ticked and the reader unticks
+ * what does not apply: the panel opens on the full score and the most
+ * urgent verdict, and gets milder as they take items away. Used where the
+ * page argues that most companies already have most of the symptoms.
  */
 interface Verdict {
   /** Lowest score (inclusive) at which this verdict applies. */
@@ -24,6 +29,11 @@ interface Props {
   verdicts: Verdict[];
   ctaLabel: string;
   subject: string;
+  /** Start with every statement ticked; the reader unticks instead. */
+  preChecked?: boolean;
+  /** Add space above: for when the check follows the hero directly, with
+   *  no light section in between to provide it. */
+  spaced?: boolean;
 }
 
 const {
@@ -34,13 +44,25 @@ const {
   verdicts,
   ctaLabel,
   subject,
+  preChecked = false,
+  spaced = false,
 } = Astro.props;
 
 const total = items.length;
 const sorted = [...verdicts].sort((a, b) => a.min - b.min);
+const initialCount = preChecked ? total : 0;
+/* The verdict shown before any interaction when the list starts full, so
+   the panel is right without JavaScript too. */
+const initialVerdict = preChecked
+  ? sorted.filter((verdict) => verdict.min <= total).at(-1)
+  : undefined;
 ---
 
-<section class="check-wrap" id={id}>
+<section
+  class:list={["check-wrap", { "check-wrap--spaced": spaced }]}
+  id={id}
+  data-prechecked={preChecked}
+>
   <div class="check" aria-labelledby={`${id}-heading`}>
     <div class="check__copy">
       <h2 class="check__title" id={`${id}-heading`}>{title}</h2>
@@ -55,6 +77,7 @@ const sorted = [...verdicts].sort((a, b) => a.min - b.min);
                   class="symptom__input"
                   type="checkbox"
                   name={`${id}-${index}`}
+                  checked={preChecked}
                 />
                 <span class="symptom__box" aria-hidden="true" />
                 <span class="symptom__text">{item}</span>
@@ -65,16 +88,24 @@ const sorted = [...verdicts].sort((a, b) => a.min - b.min);
       </ul>
     </div>
 
-    <aside class="score" data-score aria-live="polite">
+    <aside
+      class="score"
+      data-score
+      aria-live="polite"
+      style={`--ratio: ${initialCount / total}`}
+    >
       <p class="score__count">
-        <span class="score__n" data-count>0</span>
+        <span class="score__n" data-count>{initialCount}</span>
         <span class="score__of">of {total}</span>
       </p>
       <div class="meter" aria-hidden="true">
-        <span class="meter__fill" data-meter></span>
+        <span
+          class="meter__fill"
+          data-meter
+          style={`width: ${(initialCount / total) * 100}%`}></span>
       </div>
 
-      <div class="verdict" data-initial>
+      <div class="verdict" data-initial hidden={preChecked}>
         <p class="verdict__title">Tick what is true for your team.</p>
         <p class="verdict__copy">
           Be honest. Nobody is watching, and the list is worth more than the
@@ -83,7 +114,12 @@ const sorted = [...verdicts].sort((a, b) => a.min - b.min);
       </div>
       {
         sorted.map((verdict) => (
-          <div class="verdict" data-verdict data-min={verdict.min} hidden>
+          <div
+            class="verdict"
+            data-verdict
+            data-min={verdict.min}
+            hidden={verdict !== initialVerdict}
+          >
             <p class="verdict__title">{verdict.title}</p>
             <p class="verdict__copy">{verdict.copy}</p>
           </div>
@@ -114,7 +150,7 @@ const sorted = [...verdicts].sort((a, b) => a.min - b.min);
       if (!count || !meter || !initial || !score) return;
 
       const total = inputs.length;
-      let touched = false;
+      let touched = section.dataset.prechecked === "true";
 
       function update() {
         const checked = inputs.filter((input) => input.checked).length;
@@ -148,6 +184,10 @@ const sorted = [...verdicts].sort((a, b) => a.min - b.min);
   .check-wrap {
     background: var(--color-light);
     padding: 0 clamp(1rem, 3vw, 2rem) clamp(4rem, 10vw, 7.5rem);
+  }
+
+  .check-wrap--spaced {
+    padding-top: clamp(4rem, 10vw, 7.5rem);
   }
 
   .check {

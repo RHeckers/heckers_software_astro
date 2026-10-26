@@ -9,10 +9,10 @@ import { WORKSHOPS } from "../lib/workshops";
 // One photograph per workshop, each from a different room. The wide card
 // crops differently from the round desktop one, so the framing differs too.
 const images = {
-  "enterprise-angular": { src: ngPolandCode, objectPosition: "center" },
-  "nx-monorepo": { src: ngPolandHall, objectPosition: "center" },
   ai: { src: zurichWorkshop, objectPosition: "center" },
-  "ui-libraries": { src: ngPolandSponsors, objectPosition: "center" },
+  "ai-frontend": { src: ngPolandCode, objectPosition: "center" },
+  "nx-monorepo": { src: ngPolandHall, objectPosition: "center" },
+  "enterprise-angular": { src: ngPolandSponsors, objectPosition: "center" },
 } as const;
 
 const workshops = WORKSHOPS.map((item) => ({

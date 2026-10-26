@@ -22,9 +22,10 @@ export interface HomeLink {
 export const HOME_CATEGORY_LINKS = {
   codeAnalysis: { category: "Architecture", topic: "architecture" },
   workshops: {
-    "enterprise-angular": { category: "Angular", topic: "Angular" },
-    "nx-monorepo": { category: "Nx", topic: "Nx monorepo" },
     ai: { category: "AI", topic: "AI" },
+    "ai-frontend": { category: "AI", topic: "AI" },
+    "nx-monorepo": { category: "Nx", topic: "Nx monorepo" },
+    "enterprise-angular": { category: "Angular", topic: "Angular" },
   },
 } as const satisfies {
   codeAnalysis: HomeLinkTarget;

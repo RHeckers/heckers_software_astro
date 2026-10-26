@@ -3,13 +3,16 @@
  * workshops service page pair each entry with their own images.
  *
  * `id` doubles as the anchor on /services/workshops, so a link from the
- * home page lands on the matching workshop.
+ * home page lands on the matching workshop. The order here is the order
+ * everywhere: the AI delivery workshop leads because it teaches the way
+ * our forward-deployed team works; the rest follow from the AI feature
+ * down to the foundation it needs.
  */
 export type WorkshopId =
-  | "enterprise-angular"
-  | "nx-monorepo"
   | "ai"
-  | "ui-libraries";
+  | "ai-frontend"
+  | "nx-monorepo"
+  | "enterprise-angular";
 
 export interface Workshop {
   id: WorkshopId;
@@ -24,70 +27,73 @@ export interface Workshop {
 
 export const WORKSHOPS: readonly Workshop[] = [
   {
+    id: "ai",
+    title: "AI-Native Development: From Autocomplete to Automation",
+    tag: "AI • Delivery",
+    description:
+      "For development teams that use AI for code suggestions and the occasional question, and want to go much further: agents that pick up a ticket, write the code and the tests, and open a pull request for a person to review. One day on your own codebase, taught the way we work in our own engagements.",
+    bullets: [
+      "Where your team stands today and what is realistic next: from suggestions in the editor to agents that finish whole tasks while a person checks the result",
+      "Setting up coding agents such as Claude Code or Copilot so they know your codebase: the project structure, your conventions, and how to build and test",
+      "Instructions and reusable skills committed to the repository, so the whole team gets the same results, not only the early adopters",
+      "Handing the routine work to agents: tests, migrations, refactors, dependency upgrades and documentation, running in the background while people do the thinking",
+      "Automating the chain: an agent takes a ticket, makes the change, runs the tests and opens a pull request that is ready for review",
+      "Keeping quality up: a review checklist for AI-written code, which decisions the agent may take and which stay with a person",
+    ],
+    outcome:
+      "Agent instructions and skills committed to your repository, a review checklist for AI-written pull requests, one routine job (tests, upgrades or documentation) running automated, and a plan for which parts of your delivery to automate next.",
+  },
+  {
+    id: "ai-frontend",
+    title: "Building AI-Driven Front-End Systems",
+    tag: "AI • Angular",
+    description:
+      "For teams asked to put AI into their Angular application and finding out that the chat box is the easy part. You build three things: a dashboard that answers questions about your data, a chat that replies with real components instead of text, and a single message that runs a multi-step task.",
+    bullets: [
+      "AI-driven dashboards: a user asks a question in plain language and gets the right chart, table or filter, built from your own data",
+      "Chats that answer with components: the model picks a table, a chart, a form or an approve button from your own component library and the application renders it",
+      "One message, many steps: a request such as moving all open invoices for a customer to next month becomes a chain of API calls, with each step shown and confirmed before anything changes",
+      "The plumbing in Angular: streaming answers, long-running tasks, partial results, cancellation and retries, with signals instead of a tangle of subscriptions",
+      "Where the model runs: in the browser, on your backend or in a separate service, and what each means for security, cost and speed",
+      "Keeping it safe and testable: what the model may and may not do, how to test features that do not give the same answer twice, and what to show the user when it goes wrong",
+    ],
+    outcome:
+      "One of the three features working inside your own application, the set of components the model is allowed to use, and the rules and tests for the next features written down.",
+  },
+  {
+    id: "nx-monorepo",
+    title: "Nx Monorepos That Work for You",
+    tag: "Platform • Nx",
+    description:
+      "For teams on Nx, or moving to it, whose workspace has grown faster than its rules: apps that import each other freely, a folder structure nobody can explain to a new hire, and CI that gets slower every month. A deep dive into the architecture of a monorepo that stays healthy, shares more code, ships faster and lets fewer bugs reach production.",
+    bullets: [
+      "Workspace architecture: how to split apps and libraries by domain and type, and a folder structure a new developer understands on day one",
+      "Module boundaries the build enforces: tags and lint rules that stop the wrong imports before they are merged",
+      "Bringing existing projects into the workspace in stages, without stopping releases while you do it",
+      "Getting the most out of Nx Cloud: remote caching, distributed task execution and flaky-test detection, so CI only runs what changed",
+      "Keeping the monorepo from degrading: the metrics to watch, the checks that run on every pull request, and the rules that keep structure from drifting",
+      "Code sharing that pays off: shared libraries with clear owners and public APIs, so one fix lands everywhere and fewer bugs make it to production",
+    ],
+    outcome:
+      "A target architecture for your workspace, module boundary rules and tags applied to it, a CI setup that only builds and tests what changed, and a staged plan for the projects that are not in the workspace yet.",
+  },
+  {
     id: "enterprise-angular",
-    title: "Enterprise Angular Patterns",
+    title: "Enterprise Angular Architecture",
     tag: "Architecture • Angular",
     description:
-      "For teams whose Angular app has grown faster than its structure. We find where it hurts, including the places you have stopped noticing, and show you the way out.",
+      "For teams whose Angular app has grown faster than its structure, and who are about to build AI features on top of it. We find where it hurts, including the places you have stopped noticing, and show the way out.",
     bullets: [
       "Every change breaks something else: bringing dependency rules to a grown codebase",
       "State scattered everywhere, and the bugs nobody can reproduce",
       "The app feels slow but nothing looks wrong: finding the real cause",
       "Signals, standalone and zoneless adopted in place, with no big-bang rewrite",
+      "Shared components that get used instead of copied: what belongs in the library and what does not",
       "Tests that pass while production breaks: what to test at which level",
       "Your own codebase, reviewed together: the problems you have stopped seeing",
     ],
     outcome:
       "A written set of architecture rules for your app, the lint configuration that enforces them, and a prioritised list of the places in your code that break them today.",
-  },
-  {
-    id: "nx-monorepo",
-    title: "Nx Monorepo Enablement",
-    tag: "Platform • Nx",
-    description:
-      "For teams whose builds and CI keep getting slower, and whose apps have quietly grown into each other.",
-    bullets: [
-      "An hour of CI for a one-line change: affected commands and caching that only run what changed",
-      "Apps and libraries that import each other freely: module boundaries the build enforces",
-      "Moving your existing apps into one workspace in stages, while releases keep shipping",
-      "Nx Cloud, remote caching and distributed tasks for pipelines that are fast and stay fast",
-      "A look at your own project graph: the hidden coupling and duplicated code you did not know were there",
-    ],
-    outcome:
-      "Module boundary rules and tags applied to your workspace, a CI configuration that only builds what changed, and a staged plan for the apps that are not in the workspace yet.",
-  },
-  {
-    id: "ai",
-    title: "Using AI Effectively in Angular and Nx Projects",
-    tag: "AI • Productivity",
-    description:
-      "For teams where AI use is spreading unevenly: some developers fly, others distrust every suggestion, and nobody has agreed on the rules.",
-    bullets: [
-      "Why AI code drifts from your conventions, and how to stop it",
-      "Setting up coding agents such as Claude Code or Copilot with your project graph, conventions and guardrails",
-      "Shared instructions and skills so everyone benefits, not just the early adopters",
-      "Refactors, tests and migrations with AI, while your team stays in control",
-      "The risks already in your workflow today, and the policies that close them",
-    ],
-    outcome:
-      "Shared agent instructions committed to your repository, a review checklist for AI-assisted pull requests, and a written policy your team agreed on together.",
-  },
-  {
-    id: "ui-libraries",
-    title: "Building Enterprise-Grade UI Libraries",
-    tag: "UI Libraries • Angular",
-    description:
-      "For teams whose shared components get copied instead of reused, and where every brand tweak turns into a fork.",
-    bullets: [
-      "Why teams fork your components instead of using them, and the fix",
-      "The same button built four times: deciding what belongs in the library",
-      "Design tokens so a new brand does not mean a new copy of the library",
-      "The accessibility gaps you cannot see: keyboard, focus and screen readers",
-      "One release breaks every consumer: safe versioning in an Nx workspace",
-      "Your library, reviewed: the hidden coupling that keeps teams from using it",
-    ],
-    outcome:
-      "A component inventory of your library with what to keep, merge and remove, a token structure for theming, and a versioning and release process the consumers can rely on.",
   },
 ] as const;
 
@@ -104,7 +110,7 @@ export const TAILORED_WORKSHOP = {
     "For teams whose problem does not fit a catalogue entry. We start from a call about what is actually slowing you down, read your codebase, and build the workshop around that: one topic from the list, a mix of several, or something nobody has written a course for yet.",
   bullets: [
     "An intake call to find the real problem, not the one in the ticket",
-    "Topics combined from the catalogue or built from scratch: state, performance, testing, migrations, tooling, whatever your code needs",
+    "Topics combined from the catalogue or built from scratch: AI features, state, performance, testing, migrations, tooling, UI libraries, whatever your code needs",
     "Every example and exercise taken from your own repository",
     "Format chosen with you: one day, two days, or a series of half-days between sprints",
     "Decisions written down and enforced in the build, like every other workshop",

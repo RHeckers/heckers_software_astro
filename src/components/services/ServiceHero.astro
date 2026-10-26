@@ -1,9 +1,10 @@
 ---
 /**
  * Opening of a service page: the problem stated in one line, the service in
- * one paragraph, and a single piece of evidence in a glass card. Same dark
- * ground and type scale as the home hero so the page reads as part of the
- * site, but without the animated graph: here the words carry the weight.
+ * one paragraph, and next to it either a single piece of evidence in a
+ * glass card (the default) or whatever the page puts in the `aside` slot:
+ * a report preview, a stack of photos. Same dark ground and type scale as
+ * the home hero so the page reads as part of the site.
  */
 interface Props {
   /** Short name of the service, shown above the title. */
@@ -15,7 +16,8 @@ interface Props {
   subject: string;
   secondaryLabel: string;
   secondaryHref: string;
-  fact: {
+  /** The evidence card. Omit it when the `aside` slot is filled. */
+  fact?: {
     value: string;
     copy: string;
     source: string;
@@ -48,11 +50,21 @@ const {
       </div>
     </div>
 
-    <aside class="fact" aria-label="A number worth knowing">
-      <p class="fact__value">{fact.value}</p>
-      <p class="fact__copy">{fact.copy}</p>
-      <p class="fact__source">{fact.source}</p>
-    </aside>
+    {
+      Astro.slots.has("aside") ? (
+        <div class="service-hero__aside">
+          <slot name="aside" />
+        </div>
+      ) : (
+        fact && (
+          <aside class="fact" aria-label="A number worth knowing">
+            <p class="fact__value">{fact.value}</p>
+            <p class="fact__copy">{fact.copy}</p>
+            <p class="fact__source">{fact.source}</p>
+          </aside>
+        )
+      )
+    }
   </div>
 </section>
 
@@ -170,6 +182,11 @@ const {
     border-color: rgba(232, 237, 246, 0.7);
   }
 
+  .service-hero__aside {
+    width: 100%;
+    max-width: 34rem;
+  }
+
   /* --- Evidence card --- */
 
   .fact {
@@ -234,7 +251,8 @@ const {
       grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     }
 
-    .fact {
+    .fact,
+    .service-hero__aside {
       justify-self: end;
     }
   }

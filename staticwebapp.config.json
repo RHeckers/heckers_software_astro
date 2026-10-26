@@ -3,6 +3,11 @@
     {
       "route": "/api/*",
       "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/services/application-development",
+      "redirect": "/services/forward-deployed-engineering",
+      "statusCode": 301
     }
   ]
 }

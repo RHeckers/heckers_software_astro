@@ -24,6 +24,9 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
  * band that argues for it, with the photograph swapping sides as you go.
  *
  * Sources:
+ * - MIT NANDA, The GenAI Divide: State of AI in Business 2025: ~95% of
+ *   enterprise generative AI pilots show no measurable P&L return; the
+ *   report blames workflow integration, not the models.
  * - Stripe, The Developer Coefficient, 2018.
  * - Xia et al., "Measuring Program Comprehension: A Large-Scale Field Study
  *   with Professionals", IEEE TSE 2018: ~58% of time on comprehension.
@@ -40,24 +43,24 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
   <ServicesOverview />
 
   <FactBand
-    title="The numbers don't lie: technical debt is expensive, and it is everywhere"
-    stat="42%"
-    lead="of a developer's week goes to maintenance, debugging and technical debt instead of new work. That is the average team, and the average team believes its own situation is better than average."
-    source="Stripe, The Developer Coefficient"
-    note="For a team of eight at a fully loaded ninety thousand euro per engineer, that is over three hundred thousand euro a year that buys no new features. It is spent whether you measure it or not. Every service on this page exists to get some of it back."
+    title="The model is rarely the problem. The last mile is."
+    stat="95%"
+    lead="of enterprise generative AI pilots deliver no measurable return. The study behind that number does not blame the models: it blames integration into real workflows, data readiness, and nobody owning the outcome."
+    source="MIT NANDA, The GenAI Divide: State of AI in Business 2025"
+    note="A pilot is a demo with a budget. What turns it into a return is engineering: the integration with the ERP, the data that has to be cleaned first, the pipeline, the monitoring, the people trained to use it. Companies that brought in an outside partner reached production about twice as often as those who built alone. That is the whole case for an expert who comes in and finishes."
     link={{
-      href: "/services/architecture-assessment#self-check",
-      label: "Fourteen signs your architecture is costing you",
+      href: "/services/forward-deployed-engineering#self-check",
+      label: "Twelve signs your company is behind on AI automation",
     }}
     image={ngPolandCode}
-    alt="Roberto Heckers presenting Angular architecture on the main stage at ngPoland"
+    alt="Roberto Heckers presenting on the main stage at ngPoland"
     side="right"
     surface="alt"
   />
 
   {
-    /* The assessment panel is the last card of the story stack, so it is
-      slotted into it rather than placed after it. */
+    /* The forward-deployed expert panel is the last card of the story stack,
+      so it is slotted into it rather than placed after it. */
   }
   <StoryBlock>
     <CodeReveal />
@@ -68,7 +71,7 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
     stat="2.4×"
     lead="more likely to be a high-performing team when the decisions that shape the code are written down and easy to find, instead of kept in people's heads."
     source="DORA, Accelerate State of DevOps"
-    note="A team can agree on a pattern on Thursday and drift from it by the next sprint, because agreement lives in memory and memory is busy. Documentation is not the wiki nobody reads: it is the decision written down and the lint rule that fails the build when someone forgets."
+    note="A team can agree on a pattern on Thursday and drift from it by the next sprint, because agreement lives in memory and memory is busy. Everything we build inside your company is handed over with the decisions written down and the lint rules that enforce them. The workshops do the same for the code your own team writes after we leave."
     link={{
       href: "/services/workshops",
       label: "How a workshop turns rules into code",
@@ -87,7 +90,7 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
     stat="58%"
     lead="of a developer's time goes to understanding existing code before a single line of it changes. Writing the change is the small part."
     source="Xia et al., IEEE Transactions on Software Engineering"
-    note="The people who built the system carry the map in their heads and no longer notice the detours. The developer who joined last pays the full price on every task, which makes them your most accurate measuring instrument."
+    note="The people who built the system carry the map in their heads and no longer notice the detours. That is why every engagement starts with an outside read: a discovery for the business, an architecture assessment for the code. Not ready for someone inside yet? The assessment on its own is the cheapest place to start."
     link={{
       href: "/services/architecture-assessment",
       label: "Why an outside read finds what yours cannot",
@@ -99,7 +102,7 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
   />
 
   <ProofRow
-    snippets={["peterApproach", "ferdiDepth", "marcFramework"]}
+    snippets={["peterApproach", "ferdiFullStack", "ferdiBeyondScope"]}
     tone="light"
   />
 

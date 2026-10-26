@@ -3,13 +3,17 @@
  * footer and the service pages' cross-links all read from here, so a slug
  * or label changes once.
  *
+ * Order matters: the first entry is the main offer and leads everywhere
+ * the services are listed. The other two are the ways in (an outside read
+ * of the code) and the way to keep a team moving after we leave (training).
+ *
  * `subject` is the option preselected in the contact form when a call to
  * action for that service is followed (see Contact.astro).
  */
 export type ServiceSlug =
+  | "forward-deployed-engineering"
   | "architecture-assessment"
-  | "workshops"
-  | "application-development";
+  | "workshops";
 
 export interface Service {
   slug: ServiceSlug;
@@ -27,24 +31,24 @@ export interface Service {
 
 export const SERVICES: readonly Service[] = [
   {
+    slug: "forward-deployed-engineering",
+    href: "/services/forward-deployed-engineering",
+    navLabel: "Forward-Deployed Engineering",
+    name: "Forward-deployed engineering",
+    summary:
+      "An industry expert who comes into your company and delivers outcomes end to end: discovery, development, AI integration and deployment. With AI, one senior engineer ships what a team did before. Hand over a backlog, or let us find the highest-impact work first.",
+    subject: "Development",
+    cta: "Book a discovery call",
+  },
+  {
     slug: "architecture-assessment",
     href: "/services/architecture-assessment",
     navLabel: "Architecture Assessment",
     name: "Architecture assessment",
     summary:
-      "Industry leading experts read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks for a full review.",
+      "Senior engineers read your Angular or Nx codebase from the outside and hand you a ranked report and a roadmap. Fixed scope, two to three weeks. The diagnosis before any team starts building.",
     subject: "Code Review",
     cta: "Book assessment",
-  },
-  {
-    slug: "application-development",
-    href: "/services/application-development",
-    navLabel: "App Development",
-    name: "Application development",
-    summary:
-      "Your first application from scratch, a new product for your scale-up, or a section of your enterprise software, built full stack by one senior team.",
-    subject: "Development",
-    cta: "Plan your project",
   },
   {
     slug: "workshops",
@@ -52,7 +56,7 @@ export const SERVICES: readonly Service[] = [
     navLabel: "Workshops",
     name: "Angular and Nx workshops",
     summary:
-      "Hands-on training on your own codebase: enterprise Angular patterns, Nx monorepos, AI-assisted development and UI libraries.",
+      "Hands-on training on your own codebase: AI-native development, AI-driven front ends, Nx monorepos and enterprise Angular architecture. So your team keeps the pace after we leave.",
     subject: "Workshop",
     cta: "Book workshop",
   },
@@ -62,8 +66,4 @@ export function getService(slug: ServiceSlug): Service {
   const service = SERVICES.find((item) => item.slug === slug);
   if (!service) throw new Error(`Unknown service: ${slug}`);
   return service;
-}
-
-export function otherServices(slug: ServiceSlug): Service[] {
-  return SERVICES.filter((item) => item.slug !== slug);
 }

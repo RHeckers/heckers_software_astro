@@ -1,10 +1,12 @@
 ---
 /**
- * Application development: what we build, how a project runs, and what a
- * client can count on. Sits on a light background so it reads as its own
- * section between the dark workshops and testimonials blocks.
+ * The forward-deployed expert: the ways to engage, how an engagement runs,
+ * and what a client can count on. Sits on a light background so it reads as
+ * its own section between the dark proof band and the contact form, and
+ * closes the home page's argument for the main offer with the practical
+ * details a buyer needs before they write to us.
  *
- * The project plan panel is the one animated element: its vertical line
+ * The engagement plan panel is the one animated element: its vertical line
  * draws down and each phase lights up as the panel scrolls into view
  * (CSS scroll-driven animation, no script; fully drawn where unsupported).
  */
@@ -13,55 +15,67 @@ import ProofQuote from "./ProofQuote.astro";
 
 const engagements = [
   {
-    title: "Outsource a section of your application",
-    copy: "A module, a customer portal, a reporting suite or an integration, built inside your existing codebase to your standards and handed over cleanly to your own developers.",
+    title: "Hand us the work",
+    copy: "You know what needs building: a backlog your team cannot get to, a module, a portal, an integration, an application. We take it on end to end, inside your codebase and your standards, and deliver it with working software every two weeks.",
   },
   {
-    title: "Add a new application to your suite",
-    copy: "A complete product from first sketch to production: architecture, front end, backend, deployment and handover. One accountable team, one point of contact.",
+    title: "Let us find the work",
+    copy: "You know something should be faster or cheaper but not where to start. A two-week discovery with the people who do the work ends in a ranked list of what software and AI can take off their plate, and a scoped plan for the top of it. Then we build it.",
+  },
+  {
+    title: "Get an AI pilot into production",
+    copy: "A proof of concept worked on a laptop and stalled at the ERP, the data or security. We take it the rest of the way: integration, evaluation, guardrails, pipeline and monitoring, so it earns its place in the daily workflow.",
   },
 ];
 
 const scope =
-  "Customer and partner portals, back-office modules, internal tools, reporting, integrations with your ERP and CRM, and the APIs behind them.";
+  "Customer and partner portals, back-office modules, internal tools, reporting, integrations with your ERP and CRM, document and workflow automation, AI assistants on your own data, and the APIs and pipelines behind all of it.";
 
 const phases = [
   {
     title: "Discovery",
     when: "Week 1–2",
-    copy: "We map the goals, the users and the systems the application must integrate with, and align with your architects and security requirements. You get a scoped plan and a realistic estimate.",
+    copy: "We sit with the people who do the work, read the systems and the code, and find where software and AI save the most. You get a ranked list, a scoped plan and a realistic estimate before you commit to anything.",
   },
   {
     title: "Foundation",
     when: "Week 2–3",
-    copy: "Data model, integrations and code structure are designed to fit your landscape and standards, so the application slots into your suite instead of beside it.",
+    copy: "Data model, integrations and code structure designed to fit your landscape and standards, so what we build slots into your suite instead of beside it.",
   },
   {
     title: "Build in short cycles",
     when: "Every 2 weeks",
-    copy: "Working software your stakeholders can click through, reviewed together. Automated tests and deployments through your pipelines from the first sprint.",
+    copy: "Working software your stakeholders can click through, reviewed together. AI wired into the workflow where it earns its place, with evaluation and guardrails. Tests and deployments through your pipelines from the first sprint.",
   },
   {
-    title: "Launch and handover",
+    title: "Ship, hand over, stay or leave",
     when: "Final weeks",
-    copy: "Go-live, documentation and a walkthrough for your developers. We stay available for support, or keep running it with you.",
+    copy: "Go-live, documentation and a working session with your developers. Then you choose: we keep delivering the next outcome with you, or we leave with everything in your hands.",
   },
 ];
 
-const stack = ["Angular", "TypeScript", ".NET", "Node.js", "SQL", "Azure"];
+const stack = [
+  "Angular",
+  "TypeScript",
+  ".NET",
+  "Node.js",
+  "SQL",
+  "Azure",
+  "Claude and OpenAI APIs",
+];
 
 const commitments = [
   {
-    title: "Fits your standards",
-    copy: "Your coding guidelines, security and compliance requirements, and release process. We adapt to your landscape, not the other way around.",
+    title: "Outcomes, not hours",
+    copy: "Every engagement is scoped around an outcome you can see in production, with the plan, the team and the price agreed before we start. Hours are how we get there, not what you buy.",
   },
   {
-    title: "Senior hands only",
-    copy: "The people you talk to are the people who build. No hand-off to a junior team.",
+    title: "One expert, a team's output",
+    copy: "With coding agents doing the typing, one senior engineer who knows the whole stack now delivers what a team of several did before, with one person accountable. Everything learned about your company is written into your repositories, and when an outcome needs more hands, we bring them.",
   },
   {
     title: "You own everything",
-    copy: "Code, documentation and infrastructure live in your repositories from day one. No lock-in.",
+    copy: "Code, documentation, infrastructure and the decisions behind them live in your repositories and accounts from day one. No lock-in, no maintenance contract you did not plan for.",
   },
 ];
 ---
@@ -71,18 +85,21 @@ const commitments = [
     <div class="app-dev__grid">
       <div class="app-dev__copy">
         <header class="app-dev__header">
-          <h2 class="app-dev__title">Application development</h2>
+          <h2 class="app-dev__title">An industry expert inside your company</h2>
           <p class="app-dev__lede">
-            We take on your application development: a section of your existing
-            software, or a complete new application within your suite or as your
-            first application. Full stack, from the screens your users see to
-            the backend and deployment behind them, delivered by
-            <Accent range="entry 40% cover 35%">one senior team</Accent> that fits
-            into how you already work.
+            Forward-deployed engineering is what the AI labs call it when
+            their engineers go to the customer and build until it works. We do
+            the same for companies that cannot hire one: founder Roberto
+            Heckers comes in, finds or takes on the highest-impact work, and
+            delivers it end to end, from the screens your users see to the
+            backend, the AI and the deployment behind them. With AI doing the
+            typing,
+            <Accent range="entry 40% cover 35%">one expert now ships what a team did before</Accent>,
+            and when an outcome needs more hands, a team is built around him.
           </p>
         </header>
 
-        <h3 class="app-dev__subtitle">Two ways to work with us</h3>
+        <h3 class="app-dev__subtitle">Three ways to bring us in</h3>
         <ul class="offerings">
           {
             engagements.map((item) => (
@@ -93,16 +110,18 @@ const commitments = [
             ))
           }
         </ul>
+
         <p class="app-dev__scope">
           <span class="app-dev__scope-label">What that covers</span>
           {scope}
         </p>
+
         <ProofQuote snippet="ferdiDelivery" />
       </div>
 
       <aside class="plan" aria-labelledby="plan-title">
         <div class="plan__head">
-          <h3 class="plan__title" id="plan-title">How a project runs</h3>
+          <h3 class="plan__title" id="plan-title">How an engagement runs</h3>
           <p class="plan__intro">
             Fixed steps, short feedback loops, no long silences.
           </p>
@@ -138,13 +157,13 @@ const commitments = [
 
       <div class="app-dev__actions">
         <a href="#contactForm" class="app-dev__cta" data-subject="Development">
-          Plan your project
+          Book a discovery call
         </a>
         <p class="app-dev__note">
           No obligation. A short call to see whether we are the right fit.
         </p>
-        <a href="/services/application-development" class="app-dev__details">
-          How we run projects, and three ways to work with us
+        <a href="/services/forward-deployed-engineering" class="app-dev__details">
+          How an engagement runs, and three ways to work with us
         </a>
       </div>
     </div>

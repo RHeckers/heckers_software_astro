@@ -5,6 +5,13 @@
  *
  * Every snippet is a verbatim sentence or clause from the recommendation
  * it points to, so a reader who meets the full text later recognises it.
+ *
+ * The texts are English renderings of the recommendations on Roberto's
+ * LinkedIn profile. Ferdi's and Peter's were written in Dutch; the
+ * sentences about back-end work, the monorepo, technical challenges and
+ * mentoring were added from the originals when the site was repositioned
+ * around end-to-end delivery. Check the wording against the Dutch text
+ * before relying on it in print.
  */
 import type { ImageMetadata } from "astro";
 import ferdi from "../assets/testimonials/ferdi.jpg";
@@ -36,7 +43,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
     logo: vattenfallLogo,
     image: ferdi,
     content:
-      "Roberto worked with us within the Loyalty team, and I can strongly recommend him as a full-stack developer. His knowledge of Angular is exceptionally deep; it’s clear in everything he does that he understands exactly what is happening and why. He delivers quickly, makes well-considered decisions, and actively contributes to architectural discussions.",
+      "Roberto worked with us within the Loyalty team, and I can strongly recommend him as a full-stack developer. His knowledge of Angular is exceptionally deep; it’s clear in everything he does that he understands exactly what is happening and why. He delivers quickly, makes well-considered decisions, and actively contributes to architectural discussions. Although the role put less emphasis on .NET, he also did excellent work on the .NET back end, and he was involved early in the discussions and decisions about improving our monorepo. He looks beyond his own scope and contributes structurally to quality and maintainability. A very reliable and substantively strong developer.",
   },
   {
     id: "nico",
@@ -63,7 +70,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
     title: "Software architect & Angular coach",
     image: peter,
     content:
-      "In January 2025 Roberto from Heckers Software joined our team. Not by immediately bulldozing through the code, but by carefully and thoughtfully paving the right paths with insight and calm. Many of the choices he made back then still contribute today to the stability and quality of the project.",
+      "In January 2025 Roberto from Heckers Software joined our team. Not by immediately bulldozing through the code, but by carefully and thoughtfully paving the right paths with insight and calm. Many of the choices he made back then still contribute today to the stability and quality of the project. He keeps up with where Angular is going and stays critical and curious instead of settling for the way we have always done it. He does not shy away from technical challenges and keeps working on them until they are solved. And he treats colleagues with respect, especially the less experienced ones, taking on a mentoring role and sharing knowledge without ego. He helps build a team where people grow, not just the codebase.",
   },
 ] as const;
 
@@ -72,10 +79,12 @@ export const TESTIMONIALS: readonly Testimonial[] = [
  * as close to the full text as a standalone sentence allows, so the
  * snippets read like different people rather than one template. The
  * recommendations are about Roberto personally; the proof band explains
- * that every engagement is led by him (see ProofRow), and the two snippets
- * that name Heckers Software (nicoTeam, peterApproach) go where the
- * company framing matters most: next to the contact form and first on the
- * home page band.
+ * that every engagement is delivered by him personally
+ * (see ProofRow). The snippets that describe him joining a team and
+ * delivering across the stack (peterApproach, ferdiFullStack,
+ * ferdiBeyondScope) go where the end-to-end offer is argued; the ones that
+ * name Heckers Software (nicoTeam, peterApproach) go next to the contact
+ * form and first on the home page band.
  */
 export const SNIPPETS = {
   /** Depth of Angular knowledge. */
@@ -89,6 +98,18 @@ export const SNIPPETS = {
     author: "ferdi",
     quote:
       "Roberto delivers quickly, makes well-considered decisions, and actively contributes to architectural discussions. I can strongly recommend him as a full-stack developer.",
+  },
+  /** Front end, back end and the platform underneath: the whole stack. */
+  ferdiFullStack: {
+    author: "ferdi",
+    quote:
+      "Although the role put less emphasis on .NET, Roberto also did excellent work on the .NET back end, and he was involved early in the decisions about improving our monorepo.",
+  },
+  /** Ownership beyond the ticket. */
+  ferdiBeyondScope: {
+    author: "ferdi",
+    quote:
+      "Roberto looks beyond his own scope and contributes structurally to quality and maintainability. A very reliable and substantively strong developer.",
   },
   /** Nothing too difficult. */
   nicoAngular: {
@@ -125,6 +146,18 @@ export const SNIPPETS = {
     author: "peter",
     quote:
       "Many of the choices Roberto made when he joined still contribute today to the stability and quality of the project.",
+  },
+  /** Finishes what he starts. */
+  peterChallenges: {
+    author: "peter",
+    quote:
+      "Roberto does not shy away from technical challenges and keeps working on them until they are solved.",
+  },
+  /** Leaves the team stronger, not just the code. */
+  peterMentoring: {
+    author: "peter",
+    quote:
+      "Roberto treats colleagues with respect, especially the less experienced ones, taking on a mentoring role and sharing knowledge without ego. He helps build a team where people grow, not just the codebase.",
   },
 } as const satisfies Record<string, { author: TestimonialId; quote: string }>;
 

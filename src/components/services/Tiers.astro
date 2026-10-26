@@ -2,16 +2,16 @@
 /**
  * Three ways to buy the service. The first tier is framed as the least any
  * team should do, the middle one is the recommended default and gets the
- * dark panel, the last is for teams that want it done for them. No prices:
- * every tier is quoted after a short call, and the note under the grid
- * says so.
+ * dark panel, the last is for teams that want it done for them. Each card
+ * is kept to one line on who it is for, duration, price and at most five
+ * short points; the note under the grid carries the small print.
  *
  * Each button preselects the contact form subject and drops a one-line
  * message naming the tier, so the enquiry arrives with context.
  */
 interface Tier {
   name: string;
-  /** Under the name: who this is the right choice for. */
+  /** Under the name: one short line on who this is the right choice for. */
   tagline: string;
   /** Small pill above the name, e.g. "The bare minimum". */
   badge?: string;
@@ -22,9 +22,8 @@ interface Tier {
    * qualifies it ("excl. VAT", "after the roadmap").
    */
   price: { amount: string; detail?: string };
-  summary: string;
+  /** At most five short points. */
   includes: string[];
-  excludes?: string[];
   recommended?: boolean;
 }
 
@@ -36,6 +35,9 @@ interface Props {
   subject: string;
   tiers: Tier[];
   note: string;
+  /** Shown under the note: for readers whose situation fits none of the
+   *  tiers. Links to the contact form with the page's subject. */
+  otherLabel?: string;
 }
 
 const {
@@ -46,6 +48,7 @@ const {
   subject,
   tiers,
   note,
+  otherLabel,
 } = Astro.props;
 ---
 
@@ -76,14 +79,9 @@ const {
                 <span class="tier__price-detail">{tier.price.detail}</span>
               )}
             </p>
-            <p class="tier__summary">{tier.summary}</p>
-
             <ul class="tier__list">
               {tier.includes.map((item) => (
                 <li class="tier__item">{item}</li>
-              ))}
-              {tier.excludes?.map((item) => (
-                <li class="tier__item tier__item--excluded">{item}</li>
               ))}
             </ul>
 
@@ -101,6 +99,16 @@ const {
     </ul>
 
     <p class="tiers__note">{note}</p>
+    {
+      otherLabel && (
+        <p class="tiers__other">
+          Something else in mind?
+          <a href="#contactForm" data-subject={subject}>
+            {otherLabel}
+          </a>
+        </p>
+      )
+    }
   </div>
 </section>
 
@@ -155,8 +163,8 @@ const {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: clamp(1.5rem, 3vw, 2.25rem);
+    gap: 0.4rem;
+    padding: clamp(1.4rem, 2.6vw, 1.9rem);
     background: var(--color-light-raised);
     border: 1px solid var(--color-stroke);
     border-radius: 22px;
@@ -205,7 +213,8 @@ const {
 
   .tier__tagline {
     font-family: synonym, sans-serif;
-    line-height: 1.5;
+    font-size: 0.95rem;
+    line-height: 1.45;
     color: var(--muted);
   }
 
@@ -214,7 +223,7 @@ const {
     font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
     color: var(--color-accent-ink);
-    margin-top: 0.5rem;
+    margin-top: 0.35rem;
   }
 
   .tier--recommended .tier__duration {
@@ -226,7 +235,7 @@ const {
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.25rem 0.6rem;
-    padding: 0.4rem 0 0.9rem;
+    padding: 0.3rem 0 0.8rem;
     border-bottom: 1px solid var(--rule);
   }
 
@@ -244,20 +253,12 @@ const {
     color: var(--muted);
   }
 
-  .tier__summary {
-    font-family: synonym, sans-serif;
-    line-height: 1.55;
-    color: var(--ink);
-    padding: 0.25rem 0 1rem;
-    border-bottom: 1px solid var(--rule);
-  }
-
   .tier__list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    padding: 0.5rem 0 1.5rem;
+    gap: 0.45rem;
+    padding: 0.6rem 0 1.25rem;
     flex: 1;
   }
 
@@ -265,8 +266,8 @@ const {
     position: relative;
     padding-left: 1.6rem;
     font-family: synonym, sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 0.92rem;
+    line-height: 1.45;
     color: var(--ink);
   }
 
@@ -280,19 +281,6 @@ const {
     border-left: 2px solid var(--color-success);
     border-bottom: 2px solid var(--color-success);
     transform: rotate(-45deg);
-  }
-
-  .tier__item--excluded {
-    color: var(--muted);
-  }
-
-  .tier__item--excluded::before {
-    width: 0.6rem;
-    height: 0;
-    top: 0.75rem;
-    border-left: 0;
-    border-bottom: 2px solid var(--color-stroke-strong);
-    transform: none;
   }
 
   .tier__cta {
@@ -347,18 +335,18 @@ const {
       gap: var(--spacer-xl);
     }
 
-    /* Name, badge, tagline, duration, price, summary, list and button each
+    /* Name, badge, tagline, duration, price, list and button each
        share one row across the three cards, so the same element sits at
        the same height in every card. */
     @supports (grid-template-rows: subgrid) {
       .tier-grid {
-        grid-template-rows: auto auto auto auto auto auto 1fr auto;
+        grid-template-rows: auto auto auto auto auto 1fr auto;
       }
 
       .tier {
         display: grid;
         grid-template-rows: subgrid;
-        grid-row: span 8;
+        grid-row: span 7;
         row-gap: 0.5rem;
       }
 
@@ -373,4 +361,17 @@ const {
       }
     }
   }
+  .tiers__other {
+    font-family: synonym, sans-serif;
+    text-align: center;
+    color: var(--color-ink-muted);
+    line-height: 1.5;
+  }
+
+  .tiers__other a {
+    margin-left: 0.35rem;
+    color: var(--color-link);
+    font-weight: var(--font-weight-medium);
+  }
+
 </style>

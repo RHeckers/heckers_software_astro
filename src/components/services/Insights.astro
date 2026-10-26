@@ -1,28 +1,235 @@
 ---
 /**
  * The teaching part of the page: what we have learned, what it means, and
- * one thing the reader can do today without us. Each insight is a row on a
- * dark ground, title on the left, argument and takeaway on the right, so it
- * reads like an essay rather than a feature grid.
+ * one thing the reader can do today without us. Each insight is kept to
+ * two or three sentences and one takeaway, and carries a small diagram in
+ * the same idiom as the home page's project graph and service cards:
+ * rounded nodes, thin edges, one accent, red for the problem, labels in
+ * chillax. When the row scrolls into view the nodes pop in and the edges
+ * draw, with the same easing the home cards use on hover; a few diagrams
+ * then keep a slow loop going. Motion is dropped for readers who asked
+ * their system for less of it.
+ *
+ * By default each insight is a row on a dark ground, diagram and title on
+ * the left, argument and takeaway on the right. The light grid variant
+ * sets the same content as numbered cards on a light ground, for pages
+ * that keep their dark panel for the self-check; the diagram colours
+ * follow the tone through custom properties.
  */
 interface Insight {
   title: string;
   copy: string;
   /** Something the reader can do this week on their own. */
   takeaway: string;
+  /** Which diagram sits next to it; see FIGURES below. */
+  figure: FigureId;
 }
+
+type FigureId =
+  | "last-mile"
+  | "discovery"
+  | "feature"
+  | "amplified"
+  | "owner"
+  | "blind-spot"
+  | "decay"
+  | "rewrite"
+  | "rank"
+  | "slides"
+  | "rules"
+  | "multiply"
+  | "team";
 
 interface Props {
   id?: string;
   title: string;
   intro: string;
   items: Insight[];
+  tone?: "dark" | "light";
+  layout?: "rows" | "grid";
 }
 
-const { id = "insights", title, intro, items } = Astro.props;
+const {
+  id = "insights",
+  title,
+  intro,
+  items,
+  tone = "dark",
+  layout = "rows",
+} = Astro.props;
+
+/*
+ * Diagrams, 220 by 140, the size of the home page's service card art.
+ * Classes: n = node, e = edge, t = label; --accent / --danger variants.
+ * Reveal classes: p = pops in, d = draws in (needs pathLength="1"),
+ * f = fades in; --i staggers them. Looping parts carry a fig-* class.
+ */
+const FIGURES: Record<FigureId, string> = {
+  "last-mile": `
+    <rect class="n n--accent p" style="--i:0" x="10" y="12" width="60" height="22" rx="6" />
+    <text class="t t--bright p" style="--i:0" x="40" y="27">Pilot</text>
+    <path class="e d" style="--i:1" pathLength="1" d="M70 23 C 120 23, 120 60, 70 60 S 20 100, 80 100 S 140 100, 150 115" />
+    <circle class="n n--danger p" style="--i:2" cx="119" cy="41.5" r="5" />
+    <circle class="n n--danger p" style="--i:3" cx="46" cy="80" r="5" />
+    <circle class="n n--danger p" style="--i:4" cx="116" cy="100" r="5" />
+    <rect class="n p" style="--i:5" x="150" y="104" width="62" height="22" rx="6" />
+    <text class="t p" style="--i:5" x="181" y="119">Production</text>
+    <circle class="fig-runner" r="4.5" />`,
+  discovery: `
+    <rect class="n p" style="--i:0" x="16" y="22" width="120" height="20" rx="6" />
+    <rect class="n p" style="--i:1" x="16" y="60" width="120" height="20" rx="6" />
+    <rect class="n p" style="--i:2" x="16" y="98" width="120" height="20" rx="6" />
+    <path class="e d" style="--i:1" pathLength="1" d="M28 32 h60" />
+    <path class="e d" style="--i:2" pathLength="1" d="M28 70 h80" />
+    <path class="e d" style="--i:3" pathLength="1" d="M28 108 h50" />
+    <circle class="n n--danger p" style="--i:4" cx="122" cy="108" r="4" />
+    <g class="fig-lens p" style="--i:4">
+      <circle class="e e--accent" cx="178" cy="70" r="16" />
+      <path class="e e--accent" d="M190 82 l16 16" />
+    </g>`,
+  feature: `
+    <rect class="n p" style="--i:0" x="8" y="40" width="56" height="22" rx="6" />
+    <text class="t p" style="--i:0" x="36" y="55">Request</text>
+    <path class="e d" style="--i:1" pathLength="1" d="M64 51 h18" />
+    <rect class="n n--accent p" style="--i:2" x="82" y="40" width="56" height="22" rx="6" />
+    <text class="t t--bright p" style="--i:2" x="110" y="55">Classify</text>
+    <path class="e d" style="--i:3" pathLength="1" d="M138 51 h18" />
+    <rect class="n p" style="--i:4" x="156" y="40" width="56" height="22" rx="6" />
+    <text class="t p" style="--i:4" x="184" y="55">Answer</text>
+    <path class="e d" style="--i:5" pathLength="1" d="M110 62 v20" />
+    <g class="n p" style="--i:6">
+      <circle cx="110" cy="96" r="7" />
+      <path d="M96 122 C 96 108, 124 108, 124 122" />
+    </g>
+    <g class="fig-check fig-spark">
+      <circle cx="137" cy="41" r="6.5" />
+      <path d="M133.8 41.2 L136.2 43.6 L140.4 38.8" />
+    </g>`,
+  amplified: `
+    <circle class="fig-ring" cx="50" cy="70" r="30" />
+    <circle class="fig-ring fig-ring--2" cx="50" cy="70" r="30" />
+    <rect class="n n--accent p" style="--i:0" x="14" y="59" width="72" height="22" rx="6" />
+    <text class="t t--bright p" style="--i:0" x="50" y="74">One expert</text>
+    <path class="e d" style="--i:1" pathLength="1" d="M86 70 C 110 70, 110 30, 134 30" />
+    <path class="e d" style="--i:2" pathLength="1" d="M86 70 h48" />
+    <path class="e d" style="--i:3" pathLength="1" d="M86 70 C 110 70, 110 110, 134 110" />
+    <rect class="n p" style="--i:2" x="134" y="19" width="72" height="22" rx="6" />
+    <text class="t p" style="--i:2" x="170" y="34">Front end</text>
+    <rect class="n p" style="--i:3" x="134" y="59" width="72" height="22" rx="6" />
+    <text class="t p" style="--i:3" x="170" y="74">API and data</text>
+    <rect class="n p" style="--i:4" x="134" y="99" width="72" height="22" rx="6" />
+    <text class="t p" style="--i:4" x="170" y="114">Pipeline</text>`,
+  owner: `
+    <rect class="n p" style="--i:0" x="14" y="14" width="192" height="112" rx="8" />
+    <path class="e d" style="--i:1" pathLength="1" d="M14 36 h192" />
+    <circle class="fig-live" cx="30" cy="25" r="3.5" />
+    <text class="t t--start p" style="--i:1" x="40" y="29">production</text>
+    <path class="e e--accent e--thick d" style="--i:3" pathLength="1" d="M78 84 l22 22 l44 -44" />`,
+  "blind-spot": `
+    <path class="e d" style="--i:0" pathLength="1" d="M20 70 Q110 10 200 70 Q110 130 20 70 Z" />
+    <g class="fig-pupil p" style="--i:1">
+      <circle class="n n--accent" cx="110" cy="70" r="20" />
+      <circle class="fig-core" cx="110" cy="70" r="8" />
+    </g>
+    <path class="e e--crack d" style="--i:3" pathLength="1" d="M152 48 l8 -10 -4 -8 7 -9" />`,
+  decay: `
+    <rect class="n p" style="--i:0" x="6" y="10" width="40" height="18" rx="5" />
+    <path class="e d" style="--i:1" pathLength="1" d="M26 28 V41 H46" />
+    <rect class="n p" style="--i:1" x="46" y="32" width="40" height="18" rx="5" />
+    <path class="e d" style="--i:2" pathLength="1" d="M66 50 V63 H86" />
+    <rect class="n n--warn p" style="--i:2" x="86" y="54" width="40" height="18" rx="5" />
+    <path class="e d" style="--i:3" pathLength="1" d="M106 72 V85 H126" />
+    <rect class="n n--danger p" style="--i:3" x="126" y="76" width="40" height="18" rx="5" />
+    <path class="e d" style="--i:4" pathLength="1" d="M146 94 V107 H166" />
+    <rect class="n n--danger p" style="--i:4" x="166" y="98" width="40" height="18" rx="5" />
+    <circle class="fig-ball" r="4.5" />`,
+  rewrite: `
+    <rect class="n n--ghost f" style="--i:0" x="20" y="20" width="60" height="22" rx="6" />
+    <rect class="n n--ghost f" style="--i:0" x="20" y="52" width="60" height="22" rx="6" />
+    <rect class="n n--ghost f" style="--i:0" x="20" y="84" width="60" height="22" rx="6" />
+    <path class="e n--ghost f" style="--i:0" d="M50 42 v10 M50 74 v10" />
+    <path class="e e--danger fig-march f" style="--i:2" d="M 86 30 C 120 8, 150 8, 172 28" />
+    <path class="e e--crack f" style="--i:2" d="M166 20 l6 8 -10 2" />
+    <rect class="n p" style="--i:3" x="140" y="52" width="60" height="22" rx="6" />
+    <rect class="n p" style="--i:4" x="140" y="84" width="60" height="22" rx="6" />
+    <path class="e d" style="--i:4" pathLength="1" d="M170 74 v10" />
+    <g class="fig-badge p" style="--i:6">
+      <circle cx="202" cy="46" r="11" />
+      <text x="202" y="50.5">!</text>
+    </g>`,
+  rank: `
+    <path class="e d" style="--i:0" pathLength="1" d="M20 118 h180" />
+    <rect class="n fig-bar fig-bar--1 p" style="--i:1" x="30" y="30" width="30" height="88" rx="5" />
+    <rect class="n fig-bar fig-bar--2 p" style="--i:2" x="78" y="30" width="30" height="88" rx="5" />
+    <rect class="n fig-bar fig-bar--3 p" style="--i:3" x="126" y="30" width="30" height="88" rx="5" />
+    <rect class="n fig-bar fig-bar--4 p" style="--i:4" x="174" y="30" width="30" height="88" rx="5" />`,
+  slides: `
+    <rect class="n p" style="--i:0" x="8" y="30" width="90" height="62" rx="8" />
+    <path class="e d" style="--i:1" pathLength="1" d="M22 46 h50 M22 58 h62 M22 70 h40" />
+    <path class="e e--crack d" style="--i:3" pathLength="1" d="M12 34 l82 54" />
+    <path class="e d" style="--i:4" pathLength="1" d="M100 61 h18 M112 55 l6 6 -6 6" />
+    <rect class="n n--accent p" style="--i:5" x="122" y="30" width="90" height="62" rx="8" />
+    <rect class="fig-line" style="--i:6" x="134" y="44" width="40" height="5" rx="2.5" />
+    <rect class="fig-line" style="--i:7" x="142" y="56" width="56" height="5" rx="2.5" />
+    <rect class="fig-line" style="--i:8" x="142" y="68" width="34" height="5" rx="2.5" />
+    <rect class="fig-line" style="--i:9" x="134" y="80" width="24" height="5" rx="2.5" />`,
+  rules: `
+    <rect class="n p" style="--i:0" x="30" y="10" width="90" height="110" rx="8" />
+    <path class="e d" style="--i:1" pathLength="1" d="M44 30 h60" />
+    <path class="e d" style="--i:2" pathLength="1" d="M44 46 h60" />
+    <path class="e d" style="--i:3" pathLength="1" d="M44 62 h44" />
+    <path class="e d" style="--i:4" pathLength="1" d="M44 78 h52" />
+    <path class="e d" style="--i:4" pathLength="1" d="M120 92 h12" />
+    <rect class="n n--accent p" style="--i:5" x="132" y="70" width="60" height="44" rx="8" />
+    <circle class="fig-core p" style="--i:5" cx="162" cy="92" r="5" />
+    <path class="e fig-shackle d" style="--i:6" pathLength="1" d="M146 70 v-14 a16 16 0 0 1 32 0 v14" />`,
+  multiply: `
+    <path class="e d" style="--i:1" pathLength="1" d="M38 70 C 54 70, 54 40, 70 40 M38 70 C 54 70, 54 100, 70 100" />
+    <path class="e d" style="--i:3" pathLength="1" d="M98 40 C 114 40, 114 20, 130 20 M98 40 C 114 40, 114 60, 130 60 M98 100 C 114 100, 114 80, 130 80 M98 100 C 114 100, 114 120, 130 120" />
+    <rect class="n n--accent p" style="--i:0" x="10" y="62" width="28" height="16" rx="5" />
+    <rect class="n fig-gen p" style="--i:2" x="70" y="32" width="28" height="16" rx="5" />
+    <rect class="n fig-gen p" style="--i:2" x="70" y="92" width="28" height="16" rx="5" />
+    <rect class="n fig-gen fig-gen--2 p" style="--i:4" x="130" y="12" width="28" height="16" rx="5" />
+    <rect class="n fig-gen fig-gen--2 p" style="--i:4" x="130" y="52" width="28" height="16" rx="5" />
+    <rect class="n fig-gen fig-gen--2 p" style="--i:4" x="130" y="72" width="28" height="16" rx="5" />
+    <rect class="n n--danger p" style="--i:5" x="130" y="112" width="28" height="16" rx="5" />
+    <path class="e d" style="--i:5" pathLength="1" d="M158 20 h20 M158 60 h20 M158 80 h20 M158 120 h20" />`,
+  team: `
+    <path class="e d" style="--i:1" pathLength="1" d="M58 94 L92 52" />
+    <path class="e d" style="--i:2" pathLength="1" d="M128 52 L162 94" />
+    <path class="e d" style="--i:3" pathLength="1" d="M62 112 L158 112" />
+    <g class="n p" style="--i:0">
+      <circle cx="110" cy="40" r="9" />
+      <path d="M92 70 C 92 52, 128 52, 128 70" />
+    </g>
+    <g class="n p" style="--i:1">
+      <circle cx="40" cy="90" r="9" />
+      <path d="M22 120 C 22 102, 58 102, 58 120" />
+    </g>
+    <g class="n p" style="--i:2">
+      <circle cx="180" cy="90" r="9" />
+      <path d="M162 120 C 162 102, 198 102, 198 120" />
+    </g>
+    <g class="fig-check fig-check--1">
+      <circle cx="123" cy="33" r="6.5" />
+      <path d="M119.8 33.2 L122.2 35.6 L126.4 30.8" />
+    </g>
+    <g class="fig-check fig-check--2">
+      <circle cx="53" cy="83" r="6.5" />
+      <path d="M49.8 83.2 L52.2 85.6 L56.4 80.8" />
+    </g>
+    <g class="fig-check fig-check--3">
+      <circle cx="193" cy="83" r="6.5" />
+      <path d="M189.8 83.2 L192.2 85.6 L196.4 80.8" />
+    </g>`,
+};
 ---
 
-<section class="insights" id={id} aria-labelledby={`${id}-heading`}>
+<section
+  class:list={["insights", `insights--${tone}`, `insights--${layout}`]}
+  id={id}
+  aria-labelledby={`${id}-heading`}
+>
   <div class="insights__inner">
     <header class="insights__head">
       <h2 class="insights__title" id={`${id}-heading`}>{title}</h2>
@@ -31,9 +238,21 @@ const { id = "insights", title, intro, items } = Astro.props;
 
     <ul class="insight-list">
       {
-        items.map((item) => (
-          <li class="insight">
-            <h3 class="insight__title">{item.title}</h3>
+        items.map((item, index) => (
+          <li class="insight" data-insight>
+            <div class="insight__lead">
+              <svg
+                class={`insight__figure fig fig--${item.figure}`}
+                viewBox="0 0 220 140"
+                aria-hidden="true"
+                focusable="false"
+                set:html={FIGURES[item.figure]}
+              />
+              <span class="insight__index" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3 class="insight__title">{item.title}</h3>
+            </div>
             <div class="insight__body">
               <p class="insight__copy">{item.copy}</p>
               <p class="insight__takeaway">
@@ -55,6 +274,27 @@ const { id = "insights", title, intro, items } = Astro.props;
     }
   </div>
 </section>
+
+<script>
+  // Reveal each diagram the first time its row comes into view.
+  const rows = document.querySelectorAll<HTMLElement>("[data-insight]");
+  if ("IntersectionObserver" in window) {
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            seen.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.35 },
+    );
+    rows.forEach((row) => seen.observe(row));
+  } else {
+    rows.forEach((row) => row.classList.add("is-in"));
+  }
+</script>
 
 <style>
   .insights {
@@ -103,13 +343,40 @@ const { id = "insights", title, intro, items } = Astro.props;
   .insight {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem 3rem;
-    padding: clamp(1.75rem, 4vw, 2.75rem) 0;
+    gap: 1.25rem 3rem;
+    padding: clamp(1.75rem, 4vw, 2.5rem) 0;
     border-bottom: 1px solid rgba(232, 237, 246, 0.12);
   }
 
+  .insight__lead {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "figure index"
+      "figure title";
+    column-gap: 1.5rem;
+    align-content: start;
+  }
+
+  .insight__figure {
+    grid-area: figure;
+    width: clamp(10rem, 15vw, 13rem);
+    height: auto;
+    align-self: start;
+  }
+
+  .insight__index {
+    grid-area: index;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+    margin-bottom: 0.35rem;
+  }
+
   .insight__title {
-    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    grid-area: title;
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
     font-weight: var(--font-weight-medium);
     line-height: 1.15;
     color: var(--color-light-raised);
@@ -119,23 +386,24 @@ const { id = "insights", title, intro, items } = Astro.props;
   .insight__body {
     display: flex;
     flex-direction: column;
-    gap: 1.1rem;
+    gap: 1rem;
   }
 
   .insight__copy {
     font-family: synonym, sans-serif;
-    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    font-size: clamp(1rem, 1.3vw, 1.1rem);
     line-height: 1.6;
     color: rgba(232, 237, 246, 0.8);
-    max-width: 62ch;
+    max-width: 58ch;
   }
 
   .insight__takeaway {
     font-family: synonym, sans-serif;
-    line-height: 1.55;
+    line-height: 1.5;
+    font-size: 0.95rem;
     color: var(--color-ink-light);
-    max-width: 58ch;
-    padding: 0.9rem 1.1rem;
+    max-width: 56ch;
+    padding: 0.8rem 1rem;
     border-radius: 12px;
     background: rgba(47, 125, 209, 0.1);
     border: 1px solid rgba(47, 125, 209, 0.25);
@@ -152,15 +420,514 @@ const { id = "insights", title, intro, items } = Astro.props;
     display: none;
   }
 
+  /* --- Light tone --- */
+
+  .insights--light {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+  }
+
+  .insights--light .insights__title,
+  .insights--light .insight__title {
+    color: var(--color-ink);
+  }
+
+  .insights--light .insights__intro {
+    color: var(--color-ink-muted);
+  }
+
+  .insights--light .insight__copy {
+    color: var(--color-ink);
+  }
+
+  .insights--light .insight__index {
+    color: var(--color-accent-ink);
+  }
+
+  .insights--light .insight__takeaway {
+    color: var(--color-ink);
+    background: rgba(47, 125, 209, 0.08);
+    border-color: rgba(47, 125, 209, 0.3);
+  }
+
+  .insights--light .insight__takeaway-label {
+    color: var(--color-accent-ink);
+  }
+
+  /* --- Grid layout: numbered cards instead of essay rows --- */
+
+  .insights--grid .insight-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+    border-top: 0;
+  }
+
+  .insights--grid .insight {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: clamp(1.5rem, 3vw, 2rem);
+    border: 1px solid var(--color-stroke);
+    border-radius: 16px;
+    background: var(--color-light-raised);
+  }
+
+  .insights--grid .insight__lead {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "index figure"
+      "title figure";
+    column-gap: 1.5rem;
+  }
+
+  .insights--grid .insight__figure {
+    width: clamp(9rem, 12vw, 11rem);
+    justify-self: end;
+  }
+
+  .insights--grid .insight__title {
+    max-width: none;
+  }
+
+  .insights--grid .insight__body {
+    flex: 1;
+    justify-content: space-between;
+  }
+
   @media (min-width: 900px) {
-    .insight {
-      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    .insights--rows .insight {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    }
+
+    .insights--grid .insight-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .insights--grid .insights__proof {
+      margin-left: 0;
+      max-width: 40rem;
     }
 
     /* Sits under the right-hand column, where the arguments were. */
     .insights__proof {
-      margin-left: 40%;
+      margin-left: 48%;
       max-width: 40rem;
+    }
+  }
+</style>
+
+<style is:global>
+  /* The diagrams are injected as raw SVG, so their rules live here under
+     the .fig class. Colours are the home page's: light strokes on dark,
+     one accent, red for the problem; the light tone swaps the greys. */
+  .fig {
+    --fig-edge: rgba(232, 237, 246, 0.42);
+    --fig-node-fill: rgba(232, 237, 246, 0.06);
+    --fig-node-stroke: rgba(232, 237, 246, 0.6);
+    --fig-text: rgba(232, 237, 246, 0.8);
+    --fig-bright: #ffffff;
+    --fig-line: rgba(232, 237, 246, 0.55);
+    --fig-accent: #2f7dd1;
+    --fig-accent-fill: rgba(47, 125, 209, 0.28);
+    --fig-danger: #c2413b;
+    --fig-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --fig-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    overflow: visible;
+    font-family: chillax, sans-serif;
+  }
+
+  .insights--light .fig {
+    --fig-edge: rgba(11, 18, 32, 0.32);
+    --fig-node-fill: rgba(11, 18, 32, 0.035);
+    --fig-node-stroke: rgba(11, 18, 32, 0.45);
+    --fig-text: rgba(11, 18, 32, 0.75);
+    --fig-bright: #0b1220;
+    --fig-line: rgba(11, 18, 32, 0.35);
+    --fig-accent-fill: rgba(47, 125, 209, 0.18);
+  }
+
+  .fig .n {
+    fill: var(--fig-node-fill);
+    stroke: var(--fig-node-stroke);
+    stroke-width: 1.5;
+  }
+
+  .fig .n--accent {
+    fill: var(--fig-accent-fill);
+    stroke: var(--fig-accent);
+  }
+
+  .fig .n--warn {
+    stroke: var(--fig-danger);
+    stroke-opacity: 0.55;
+  }
+
+  .fig .n--danger {
+    stroke: var(--fig-danger);
+  }
+
+  .fig .n--ghost {
+    fill: none;
+    stroke-dasharray: 4 4;
+    stroke-opacity: 0.6;
+  }
+
+  .fig .e {
+    fill: none;
+    stroke: var(--fig-edge);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .fig .e--accent {
+    stroke: var(--fig-accent);
+    stroke-width: 2;
+  }
+
+  .fig .e--thick {
+    stroke-width: 3;
+  }
+
+  .fig .e--danger {
+    stroke: var(--fig-danger);
+    stroke-width: 1.75;
+    stroke-dasharray: 5 4;
+  }
+
+  .fig .e--crack {
+    stroke: var(--fig-danger);
+    stroke-width: 2;
+  }
+
+  .fig .t {
+    font-size: 11px;
+    font-weight: 500;
+    fill: var(--fig-text);
+    text-anchor: middle;
+  }
+
+  .fig .t--start {
+    text-anchor: start;
+  }
+
+  .fig .t--bright {
+    fill: var(--fig-bright);
+  }
+
+  .fig .fig-line {
+    fill: var(--fig-line);
+  }
+
+  .fig .fig-core {
+    fill: var(--fig-accent);
+  }
+
+  .fig .fig-live {
+    fill: var(--color-success);
+  }
+
+  .fig .fig-badge circle {
+    fill: var(--fig-danger);
+  }
+
+  .fig .fig-badge text {
+    fill: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-anchor: middle;
+  }
+
+  .fig .fig-check circle {
+    fill: var(--fig-accent);
+  }
+
+  .fig .fig-check path {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* --- Reveal on scroll: nodes pop, edges draw, the rest fades --- */
+
+  .fig .p {
+    opacity: 0;
+    transform: scale(0.85);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 0.3s ease calc(var(--i, 0) * 0.11s),
+      transform 0.5s var(--fig-pop) calc(var(--i, 0) * 0.11s);
+  }
+
+  .fig .d {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.5s var(--fig-ease) calc(0.15s + var(--i, 0) * 0.11s);
+  }
+
+  .fig .f {
+    opacity: 0;
+    transition: opacity 0.4s ease calc(0.1s + var(--i, 0) * 0.11s);
+  }
+
+  .fig .fig-line {
+    transform: scaleX(0);
+    transform-box: fill-box;
+    transform-origin: left center;
+    transition: transform 0.35s var(--fig-ease) calc(var(--i, 0) * 0.11s);
+  }
+
+  .is-in .fig .p {
+    opacity: 1;
+    transform: none;
+  }
+
+  .is-in .fig .d {
+    stroke-dashoffset: 0;
+  }
+
+  .is-in .fig .f {
+    opacity: 1;
+  }
+
+  .is-in .fig .fig-line {
+    transform: scaleX(1);
+  }
+
+  /* --- The slow loops; each starts once the row is in view --- */
+
+  /* Last mile: the runner covers most of the road quickly and creeps
+     through the last stretch, which is the whole point. */
+  .fig--last-mile .fig-runner {
+    fill: var(--fig-accent);
+    opacity: 0;
+    offset-path: path("M70 23 C 120 23, 120 60, 70 60 S 20 100, 80 100 S 140 100, 150 115");
+  }
+
+  .is-in .fig--last-mile .fig-runner {
+    animation: fig-last-mile 5.5s var(--fig-ease) 1.4s infinite;
+  }
+
+  @keyframes fig-last-mile {
+    0% { offset-distance: 0%; opacity: 0; }
+    6% { opacity: 1; }
+    35% { offset-distance: 78%; }
+    85% { offset-distance: 100%; opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+
+  .is-in .fig--discovery .fig-lens {
+    animation: fig-lens 5s ease-in-out 1.6s infinite;
+  }
+
+  @keyframes fig-lens {
+    0%, 100% { transform: translateY(-38px); }
+    50% { transform: translateY(38px); }
+  }
+
+  /* The check on the AI step pops now and then, like the card on the
+     home page does on hover. */
+  .fig--feature .fig-spark {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity 0.3s ease 1s,
+      transform 0.5s var(--fig-pop) 1s;
+  }
+
+  .is-in .fig--feature .fig-spark {
+    opacity: 1;
+    transform: scale(1);
+    animation: fig-spark 3.5s var(--fig-pop) 2s infinite;
+  }
+
+  @keyframes fig-spark {
+    0%, 70%, 100% { transform: scale(1); }
+    82% { transform: scale(1.3); }
+  }
+
+  .fig--amplified .fig-ring {
+    fill: none;
+    stroke: var(--fig-accent);
+    stroke-width: 1.5;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .is-in .fig--amplified .fig-ring {
+    animation: fig-ring 3.2s ease-out 1.2s infinite;
+  }
+
+  .is-in .fig--amplified .fig-ring--2 {
+    animation-delay: 2.8s;
+  }
+
+  @keyframes fig-ring {
+    0% { transform: scale(0.5); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  .is-in .fig--owner .fig-live {
+    animation: fig-live 2s ease-in-out infinite;
+  }
+
+  @keyframes fig-live {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+
+  .is-in .fig--blind-spot .fig-pupil {
+    animation: fig-blink 5s ease-in-out 2.5s infinite;
+  }
+
+  @keyframes fig-blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+
+  .fig--decay .fig-ball {
+    fill: var(--fig-accent);
+    opacity: 0;
+    offset-path: path("M26 19 L66 41 L106 63 L146 85 L186 107");
+  }
+
+  .is-in .fig--decay .fig-ball {
+    animation: fig-ball 6s steps(1, end) 1.4s infinite;
+  }
+
+  @keyframes fig-ball {
+    0% { offset-distance: 0%; opacity: 1; }
+    18% { offset-distance: 25%; }
+    36% { offset-distance: 50%; }
+    54% { offset-distance: 75%; }
+    72% { offset-distance: 100%; opacity: 1; }
+    90%, 100% { offset-distance: 100%; opacity: 0; }
+  }
+
+  /* Same march as the flagged cycle on the home page's assessment card. */
+  .is-in .fig--rewrite .fig-march {
+    animation: fig-march 0.9s linear infinite;
+  }
+
+  @keyframes fig-march {
+    to { stroke-dashoffset: -18; }
+  }
+
+  .fig--rank .fig-bar {
+    transform-box: fill-box;
+    transform-origin: bottom;
+  }
+
+  .is-in .fig--rank .fig-bar {
+    animation: fig-rank 6s var(--fig-ease) 1.2s infinite;
+  }
+
+  @keyframes fig-rank {
+    0%, 30% { transform: scaleY(var(--from)); stroke: var(--fig-node-stroke); fill: var(--fig-node-fill); }
+    55%, 100% { transform: scaleY(var(--to)); stroke: var(--s, var(--fig-node-stroke)); fill: var(--f, var(--fig-node-fill)); }
+  }
+
+  .fig--rank .fig-bar--1 { --from: 0.55; --to: 1; --s: var(--fig-accent); --f: var(--fig-accent-fill); }
+  .fig--rank .fig-bar--2 { --from: 0.95; --to: 0.72; }
+  .fig--rank .fig-bar--3 { --from: 0.35; --to: 0.5; }
+  .fig--rank .fig-bar--4 { --from: 0.75; --to: 0.3; }
+
+  /* The padlock clicks shut once the document is drawn. */
+  .fig--rules .fig-shackle {
+    transform: translateY(-10px);
+    transition:
+      stroke-dashoffset 0.5s var(--fig-ease) 0.8s,
+      transform 0.45s var(--fig-pop) 1.5s;
+  }
+
+  .is-in .fig--rules .fig-shackle {
+    transform: translateY(0);
+  }
+
+  /* Each generation of nodes lights up in turn. */
+  .is-in .fig--multiply .fig-gen {
+    animation: fig-glow 4s ease-in-out 1.5s infinite;
+  }
+
+  .is-in .fig--multiply .fig-gen--2 {
+    animation-delay: 2.1s;
+  }
+
+  @keyframes fig-glow {
+    0%, 45% { stroke: var(--fig-accent); fill: var(--fig-accent-fill); }
+    65%, 100% { stroke: var(--fig-node-stroke); fill: var(--fig-node-fill); }
+  }
+
+  /* The check pops on each attendee in turn. */
+  .fig--team .fig-check {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  .is-in .fig--team .fig-check {
+    animation: fig-got-it 4.5s var(--fig-pop) 1.2s infinite;
+  }
+
+  .is-in .fig--team .fig-check--2 {
+    animation-delay: 2.2s;
+  }
+
+  .is-in .fig--team .fig-check--3 {
+    animation-delay: 3.2s;
+  }
+
+  @keyframes fig-got-it {
+    0% { transform: scale(0); opacity: 0; }
+    10%, 70% { transform: scale(1); opacity: 1; }
+    80%, 100% { transform: scale(0); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fig .p,
+    .fig .f,
+    .fig .fig-line,
+    .fig--feature .fig-spark {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .fig .d {
+      stroke-dashoffset: 0;
+      transition: none;
+    }
+
+    .fig * {
+      animation: none !important;
+    }
+
+    .fig--rules .fig-shackle {
+      transform: none;
+      transition: none;
+    }
+
+    .fig--team .fig-check {
+      transform: none;
+      opacity: 1;
+    }
+
+    .fig--rank .fig-bar {
+      transform: scaleY(var(--to));
+    }
+
+    .fig .fig-runner,
+    .fig .fig-ball,
+    .fig .fig-ring {
+      display: none;
     }
   }
 </style>

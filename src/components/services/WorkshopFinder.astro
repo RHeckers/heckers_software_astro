@@ -1,0 +1,659 @@
+---
+/**
+ * Which workshop first: a short flow, one question at a time. Two or three
+ * answers lead to one workshop, with the reason and the workshop to pair
+ * it with on a second day. The workshops page's version of the self-check:
+ * a diagnosis that ends in a recommendation rather than a score.
+ *
+ * All steps are in the markup; the script shows one at a time and keeps a
+ * trail of the answers given. Without JavaScript the first question shows
+ * with a link to the catalogue underneath.
+ */
+import { WORKSHOPS, type WorkshopId } from "../../lib/workshops";
+
+interface Option {
+  label: string;
+  /** Id of the next question, or of a result. */
+  next: string;
+}
+
+interface Question {
+  id: string;
+  question: string;
+  options: Option[];
+}
+
+interface Result {
+  id: string;
+  workshop: WorkshopId;
+  /** Why this workshop follows from the answers given. */
+  reason: string;
+  /** The workshop that usually fills the second day. */
+  pair: WorkshopId;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  intro: string;
+  subject: string;
+}
+
+const { id = "finder", title, intro, subject } = Astro.props;
+
+const questions: Question[] = [
+  {
+    id: "start",
+    question: "If you could fix one thing tomorrow, what would it be?",
+    options: [
+      { label: "How much a developer gets done in a day", next: "speed" },
+      { label: "What the product can do for its users", next: "product" },
+      { label: "How long a change takes to reach production", next: "pipeline" },
+      { label: "How consistent the codebase is", next: "consistency" },
+    ],
+  },
+  {
+    id: "speed",
+    question: "Where does a developer's day go?",
+    options: [
+      { label: "Writing, testing and reviewing code by hand", next: "r-ai" },
+      { label: "Waiting for builds, tests and CI", next: "r-nx" },
+      {
+        label: "Working out how the code is structured before touching it",
+        next: "r-angular",
+      },
+    ],
+  },
+  {
+    id: "product",
+    question: "What are users asking for?",
+    options: [
+      {
+        label: "Answers from their data, without a new report each time",
+        next: "ready",
+      },
+      { label: "An assistant or a chat inside the application", next: "ready" },
+      {
+        label: "Fewer clicks: a routine task done from one request",
+        next: "ready",
+      },
+    ],
+  },
+  {
+    id: "ready",
+    question: "And how is the front end today?",
+    options: [
+      {
+        label: "Modern Angular: signals, standalone, a component library we trust",
+        next: "r-ai-frontend",
+      },
+      {
+        label: "Behind on versions, or every part is built differently",
+        next: "r-angular-first",
+      },
+    ],
+  },
+  {
+    id: "pipeline",
+    question: "What is the slow part?",
+    options: [
+      {
+        label: "Every change builds and tests the whole workspace",
+        next: "r-nx",
+      },
+      {
+        label: "Changes break things in places that should be unrelated",
+        next: "r-nx-boundaries",
+      },
+      {
+        label: "Tests, upgrades and documentation keep getting postponed",
+        next: "r-ai-routine",
+      },
+    ],
+  },
+  {
+    id: "consistency",
+    question: "Where does it show first?",
+    options: [
+      {
+        label: "Two developers would build the same feature two different ways",
+        next: "r-angular",
+      },
+      {
+        label: "Pull requests written with AI look nothing like the rest",
+        next: "r-ai-rules",
+      },
+      { label: "Apps and libraries import each other freely", next: "r-nx-boundaries" },
+    ],
+  },
+];
+
+const results: Result[] = [
+  {
+    id: "r-ai",
+    workshop: "ai",
+    reason:
+      "The bottleneck is the typing, testing and reviewing itself. That is exactly the work coding agents take over once they are set up on your codebase.",
+    pair: "enterprise-angular",
+  },
+  {
+    id: "r-ai-routine",
+    workshop: "ai",
+    reason:
+      "Postponed tests, upgrades and documentation are the first jobs to hand to agents: routine, well defined, and nobody misses doing them by hand.",
+    pair: "nx-monorepo",
+  },
+  {
+    id: "r-ai-rules",
+    workshop: "ai",
+    reason:
+      "Agents copy whatever they find in the codebase. Shared instructions committed to the repository make AI-written code look like yours.",
+    pair: "enterprise-angular",
+  },
+  {
+    id: "r-ai-frontend",
+    workshop: "ai-frontend",
+    reason:
+      "Your front end is ready for it. One day on dashboards, chats that answer with components and multi-step tasks gives you the first AI feature inside your own application.",
+    pair: "ai",
+  },
+  {
+    id: "r-angular-first",
+    workshop: "enterprise-angular",
+    reason:
+      "The AI features will land on whatever structure you have. A day on architecture first makes the day on AI-driven front ends stick.",
+    pair: "ai-frontend",
+  },
+  {
+    id: "r-nx",
+    workshop: "nx-monorepo",
+    reason:
+      "CI that runs everything is a workspace without boundaries. Affected commands, caching and Nx Cloud only pay off once the structure lets them.",
+    pair: "enterprise-angular",
+  },
+  {
+    id: "r-nx-boundaries",
+    workshop: "nx-monorepo",
+    reason:
+      "Unrelated things break together because nothing stops them from importing each other. Module boundaries the build enforces are the fix, set up on your own workspace.",
+    pair: "enterprise-angular",
+  },
+  {
+    id: "r-angular",
+    workshop: "enterprise-angular",
+    reason:
+      "Two ways of building the same feature means the rules live in people's heads, not in the repository. This workshop ends with them written down and enforced.",
+    pair: "nx-monorepo",
+  },
+];
+
+const byId = (workshopId: WorkshopId) => {
+  const workshop = WORKSHOPS.find((item) => item.id === workshopId);
+  if (!workshop) throw new Error(`Unknown workshop: ${workshopId}`);
+  return workshop;
+};
+
+/* Every option must lead somewhere that exists. */
+const known = new Set([...questions.map((q) => q.id), ...results.map((r) => r.id)]);
+for (const question of questions) {
+  for (const option of question.options) {
+    if (!known.has(option.next)) {
+      throw new Error(`Finder option "${option.label}" leads nowhere: ${option.next}`);
+    }
+  }
+}
+---
+
+<section class="finder" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="finder__inner">
+    <header class="finder__head">
+      <h2 class="finder__title" id={`${id}-heading`}>{title}</h2>
+      <p class="finder__intro">{intro}</p>
+    </header>
+
+    <div class="quiz" data-quiz>
+      <ol class="quiz__trail" data-trail aria-label="Your answers so far"></ol>
+
+      {
+        questions.map((question, index) => (
+          <div
+            class="quiz__step"
+            data-step={question.id}
+            hidden={index !== 0}
+            role="group"
+            aria-labelledby={`${id}-${question.id}`}
+          >
+            <p class="quiz__question" id={`${id}-${question.id}`}>
+              {question.question}
+            </p>
+            <div class="quiz__options">
+              {question.options.map((option) => (
+                <button type="button" class="quiz__option" data-next={option.next}>
+                  <span class="quiz__option-mark" aria-hidden="true" />
+                  <span>{option.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+
+      {
+        results.map((result) => {
+          const workshop = byId(result.workshop);
+          const pair = byId(result.pair);
+          return (
+            <article class="quiz__step quiz__result" data-step={result.id} hidden>
+              <p class="quiz__result-label">Start with</p>
+              <p class="quiz__result-tag">{workshop.tag}</p>
+              <h3 class="quiz__result-title">{workshop.title}</h3>
+              <p class="quiz__result-reason">{result.reason}</p>
+              <p class="quiz__result-pair">
+                <span class="quiz__result-pair-label">On a second day:</span>
+                <a href={`#${pair.id}`}>{pair.title}</a>
+              </p>
+              <div class="quiz__result-actions">
+                <a
+                  class="quiz__cta"
+                  href="#contactForm"
+                  data-subject={subject}
+                  data-message={`I am interested in the ${workshop.title} workshop.`}
+                >
+                  Book this workshop
+                </a>
+                <a class="quiz__link" href={`#${workshop.id}`}>
+                  Read the full programme
+                </a>
+              </div>
+            </article>
+          );
+        })
+      }
+
+      <div class="quiz__nav">
+        <button type="button" class="quiz__back" data-back hidden>
+          Back
+        </button>
+        <button type="button" class="quiz__restart" data-restart hidden>
+          Start over
+        </button>
+      </div>
+
+      <noscript>
+        <p class="quiz__noscript">
+          This needs JavaScript. <a href="#catalog">See all workshops</a> instead.
+        </p>
+      </noscript>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-quiz]").forEach((quiz) => {
+    const steps = new Map<string, HTMLElement>();
+    quiz.querySelectorAll<HTMLElement>("[data-step]").forEach((step) => {
+      steps.set(step.dataset.step ?? "", step);
+    });
+    const trail = quiz.querySelector<HTMLElement>("[data-trail]");
+    const back = quiz.querySelector<HTMLButtonElement>("[data-back]");
+    const restart = quiz.querySelector<HTMLButtonElement>("[data-restart]");
+    if (!trail || !back || !restart) return;
+
+    const start = "start";
+    const path: { step: string; answer: string }[] = [];
+    let current = start;
+
+    function render(focus: boolean) {
+      steps.forEach((step, key) => {
+        step.hidden = key !== current;
+      });
+      const atStart = path.length === 0;
+      back.hidden = atStart;
+      restart.hidden = atStart;
+      trail.replaceChildren(
+        ...path.map(({ answer }) => {
+          const item = document.createElement("li");
+          item.className = "quiz__crumb";
+          item.textContent = answer;
+          return item;
+        }),
+      );
+      if (focus) {
+        const target = steps
+          .get(current)
+          ?.querySelector<HTMLElement>("button, a, h3, p");
+        target?.focus?.();
+      }
+    }
+
+    quiz.querySelectorAll<HTMLButtonElement>("[data-next]").forEach((option) => {
+      option.addEventListener("click", () => {
+        const next = option.dataset.next;
+        if (!next || !steps.has(next)) return;
+        path.push({ step: current, answer: option.textContent?.trim() ?? "" });
+        current = next;
+        render(true);
+      });
+    });
+
+    back.addEventListener("click", () => {
+      const previous = path.pop();
+      current = previous?.step ?? start;
+      render(true);
+    });
+
+    restart.addEventListener("click", () => {
+      path.length = 0;
+      current = start;
+      render(true);
+    });
+
+    render(false);
+  });
+</script>
+
+<style>
+  .finder {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .finder__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .finder__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    max-width: 44ch;
+  }
+
+  .finder__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .finder__intro {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  /* --- The flow --- */
+
+  .quiz {
+    background: var(--color-light-raised);
+    border: 1px solid var(--color-stroke);
+    border-radius: 20px;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0 24px 48px rgba(11, 18, 32, 0.08);
+  }
+
+  .quiz__trail {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .quiz__trail:empty {
+    display: none;
+  }
+
+  /* The crumbs are created by the script, so they carry no scoped
+     attribute: global within the trail. */
+  .quiz__trail :global(.quiz__crumb) {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    background: var(--color-light-alt);
+    border: 1px solid var(--color-stroke);
+  }
+
+  .quiz__step {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .quiz__step[hidden] {
+    display: none;
+  }
+
+  .quiz__question {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+  }
+
+  .quiz__options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .quiz__option {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    gap: 0.9rem;
+    align-items: center;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    border: 1px solid var(--color-stroke);
+    background: var(--color-light-raised);
+    color: var(--color-ink);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.45;
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      background-color 0.2s,
+      transform 0.2s;
+  }
+
+  .quiz__option:hover,
+  .quiz__option:focus-visible {
+    border-color: var(--color-accent);
+    background: rgba(47, 125, 209, 0.06);
+    transform: translateX(2px);
+  }
+
+  .quiz__option:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .quiz__option-mark {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-stroke-strong);
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+
+  .quiz__option:hover .quiz__option-mark,
+  .quiz__option:focus-visible .quiz__option-mark {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    box-shadow: inset 0 0 0 3px var(--color-light-raised);
+  }
+
+  /* --- Result --- */
+
+  .quiz__result {
+    gap: 0.75rem;
+  }
+
+  .quiz__result-label {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semi-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent-ink);
+  }
+
+  .quiz__result-tag {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .quiz__result-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+  }
+
+  .quiz__result-title:focus {
+    outline: none;
+  }
+
+  .quiz__result-reason {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.6;
+    max-width: 58ch;
+    margin-top: 0.5rem;
+  }
+
+  .quiz__result-pair {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(47, 125, 209, 0.08);
+    border: 1px solid rgba(47, 125, 209, 0.3);
+    max-width: 58ch;
+  }
+
+  .quiz__result-pair-label {
+    font-family: chillax, sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-accent-ink);
+    margin-right: 0.35rem;
+  }
+
+  .quiz__result-pair a {
+    color: var(--color-link);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .quiz__result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .quiz__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2rem;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-light-raised);
+    background-color: var(--color-accent-strong);
+    border-radius: 50px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .quiz__cta:hover,
+  .quiz__cta:focus-visible {
+    background-color: var(--color-accent-ink);
+  }
+
+  .quiz__link {
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-link);
+  }
+
+  /* --- Navigation --- */
+
+  .quiz__nav {
+    display: flex;
+    gap: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-stroke);
+  }
+
+  .quiz__nav:not(:has(button:not([hidden]))) {
+    display: none;
+  }
+
+  .quiz__back,
+  .quiz__restart {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink-muted);
+  }
+
+  .quiz__back::before {
+    content: "←";
+    margin-right: 0.35rem;
+  }
+
+  .quiz__back:hover,
+  .quiz__restart:hover {
+    color: var(--color-link);
+  }
+
+  .quiz__back[hidden],
+  .quiz__restart[hidden] {
+    display: none;
+  }
+
+  .quiz__noscript {
+    font-family: synonym, sans-serif;
+    color: var(--color-ink-muted);
+  }
+
+  .quiz__noscript a {
+    color: var(--color-link);
+  }
+
+  @media (min-width: 900px) {
+    .finder__inner {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    .finder__head {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quiz__option,
+    .quiz__option-mark {
+      transition: none;
+    }
+  }
+</style>

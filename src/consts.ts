@@ -1,5 +1,5 @@
 export const SITE_TITLE = "Heckers Software";
-export const SITE_DESCRIPTION = "Complex systems built with simplicity";
+export const SITE_DESCRIPTION = "Forward-deployed engineering: one industry expert, amplified by AI, who comes into your company and delivers software and AI end to end, from discovery to production.";
 
 export const COMPANY = {
   name: "Heckers Software",

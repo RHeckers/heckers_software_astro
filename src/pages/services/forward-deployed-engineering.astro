@@ -1,0 +1,387 @@
+---
+/**
+ * Service page: forward-deployed engineering, the main offer. One
+ * industry expert, amplified by AI, who comes into a company and delivers
+ * outcomes end to end: discovery, development, AI integration and
+ * deployment, with a team built around him when an outcome needs it.
+ *
+ * The lesson is that software and AI initiatives fail in the last mile,
+ * where nobody owns the outcome, so the page teaches the reader how to
+ * recognise that in their own company before it explains how we work. It
+ * also answers the obvious question up front: why an engagement rather
+ * than one forward-deployed engineer on the payroll.
+ *
+ * The page ends on the three tiers: the proof, the questions and the other
+ * services come before them, the contact form opens in a dialog from every
+ * call to action, and the footer is the compact one, so the last thing a
+ * reader scrolls to is the offer.
+ */
+import PageLayout from "../../layouts/PageLayout.astro";
+import ServiceHero from "../../components/services/ServiceHero.astro";
+import EvidenceBand from "../../components/services/EvidenceBand.astro";
+import SymptomCheck from "../../components/services/SymptomCheck.astro";
+import Insights from "../../components/services/Insights.astro";
+import ProcessSteps from "../../components/services/ProcessSteps.astro";
+import Tiers from "../../components/services/Tiers.astro";
+import Faq from "../../components/services/Faq.astro";
+import ProofQuote from "../../components/ProofQuote.astro";
+import ProofRow from "../../components/ProofRow.astro";
+import ContactDialog from "../../components/ContactDialog.astro";
+import { AUTHOR, COMPANY } from "../../consts";
+import { getService } from "../../lib/services";
+
+const service = getService("forward-deployed-engineering");
+
+const title =
+  "Forward-deployed engineering: software and AI delivered end to end inside your company — Heckers Software";
+const description =
+  "An industry expert who comes into your company and delivers outcomes end to end: discovery, development, AI integration and deployment. With AI, one senior engineer ships what a team did before. Hand over a backlog, or let us find the highest-impact work first.";
+
+const tiers = [
+  {
+    name: "Minimum",
+    tagline: "One outcome you can already describe, delivered end to end.",
+    duration: "One outcome, from three weeks",
+    price: {
+      amount: "Fixed price",
+      detail: "per outcome, set after a few days of scoping",
+    },
+    includes: [
+      "A few days of scoping, then a fixed price",
+      "Front end, API, data and integrations, in your repositories",
+      "Tests and a deployment pipeline from the first week",
+      "Working software to click through every two weeks",
+      "Documentation and a handover session",
+    ],
+  },
+  {
+    name: "Standard",
+    badge: "Most companies choose this",
+    recommended: true,
+    tagline: "Discovery first, then the highest-impact outcomes, owned rather than staffed.",
+    duration: "Two-week discovery, then two-week increments",
+    price: {
+      amount: "Fixed price",
+      detail: "per outcome, set after discovery",
+    },
+    includes: [
+      "Everything in Minimum",
+      "Two-week discovery: a ranked list and a scoped plan",
+      "AI wired in where it earns its place, with guardrails",
+      "A demo every two weeks with your stakeholders",
+      "More hands brought in when the scope needs them",
+    ],
+  },
+  {
+    name: "Advanced",
+    tagline: "A roadmap of outcomes, quarter by quarter.",
+    duration: "Quarterly, renewed per outcome list",
+    price: {
+      amount: "Fixed price",
+      detail: "per outcome, planned a quarter at a time",
+    },
+    includes: [
+      "Everything in Standard",
+      "Roadmap refreshed every quarter with the people who do the work",
+      "A team assembled when one person is not enough",
+      "AI enablement for your own developers",
+      "Monthly steering with leadership",
+    ],
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Forward-deployed engineering",
+  serviceType: "End-to-end software delivery and AI integration",
+  description,
+  url: new URL(service.href, Astro.site).toString(),
+  provider: {
+    "@type": "Organization",
+    name: COMPANY.name,
+    url: AUTHOR.url,
+    email: COMPANY.email,
+    telephone: COMPANY.phone,
+  },
+  areaServed: "Europe",
+  audience: [
+    { "@type": "Audience", audienceType: "Enterprise teams" },
+    { "@type": "Audience", audienceType: "Scale-ups" },
+    { "@type": "Audience", audienceType: "Startups" },
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Engagement models",
+    itemListElement: tiers.map((tier) => ({
+      "@type": "Offer",
+      name: tier.name,
+      description: tier.tagline,
+    })),
+  },
+};
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  compactFooter
+>
+  <ServiceHero
+    eyebrow="Forward-deployed engineering for companies that need outcomes, not another hire"
+    title="Software and AI rarely fail at the idea. They fail in the last mile."
+    lead="The last mile is where nobody owns the outcome. An industry expert who comes into your company and delivers end to end: discovery, development, AI integration and deployment. With AI, one senior engineer now ships what a whole team did before. Hand over a set of tasks, or let us find the highest-impact improvements first. Either way, we stay until it runs in production."
+    ctaLabel={service.cta}
+    subject={service.subject}
+    secondaryLabel="Check your next initiative"
+    secondaryHref="#self-check"
+    fact={{
+      value: "95%",
+      copy: "of enterprise generative AI pilots deliver no measurable return. The researchers do not blame the models: they blame integration into real workflows, data readiness, and nobody owning the outcome.",
+      source: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
+    }}
+  />
+
+  <EvidenceBand
+    title="What the numbers say about getting software and AI into production"
+    intro="None of these numbers are ours. They come from MIT, IDC and RAND, and together they describe the company that starts more than it finishes."
+    stats={[
+      {
+        value: "95%",
+        label:
+          "of enterprise generative AI pilots show no measurable profit-and-loss impact. The demo worked; the integration into the daily workflow never got finished.",
+        source: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
+      },
+      {
+        value: "88%",
+        label:
+          "of AI proofs of concept never reach production. For every thirty-three a company starts, four make it. The rest stall at the ERP, the data, security, or the team that was supposed to use it.",
+        source: "IDC, 2025",
+      },
+      {
+        value: "2×",
+        label:
+          "as often: the rate at which tools built with an outside partner reached deployment, compared with tools built alone. About two in three against one in three.",
+        source: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
+      },
+    ]}
+    meaning="The pattern is the same whether the initiative is an AI assistant or a customer portal: the demo is the easy part. What is missing is the last mile, which is the integration with the ERP, the data that has to be cleaned first, the pipeline, the monitoring, and the people trained to use it. That is engineering, and it needs an owner. It is why the AI labs invented the forward-deployed engineer: someone who goes to the customer and builds until it works. We do the same for companies that cannot hire one. And because coding agents now do the typing, one industry expert delivers what used to take a team, with one person accountable for the whole outcome."
+  >
+    <ProofQuote slot="proof" snippet="peterChallenges" />
+  </EvidenceBand>
+
+  <SymptomCheck
+    title="Twelve signs your company is behind on AI automation"
+    intro="Every statement is ticked, because at most companies most of them are still true. Walk through your own departments and untick only what you can honestly rule out. What is left is your score, and someone else's head start."
+    items={[
+      "Someone retypes data from PDFs, emails or one system into another every week.",
+      "Customer questions with a standard answer still wait for a person to type it.",
+      "Reports are assembled by hand in a spreadsheet before every management meeting.",
+      "AI in your company means a few people with a chat subscription and no shared way of working.",
+      "There is an AI policy, or a plan to write one, but no model running inside a business process.",
+      "Documents are read, classified and routed by people, one at a time.",
+      "Your developers type every line themselves; coding agents are not set up on your repositories.",
+      "Nobody can name a process where a model does the first draft and a person checks it.",
+      "An AI pilot impressed everyone last year and is used by no one today.",
+      "Approvals wait in one inbox, and when that person is on holiday they wait longer.",
+      "The data a model would need lives in four systems, and nobody owns getting it together.",
+      "A competitor, supplier or customer has mentioned what they automated, and you have no answer yet.",
+    ]}
+    verdicts={[
+      {
+        min: 0,
+        title: "Ahead of the pack.",
+        copy: "Models already do the first draft of real work in your company, and your developers ship with agents. We add the next outcome, not the first.",
+      },
+      {
+        min: 2,
+        title: "Typical.",
+        copy: "This is where most companies are: a subscription here, a pilot there, and the real work still done by hand. Each ticked item is a process where a model could do the first draft tomorrow, with a person checking it.",
+      },
+      {
+        min: 5,
+        title: "Falling behind.",
+        copy: "The manual work is spread across departments, so nobody sees the total. Add up the hours behind the ticked items and the number is usually a few salaries a year. A two-week discovery puts that number on paper, ranked by what is cheapest to automate first.",
+      },
+      {
+        min: 8,
+        title: "The gap is growing.",
+        copy: "Companies that automated these steps a year ago now do them at a fraction of the cost, and the gap widens every quarter you wait. This is not fixed by a policy, a tool licence or another pilot. It is fixed by someone coming in, picking the highest-impact process, automating it into production, and then the next one.",
+      },
+    ]}
+    ctaLabel="Talk about your score"
+    subject={service.subject}
+    preChecked
+  />
+
+  <Insights
+    title="What we have learned delivering inside other people's companies"
+    intro="Utilities, healthcare, industry, government, and companies with no developers yet. The engagements that landed shared five habits."
+    items={[
+      {
+        figure: "last-mile",
+        title: "The last mile is the project.",
+        copy: "Screens and models are the easy part. The identity provider nobody owns, the ERP with no documented API and the security review planned for the end decide the timeline.",
+        takeaway:
+          "List every system the initiative touches and who owns its credentials. A missing name is your first risk.",
+      },
+      {
+        figure: "discovery",
+        title: "Discovery beats a wishlist.",
+        copy: "A backlog written by IT describes what IT can see. The highest-impact work is the export someone cleans up by hand every Monday, and you only find it by sitting with the people who do it.",
+        takeaway:
+          "Spend one day next to the team with the most tickets. Write down the three things they do by hand.",
+      },
+      {
+        figure: "feature",
+        title: "AI is a feature, not a project.",
+        copy: "The initiatives that returned money started with one slow workflow step and used a model for exactly that step, with a person checking the output. The ones that started with the technology produced a demo and a steering committee.",
+        takeaway:
+          "For every AI idea, name the step it replaces and the person who checks it. If either is blank, it is not ready.",
+      },
+      {
+        figure: "amplified",
+        title: "One expert with AI outdelivers a team without it.",
+        copy: "Most of what a team costs is keeping it aligned. With agents doing the typing, one engineer who understands the whole stack ships what the team shipped, as long as what they learn lands in your repositories and not in their head.",
+        takeaway:
+          "Ask every external engineer where what they know lives. Insist on written decisions in your repository.",
+      },
+      {
+        figure: "owner",
+        title: "Outcomes need an owner with hands.",
+        copy: "A report changes nothing unless someone builds, and a team that only builds what it is told ships the wrong thing faster. One party accountable for the outcome in production is the whole idea, and why we price per outcome.",
+        takeaway:
+          "Before signing with anyone, ask who is accountable for this running in production, and what happens to the price if it does not.",
+      },
+    ]}
+  >
+    <ProofQuote slot="proof" snippet="ferdiBeyondScope" tone="dark" />
+  </Insights>
+
+  <ProcessSteps
+    title="How an engagement runs"
+    intro="Fixed steps, short feedback loops, no long silences. The same structure whether you hand us a backlog or ask us to find the work."
+    deliverablesTitle="What you can count on"
+    deliverables={[
+      "A ranked list of high-impact work and a scoped plan with a realistic estimate before you commit to anything",
+      "Code, documentation and infrastructure in your repositories and accounts from day one",
+      "Automated tests and deployment through a pipeline from the first sprint",
+      "Working software you can click through every two weeks",
+      "AI features with evaluation, guardrails and a person in the loop, never a black box",
+      "Your coding guidelines, security and compliance requirements, and release process, followed; or set up with you if you have none yet",
+      "Written decisions and lint rules at handover, so your own team can keep the pace",
+      "The people you talk to are the people who build; no handoff to a junior team",
+    ]}
+    steps={[
+      {
+        title: "Discovery",
+        when: "Week 1–2",
+        copy: "We sit with the people who do the work, read the systems and the code, and map every integration the outcome depends on. For a backlog you hand us, this is a few days of scoping. For a company that wants us to find the work, it is two weeks that end in a ranked list of what software and AI would save the most time or money.",
+      },
+      {
+        title: "Scope and commit",
+        when: "End of week 2",
+        copy: "The top of the list becomes a scoped outcome with a fixed price and a timeline. You decide whether to go ahead knowing exactly what you buy. Most companies do; some take the list and run part of it themselves.",
+      },
+      {
+        title: "Foundation",
+        when: "Week 3",
+        copy: "Data model, integrations, pipeline and code structure designed to fit your landscape and standards, so what we build slots into your suite instead of beside it. Security and compliance are involved here, not at sign-off.",
+      },
+      {
+        title: "Build in short cycles",
+        when: "Every 2 weeks",
+        copy: "Working software you and the people who will use it can click through, reviewed together. Automated tests and deployments through the pipeline from the first sprint, so every demo is a release candidate.",
+      },
+      {
+        title: "AI integration",
+        when: "Where it earns its place",
+        copy: "The workflow step a model replaces is wired in with evaluation on your own data, guardrails, and a person checking the output until the numbers say they do not have to. If a model does not earn its place, we build the plain software version and tell you why.",
+      },
+      {
+        title: "Ship, hand over, stay or leave",
+        when: "Per outcome",
+        copy: "Go-live, monitoring, documentation and a working session with your developers. Then you choose: we take the next outcome from the list with you, or we leave with everything already in your hands.",
+      },
+    ]}
+    ctaLabel={service.cta}
+    subject={service.subject}
+  >
+    <ProofQuote slot="proof" snippet="peterApproach" />
+  </ProcessSteps>
+
+  <ProofRow snippets={["ferdiFullStack", "peterMentoring", "nicoTeam"]} />
+
+  <Faq
+    title="Questions we hear before every engagement"
+    items={[
+      {
+        question:
+          "What is a forward-deployed engineer, and why an engagement rather than hiring one?",
+        answer:
+          "A forward-deployed engineer is the role the AI labs and Palantir use for an engineer who goes to the customer, works inside their company and builds until the product delivers. The good ones are rare, expensive and in demand, and most companies will not find one in a six-month search. We offer the same way of working as an engagement: one industry expert who, with coding agents doing the typing, delivers what a team did before, at a fixed price per outcome instead of a salary, with everything written into your repositories so nothing leaves in one head, and with a team built around him when an outcome needs more hands. You get the outcome ownership of the role without the hiring, the payroll or the search.",
+      },
+      {
+        question:
+          "We already know what we want built. Do we still need discovery?",
+        answer:
+          "Not the full two weeks. We spend a few days scoping what you hand us: the integrations it touches, the people who will use it, what done looks like in production. Then you get a fixed price and a timeline. If scoping turns up something more valuable than the original ask, we tell you and let you decide.",
+      },
+      {
+        question:
+          "We do not know where AI fits in our company. Is that a problem?",
+        answer:
+          "That is the normal starting point, and it is what discovery is for. We sit with the people who do the work and find the steps that are slow or expensive. Some of those are AI shaped: reading documents, classifying requests, drafting answers. Many are not, and need ordinary software or an integration. We rank by return, not by technology, and we say when a model does not earn its place.",
+      },
+      {
+        question: "Fixed price or time and materials?",
+        answer:
+          "Fixed price per outcome, in every tier. For an outcome you hand us, a few days of scoping set the price; for work we find, the two-week discovery does. Both are short and priced separately, so you never pay for a build you have not scoped. In the Advanced tier the outcomes are planned a quarter at a time, each with its own price.",
+      },
+      {
+        question: "Who owns the code, the models and the data?",
+        answer:
+          "You do, from the first commit. Everything lives in your repositories, your pipelines and your cloud account, including the prompts, evaluation sets and configuration behind any AI feature. Your data never trains anyone's model. If we part ways tomorrow, you lose nothing but us.",
+      },
+      {
+        question: "What happens when you leave?",
+        answer:
+          "Your developers get a working session, not just documentation, and the decisions we made are written down with the lint rules that enforce them. After that you choose: run it yourself, keep us on call, or take the next outcome from the list together. There is no maintenance contract you did not plan for, and the workshops exist for teams that want to keep the pace on their own.",
+      },
+      {
+        question: "How does this fit with our security and compliance teams?",
+        answer:
+          "We involve them in discovery, not at sign-off. Your guidelines, review process and release gates apply to us as they apply to your own developers, and that includes how any AI feature handles data. We have worked under the requirements of utilities, healthcare, defence and government. If you have no such requirements yet, we set up the sensible defaults so you are not the company that adds security after the breach.",
+      },
+      {
+        question: "Can you work inside our existing Angular or Nx workspace?",
+        answer:
+          "That is the most common case. We build inside your workspace, respect its module boundaries and, where they are missing, help put them in. If the codebase itself is the problem, the architecture assessment is the place to start: a fixed-scope outside read that becomes the first part of discovery.",
+      },
+      {
+        question: "Who actually does the work?",
+        answer:
+          "Roberto Heckers, the person you talk to first. With coding agents handling the typing, one senior engineer who knows the whole stack covers what used to need several people, and that keeps communication direct and the decisions consistent. When an outcome genuinely needs more hands, engineers we have worked with before join under the same lead and the same rules.",
+      },
+      {
+        question:
+          "We are a startup with an idea and no developers yet. Is that too early?",
+        answer:
+          "No. That is the moment where the most money is saved or wasted. Discovery cuts the idea down to a first version real users can try, and we set up the repositories, pipeline and cloud account in your name from day one, so whoever you hire later walks into a working project instead of a supplier's black box.",
+      },
+    ]}
+  />
+
+  <Tiers
+    title="Three ways to bring us in"
+    intro="Every tier is a fixed price per outcome. Pick by how much you want us to find for you: one outcome you hand us, discovery plus the outcomes it turns up, or a roadmap of them."
+    serviceName="forward-deployed engineering"
+    subject={service.subject}
+    tiers={tiers}
+    note="Every outcome is priced on its own, before we build it. Scoping and discovery are short and priced separately, and end in a scoped plan, so you commit to delivery knowing scope and price. Our default stack is Angular, TypeScript, .NET, Node.js, SQL and Azure, with the Claude and OpenAI APIs for AI features; where your platform requires another, we work in yours."
+    otherLabel="Tell us what you need"
+  />
+
+  <ContactDialog />
+</PageLayout>

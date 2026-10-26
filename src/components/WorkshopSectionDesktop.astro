@@ -12,20 +12,20 @@ import { WORKSHOPS } from "../lib/workshops";
 
 // Portraits for the wheel on the right.
 const images = {
-  "enterprise-angular": { src: talk1, objectPosition: "center" },
-  "nx-monorepo": { src: ngPoland, objectPosition: "left" },
   ai: { src: talk2, objectPosition: "center" },
-  "ui-libraries": { src: effectiveAngular, objectPosition: "top center" },
+  "ai-frontend": { src: talk1, objectPosition: "center" },
+  "nx-monorepo": { src: ngPoland, objectPosition: "left" },
+  "enterprise-angular": { src: effectiveAngular, objectPosition: "top center" },
 } as const;
 
 // A second photograph inside each card, one per workshop and each from a
 // different room: the point is that these are taught in public and
 // in-house, not that they look nice.
 const cardImages = {
-  "enterprise-angular": { src: ngPolandCode, objectPosition: "center" },
-  "nx-monorepo": { src: ngPolandStage, objectPosition: "center" },
   ai: { src: zurichWorkshop, objectPosition: "center" },
-  "ui-libraries": { src: ngPolandHall, objectPosition: "center" },
+  "ai-frontend": { src: ngPolandCode, objectPosition: "center" },
+  "nx-monorepo": { src: ngPolandStage, objectPosition: "center" },
+  "enterprise-angular": { src: ngPolandHall, objectPosition: "center" },
 } as const;
 
 const workshops = WORKSHOPS.map((item) => ({

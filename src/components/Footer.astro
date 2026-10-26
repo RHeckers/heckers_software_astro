@@ -4,10 +4,17 @@ import logo from "../assets/logos/logo.png";
 import { COMPANY } from "../consts";
 import { SERVICES } from "../lib/services";
 
+interface Props {
+  /** One row with the legal links only, for pages that must end on their
+   *  last section rather than on a wall of links. */
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer">
+<footer class:list={["footer", { "footer--compact": compact }]}>
   <div class="footer__inner">
     <div class="footer__brand">
       <div class="footer__mark">
@@ -21,8 +28,9 @@ const year = new Date().getFullYear();
         />
       </div>
       <p class="footer__tagline">
-        Angular and Nx specialists delivering resilient apps, faster builds, and
-        teams that stay unblocked.
+        Forward-deployed engineering: one industry expert, amplified by AI,
+        delivering software and AI end to end inside your company. Discovery,
+        development, integration and deployment.
       </p>
     </div>
 
@@ -37,12 +45,14 @@ const year = new Date().getFullYear();
           ))
         }
         <li>
-          <a href="/services/workshops#nx-monorepo">
-            Nx monorepo setup or enhancement
+          <a href="/services/forward-deployed-engineering#how-it-works">
+            AI integration and workflow automation
           </a>
         </li>
         <li>
-          <a href="/services/workshops#ai">AI-assisted development</a>
+          <a href="/services/workshops#ai">
+            AI-native development workshop
+          </a>
         </li>
       </ul>
     </div>
@@ -278,6 +288,40 @@ const year = new Date().getFullYear();
     transform: translateY(0);
   }
 
+  /* Compact: brand, legal and meta on one row; the service and contact
+     columns are dropped. */
+  .footer--compact {
+    padding-top: clamp(1.5rem, 3vw, 2rem);
+    padding-bottom: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .footer--compact .footer__list,
+  .footer--compact .footer__contact,
+  .footer--compact .footer__tagline,
+  .footer--compact .footer__heading {
+    display: none;
+  }
+
+  .footer--compact .footer__inner {
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+    align-items: center;
+  }
+
+  .footer--compact .footer__logo {
+    max-width: 160px;
+  }
+
+  .footer--compact .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacer-md) var(--spacer-lg);
+  }
+
+  .footer--compact .footer__meta {
+    margin-top: var(--spacer-lg);
+  }
+
   .footer__meta {
     max-width: 1200px;
     margin: clamp(1.75rem, 5vw, 2.5rem) auto 0;
@@ -311,6 +355,17 @@ const year = new Date().getFullYear();
   @media (min-width: 961px) {
     .footer__inner {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 721px) {
+    .footer--compact .footer__inner {
+      grid-template-columns: auto 1fr;
+      justify-content: space-between;
+    }
+
+    .footer--compact .footer__legal {
+      justify-self: end;
     }
   }
 </style>

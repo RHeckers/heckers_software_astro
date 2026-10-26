@@ -18,6 +18,8 @@ interface Props {
    * off never get a `data-theme` attribute and keep the light palette.
    */
   themeToggle?: boolean;
+  /** Compact footer: legal links only, for pages that end on their offer. */
+  compactFooter?: boolean;
 }
 
 const {
@@ -28,6 +30,7 @@ const {
   article,
   jsonLd,
   themeToggle = false,
+  compactFooter = false,
 } = Astro.props;
 ---
 
@@ -49,7 +52,7 @@ const {
     <main>
       <slot />
     </main>
-    <Footer />
+    <Footer compact={compactFooter} />
     <CookieConsent />
   </body>
 </html>

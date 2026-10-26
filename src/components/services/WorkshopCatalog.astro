@@ -26,10 +26,10 @@ interface Props {
 const { id = "catalog", title, intro, subject } = Astro.props;
 
 const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
-  "enterprise-angular": { src: talk1, position: "center" },
-  "nx-monorepo": { src: ngPoland, position: "left" },
   ai: { src: talk2, position: "center" },
-  "ui-libraries": { src: effectiveAngular, position: "top center" },
+  "ai-frontend": { src: talk1, position: "center" },
+  "nx-monorepo": { src: ngPoland, position: "left" },
+  "enterprise-angular": { src: effectiveAngular, position: "top center" },
 };
 ---
 

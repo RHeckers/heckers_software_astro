@@ -22,8 +22,31 @@ const FONT = 'font-family="chillax, sans-serif" text-anchor="middle"';
 
 const services = [
   {
+    title: "Forward-deployed engineering",
+    copy: "An industry expert inside your company who delivers outcomes end to end: discovery, development, AI integration and deployment. With AI, one senior engineer ships what a team did before.",
+    href: "/services/forward-deployed-engineering",
+    label: "How an engagement runs",
+    /* Three connected stages: discover, build, ship. */
+    art: `
+      <g ${EDGES}>
+        <path class="art-flow" d="M 110 48 L 110 62" />
+        <path class="art-flow" d="M 110 92 L 110 106" />
+      </g>
+      <g ${NODES}>
+        <rect x="40" y="16" width="140" height="32" rx="8" ${ACCENT_NODE} />
+        <rect class="art-layer" x="40" y="62" width="140" height="30" rx="8" />
+        <rect class="art-layer" x="40" y="106" width="140" height="30" rx="8" />
+      </g>
+      <g ${FONT} font-size="12.5" font-weight="500" fill="rgba(232, 237, 246, 0.8)">
+        <text x="110" y="36.5" fill="#ffffff">Discover</text>
+        <text x="110" y="81.5">Build and integrate AI</text>
+        <text x="110" y="125.5">Ship to production</text>
+      </g>
+    `,
+  },
+  {
     title: "Architecture assessment",
-    copy: "Industry leading experts read your Angular or Nx codebase and hand you a ranked report and a roadmap. Fixed scope, two to three weeks for a full review.",
+    copy: "Senior engineers read your Angular or Nx codebase from the outside and hand you a ranked report and a roadmap. Fixed scope, two to three weeks. The diagnosis before anyone builds.",
     href: "/services/architecture-assessment",
     label: "Everything about the assessment",
     /* A dependency graph with one circular dependency flagged. */
@@ -56,7 +79,7 @@ const services = [
   },
   {
     title: "Angular and Nx workshops",
-    copy: "Hands-on training for your team in enterprise Angular patterns, Nx monorepos and AI-assisted development.",
+    copy: "Hands-on training on your own codebase: automating development with AI agents, AI-driven front ends, Nx monorepos and enterprise Angular architecture. So your team keeps the pace after we leave.",
     href: "/services/workshops",
     label: "See all workshops",
     /* A classroom: a screen with code being walked through, three
@@ -86,29 +109,6 @@ const services = [
       <g class="art-spark">
         <circle cx="174" cy="105" r="6.5" fill="${ACCENT}" />
         <path d="M 170.8 105.2 L 173.2 107.6 L 177.4 102.8" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-      </g>
-    `,
-  },
-  {
-    title: "Application development",
-    copy: "A section of your enterprise software or a complete new application, built full stack by one senior team.",
-    href: "/services/application-development",
-    label: "See how we build",
-    /* Three connected layers: front end, API, data. */
-    art: `
-      <g ${EDGES}>
-        <path class="art-flow" d="M 110 48 L 110 62" />
-        <path class="art-flow" d="M 110 92 L 110 106" />
-      </g>
-      <g ${NODES}>
-        <rect x="40" y="16" width="140" height="32" rx="8" ${ACCENT_NODE} />
-        <rect class="art-layer" x="40" y="62" width="140" height="30" rx="8" />
-        <rect class="art-layer" x="40" y="106" width="140" height="30" rx="8" />
-      </g>
-      <g ${FONT} font-size="12.5" font-weight="500" fill="rgba(232, 237, 246, 0.8)">
-        <text x="110" y="36.5" fill="#ffffff">Front end</text>
-        <text x="110" y="81.5">API</text>
-        <text x="110" y="125.5">Data</text>
       </g>
     `,
   },
@@ -143,9 +143,9 @@ const services = [
     </ul>
 
     <p class="services__next">
-      Each page has the full story: the numbers, a self-check for your own team,
-      how it runs and what it costs in time. Most teams start with the
-      assessment. Here is why.
+      Each page has the full story: the numbers, a self-check for your own
+      company, how it runs and what it costs in time. Most companies start with
+      a two-week discovery. Here is why.
     </p>
   </div>
 </section>

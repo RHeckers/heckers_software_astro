@@ -7,7 +7,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 const nextSteps = [
   "You get a personal reply from Roberto, not an autoresponder.",
   "We schedule a short call to understand your situation and goals.",
-  "You receive a clear proposal with scope, timeline and price.",
+  "You receive a clear proposal with the outcome, the timeline and the price.",
 ];
 ---
 
@@ -18,9 +18,10 @@ const nextSteps = [
         Tell us about your project
       </h2>
       <p class="contact__lede">
-        An audit, a workshop, a new application or a codebase that needs
-        rescuing. Describe where you are and we will tell you honestly whether
-        we can help.
+        A backlog your team cannot get to, a process that should have been
+        automated years ago, an AI pilot that never reached production, or a
+        codebase that needs rescuing. Describe where you are and we will tell
+        you honestly whether we can help.
       </p>
       <ol class="next-steps">
         {
@@ -157,13 +158,15 @@ const nextSteps = [
   // data-subject attribute; preselect that subject when they are followed.
   // A data-message attribute (tier and workshop buttons) is dropped into
   // the message field when it is still empty, so the enquiry names what
-  // the visitor was looking at.
+  // the visitor was looking at. A line we filled in ourselves is replaced
+  // by the next button's line; anything the visitor typed is kept.
   const subjectSelect = document.getElementById(
     "subject",
   ) as HTMLSelectElement | null;
   const messageField = document.getElementById(
     "content",
   ) as HTMLTextAreaElement | null;
+  let prefilled = "";
   if (subjectSelect) {
     document
       .querySelectorAll<HTMLAnchorElement>('a[href="#contactForm"][data-subject]')
@@ -178,7 +181,9 @@ const nextSteps = [
             subjectSelect.dispatchEvent(new Event("input", { bubbles: true }));
           }
           const message = link.dataset.message;
-          if (message && messageField && messageField.value.trim() === "") {
+          const current = messageField?.value.trim() ?? "";
+          if (message && messageField && (current === "" || current === prefilled)) {
+            prefilled = message;
             messageField.value = message + "\n\n";
             messageField.dispatchEvent(new Event("input", { bubbles: true }));
           }
