@@ -49,41 +49,41 @@ import Accent from "./Accent.astro";
       <div class="stacked-text">
         <p class="small-text">
           With our <Accent
-            range="cover 0% cover 10%"
-            mobileRange="cover 0% cover 6.5%">Forward-deployed team</Accent
+            range="cover 3% cover 17%"
+            mobileRange="cover 2% cover 10%">Forward-deployed team</Accent
           >
           <br />
           Industry <Accent
-            range="cover 1% cover 9.5%"
-            mobileRange="cover 0% cover 6.8%">experts</Accent
+            range="cover 4% cover 17%"
+            mobileRange="cover 2.5% cover 10.5%">experts</Accent
           >
           <br />
           Come in and
           <br />
         </p>
         <p class="large-text">
-          <Accent range="cover 2% cover 11%" mobileRange="cover 0% cover 6.3%"
+          <Accent range="cover 5% cover 19%" mobileRange="cover 3% cover 10%"
             >DELIVER</Accent
           >
         </p>
       </div>
     </div>
-    <div class="sticky-spacer"></div>
   </div>
+  <div class="sticky-spacer" aria-hidden="true"></div>
   <div class="sticky-wrapper sticky-wrapper-long">
     <div class="story-block story-block-3">
       <p class="story-text line-4">
-        <Accent range="cover 1% cover 14%" mobileRange="cover 0% cover 7.5%"
+        <Accent range="cover 4% cover 22%" mobileRange="cover 2% cover 11.5%"
           >Find</Accent
         > the highest-impact work
       </p>
       <p class="story-text line-5">
-        <Accent range="cover 1.5% cover 12%" mobileRange="cover 0% cover 6.6%"
+        <Accent range="cover 5% cover 20%" mobileRange="cover 2.5% cover 10.5%"
           >Build</Accent
         > it end to end
       </p>
       <p class="story-text line-5">
-        <Accent range="cover 0.5% cover 10%" mobileRange="cover 0% cover 7%"
+        <Accent range="cover 4% cover 18%" mobileRange="cover 2% cover 11%"
           >Ship</Accent
         > it into production
       </p>
@@ -92,8 +92,8 @@ import Accent from "./Accent.astro";
         development, AI integration and deployment, until the outcome is live.
       </p>
     </div>
-    <div class="sticky-spacer"></div>
   </div>
+  <div class="sticky-spacer" aria-hidden="true"></div>
 
   <!--
     Anything slotted here scrolls inside .story, which is the containing
@@ -127,7 +127,11 @@ import Accent from "./Accent.astro";
       min-height: fit-content;
 
       .story-text {
-        font-size: var(--font-6xl);
+        /* Capped by the viewport height, so the three lines and the caption
+           fit the fixed card height on short screens: a card that grows past
+           it would be taller than the other two and leave the stack first. */
+        font-size: min(var(--font-6xl), 9svh);
+        line-height: 1.15;
         color: var(--color-ink-light);
 
         &:not(.accent, .danger) {
@@ -149,7 +153,9 @@ import Accent from "./Accent.astro";
       hundred of them. Every range therefore has to finish inside the first
       tenth or so of its pass, before the next card rises over this one. A
       wipe still running when the card is covered reads as broken, so the
-      ranges are measured against that moment rather than eyeballed.
+      ranges are measured against that moment rather than eyeballed. The
+      spacers between the cards hold each one longer, which is what makes
+      room for the wipes to start later and run slower than they used to.
     */
 
     /* Brighter green on the dark cards, the light-page token is too muddy there. */
@@ -163,11 +169,9 @@ import Accent from "./Accent.astro";
       top: 60px;
       z-index: 2;
       margin: 0 var(--spacer-2xl);
-      --sticky-tail: 20svh;
     }
 
     .sticky-wrapper-long {
-      --sticky-tail: 5svh;
 
       &:has(.story-block-2) {
         background-color: var(--color-light-alt);
@@ -206,7 +210,7 @@ import Accent from "./Accent.astro";
     }
 
     .story-caption {
-      margin-top: var(--spacer-xl);
+      margin-top: min(var(--spacer-xl), 3svh);
       font-family: synonym, sans-serif;
       font-size: clamp(1.05rem, 1.5vw, 1.35rem);
       color: rgba(232, 237, 246, 0.72);
@@ -214,8 +218,13 @@ import Accent from "./Accent.astro";
       padding: 0 var(--spacer-md);
     }
 
+    /* How long a card stays pinned on its own before the next one starts
+       to rise over it. The spacer sits between the sticky wrappers, not
+       inside them: inside, it would make a wrapper taller than its card
+       and release that card before the others when the stack scrolls out.
+       All wrappers are the same height, so all three cards leave together. */
     .sticky-spacer {
-      height: var(--sticky-tail);
+      height: 40svh;
     }
 
     .story-block-3 {

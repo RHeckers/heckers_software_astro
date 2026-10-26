@@ -27,6 +27,9 @@ interface Props {
   alt: string;
   /** Which side the photograph sits on from 900px up. */
   side?: "left" | "right";
+  /** Which part of the photograph to keep when it is cropped to the column,
+   *  e.g. "center top" for a portrait whose face sits near the top. */
+  imagePosition?: string;
   /** Which of the two light grounds this band uses. */
   surface?: "alt" | "raised";
   /**
@@ -46,6 +49,7 @@ const {
   image,
   alt,
   side = "right",
+  imagePosition = "center",
   surface = "alt",
   hideOnMobile = false,
 } = Astro.props;
@@ -79,6 +83,7 @@ const headingId = `fact-${stat.replace(/[^a-z0-9]/gi, "").toLowerCase()}`;
         widths={[560, 840, 1120]}
         sizes="(min-width: 900px) 46vw, 92vw"
         loading="lazy"
+        style={`object-position: ${imagePosition}`}
       />
     </div>
   </div>
@@ -222,12 +227,19 @@ const headingId = `fact-${stat.replace(/[^a-z0-9]/gi, "").toLowerCase()}`;
       order: 2;
     }
 
-    .fact__proof,
-    .fact__proof :global(img) {
-      height: 100%;
+    /* The photograph fills whatever height the argument beside it needs,
+       and never more: taken out of flow, its own proportions cannot
+       stretch the row, so both columns end on the same line. */
+    .fact__proof {
+      position: relative;
+      min-height: 100%;
     }
 
     .fact__proof :global(img) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       aspect-ratio: auto;
     }
   }

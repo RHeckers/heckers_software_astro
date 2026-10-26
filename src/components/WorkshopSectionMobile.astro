@@ -1,17 +1,17 @@
 ---
 import { Image } from "astro:assets";
-import ngPolandCode from "../assets/workshop/ng-poland-2024.6.jpg";
 import ngPolandSponsors from "../assets/workshop/ng-poland-2024.7.jpg";
 import ngPolandHall from "../assets/workshop/ng-poland-2024.4.jpg";
 import zurichWorkshop from "../assets/workshop/angular-zurich.png";
+import effectiveAngular from "../assets/workshop/effective_angular.jpg";
 import { WORKSHOPS } from "../lib/workshops";
 
 // One photograph per workshop, each from a different room. The wide card
 // crops differently from the round desktop one, so the framing differs too.
 const images = {
   ai: { src: zurichWorkshop, objectPosition: "center" },
-  "ai-frontend": { src: ngPolandCode, objectPosition: "center" },
-  "nx-monorepo": { src: ngPolandHall, objectPosition: "center" },
+  "ai-frontend": { src: ngPolandHall, objectPosition: "center" },
+  "nx-monorepo": { src: effectiveAngular, objectPosition: "top" },
   "enterprise-angular": { src: ngPolandSponsors, objectPosition: "center" },
 } as const;
 

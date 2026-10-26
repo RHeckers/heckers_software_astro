@@ -39,8 +39,8 @@ const services = [
       </g>
       <g ${FONT} font-size="12.5" font-weight="500" fill="rgba(232, 237, 246, 0.8)">
         <text x="110" y="36.5" fill="#ffffff">Discover</text>
-        <text x="110" y="81.5">Build and integrate AI</text>
-        <text x="110" y="125.5">Ship to production</text>
+        <text class="art-label" x="110" y="81.5">Build and integrate AI</text>
+        <text class="art-label" x="110" y="125.5">Ship to production</text>
       </g>
     `,
   },
@@ -362,8 +362,9 @@ const services = [
     }
   }
 
-  /* Application development: the edges redraw top to bottom and each
-     layer lights up as the data reaches it. */
+  /* Forward-deployed engineering: the edges draw top to bottom and each
+     stage turns accent blue as the work reaches it, so at the end all
+     three look like the first: discovered, built, shipped. */
   .panel__art :global(.art-flow) {
     stroke-dasharray: 14;
     stroke-dashoffset: 0;
@@ -377,19 +378,29 @@ const services = [
     animation-delay: 0.3s;
   }
 
-  .panel__art :global(.art-layer) {
-    transition: fill 0.3s;
+  .panel__art :global(.art-layer),
+  .panel__art :global(.art-label) {
+    transition:
+      fill 0.3s,
+      stroke 0.3s;
   }
 
   .panel__link:hover .panel__art :global(.art-layer) {
-    fill: rgba(232, 237, 246, 0.14);
+    fill: rgba(47, 125, 209, 0.28);
+    stroke: #2f7dd1;
   }
 
-  .panel__link:hover .panel__art :global(.art-layer:nth-child(2)) {
+  .panel__link:hover .panel__art :global(.art-label) {
+    fill: #ffffff;
+  }
+
+  .panel__link:hover .panel__art :global(.art-layer:nth-child(2)),
+  .panel__link:hover .panel__art :global(.art-label:nth-child(2)) {
     transition-delay: 0.3s;
   }
 
-  .panel__link:hover .panel__art :global(.art-layer:nth-child(3)) {
+  .panel__link:hover .panel__art :global(.art-layer:nth-child(3)),
+  .panel__link:hover .panel__art :global(.art-label:nth-child(3)) {
     transition-delay: 0.6s;
   }
 
@@ -421,7 +432,8 @@ const services = [
     .panel__cta,
     .panel__art :global(.art-flag),
     .panel__art :global(.art-spark),
-    .panel__art :global(.art-layer) {
+    .panel__art :global(.art-layer),
+    .panel__art :global(.art-label) {
       transition: none;
     }
 

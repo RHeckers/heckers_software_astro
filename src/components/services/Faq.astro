@@ -1,7 +1,9 @@
 ---
 /**
  * The objections, answered before they are raised. Native details/summary,
- * so it works everywhere and the open state is the browser's.
+ * so it works everywhere and the open state is the browser's. The same
+ * pairs go out as FAQPage structured data, so search engines and AI
+ * assistants can quote an answer with the question it belongs to.
  */
 interface Item {
   question: string;
@@ -15,9 +17,20 @@ interface Props {
 }
 
 const { id = "faq", title, items } = Astro.props;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
 ---
 
 <section class="faq" id={id} aria-labelledby={`${id}-heading`}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <div class="faq__inner">
     <h2 class="faq__title" id={`${id}-heading`}>{title}</h2>
     <div class="faq__list">

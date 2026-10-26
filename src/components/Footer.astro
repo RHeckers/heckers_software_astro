@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import logo from "../assets/logos/logo.png";
-import { COMPANY } from "../consts";
+import { COMPANY, PROFILES } from "../consts";
 import { SERVICES } from "../lib/services";
 
 interface Props {
@@ -50,10 +50,9 @@ const year = new Date().getFullYear();
           </a>
         </li>
         <li>
-          <a href="/services/workshops#ai">
-            AI-native development workshop
-          </a>
+          <a href="/services/workshops#ai"> AI-native development workshop </a>
         </li>
+        <li><a href="/about">About Heckers Software</a></li>
       </ul>
     </div>
 
@@ -61,7 +60,8 @@ const year = new Date().getFullYear();
       <p class="footer__heading">Get in touch</p>
       <address class="footer__address">
         {COMPANY.street}<br />
-        {COMPANY.postalCode} {COMPANY.city}<br />
+        {COMPANY.postalCode}
+        {COMPANY.city}<br />
         {COMPANY.country}
       </address>
       <ul class="footer__contact-list">
@@ -71,6 +71,15 @@ const year = new Date().getFullYear();
         <li>
           <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
         </li>
+        {
+          PROFILES.linkedin && (
+            <li>
+              <a href={PROFILES.linkedin} rel="me">
+                LinkedIn
+              </a>
+            </li>
+          )
+        }
       </ul>
     </div>
 
@@ -98,11 +107,9 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
-  document
-    .getElementById("cookieSettings")
-    ?.addEventListener("click", () => {
-      (window as any).openCookieConsent?.();
-    });
+  document.getElementById("cookieSettings")?.addEventListener("click", () => {
+    (window as any).openCookieConsent?.();
+  });
 </script>
 
 <style>

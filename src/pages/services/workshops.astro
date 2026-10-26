@@ -20,6 +20,7 @@ import WorkshopCatalog from "../../components/services/WorkshopCatalog.astro";
 import ProcessSteps from "../../components/services/ProcessSteps.astro";
 import Tiers from "../../components/services/Tiers.astro";
 import Faq from "../../components/services/Faq.astro";
+import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
 import ProofRow from "../../components/ProofRow.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
@@ -253,37 +254,7 @@ const jsonLd = {
 
   <Faq
     title="Questions we hear before every workshop"
-    items={[
-      {
-        question: "Our developers are senior. Is this too basic for them?",
-        answer:
-          "The workshops are for teams that already ship Angular in production; that is the assumption behind every exercise. Senior teams get the most out of them, because the work happens on their own code and the discussion is about their own decisions, not about the basics.",
-      },
-      {
-        question: "On site or remote?",
-        answer:
-          "Both work. On site is better for the whole-team discussions, remote is easier to schedule across locations. For two-day workshops we prefer on site for at least one of the days.",
-      },
-      {
-        question: "How many people?",
-        answer: `As many as you have. Twelve seats are included in every tier; each extra seat is ${euro(price.extraSeatPerDay)} per workshop day, ${VAT_NOTE}. Above roughly fifteen people we split into parallel groups, so the exercises stay hands-on and each group can work on its own part of the codebase. Bringing a whole department onto the same rules is what the Advanced tier is for.`,
-      },
-      {
-        question: "Do we need to prepare anything?",
-        answer:
-          "Read access to the repository two weeks before, an intake call, and a room or a video link. We do the rest. Attendees should bring a laptop that can run the project.",
-      },
-      {
-        question: "Can we combine topics?",
-        answer:
-          "Yes, and most two-day workshops do. AI-Native Development and Building AI-Driven Front-End Systems are the most common pair; so are the Nx and Enterprise Angular Architecture workshops. We will say honestly what fits in the time.",
-      },
-      {
-        question: "Which language?",
-        answer:
-          "English or Dutch, whichever the team prefers. The material is in English.",
-      },
-    ]}
+    items={FAQS["workshops"]}
   />
 
   <Tiers

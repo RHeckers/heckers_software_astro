@@ -14,9 +14,8 @@ import ProofRow from "../components/ProofRow.astro";
 import FactBand from "../components/FactBand.astro";
 
 import ngPolandCode from "../assets/workshop/ng-poland-2024.6.jpg";
-import ngPolandHall from "../assets/workshop/ng-poland-2024.4.jpg";
-import ngPolandStage from "../assets/workshop/ng-poland-2024.7.jpg";
-import zurichWorkshop from "../assets/workshop/angular-zurich.png";
+import ngPolandAudience from "../assets/workshop/ng-poland-2024.7.jpg";
+import pointing from "../assets/pointing.jpg";
 
 /**
  * The page alternates two light grounds and two dark ones, and never puts
@@ -76,8 +75,9 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
       href: "/services/workshops",
       label: "How a workshop turns rules into code",
     }}
-    image={zurichWorkshop}
-    alt="Roberto Heckers running an Angular workshop for a development team in Zurich"
+    image={pointing}
+    imagePosition="center top"
+    alt="Roberto Heckers pointing at the headline"
     side="left"
     surface="raised"
     hideOnMobile
@@ -95,8 +95,8 @@ import zurichWorkshop from "../assets/workshop/angular-zurich.png";
       href: "/services/architecture-assessment",
       label: "Why an outside read finds what yours cannot",
     }}
-    image={ngPolandHall}
-    alt="A full auditorium at ngPoland during a Heckers Software talk on Angular architecture"
+    image={ngPolandAudience}
+    alt="Roberto Heckers on the ngPoland stage in front of a full auditorium"
     side="right"
     surface="alt"
   />

@@ -12,6 +12,9 @@ export async function GET(context) {
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
+      // The whole post, rendered, so readers and AI crawlers that only
+      // read the feed get the text and not just the teaser.
+      content: post.rendered?.html ?? "",
       link: `/blog/${post.id}/`,
       categories: post.data.categories,
     })),

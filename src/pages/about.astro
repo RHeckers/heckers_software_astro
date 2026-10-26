@@ -1,0 +1,1441 @@
+---
+/**
+ * The company page: what Heckers Software is for, the story of the person
+ * behind it, and why a company should want him inside its codebase. Built
+ * like the service pages: a dark hero with a diagram of the one thing the
+ * company does (a pilot becoming production) and the credentials in a
+ * strip under it, then the goal as three cards on light ground, then the
+ * story in the same dark stepped panel the service pages use for their
+ * process, with the facts panel pinned beside it. Surfaces alternate
+ * slowly on purpose: dark hero, light goal, light story with one dark
+ * panel inside, dark testimonials, contact. It reads as one argument,
+ * from a self-taught start through a book and the conference circuit to
+ * AI, and ends on what that buys a customer. The facts a reader, a search
+ * engine or an AI assistant might lift are stated plainly in the side
+ * panel and repeated in the structured data: organisation, person and
+ * book as one graph, with the same public profiles the footer and the
+ * blog link to.
+ */
+import PageLayout from "../layouts/PageLayout.astro";
+import Contact from "../components/Contact.astro";
+import ProofRow from "../components/ProofRow.astro";
+import logo from "../assets/logos/logo.png";
+import { AUTHOR, COMPANY, PROFILES, profileLinks } from "../consts";
+import { SERVICES } from "../lib/services";
+
+const title = `About ${COMPANY.name}: ${AUTHOR.name}, Angular, Nx and AI engineering from the Netherlands`;
+const description = `${COMPANY.name} brings software and AI into production inside companies. Founded by ${AUTHOR.name}, author of ${PROFILES.book.title} and speaker at ngPoland, Angular Zurich and The Dutch Angular Group, with a seat in AI knowledge groups alongside industry leaders.`;
+
+const siteUrl = Astro.site?.href ?? "https://heckerssoftware.com/";
+const orgId = `${siteUrl}#organization`;
+const personId = `${siteUrl}about#person`;
+const bookId = `${siteUrl}about#book`;
+const knowsAbout = [
+  "Angular",
+  "TypeScript",
+  "Nx monorepos",
+  "NgRx and Signal Store",
+  ".NET",
+  "Node.js",
+  "Microsoft Azure",
+  "Software architecture",
+  "AI integration and workflow automation",
+  "AI-native development with coding agents",
+  "Large language model applications",
+];
+
+interface Credential {
+  title: string;
+  detail: string;
+  href?: string;
+  links?: readonly { event: string; url: string }[];
+}
+
+const credentials: Credential[] = [
+  {
+    title: "A book",
+    detail: `${PROFILES.book.title}, ${PROFILES.book.publisher} ${PROFILES.book.year}: Angular at any size with Nx, RxJS and NgRx.`,
+    href: PROFILES.book.url,
+  },
+  {
+    title: "Conference stages",
+    detail: "Architecture, monorepos and AI-driven front ends, most recently at:",
+    links: PROFILES.talks,
+  },
+  {
+    title: "Enterprise solutions",
+    detail: "Energy, healthcare, industry and government, in codebases with hundreds of projects.",
+  },
+  {
+    title: "AI at the source",
+    detail: "Knowledge groups with industry leaders and the conferences where next year's tooling shows first.",
+  },
+];
+
+const chapters = [
+  {
+    title: "From the first line of AngularJS to Angular at scale",
+    when: "Where it started",
+    paragraphs: [
+      `${AUTHOR.name} started as a self-taught developer building AngularJS applications and spent the years that followed inside the systems large organisations actually run on: Angular and TypeScript on the front, .NET and Node.js behind it, SQL and Azure underneath. Energy, healthcare, industry and government, codebases with hundreds of projects and teams in several countries. That is where he learned what separates software that ships every two weeks for years from software that quietly stops.`,
+    ],
+    book: true,
+  },
+  {
+    title: "Then AI changed what one engineer can ship",
+    when: "Since coding agents",
+    paragraphs: [
+      "Delivering end to end used to take a team: a front-end developer, a back-end developer, someone for the data, someone for the pipeline, and a lead to keep them aligned. Most of the cost was the alignment. With coding agents doing the typing, one senior engineer who understands the whole stack now ships what that team shipped, and the coordination cost disappears because it is one head.",
+      `That is the engine behind ${COMPANY.name}. One expert, amplified by AI, accountable for an outcome in production, with more hands brought in under the same lead when the work needs them. It is also why we can price per outcome instead of per hour: we know what it takes.`,
+    ],
+  },
+  {
+    title: "Plugged into the people figuring AI out",
+    when: "Every week",
+    paragraphs: [
+      `AI moves faster than any one company can follow from the inside, so we make a point of not following it from the inside. ${AUTHOR.name} sits in several AI knowledge groups alongside industry leaders, where the people building with these models compare notes on what is working in production and what only works in a demo. He attends the conferences where the next year of tooling is shown first, and he runs the newest agents and models on real client-shaped code before recommending any of them.`,
+      "You get the benefit twice. The cutting edge arrives in your company already tested, and the experiments that did not pan out never reach your budget. When a model does not earn its place in your workflow, we say so, because we have usually already seen someone else try.",
+    ],
+  },
+];
+
+const benefits = [
+  {
+    title: "Depth where it counts.",
+    copy: "The person reading your codebase wrote the book on structuring it.",
+  },
+  {
+    title: "No learning on your time.",
+    copy: "AI tooling, agent workflows and model choices arrive proven, from groups and conferences you do not have to attend.",
+  },
+  {
+    title: "One accountable owner.",
+    copy: "Discovery, build, integration, deployment and handover, under one name, at a fixed price per outcome.",
+  },
+  {
+    title: "A team that keeps the pace.",
+    copy: "Everything we learn about your company goes into your repositories, and your developers are trained on their own code before we leave.",
+  },
+];
+
+/* The hero diagram: three pilots that never left the demo stage, and the
+   four stages that turn one of them into production. Stage i lights up at
+   slot i of the loop; the runner crosses the stages in the same slots. */
+const stages = ["Discover", "Build", "Integrate", "Ship"];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": orgId,
+      name: COMPANY.name,
+      url: siteUrl,
+      logo: new URL(logo.src, Astro.site).href,
+      email: COMPANY.email,
+      telephone: COMPANY.phone,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: COMPANY.street,
+        postalCode: COMPANY.postalCode,
+        addressLocality: COMPANY.city,
+        addressCountry: "NL",
+      },
+      vatID: COMPANY.btw,
+      identifier: { "@type": "PropertyValue", propertyID: "KVK", value: COMPANY.kvk },
+      founder: { "@id": personId },
+      areaServed: ["Netherlands", "Belgium", "Europe", "Worldwide"],
+      knowsAbout,
+      sameAs: profileLinks(),
+      makesOffer: SERVICES.map((service) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.name,
+          url: new URL(service.href, Astro.site).href,
+          description: service.summary,
+        },
+      })),
+    },
+    {
+      "@type": "Person",
+      "@id": personId,
+      name: AUTHOR.name,
+      url: AUTHOR.url,
+      jobTitle: AUTHOR.jobTitle,
+      description: AUTHOR.bio,
+      worksFor: { "@id": orgId },
+      email: COMPANY.email,
+      knowsAbout,
+      sameAs: profileLinks(),
+      author: { "@id": bookId },
+      performerIn: PROFILES.talks.map((talk) => ({
+        "@type": "Event",
+        name: talk.event,
+        url: talk.url,
+      })),
+    },
+    {
+      "@type": "Book",
+      "@id": bookId,
+      name: PROFILES.book.title,
+      alternateName: `${PROFILES.book.title}: ${PROFILES.book.subtitle}`,
+      author: { "@id": personId },
+      publisher: { "@type": "Organization", name: PROFILES.book.publisher },
+      datePublished: PROFILES.book.year,
+      isbn: PROFILES.book.isbn,
+      url: PROFILES.book.url,
+    },
+  ],
+};
+---
+
+<PageLayout title={title} description={description} jsonLd={jsonLd}>
+  <section class="hero" aria-labelledby="about-heading">
+    <div class="hero__inner">
+      <div class="hero__copy">
+        <p class="hero__eyebrow">About {COMPANY.name}</p>
+        <h1 class="hero__title" id="about-heading">
+          We exist to get software and AI out of the pilot and into production.
+        </h1>
+        <p class="hero__lead">
+          Most companies do not lack ideas, budgets or talent. They lack
+          someone who will own an outcome until it is live and the people
+          inside can run it. {COMPANY.name} is built to be that someone: an
+          industry expert who comes in, finds the highest-impact work, builds
+          it end to end, ships it, and leaves the know-how in your
+          repositories.
+        </p>
+        <div class="hero__actions">
+          <a href="#contactForm" class="btn btn--primary" data-subject="Development">
+            Talk to us
+          </a>
+          <a href={SERVICES[0].href} class="btn btn--ghost">
+            How an engagement runs
+          </a>
+        </div>
+      </div>
+
+      <figure class="hero__art">
+        <svg
+          class="art"
+          viewBox="0 0 470 280"
+          role="img"
+          aria-label="Three pilots that stayed demos, and one that is taken through discovery, build and integration into production."
+        >
+          <g class="ghosts">
+            <rect class="ghost" x="24" y="22" width="120" height="28" rx="7" />
+            <text class="ghost-label" x="84" y="40">Demo, 2024</text>
+            <rect class="ghost" x="44" y="60" width="120" height="28" rx="7" />
+            <text class="ghost-label" x="104" y="78">Pilot, 2025</text>
+            <rect class="pick" x="64" y="98" width="120" height="28" rx="7" />
+            <text class="pick-label" x="124" y="116">Proof of concept</text>
+          </g>
+
+          <path class="lead" pathLength="1" d="M 124 126 C 124 160, 40 150, 40 190" />
+
+          <g class="stages">
+            {
+              stages.map((stage, i) => (
+                <g class={`stage stage--${i}`}>
+                  <rect x={16 + i * 108} y="190" width="94" height="30" rx="8" />
+                  <text x={63 + i * 108} y="209">{stage}</text>
+                </g>
+              ))
+            }
+            {
+              [0, 1, 2].map((i) => (
+                <path
+                  class={`link link--${i}`}
+                  pathLength="1"
+                  d={`M ${110 + i * 108} 205 H ${124 + i * 108}`}
+                />
+              ))
+            }
+          </g>
+
+          <g class="prod">
+            <path class="link link--3" pathLength="1" d="M 434 205 H 450" />
+            <circle class="live" cx="458" cy="205" r="4.5" />
+          </g>
+
+          <circle class="runner" r="5" />
+
+          <g class="status">
+            <rect x="278" y="236" width="176" height="28" rx="14" />
+            <circle class="status__dot" cx="296" cy="250" r="4" />
+            <text x="310" y="254" text-anchor="start">In production, owned</text>
+          </g>
+        </svg>
+        <figcaption>
+          Most pilots stay a demo. One owner takes the right one through
+          discovery, build and integration into production.
+        </figcaption>
+      </figure>
+    </div>
+
+    <ul class="creds" aria-label="Credentials">
+      {
+        credentials.map((item) => (
+          <li class="cred">
+            <h2 class="cred__title">{item.title}</h2>
+            <p class="cred__detail">
+              {item.href ? <a href={item.href}>{item.detail}</a> : item.detail}
+              {item.links && (
+                <span class="cred__links">
+                  {item.links.map((talk) => (
+                    <a href={talk.url}>{talk.event}</a>
+                  ))}
+                </span>
+              )}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="goal" aria-labelledby="goal-heading">
+    <div class="goal__inner">
+      <header class="goal__head">
+        <p class="goal__eyebrow">Our goal</p>
+        <h2 class="goal__title" id="goal-heading">
+          Every company we work with should be able to say three things.
+        </h2>
+      </header>
+      <ol class="goal__list">
+        <li>
+          <span class="goal__index">01</span>
+          <strong>The software and AI we needed is live.</strong>
+          <span>
+            Not demoed. In production, integrated with the ERP, the identity
+            provider and the data, with people using it on a Monday morning.
+          </span>
+        </li>
+        <li>
+          <span class="goal__index">02</span>
+          <strong>Our own developers can run it.</strong>
+          <span>
+            Every decision is written down, every rule is enforced in the
+            build, and the agent instructions that made us fast are in your
+            repository, not in our heads.
+          </span>
+        </li>
+        <li>
+          <span class="goal__index">03</span>
+          <strong>We know what to build next.</strong>
+          <span>
+            A ranked list of the next outcomes, with what each is worth, so
+            the next quarter starts with a decision instead of a workshop.
+          </span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="story" aria-labelledby="story-heading">
+    <div class="story__inner">
+      <div class="story__main">
+        <header class="story__head">
+          <p class="story__eyebrow">The person behind it</p>
+          <h2 class="story__title" id="story-heading">
+            A career of enterprise code, one book, and a front-row seat on AI.
+          </h2>
+        </header>
+
+        <aside class="plan" aria-label="Step by step">
+          <ol class="phases">
+            {
+              chapters.map((chapter, index) => (
+                <li class="phase" style={`--i: ${index}`}>
+                  <span class="phase__marker" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <div class="phase__body">
+                    <div class="phase__row">
+                      <h3 class="phase__title">{chapter.title}</h3>
+                      <span class="phase__when">{chapter.when}</span>
+                    </div>
+                    {chapter.paragraphs.map((paragraph) => (
+                      <p class="phase__copy">{paragraph}</p>
+                    ))}
+                    {chapter.book && (
+                      <p class="phase__copy">
+                        He wrote those lessons down.{" "}
+                        <a href={PROFILES.book.url}>
+                          <em>{PROFILES.book.title}</em>
+                        </a>{" "}
+                        ({PROFILES.book.publisher}, {PROFILES.book.year}) is a
+                        full book on building Angular applications of any size
+                        with Nx, RxJS and NgRx, and it is the reason teams
+                        across Europe know the name before he walks in. He
+                        takes the same material on stage:{" "}
+                        <a href={PROFILES.talks[0].url}>ngPoland</a>,{" "}
+                        <a href={PROFILES.talks[1].url}>Angular Zurich</a> and{" "}
+                        <a href={PROFILES.talks[2].url}>The Dutch Angular Group</a>{" "}
+                        have had him talk about architecture, monorepos and the
+                        way AI is changing how front ends are built.
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </aside>
+
+        <h3 class="story__sub">What that means for you</h3>
+        <ul class="benefits">
+          {
+            benefits.map((item) => (
+              <li class="benefit">
+                <strong>{item.title}</strong>
+                <span>{item.copy}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h3 class="story__sub">Three ways in</h3>
+        <ul class="ways">
+          {
+            SERVICES.map((service) => (
+              <li class="way">
+                <a href={service.href}>{service.name}</a>
+                <span>{service.summary}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <aside class="facts" aria-label="Facts">
+        <dl>
+          <div>
+            <dt>Company</dt>
+            <dd>{COMPANY.name}</dd>
+          </div>
+          <div>
+            <dt>Founder</dt>
+            <dd>{AUTHOR.name}</dd>
+          </div>
+          <div>
+            <dt>Based in</dt>
+            <dd>{COMPANY.city}, {COMPANY.country}</dd>
+          </div>
+          <div>
+            <dt>Works</dt>
+            <dd>On site across the Netherlands and Belgium, remote globally</dd>
+          </div>
+          <div>
+            <dt>Languages</dt>
+            <dd>Dutch, English</dd>
+          </div>
+          <div>
+            <dt>Stack</dt>
+            <dd>
+              Angular, TypeScript, Nx, .NET, Node.js, SQL, Azure, Claude and
+              OpenAI APIs
+            </dd>
+          </div>
+          <div>
+            <dt>Book</dt>
+            <dd>
+              <a href={PROFILES.book.url}>{PROFILES.book.title}</a> ({
+                PROFILES.book.publisher
+              }, {PROFILES.book.year})
+            </dd>
+          </div>
+          <div>
+            <dt>Talks</dt>
+            <dd class="facts__talks">
+              {
+                PROFILES.talks.map((talk) => (
+                  <a href={talk.url}>{talk.event}</a>
+                ))
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>AI</dt>
+            <dd>
+              Member of AI knowledge groups with industry leaders; regular at
+              AI and Angular conferences
+            </dd>
+          </div>
+          <div>
+            <dt>Clients include</dt>
+            <dd>Vattenfall, Marel, Wit-Gele Kruis West-Vlaanderen</dd>
+          </div>
+          {
+            PROFILES.linkedin && (
+              <div>
+                <dt>Profile</dt>
+                <dd>
+                  <a href={PROFILES.linkedin} rel="me">
+                    LinkedIn
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>Registration</dt>
+            <dd>KVK {COMPANY.kvk}</dd>
+          </div>
+          <div>
+            <dt>Contact</dt>
+            <dd>
+              <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a><br />
+              <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a>
+            </dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <ProofRow snippets={["ferdiFullStack", "peterMentoring", "nicoTeam"]} />
+
+  <Contact />
+</PageLayout>
+
+<style>
+  /* --- Hero: dark, copy, the diagram, and the credentials strip --- */
+
+  .hero {
+    background: linear-gradient(
+      to bottom,
+      var(--color-dark) 0%,
+      var(--color-dark-alt) 100%
+    );
+    color: var(--color-ink-light);
+    padding: clamp(7rem, 14vw, 10rem) clamp(1.25rem, 6vw, 5rem)
+      clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .hero__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+    align-items: center;
+  }
+
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .hero__eyebrow,
+  .goal__eyebrow,
+  .story__eyebrow {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .hero__title {
+    font-size: clamp(2.4rem, 5.5vw, 4.25rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    color: var(--color-light-raised);
+    max-width: 16ch;
+  }
+
+  .hero__lead {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: rgba(232, 237, 246, 0.78);
+    max-width: 56ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85em 1.8em;
+    font-family: chillax, sans-serif;
+    font-size: var(--font-md);
+    font-weight: var(--font-weight-bold);
+    border-radius: 999px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .btn--primary {
+    background: var(--color-accent);
+    color: var(--color-light-raised);
+  }
+
+  .btn--primary:hover,
+  .btn--primary:focus-visible {
+    background: var(--color-accent-strong);
+  }
+
+  .btn--ghost {
+    color: var(--color-ink-light);
+    border-color: rgba(232, 237, 246, 0.35);
+  }
+
+  .btn--ghost:hover,
+  .btn--ghost:focus-visible {
+    border-color: var(--color-light-raised);
+    color: var(--color-light-raised);
+  }
+
+  /* --- The diagram --- */
+
+  .hero__art {
+    width: 100%;
+    max-width: 34rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .art {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    font-family: chillax, sans-serif;
+    --loop: 10s;
+  }
+
+  .art text {
+    font-size: 12.5px;
+    font-weight: 500;
+    text-anchor: middle;
+    fill: rgba(232, 237, 246, 0.8);
+  }
+
+  .hero__art figcaption {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.55);
+    max-width: 40ch;
+  }
+
+  .ghost {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.35);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+  }
+
+  .ghost-label {
+    fill: rgba(232, 237, 246, 0.45);
+  }
+
+  .pick {
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.6);
+    stroke-width: 1.5;
+  }
+
+  .lead,
+  .link {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.42);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .stage rect {
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.6);
+    stroke-width: 1.5;
+  }
+
+  .live,
+  .status__dot {
+    fill: var(--color-success);
+  }
+
+  .status rect {
+    fill: rgba(232, 237, 246, 0.05);
+    stroke: rgba(232, 237, 246, 0.14);
+    stroke-width: 1;
+  }
+
+  .status text {
+    fill: var(--color-ink-light);
+    font-size: 12px;
+    /* The shared rule centres every label; this one starts at the dot. */
+    text-anchor: start;
+  }
+
+  .runner {
+    fill: var(--color-accent);
+    opacity: 0;
+    offset-path: path("M 124 126 C 124 160, 40 150, 40 190 L 63 205 H 452");
+  }
+
+  /*
+    One loop: the picked pilot lights up, the lead edge draws, then each
+    stage turns accent as the runner reaches it, the link after it draws,
+    and the whole thing resets for the next pilot. Stage i owns the slot
+    from 25% + i * 12% to 37% + i * 12%.
+  */
+  .pick {
+    animation: art-pick var(--loop) ease-in-out infinite;
+  }
+
+  .lead {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: art-lead var(--loop) cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  }
+
+  .stage rect,
+  .stage text {
+    animation-duration: var(--loop);
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  .link {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation-duration: var(--loop);
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation-iteration-count: infinite;
+  }
+
+  .stage--0 rect {
+    animation-name: art-stage-0;
+  }
+
+  .stage--0 text {
+    animation-name: art-label-0;
+  }
+
+  .link--0 {
+    animation-name: art-link-0;
+  }
+
+  .stage--1 rect {
+    animation-name: art-stage-1;
+  }
+
+  .stage--1 text {
+    animation-name: art-label-1;
+  }
+
+  .link--1 {
+    animation-name: art-link-1;
+  }
+
+  .stage--2 rect {
+    animation-name: art-stage-2;
+  }
+
+  .stage--2 text {
+    animation-name: art-label-2;
+  }
+
+  .link--2 {
+    animation-name: art-link-2;
+  }
+
+  .stage--3 rect {
+    animation-name: art-stage-3;
+  }
+
+  .stage--3 text {
+    animation-name: art-label-3;
+  }
+
+  .link--3 {
+    animation-name: art-link-3;
+  }
+
+  .runner {
+    animation: art-runner var(--loop) linear infinite;
+  }
+
+  .live {
+    animation: art-live var(--loop) ease-in-out infinite;
+  }
+
+  .status {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: art-status var(--loop) cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  }
+
+  .status__dot {
+    animation: art-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes art-pick {
+    0%, 6% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    12%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+  }
+
+  @keyframes art-lead {
+    0%, 12% { stroke-dashoffset: 1; }
+    22%, 90% { stroke-dashoffset: 0; }
+    96%, 100% { stroke-dashoffset: 1; }
+  }
+
+  @keyframes art-stage-0 {
+    0%, 31% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    37%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+  }
+
+  @keyframes art-label-0 {
+    0%, 31% { fill: rgba(232, 237, 246, 0.8); }
+    37%, 88% { fill: #ffffff; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+  }
+
+  @keyframes art-link-0 {
+    0%, 37% { stroke-dashoffset: 1; }
+    43%, 88% { stroke-dashoffset: 0; }
+    96%, 100% { stroke-dashoffset: 1; }
+  }
+
+  @keyframes art-stage-1 {
+    0%, 43% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    49%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+  }
+
+  @keyframes art-label-1 {
+    0%, 43% { fill: rgba(232, 237, 246, 0.8); }
+    49%, 88% { fill: #ffffff; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+  }
+
+  @keyframes art-link-1 {
+    0%, 49% { stroke-dashoffset: 1; }
+    55%, 88% { stroke-dashoffset: 0; }
+    96%, 100% { stroke-dashoffset: 1; }
+  }
+
+  @keyframes art-stage-2 {
+    0%, 55% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    61%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+  }
+
+  @keyframes art-label-2 {
+    0%, 55% { fill: rgba(232, 237, 246, 0.8); }
+    61%, 88% { fill: #ffffff; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+  }
+
+  @keyframes art-link-2 {
+    0%, 61% { stroke-dashoffset: 1; }
+    67%, 88% { stroke-dashoffset: 0; }
+    96%, 100% { stroke-dashoffset: 1; }
+  }
+
+  @keyframes art-stage-3 {
+    0%, 67% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+    73%, 88% { fill: rgba(47, 125, 209, 0.28); stroke: #2f7dd1; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.6); }
+  }
+
+  @keyframes art-label-3 {
+    0%, 67% { fill: rgba(232, 237, 246, 0.8); }
+    73%, 88% { fill: #ffffff; }
+    96%, 100% { fill: rgba(232, 237, 246, 0.8); }
+  }
+
+  @keyframes art-link-3 {
+    0%, 73% { stroke-dashoffset: 1; }
+    79%, 88% { stroke-dashoffset: 0; }
+    96%, 100% { stroke-dashoffset: 1; }
+  }
+
+  /* The runner reaches each stage just as that stage switches on. */
+  @keyframes art-runner {
+    0%, 12% { offset-distance: 0%; opacity: 0; }
+    14% { opacity: 1; }
+    25% { offset-distance: 20%; }
+    34% { offset-distance: 26%; }
+    46% { offset-distance: 47%; }
+    58% { offset-distance: 67%; }
+    70% { offset-distance: 88%; }
+    76% { offset-distance: 100%; opacity: 1; }
+    79%, 100% { offset-distance: 100%; opacity: 0; }
+  }
+
+  @keyframes art-live {
+    0%, 75% { opacity: 0.25; }
+    79%, 90% { opacity: 1; }
+    96%, 100% { opacity: 0.25; }
+  }
+
+  @keyframes art-status {
+    0%, 76% { opacity: 0; transform: scale(0.9); }
+    82%, 90% { opacity: 1; transform: scale(1); }
+    96%, 100% { opacity: 0; transform: scale(0.9); }
+  }
+
+  @keyframes art-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* --- Credentials strip, on the hero's own ground --- */
+
+  .creds {
+    max-width: 1200px;
+    margin: clamp(3rem, 6vw, 4.5rem) auto 0;
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid rgba(232, 237, 246, 0.14);
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+  }
+
+  .cred {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .cred__title {
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--color-light-raised);
+  }
+
+  .cred__detail {
+    font-family: synonym, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.72);
+    max-width: 30ch;
+  }
+
+  .cred__detail a {
+    color: inherit;
+    text-decoration-color: var(--color-accent);
+  }
+
+  .cred__detail a:hover {
+    color: var(--color-light-raised);
+  }
+
+  .cred__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin-top: 0.35rem;
+  }
+
+  .cred__links a {
+    color: var(--color-light-raised);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* --- Goal: three cards on light ground --- */
+
+  .goal {
+    background: var(--color-light);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .goal__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .goal__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .goal__eyebrow {
+    color: var(--color-accent-ink);
+  }
+
+  .goal__title {
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 22ch;
+  }
+
+  .goal__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-lg);
+  }
+
+  .goal__list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: clamp(1.5rem, 3vw, 2rem);
+    border: 1px solid var(--color-stroke);
+    border-radius: 18px;
+    background: var(--color-light-raised);
+  }
+
+  .goal__index {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    letter-spacing: 0.12em;
+    color: var(--color-accent-ink);
+  }
+
+  .goal__list strong {
+    font-family: chillax, sans-serif;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+  }
+
+  .goal__list span:not(.goal__index) {
+    font-family: synonym, sans-serif;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  /* --- Story: the stepped panel, benefits, ways in, and the facts --- */
+
+  .story {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .story__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+    align-items: start;
+  }
+
+  .story__main {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+    max-width: 68ch;
+  }
+
+  .story__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .story__eyebrow {
+    color: var(--color-accent-ink);
+  }
+
+  .story__title {
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  /* --- Stepped panel, as on the service pages --- */
+
+  .plan {
+    background: var(--background-gradient-primary);
+    color: var(--color-ink-light);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    view-timeline-name: --plan-reveal;
+  }
+
+  .phases {
+    list-style: none;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+    --marker: 2rem;
+  }
+
+  .phase {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--marker) 1fr;
+    gap: var(--spacer-md);
+    align-items: start;
+  }
+
+  .phase:not(:last-child)::before,
+  .phase:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--marker) / 2 - 1px);
+    top: calc(var(--marker) / 2);
+    bottom: calc(-1 * var(--spacer-lg) - var(--marker) / 2);
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  .phase:not(:last-child)::before {
+    background: rgba(232, 237, 246, 0.14);
+  }
+
+  .phase:not(:last-child)::after {
+    background: var(--color-accent);
+    transform-origin: top;
+    transform: scaleY(1);
+  }
+
+  .phase__marker {
+    width: var(--marker);
+    height: var(--marker);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-light-raised);
+    background: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-dark-strong);
+    position: relative;
+    z-index: 1;
+  }
+
+  .phase__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-top: 0.2rem;
+  }
+
+  .phase__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+  }
+
+  .phase__title {
+    font-size: 1.15rem;
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.25;
+  }
+
+  .phase__when {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .phase__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.55;
+    color: rgba(232, 237, 246, 0.78);
+    max-width: 60ch;
+  }
+
+  .phase__copy a {
+    color: var(--color-light-raised);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-underline-offset: 3px;
+  }
+
+  @supports (animation-timeline: view()) {
+    .phase:not(:last-child)::after {
+      transform: scaleY(0);
+      animation: plan-rail linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(35% + var(--i) * 12%) entry
+        calc(60% + var(--i) * 12%);
+    }
+
+    .phase {
+      opacity: 0.35;
+      animation: plan-phase linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(20% + var(--i) * 12%) entry
+        calc(45% + var(--i) * 12%);
+    }
+
+    .phase__marker {
+      background: var(--color-dark-soft);
+      animation: plan-marker linear both;
+      animation-timeline: --plan-reveal;
+      animation-range: entry calc(20% + var(--i) * 12%) entry
+        calc(45% + var(--i) * 12%);
+    }
+
+    @media (min-width: 960px) {
+      .phase,
+      .phase__marker {
+        animation-range: cover calc(14% + var(--i) * 9%) cover
+          calc(26% + var(--i) * 9%);
+      }
+
+      .phase:not(:last-child)::after {
+        animation-range: cover calc(20% + var(--i) * 9%) cover
+          calc(34% + var(--i) * 9%);
+      }
+    }
+  }
+
+  @keyframes plan-rail {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes plan-phase {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes plan-marker {
+    to {
+      background: var(--color-accent);
+    }
+  }
+
+  .story__sub {
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+    margin-bottom: -1rem;
+  }
+
+  .benefits {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-md);
+  }
+
+  .benefit {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: 14px;
+    background: rgba(47, 125, 209, 0.08);
+    border: 1px solid rgba(47, 125, 209, 0.25);
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+  }
+
+  .benefit strong {
+    font-family: chillax, sans-serif;
+    font-weight: var(--font-weight-medium);
+    font-size: 1.1rem;
+  }
+
+  .benefit span {
+    font-size: 0.95rem;
+  }
+
+  .ways {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-md);
+  }
+
+  .way {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-stroke);
+    border-radius: 14px;
+    background: var(--color-light-raised);
+    font-family: synonym, sans-serif;
+  }
+
+  .way a {
+    font-family: chillax, sans-serif;
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-link);
+  }
+
+  .way span {
+    color: var(--color-ink-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .facts {
+    background: var(--color-light-raised);
+    border: 1px solid var(--color-stroke);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.08);
+  }
+
+  .facts dl {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .facts dl > div {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .facts dl > div:last-child {
+    border-bottom: 0;
+  }
+
+  .facts dt {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink-muted);
+  }
+
+  .facts dd {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+  }
+
+  .facts a {
+    color: var(--color-link);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .facts__talks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+  }
+
+  @media (min-width: 720px) {
+    .creds {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .benefits {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+
+    .hero__art {
+      justify-self: end;
+    }
+
+    .creds {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .goal__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .story__inner {
+      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 1fr);
+    }
+
+    .facts {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pick,
+    .lead,
+    .stage rect,
+    .stage text,
+    .link,
+    .runner,
+    .live,
+    .status,
+    .status__dot,
+    .phase,
+    .phase__marker,
+    .phase:not(:last-child)::after {
+      animation: none;
+    }
+
+    .pick,
+    .stage rect {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+
+    .lead,
+    .link {
+      stroke-dashoffset: 0;
+    }
+
+    .status {
+      opacity: 1;
+      transform: none;
+    }
+
+    .runner {
+      display: none;
+    }
+
+    .phase {
+      opacity: 1;
+    }
+
+    .phase:not(:last-child)::after {
+      transform: scaleY(1);
+    }
+
+    .phase__marker {
+      background: var(--color-accent);
+    }
+  }
+</style>

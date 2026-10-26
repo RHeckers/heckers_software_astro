@@ -27,8 +27,7 @@ import code_img from "../assets/code_img.svg";
       <p class="reveal-lede">
         An industry expert who comes into your company and owns an outcome
         from the first conversation to production. With AI doing the typing,
-        one senior engineer now ships what a whole team did before. Not a
-        hire, not a report: someone who finishes.
+        one senior engineer ships what a team did before. Someone who finishes.
       </p>
 
       <div class="bento-grid">
@@ -39,8 +38,8 @@ import code_img from "../assets/code_img.svg";
           </div>
           <p class="card-desc">
             We sit with the people who do the work, read the systems and the
-            code, and find where software and AI would save the most time or
-            money. Two weeks, ending in a ranked list and a scoped plan.
+            code, and find where software and AI save the most. Two weeks,
+            ending in a ranked list and a scoped plan.
           </p>
         </div>
 
@@ -51,8 +50,8 @@ import code_img from "../assets/code_img.svg";
           </div>
           <p class="card-desc">
             Front end, back end, data and integrations, built in your
-            repositories to your standards. Working software you can click
-            through every two weeks, from the first sprint.
+            repositories to your standards. Working software to click through
+            every two weeks, from the first sprint.
           </p>
         </div>
 
@@ -62,9 +61,9 @@ import code_img from "../assets/code_img.svg";
             <h3 class="card-title">AI integration</h3>
           </div>
           <p class="card-desc">
-            Where a model earns its place, we wire it into the workflow:
-            document handling, classification, agents on your own data, with
-            evaluation and guardrails. Where it does not, we say so.
+            Where a model earns its place, we wire it into the workflow with
+            evaluation and guardrails: documents, classification, agents on
+            your own data. Where it does not, we say so.
           </p>
         </div>
 
@@ -76,7 +75,7 @@ import code_img from "../assets/code_img.svg";
           <p class="card-desc">
             Pipelines, infrastructure and monitoring in your own cloud account.
             Go-live, documentation and a working session with your developers.
-            Then we stay, or we leave: either way, you own everything.
+            Either way, you own everything.
           </p>
         </div>
       </div>
@@ -422,35 +421,68 @@ import code_img from "../assets/code_img.svg";
 
   /* ─── Desktop ─── */
   @media (min-width: 641px) {
+    /* The same frame as the two story cards it stacks onto: same gutter,
+       same pinned top, and the same fixed height, so the three cards fit
+       the viewport the same way. The content is sized to fit inside it. */
     .content-reveal {
       max-width: 1200px;
+      height: 100%;
       padding: var(--spacer-lg) var(--spacer-xl);
-      min-height: calc(100svh - 6rem);
       justify-content: center;
     }
 
-    /* Same gutter and pinned top as the story cards this one stacks onto. */
     .code-reveal-section.code-reveal--sticky {
       margin: 0 var(--spacer-2xl);
       top: 60px;
+      height: calc(100svh - 120px);
     }
 
     .reveal-title {
-      font-size: clamp(2.25rem, 4vw, 3.5rem);
-      margin-bottom: var(--spacer-md);
+      font-size: clamp(2rem, 3.2vw, 3rem);
+      margin-bottom: var(--spacer-base);
     }
 
     .reveal-lede {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       max-width: 64ch;
-      margin-bottom: var(--spacer-xl);
+      margin-bottom: var(--spacer-lg);
     }
+
+    .bento-card {
+      padding: var(--spacer-md) var(--spacer-lg);
+    }
+
+    .cta-button {
+      margin-top: var(--spacer-lg);
+      padding: 0.75rem var(--spacer-lg);
+      font-size: var(--font-lg);
+    }
+
+    .details-link {
+      margin-top: var(--spacer-base);
+    }
+  }
+
+  /* Short viewports: drop the lede so the cards and the button still fit. */
+  @media (min-width: 641px) and (max-height: 760px) {
+    .reveal-lede {
+      display: none;
+    }
+
+    .card-desc {
+      font-size: var(--font-xs);
+    }
+  }
+
+  @media (min-width: 641px) {
 
     /* Bento grid — 3 columns, 2 rows */
     .bento-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1.3fr;
-      grid-template-rows: 1fr 1fr;
+      /* Rows take the height of their content, so the tiles in the second
+         row do not stretch to match the first. */
+      grid-template-rows: auto auto;
       gap: 1rem;
     }
 

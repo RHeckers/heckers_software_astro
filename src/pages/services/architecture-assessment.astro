@@ -24,6 +24,7 @@ import Insights from "../../components/services/Insights.astro";
 import ProcessSteps from "../../components/services/ProcessSteps.astro";
 import Tiers from "../../components/services/Tiers.astro";
 import Faq from "../../components/services/Faq.astro";
+import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
 import ProofRow from "../../components/ProofRow.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
@@ -317,38 +318,7 @@ const jsonLd = {
 
   <Faq
     title="Questions we hear before every assessment"
-    items={[
-      {
-        question: "We already have senior developers. Why an outside look?",
-        answer:
-          "Because they built it, and nobody can proofread their own writing. Your seniors know the history behind every decision, which is exactly what makes the decision invisible. An outside reader has no history, only the code and the cost. The best assessments we have done were for teams with strong seniors: the report gave them the mandate to fix what they already suspected.",
-      },
-      {
-        question: "Will this disrupt the team?",
-        answer:
-          "We need read access to the repository, a kickoff session, and about an hour per interviewed person. In total, three to five hours of your team's time across the whole assessment, plus the roadmap session at the end. No feature freeze, no branch we block.",
-      },
-      {
-        question:
-          "Our codebase is not on Nx, or runs an older Angular version.",
-        answer:
-          "That is common and not a problem. We assess plain Angular workspaces as often as Nx ones, and older versions usually make the upgrade path one of the most valuable parts of the report.",
-      },
-      {
-        question: "Is this a way to sell us the execution tier?",
-        answer:
-          "No. The roadmap is written so your own team can run it, and most teams do. The Advanced tier, where we execute the top findings ourselves, exists for teams who have no capacity to do it themselves, not as the intended next step.",
-      },
-      {
-        question: "What about confidentiality?",
-        answer:
-          "We sign your NDA before we see a line of code. Access is revoked at the end, and the report is yours alone.",
-      },
-      {
-        question: "What does it cost?",
-        answer: `The Minimum assessment is ${euro(price.minimum)} and the Standard assessment is ${euro(price.standard)}, both ${VAT_NOTE} and fixed for workspaces up to roughly fifty projects. Larger workspaces get a fixed quote after a thirty-minute call. Either way you know the number before we start, and it does not change during the assessment. Execution in the Advanced tier is quoted after the roadmap, when the size of the work is known.`,
-      },
-    ]}
+    items={FAQS["architecture-assessment"]}
   />
 
   <Tiers
