@@ -31,7 +31,7 @@ export const WORKSHOPS: readonly Workshop[] = [
     title: "AI-Native Development: From Autocomplete to Automation",
     tag: "AI • Delivery",
     description:
-      "For development teams that use AI for code suggestions and the occasional question, and want to go much further: agents that pick up a ticket, write the code and the tests, and open a pull request for a person to review. One day on your own codebase, taught the way we work in our own engagements.",
+      "Agents that pick up a ticket, write the code and the tests, and open a pull request for a person to review. We show how to set up the agents, how to keep quality up, and how to automate the chain from ticket to pull request.",
     bullets: [
       "Where your team stands today and what is realistic next: from suggestions in the editor to agents that finish whole tasks while a person checks the result",
       "Setting up coding agents such as Claude Code or Copilot so they know your codebase: the project structure, your conventions, and how to build and test",
@@ -48,7 +48,7 @@ export const WORKSHOPS: readonly Workshop[] = [
     title: "Building AI-Driven Front-End Systems",
     tag: "AI • Angular",
     description:
-      "For teams asked to put AI into their Angular application and finding out that the chat box is the easy part. You build three things: a dashboard that answers questions about your data, a chat that replies with real components instead of text, and a single message that runs a multi-step task.",
+      "You build three things: a dashboard that answers questions about your data, a chat that replies with real components instead of text, and a single message that runs a multi-step task.",
     bullets: [
       "AI-driven dashboards: a user asks a question in plain language and gets the right chart, table or filter, built from your own data",
       "Chats that answer with components: the model picks a table, a chart, a form or an approve button from your own component library and the application renders it",
@@ -65,7 +65,7 @@ export const WORKSHOPS: readonly Workshop[] = [
     title: "Nx Monorepos That Work for You",
     tag: "Platform • Nx",
     description:
-      "For teams on Nx, or moving to it, whose workspace has grown faster than its rules: apps that import each other freely, a folder structure nobody can explain to a new hire, and CI that gets slower every month. A deep dive into the architecture of a monorepo that stays healthy, shares more code, ships faster and lets fewer bugs reach production.",
+      "A deep dive into the architecture of a monorepo that stays healthy, shares more code, ships faster and lets fewer bugs reach production.",
     bullets: [
       "Workspace architecture: how to split apps and libraries by domain and type, and a folder structure a new developer understands on day one",
       "Module boundaries the build enforces: tags and lint rules that stop the wrong imports before they are merged",
