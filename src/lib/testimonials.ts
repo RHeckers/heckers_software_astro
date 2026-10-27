@@ -14,6 +14,7 @@
  * before relying on it in print.
  */
 import type { ImageMetadata } from "astro";
+import alex from "../assets/testimonials/alex.jpg";
 import ferdi from "../assets/testimonials/ferdi.jpg";
 import marc from "../assets/testimonials/marc.jpg";
 import nico from "../assets/testimonials/nico.jpg";
@@ -21,7 +22,7 @@ import peter from "../assets/testimonials/peter.jpg";
 import marelLogo from "../assets/logos/marel_logo.svg";
 import vattenfallLogo from "../assets/logos/vattenfall_logo.svg";
 
-export type TestimonialId = "ferdi" | "nico" | "marc" | "peter";
+export type TestimonialId = "ferdi" | "nico" | "marc" | "peter" | "alex";
 
 export interface Testimonial {
   id: TestimonialId;
@@ -63,6 +64,16 @@ export const TESTIMONIALS: readonly Testimonial[] = [
     image: marc,
     content:
       "Roberto really was a great addition to his team for several years at Marel and has developed a big front-end angular data visualisation framework for us, going from the earliest versions of Angular to the most recent versions and he was able to tackle all challenges that you can encounter in a technology that is continuously improving.",
+  },
+  {
+    id: "alex",
+    name: "Alex Wesselink",
+    title: "UX Designer",
+    company: "Vattenfall",
+    logo: vattenfallLogo,
+    image: alex,
+    content:
+      "Working alongside Roberto at Vattenfall has been a great experience. As a UX designer, I was consistently impressed by his ability to not just code, but to actively think along and enhance our user experiences. His quick development skills with Angular, combined with his thoughtful input during product discussions, made our collaboration efficient and productive. What sets Roberto apart is his proactive approach: he doesn't just build what's asked, but actively contributes to improving our product flows. He's been a reliable and valuable development partner who consistently delivers quality work.",
   },
   {
     id: "peter",
@@ -152,6 +163,24 @@ export const SNIPPETS = {
     author: "peter",
     quote:
       "Roberto does not shy away from technical challenges and keeps working on them until they are solved.",
+  },
+  /** Builds more than the ticket asks for. */
+  alexProactive: {
+    author: "alex",
+    quote:
+      "What sets Roberto apart is his proactive approach: he doesn't just build what's asked, but actively contributes to improving our product flows. A reliable and valuable development partner who consistently delivers quality work.",
+  },
+  /** Thinks along with design, not just code; from a designer. */
+  alexThinkAlong: {
+    author: "alex",
+    quote:
+      "As a UX designer, I was consistently impressed by Roberto's ability to not just code, but to actively think along and enhance our user experiences.",
+  },
+  /** Speed plus judgement in product discussions. */
+  alexCollaboration: {
+    author: "alex",
+    quote:
+      "Roberto's quick development skills with Angular, combined with his thoughtful input during product discussions, made our collaboration efficient and productive.",
   },
   /** Leaves the team stronger, not just the code. */
   peterMentoring: {
