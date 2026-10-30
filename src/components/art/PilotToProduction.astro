@@ -1,20 +1,22 @@
 ---
 /**
  * The one thing the company does, as a route map: a main line along the
- * bottom (Discover, Develop, Validate, Deploy) with the milestones that
- * branch up off it and come back down. Discovery climbs into a proof of
- * concept and returns for development; development climbs into
- * integrations and then AI integration and returns for validation;
- * validation climbs into a demo and then a pilot, and the last drop,
- * from the pilot down to deployment, is where most initiatives stall.
- * The main-line stops are solid pills; the branch stops are dashed and
- * dim until the route reaches them. Inline SVG, CSS animation only.
+ * bottom (Discover, Develop, Validate, Deploy) with the milestones each
+ * step produces stacked above it. Discovery climbs into a proof of
+ * concept and comes down into development; development climbs into
+ * integrations and then AI integration and comes down into validation;
+ * validation climbs into a demo and then a pilot and comes down into
+ * deployment. The descent from AI integration into validation is drawn
+ * as a broken track with "where most projects stall" under it; the route
+ * bridges it. Main-line stops are solid pills; the stacked stops are
+ * dashed and dim until the route reaches them. Inline SVG, CSS only.
  *
  * One loop (14 s): a comet runs the whole route, lighting each stop as
- * it arrives and drawing the link after it. It pauses at the pilot, the
- * bridge draws down to Deploy, the stall label fades, the beacon ripples
- * and the status pill lands. Then everything resets. Every keyframe that
- * depends on a stop is generated below from one schedule.
+ * it arrives and drawing the link after it. It halts at the top of the
+ * development stack, the bridge draws down into Validate, the stall
+ * label fades, and at the end the beacon ripples and the status pill
+ * lands. Then everything resets. Every keyframe that depends on a stop
+ * is generated below from one schedule.
  */
 interface Props {
   /** Extra class for the figure, so the page can place it in its grid.
@@ -27,40 +29,44 @@ interface Props {
 
 const {
   class: className,
-  caption = "Most initiatives stall between the pilot and production. We take them that last step, and hand them over to your team.",
+  caption = "Most initiatives stall between a working integration and a validated pilot. We take them the whole way to production, and hand them over to your team.",
   ...rest
 } = Astro.props;
 
-/* The stops, in route order. `row` is the line they sit on: 0 is the
-   main line, 1 and 2 the branches above it. `x` is the centre; the
-   widths fit the labels and keep stops on the same row apart. */
+/* The stops, in route order. `col` is the main-line step they belong
+   to, `row` how high they sit above it (0 is the main line). Widths fit
+   the labels. */
 const stops = [
-  { label: "Discover", row: 0, x: 54, w: 96 },
-  { label: "Proof of concept", row: 1, x: 122, w: 132 },
-  { label: "Develop", row: 0, x: 190, w: 92 },
-  { label: "Integrations", row: 1, x: 252, w: 108 },
-  { label: "Integrate AI", row: 2, x: 296, w: 110 },
-  { label: "Validate", row: 0, x: 334, w: 90 },
-  { label: "Demo", row: 1, x: 402, w: 72 },
-  { label: "Pilot", row: 2, x: 438, w: 70 },
-  { label: "Deploy", row: 0, x: 474, w: 86 },
+  { label: "Discover", col: 0, row: 0, w: 108 },
+  { label: "Proof of concept", col: 0, row: 1, w: 124 },
+  { label: "Develop", col: 1, row: 0, w: 108 },
+  { label: "Integrations", col: 1, row: 1, w: 116 },
+  { label: "Integrate AI", col: 1, row: 2, w: 116 },
+  { label: "Validate", col: 2, row: 0, w: 108 },
+  { label: "Demo", col: 2, row: 1, w: 96 },
+  { label: "Pilot", col: 2, row: 2, w: 96 },
+  { label: "Deploy", col: 3, row: 0, w: 100 },
 ] as const;
 
-/* Geometry, in viewBox units (560 x 330). */
-const PILL = { h: 32, rx: 16 };
+/* Geometry, in viewBox units (600 x 340). */
+const COL_X = [72, 212, 380, 512];
+const PILL = { h: 40, rx: 20 };
 const ROW_TOP = 236;
-const ROW_GAP = 76;
+const ROW_GAP = 64;
 const rowTop = (row: number) => ROW_TOP - row * ROW_GAP;
+const cx = (i: number) => COL_X[stops[i].col];
 const cy = (i: number) => rowTop(stops[i].row) + PILL.h / 2;
-const cx = (i: number) => stops[i].x;
+const left = (i: number) => cx(i) - stops[i].w / 2;
+const right = (i: number) => cx(i) + stops[i].w / 2;
 const last = stops.length - 1;
-const GAP_AFTER = last - 1; // Pilot → Deploy
-const BEACON = { x: 540, y: cy(last) };
+const GAP_AFTER = 4; // Integrate AI → Validate
+const BEACON = { x: 586, y: cy(last) };
 const pathEnd = BEACON.x - 12;
 
-/* A link between two stops: an S-curve with horizontal tangents, from
-   centre to centre (the pills are drawn on top). Its length is sampled
-   so the comet's stops can be placed as exact fractions of the path. */
+/* A descent from the top of one stack to the next main-line stop: an
+   S-curve with horizontal tangents from the right edge of the one to the
+   left edge of the other. Its length is sampled so the comet's stops can
+   be placed as exact fractions of the path. */
 const curve = (x1: number, y1: number, x2: number, y2: number) => {
   const c1 = [x1 + (x2 - x1) * 0.5, y1];
   const c2 = [x2 - (x2 - x1) * 0.5, y2];
@@ -81,20 +87,29 @@ const curve = (x1: number, y1: number, x2: number, y2: number) => {
   return { d: `C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${x2} ${y2}`, len };
 };
 
-const linkPath = (i: number) =>
-  i < last
-    ? `M ${cx(i)} ${cy(i)} ${curve(cx(i), cy(i), cx(i + 1), cy(i + 1)).d}`
-    : `M ${cx(i)} ${cy(i)} H ${pathEnd}`;
+/* The link after stop i: straight up within a stack, a descent to the
+   next column otherwise, and a short run to the beacon at the end. */
+const climbs = (i: number) => i < last && stops[i + 1].col === stops[i].col;
+const linkPath = (i: number) => {
+  if (i === last) return `M ${cx(i)} ${cy(i)} H ${pathEnd}`;
+  if (climbs(i)) return `M ${cx(i)} ${cy(i)} V ${cy(i + 1)}`;
+  return `M ${right(i)} ${cy(i)} ${curve(right(i), cy(i), left(i + 1), cy(i + 1)).d}`;
+};
 
-/* The comet path runs the whole route; `at` holds the distance to each
-   stop, so the keyframes can halt there exactly. */
+/* The comet path runs the whole route through every stop centre; `at`
+   holds the distance to each centre, so the keyframes halt there. */
 const parts = [`M ${cx(0)} ${cy(0)}`];
 const at = [0];
 let total = 0;
 for (let i = 0; i < last; i++) {
-  const c = curve(cx(i), cy(i), cx(i + 1), cy(i + 1));
-  parts.push(c.d);
-  total += c.len;
+  if (climbs(i)) {
+    parts.push(`V ${cy(i + 1)}`);
+    total += Math.abs(cy(i + 1) - cy(i));
+  } else {
+    const c = curve(right(i), cy(i), left(i + 1), cy(i + 1));
+    parts.push(`H ${right(i)}`, c.d, `H ${cx(i + 1)}`);
+    total += stops[i].w / 2 + c.len + stops[i + 1].w / 2;
+  }
   at.push(total);
 }
 parts.push(`H ${pathEnd}`);
@@ -104,27 +119,29 @@ const along = (i: number) => ((at[i] / total) * 100).toFixed(2);
 
 /*
   Schedule, in percent of the loop. The comet leaves Discover at 8 % and
-  reaches the next stops at the times below. It halts at the pilot for a
-  beat, then takes the long drop to Deploy (56 – 65 %) while the bridge
-  draws under it, and reaches the beacon at 72 %. Each stop lights as the
-  comet arrives; each link draws as the comet runs it. The hold ends at
-  90 %; by 96 % everything is idle again.
+  reaches the next stops at the times below. It halts at the top of the
+  development stack, then takes the long drop into Validate (35 – 43 %)
+  while the bridge draws under it, and reaches the beacon at 72 %. Each
+  stop lights as the comet arrives; each link draws as the comet runs it.
+  The hold ends at 90 %; by 96 % everything is idle again.
 */
-const arrive = [5, 14, 21, 28, 34, 41, 48, 54, 65];
+const arrive = [5, 13, 20, 27, 33, 44, 51, 58, 65];
+const HALT_UNTIL = 35;
 const BEACON_AT = 72;
-/* Main-line stops are solid; the branch stops are dashed and dimmer, like
-   something not yet certain, until the route reaches them. */
+
+/* Main-line stops are solid; the stacked stops are dashed and dimmer,
+   like something not yet certain, until the route reaches them. */
 const isSub = (i: number) => stops[i].row > 0;
 const idleFor = (i: number) =>
   isSub(i)
-    ? "fill: rgba(232, 237, 246, 0.03); stroke: rgba(232, 237, 246, 0.3); stroke-dasharray: 4 4;"
+    ? "fill: rgba(232, 237, 246, 0.03); stroke: rgba(232, 237, 246, 0.3); stroke-dasharray: 5 5;"
     : "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
 const litFor = (i: number) =>
   isSub(i)
-    ? "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1; stroke-dasharray: 8 0;"
+    ? "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1; stroke-dasharray: 10 0;"
     : "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
 const inkIdle = (i: number) =>
-  isSub(i) ? "rgba(232, 237, 246, 0.5)" : "rgba(232, 237, 246, 0.66)";
+  isSub(i) ? "rgba(232, 237, 246, 0.5)" : "rgba(232, 237, 246, 0.7)";
 const stopCss = stops
   .map((_, i) => {
     const on = arrive[i];
@@ -133,7 +150,7 @@ const stopCss = stops
     const lit = litFor(i);
     const [linkOn, linkDone] =
       i === GAP_AFTER
-        ? [56, 64]
+        ? [HALT_UNTIL, arrive[i + 1] - 1]
         : i === last
           ? [BEACON_AT - 5, BEACON_AT - 1]
           : [on + 2, arrive[i + 1]];
@@ -150,33 +167,33 @@ const stopCss = stops
   .join("\n");
 
 /* The comet: invisible at the start, visible from 8 %, at each stop at
-   its arrival time, a beat at the pilot, then the beacon. */
+   its arrival time, a halt before the gap, then the beacon. */
 const cometFrames = [
   `0%, 6% { offset-distance: 0%; opacity: 0; }`,
   `8% { offset-distance: 0%; opacity: 1; }`,
   ...stops.slice(1).map((_, k) => {
     const i = k + 1;
-    const hold = i === GAP_AFTER ? `, 56%` : "";
+    const hold = i === GAP_AFTER ? `, ${HALT_UNTIL}%` : "";
     return `${arrive[i]}%${hold} { offset-distance: ${along(i)}%; }`;
   }),
   `${BEACON_AT}% { offset-distance: 100%; opacity: 1; }`,
   `${BEACON_AT + 3}%, 100% { offset-distance: 100%; opacity: 0; }`,
 ];
-const cometCss = `@keyframes p2p-comet { ${cometFrames.join(" ")} }`;
-const timeline = `${stopCss}\n${cometCss}`;
+const timeline = `${stopCss}\n@keyframes p2p-comet { ${cometFrames.join(" ")} }`;
 
+/* The stall label sits under the main line, beneath the gap's landing. */
 const gapLabel = {
-  x: cx(GAP_AFTER) + 64,
-  y: rowTop(1) + PILL.h / 2 + 4,
+  x: (right(GAP_AFTER) + left(GAP_AFTER + 1)) / 2,
+  y: rowTop(0) + PILL.h + 24,
 };
 ---
 
 <figure class:list={["p2p", className]} {...rest}>
   <svg
     class="art"
-    viewBox="0 0 560 330"
+    viewBox="0 0 600 340"
     role="img"
-    aria-label="A route map from discovery to production: discovery climbs into a proof of concept and returns for development; development climbs into integrations and AI integration and returns for validation; validation climbs into a demo and a pilot, and the last drop into deployment, where most initiatives stall, is bridged."
+    aria-label="A route map from discovery to production: discovery climbs into a proof of concept and comes down into development; development climbs into integrations and AI integration and comes down into validation, the drop where most projects stall; validation climbs into a demo and a pilot and comes down into deployment."
   >
     <defs>
       <pattern
@@ -192,7 +209,7 @@ const gapLabel = {
         <stop offset="1" stop-color="#000000"></stop>
       </radialGradient>
       <mask id="p2p-mask">
-        <rect width="560" height="330" fill="url(#p2p-fade)"></rect>
+        <rect width="600" height="340" fill="url(#p2p-fade)"></rect>
       </mask>
       <radialGradient id="p2p-ambient" cx="50%" cy="50%" r="50%">
         <stop offset="0" stop-color="rgba(47, 125, 209, 0.2)"></stop>
@@ -214,26 +231,26 @@ const gapLabel = {
          along the route that turns green when the work goes live. -->
     <rect
       class="grid"
-      width="560"
-      height="330"
+      width="600"
+      height="340"
       fill="url(#p2p-dots)"
       mask="url(#p2p-mask)"></rect>
     <ellipse
       class="ambient"
-      cx="280"
+      cx="300"
       cy={rowTop(1) + PILL.h / 2}
-      rx="290"
-      ry="110"
+      rx="310"
+      ry="120"
       fill="url(#p2p-ambient)"></ellipse>
     <ellipse
       class="ambient ambient--live"
-      cx={BEACON.x - 70}
+      cx={BEACON.x - 80}
       cy={BEACON.y - 30}
-      rx="170"
-      ry="110"
+      rx="180"
+      ry="120"
       fill="url(#p2p-ambient-live)"></ellipse>
 
-    <!-- The main line itself, faint, so the branches read as detours. -->
+    <!-- The main line itself, faint, so the stacks read as detours. -->
     <line
       class="mainline"
       x1={cx(0)}
@@ -241,15 +258,14 @@ const gapLabel = {
       x2={pathEnd}
       y2={cy(0)}></line>
 
-    <text class="eyebrow" x={cx(0) - stops[0].w / 2} y="302">
-      The road to production
-    </text>
-    <text class="eyebrow eyebrow--end" x={BEACON.x} y={cy(last) - 24}>
+    <text class="eyebrow" x={left(0)} y="326">The road to production</text>
+    <text class="eyebrow eyebrow--end" x={BEACON.x} y={cy(last) - 26}>
       Live
     </text>
 
-    <!-- The route, faint before it is travelled. The drop from the pilot
-         to deployment is the gap: broken and tinted, labelled beside it. -->
+    <!-- The route, faint before it is travelled. The drop from AI
+         integration into validation is the gap: broken and tinted, with
+         the stall label under its landing. -->
     <g class="tracks">
       {
         stops.map((_, i) => (
@@ -260,7 +276,9 @@ const gapLabel = {
         ))
       }
     </g>
-    <text class="stall" x={gapLabel.x} y={gapLabel.y}>where most stall</text>
+    <text class="stall" x={gapLabel.x} y={gapLabel.y}>
+      where most projects stall
+    </text>
 
     <!-- The travelled route, drawn link by link under the comet. -->
     <g class="links">
@@ -282,7 +300,7 @@ const gapLabel = {
           <g class:list={["stop", `stop--${i}`, { "stop--sub": stop.row > 0 }]}>
             <rect
               class="stop__halo"
-              x={cx(i) - stop.w / 2}
+              x={left(i)}
               y={rowTop(stop.row)}
               width={stop.w}
               height={PILL.h}
@@ -291,13 +309,13 @@ const gapLabel = {
             />
             <rect
               class="stop__box"
-              x={cx(i) - stop.w / 2}
+              x={left(i)}
               y={rowTop(stop.row)}
               width={stop.w}
               height={PILL.h}
               rx={PILL.rx}
             />
-            <text class="stop__label" x={cx(i)} y={rowTop(stop.row) + 20.5}>
+            <text class="stop__label" x={cx(i)} y={rowTop(stop.row) + 25}>
               {stop.label}
             </text>
           </g>
@@ -331,9 +349,9 @@ const gapLabel = {
       style={`offset-path: path("${cometPath}")`}></circle>
 
     <g class="status">
-      <rect x={BEACON.x - 196} y="284" width="196" height="30" rx="15"></rect>
-      <circle class="status__dot" cx={BEACON.x - 178} cy="299" r="4"></circle>
-      <text x={BEACON.x - 164} y="303">Live, handed to your team</text>
+      <rect x={BEACON.x - 206} y="298" width="206" height="32" rx="16"></rect>
+      <circle class="status__dot" cx={BEACON.x - 188} cy="314" r="4"></circle>
+      <text x={BEACON.x - 174} y="318.5">Live, handed to your team</text>
     </g>
   </svg>
   <figcaption>{caption}</figcaption>
@@ -348,7 +366,7 @@ const gapLabel = {
   .p2p {
     margin: 0;
     width: 100%;
-    max-width: 560px;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -365,7 +383,7 @@ const gapLabel = {
   }
 
   .art text {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     fill: rgba(232, 237, 246, 0.82);
   }
@@ -375,12 +393,12 @@ const gapLabel = {
     font-size: var(--font-sm);
     line-height: 1.5;
     color: rgba(232, 237, 246, 0.55);
-    max-width: 44ch;
+    max-width: 48ch;
   }
 
   .art .eyebrow {
     font-family: synonym, sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -402,7 +420,7 @@ const gapLabel = {
   .track {
     fill: none;
     stroke: rgba(232, 237, 246, 0.18);
-    stroke-width: 1.25;
+    stroke-width: 1.5;
     stroke-dasharray: 3 5;
     stroke-linecap: round;
   }
@@ -415,7 +433,7 @@ const gapLabel = {
 
   .art .stall {
     font-family: synonym, sans-serif;
-    font-size: 10.5px;
+    font-size: 11.5px;
     font-weight: 400;
     text-anchor: middle;
     fill: rgba(229, 117, 110, 0.85);
@@ -424,7 +442,7 @@ const gapLabel = {
   .link {
     fill: none;
     stroke: #2f7dd1;
-    stroke-width: 2;
+    stroke-width: 2.25;
     stroke-linecap: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
@@ -432,7 +450,7 @@ const gapLabel = {
 
   /* The bridge over the gap is the point of the picture: a touch heavier. */
   .link--bridge {
-    stroke-width: 2.5;
+    stroke-width: 2.75;
   }
 
   /* --- Stops --- */
@@ -449,16 +467,16 @@ const gapLabel = {
   }
 
   .stop__label {
-    fill: rgba(232, 237, 246, 0.66);
+    fill: rgba(232, 237, 246, 0.7);
     text-anchor: middle;
   }
 
-  /* Branch stops: dashed and dimmer until the route reaches them. */
+  /* Stacked stops: dashed and dimmer until the route reaches them. */
   .stop--sub .stop__box {
     fill: rgba(232, 237, 246, 0.03);
     stroke: rgba(232, 237, 246, 0.3);
-    stroke-width: 1.25;
-    stroke-dasharray: 4 4;
+    stroke-width: 1.5;
+    stroke-dasharray: 5 5;
   }
 
   .stop--sub .stop__label {
@@ -517,7 +535,7 @@ const gapLabel = {
 
   .status text {
     fill: var(--color-ink-light);
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .status__dot {
@@ -591,10 +609,10 @@ const gapLabel = {
   /* The stall label gives way once the bridge is across. */
   @keyframes p2p-stall {
     0%,
-    60% {
+    40% {
       opacity: 1;
     }
-    66%,
+    46%,
     92% {
       opacity: 0;
     }
