@@ -8,8 +8,9 @@
  * validation climbs into a demo and then a pilot and comes down into
  * deployment. The descent from AI integration into validation is drawn
  * as a broken track with "where most projects stall" under it; the route
- * bridges it. Main-line stops are solid pills; the stacked stops are
- * dashed and dim until the route reaches them. Inline SVG, CSS only.
+ * bridges it. Main-line stops are solid boxes that light up in the full
+ * accent; the stacked stops are dashed boxes that stay dashed and light
+ * up more quietly. Inline SVG, CSS only.
  *
  * One loop (14 s): a comet runs the whole route, lighting each stop as
  * it arrives and drawing the link after it. It halts at the top of the
@@ -50,9 +51,10 @@ const stops = [
 
 /* Geometry, in viewBox units (600 x 340). */
 const COL_X = [72, 212, 380, 512];
-const PILL = { h: 40, rx: 20 };
+/* Boxes rather than pills: a small radius and some height. */
+const PILL = { h: 48, rx: 10 };
 const ROW_TOP = 236;
-const ROW_GAP = 64;
+const ROW_GAP = 70;
 const rowTop = (row: number) => ROW_TOP - row * ROW_GAP;
 const cx = (i: number) => COL_X[stops[i].col];
 const cy = (i: number) => rowTop(stops[i].row) + PILL.h / 2;
@@ -129,19 +131,22 @@ const arrive = [5, 13, 20, 27, 33, 44, 51, 58, 65];
 const HALT_UNTIL = 35;
 const BEACON_AT = 72;
 
-/* Main-line stops are solid; the stacked stops are dashed and dimmer,
-   like something not yet certain, until the route reaches them. */
+/* Main-line stops are solid and light up in the full accent. The stacked
+   stops are dashed and dimmer; they stay dashed when reached and light
+   up in a quieter blue, so the main line keeps the emphasis. */
 const isSub = (i: number) => stops[i].row > 0;
 const idleFor = (i: number) =>
   isSub(i)
-    ? "fill: rgba(232, 237, 246, 0.03); stroke: rgba(232, 237, 246, 0.3); stroke-dasharray: 5 5;"
+    ? "fill: rgba(232, 237, 246, 0.03); stroke: rgba(232, 237, 246, 0.3);"
     : "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
 const litFor = (i: number) =>
   isSub(i)
-    ? "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1; stroke-dasharray: 10 0;"
+    ? "fill: rgba(47, 125, 209, 0.14); stroke: rgba(127, 182, 239, 0.75);"
     : "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
 const inkIdle = (i: number) =>
   isSub(i) ? "rgba(232, 237, 246, 0.5)" : "rgba(232, 237, 246, 0.7)";
+const inkLit = (i: number) => (isSub(i) ? "rgba(232, 237, 246, 0.86)" : "#ffffff");
+const haloLit = (i: number) => (isSub(i) ? 0.22 : 0.5);
 const stopCss = stops
   .map((_, i) => {
     const on = arrive[i];
@@ -156,8 +161,8 @@ const stopCss = stops
           : [on + 2, arrive[i + 1]];
     return `
 @keyframes p2p-stop-${i} { 0%, ${on}% { ${idle} } ${full}%, 90% { ${lit} } 96%, 100% { ${idle} } }
-@keyframes p2p-halo-${i} { 0%, ${on}% { opacity: 0; } ${full}%, 90% { opacity: 0.5; } 96%, 100% { opacity: 0; } }
-@keyframes p2p-ink-${i} { 0%, ${on}% { fill: ${inkIdle(i)}; } ${full}%, 90% { fill: #ffffff; } 96%, 100% { fill: ${inkIdle(i)}; } }
+@keyframes p2p-halo-${i} { 0%, ${on}% { opacity: 0; } ${full}%, 90% { opacity: ${haloLit(i)}; } 96%, 100% { opacity: 0; } }
+@keyframes p2p-ink-${i} { 0%, ${on}% { fill: ${inkIdle(i)}; } ${full}%, 90% { fill: ${inkLit(i)}; } 96%, 100% { fill: ${inkIdle(i)}; } }
 @keyframes p2p-link-${i} { 0%, ${linkOn}% { stroke-dashoffset: 1; } ${linkDone}%, 90% { stroke-dashoffset: 0; } 96%, 100% { stroke-dashoffset: 1; } }
 .p2p .stop--${i} .stop__box { animation-name: p2p-stop-${i}; }
 .p2p .stop--${i} .stop__halo { animation-name: p2p-halo-${i}; }
@@ -315,7 +320,7 @@ const gapLabel = {
               height={PILL.h}
               rx={PILL.rx}
             />
-            <text class="stop__label" x={cx(i)} y={rowTop(stop.row) + 25}>
+            <text class="stop__label" x={cx(i)} y={rowTop(stop.row) + 29}>
               {stop.label}
             </text>
           </g>
@@ -471,7 +476,8 @@ const gapLabel = {
     text-anchor: middle;
   }
 
-  /* Stacked stops: dashed and dimmer until the route reaches them. */
+  /* Stacked stops: dashed and dimmer, and they stay dashed once reached
+     (the dash pattern is not animated, only the colours are). */
   .stop--sub .stop__box {
     fill: rgba(232, 237, 246, 0.03);
     stroke: rgba(232, 237, 246, 0.3);
@@ -743,15 +749,27 @@ const gapLabel = {
     .stop__box {
       fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
-      stroke-dasharray: none;
+    }
+
+    .stop--sub .stop__box {
+      fill: rgba(47, 125, 209, 0.14);
+      stroke: rgba(127, 182, 239, 0.75);
     }
 
     .stop__halo {
       opacity: 0.4;
     }
 
+    .stop--sub .stop__halo {
+      opacity: 0.2;
+    }
+
     .stop__label {
       fill: #ffffff;
+    }
+
+    .stop--sub .stop__label {
+      fill: rgba(232, 237, 246, 0.86);
     }
 
     .link {
