@@ -90,4 +90,26 @@ import Contact from "./Contact.astro";
   .contact-dialog :global(.contact) {
     padding-top: clamp(1.5rem, 4vw, 3rem);
   }
+
+  /* Phones: a full-screen sheet instead of a floating card, so the form
+     gets the whole width. The spam-protection widget is 300px wide and
+     does not shrink; inside a card with two layers of padding it was
+     wider than the form and gave the dialog a horizontal scroll. */
+  @media (max-width: 639px) {
+    .contact-dialog {
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
+      border-radius: 0;
+    }
+
+    .contact-dialog :global(.contact) {
+      padding-inline: 1rem;
+    }
+
+    .contact-dialog :global(.contact-form) {
+      padding: 1rem;
+    }
+  }
 </style>

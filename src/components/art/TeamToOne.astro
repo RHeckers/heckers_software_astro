@@ -1,0 +1,526 @@
+---
+/**
+ * The engine behind the company, as a diagram: the team it used to take
+ * to deliver end to end, with everyone talking to everyone, folds into one
+ * senior engineer with coding agents in orbit, who ships the outcome into
+ * production. Inline SVG, CSS animation only. One loop: the handoffs draw
+ * and turn red (that was the cost), the five roles fly into the one
+ * expert, the agents appear, the line to production draws, hold, reset.
+ */
+interface Props {
+  /** Extra class for the figure, so the page can place it in its grid.
+      The page's scoped-style attribute arrives with it and is spread
+      onto the figure, so the page's rules for that class apply. */
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+  caption?: string;
+}
+
+const {
+  class: className,
+  caption = "Delivering end to end used to take a team, and most of the cost was keeping it aligned. One senior engineer with coding agents now ships what that team shipped, and owns it.",
+  ...rest
+} = Astro.props;
+
+const roles = [
+  "Front-end dev",
+  "Back-end dev",
+  "Data engineer",
+  "DevOps",
+  "Tech lead",
+];
+
+const CHIP = { x: 18, w: 108, h: 26, gap: 44, top: 24 };
+const EXPERT = { x: 290, y: 125, r: 36, orbit: 50 };
+
+const chipY = (i: number) => CHIP.top + i * CHIP.gap;
+const chipMid = (i: number) => chipY(i) + CHIP.h / 2;
+const chipRight = CHIP.x + CHIP.w;
+
+// Every pair of roles talks to each other: ten handoffs for five people.
+const handoffs: [number, number][] = [];
+for (let i = 0; i < roles.length; i++) {
+  for (let j = i + 1; j < roles.length; j++) handoffs.push([i, j]);
+}
+const handoffPath = (i: number, j: number) => {
+  const bulge = chipRight + 26 + (j - i) * 18;
+  return `M ${chipRight} ${chipMid(i)} C ${bulge} ${chipMid(i)}, ${bulge} ${chipMid(j)}, ${chipRight} ${chipMid(j)}`;
+};
+
+// Three agents on the orbit, 120 degrees apart.
+const agents = [0, 120, 240].map((deg) => {
+  const rad = (deg * Math.PI) / 180;
+  return {
+    cx: (EXPERT.x + EXPERT.orbit * Math.cos(rad)).toFixed(1),
+    cy: (EXPERT.y + EXPERT.orbit * Math.sin(rad)).toFixed(1),
+  };
+});
+---
+
+<figure class:list={["team", className]} {...rest}>
+  <svg
+    class="art"
+    viewBox="0 0 470 280"
+    role="img"
+    aria-label="Five roles tangled in handoffs fold into one senior engineer with coding agents in orbit, who ships the outcome into production."
+    style={`--ox: ${EXPERT.x}px; --oy: ${EXPERT.y}px`}
+  >
+    <g class="handoffs">
+      {
+        handoffs.map(([i, j]) => (
+          <path class="handoff" pathLength="1" d={handoffPath(i, j)} />
+        ))
+      }
+    </g>
+
+    <g class="roles">
+      {
+        roles.map((role, i) => (
+          <g
+            class="role"
+            style={`--dx: ${EXPERT.x - (CHIP.x + CHIP.w / 2)}px; --dy: ${EXPERT.y - chipMid(i)}px`}
+          >
+            <rect x={CHIP.x} y={chipY(i)} width={CHIP.w} height={CHIP.h} rx="7" />
+            <text x={CHIP.x + CHIP.w / 2} y={chipY(i) + 17}>
+              {role}
+            </text>
+          </g>
+        ))
+      }
+    </g>
+
+    <text class="cost" x={CHIP.x + CHIP.w / 2} y="250">
+      Five people, ten handoffs
+    </text>
+
+    <g class="one">
+      <circle cx={EXPERT.x} cy={EXPERT.y} r={EXPERT.r}></circle>
+      <text x={EXPERT.x} y={EXPERT.y - 3}>One</text>
+      <text x={EXPERT.x} y={EXPERT.y + 12}>expert</text>
+    </g>
+
+    <g class="orbit">
+      <circle
+        class="orbit__ring"
+        cx={EXPERT.x}
+        cy={EXPERT.y}
+        r={EXPERT.orbit}></circle>
+      <g class="agents">
+        {agents.map((a) => <circle class="agent" cx={a.cx} cy={a.cy} r="4.5" />)}
+      </g>
+    </g>
+
+    <text class="ai" x={EXPERT.x + EXPERT.orbit + 14} y={EXPERT.y + 4}>
+      with coding agents
+    </text>
+
+    <path
+      class="out"
+      pathLength="1"
+      d={`M ${EXPERT.x} ${EXPERT.y + EXPERT.orbit + 1} V 236`}></path>
+
+    <g class="status">
+      <rect x={EXPERT.x - 88} y="236" width="176" height="28" rx="14"></rect>
+      <circle class="status__dot" cx={EXPERT.x - 70} cy="250" r="4"></circle>
+      <text x={EXPERT.x - 56} y="254">In production, owned</text>
+    </g>
+  </svg>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+  .team {
+    margin: 0;
+    width: 100%;
+    max-width: 34rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .art {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    font-family: chillax, sans-serif;
+    --loop: 12s;
+  }
+
+  .art text {
+    font-size: 12.5px;
+    font-weight: 500;
+    text-anchor: middle;
+    fill: rgba(232, 237, 246, 0.8);
+  }
+
+  figcaption {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.55);
+    max-width: 44ch;
+  }
+
+  .role rect {
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.6);
+    stroke-width: 1.5;
+  }
+
+  .handoff {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.4);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  /* Both outrank the shared text rule above. */
+  .art .cost,
+  .art .ai {
+    font-family: synonym, sans-serif;
+    font-size: 11.5px;
+    font-weight: 400;
+    fill: rgba(232, 237, 246, 0.55);
+    opacity: 0;
+  }
+
+  .art .cost {
+    fill: rgba(229, 117, 110, 0.9);
+  }
+
+  .art .ai {
+    text-anchor: start;
+  }
+
+  .one circle {
+    fill: rgba(47, 125, 209, 0.28);
+    stroke: #2f7dd1;
+    stroke-width: 1.5;
+  }
+
+  .one text {
+    fill: #ffffff;
+  }
+
+  .orbit__ring {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.2);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+
+  .agent {
+    fill: rgba(232, 237, 246, 0.92);
+  }
+
+  .out {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.42);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .status rect {
+    fill: rgba(232, 237, 246, 0.05);
+    stroke: rgba(232, 237, 246, 0.14);
+    stroke-width: 1;
+  }
+
+  .status text {
+    fill: var(--color-ink-light);
+    font-size: 12px;
+    /* The shared rule centres every label; this one starts at the dot. */
+    text-anchor: start;
+  }
+
+  .status__dot {
+    fill: var(--color-success);
+  }
+
+  /*
+    The loop, in slots of the 12 s:
+       0 – 16 %  the handoffs draw between the five roles
+      16 – 32 %  hold; the handoffs turn red and the cost line appears
+      32 – 44 %  the roles fly into the one expert, who grows in
+      48 – 60 %  the agents and their label appear
+      62 – 76 %  the line to production draws and the status pill lands
+      76 – 92 %  hold
+      92 – 100 % everything fades, the roles are back for the next pass
+  */
+  .role {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: team-role var(--loop) cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+
+  .handoff {
+    animation:
+      team-handoff-draw var(--loop) cubic-bezier(0.22, 0.61, 0.36, 1) infinite,
+      team-handoff-tint var(--loop) ease-in-out infinite;
+  }
+
+  .cost {
+    animation: team-cost var(--loop) ease-in-out infinite;
+  }
+
+  .one {
+    opacity: 0;
+    transform-box: view-box;
+    transform-origin: var(--ox) var(--oy);
+    animation: team-one var(--loop) cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  }
+
+  .orbit {
+    opacity: 0;
+    animation: team-orbit var(--loop) ease-in-out infinite;
+  }
+
+  /* The agents circle the expert on their own clock. */
+  .agents {
+    transform-box: view-box;
+    transform-origin: var(--ox) var(--oy);
+    animation: team-agents 9s linear infinite;
+  }
+
+  .ai {
+    animation: team-ai var(--loop) ease-in-out infinite;
+  }
+
+  .out {
+    animation: team-out var(--loop) cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  }
+
+  .status {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: team-status var(--loop) cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  }
+
+  .status__dot {
+    animation: team-pulse 2s ease-in-out infinite;
+  }
+
+  /* The roles stay solid for most of the flight and vanish on arrival. */
+  @keyframes team-role {
+    0%,
+    32% {
+      opacity: 1;
+      transform: none;
+    }
+    40% {
+      opacity: 1;
+    }
+    44%,
+    92% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) scale(0.2);
+    }
+    93% {
+      opacity: 0;
+      transform: none;
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes team-handoff-draw {
+    0%,
+    4% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    16%,
+    32% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    40%,
+    92% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+    93%,
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+  }
+
+  @keyframes team-handoff-tint {
+    0%,
+    20% {
+      stroke: rgba(232, 237, 246, 0.4);
+    }
+    28%,
+    92% {
+      stroke: rgba(229, 117, 110, 0.8);
+    }
+    93%,
+    100% {
+      stroke: rgba(232, 237, 246, 0.4);
+    }
+  }
+
+  @keyframes team-cost {
+    0%,
+    16% {
+      opacity: 0;
+    }
+    22%,
+    32% {
+      opacity: 1;
+    }
+    38%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes team-one {
+    0%,
+    36% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    44% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    50%,
+    90% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+  }
+
+  @keyframes team-orbit {
+    0%,
+    48% {
+      opacity: 0;
+    }
+    56%,
+    90% {
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes team-agents {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes team-ai {
+    0%,
+    54% {
+      opacity: 0;
+    }
+    60%,
+    90% {
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes team-out {
+    0%,
+    62% {
+      stroke-dashoffset: 1;
+    }
+    70%,
+    90% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  @keyframes team-status {
+    0%,
+    70% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    76%,
+    90% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes team-pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  /* Reduced motion: the whole story in one still, before on the left and
+     after on the right. */
+  @media (prefers-reduced-motion: reduce) {
+    .role,
+    .handoff,
+    .cost,
+    .one,
+    .orbit,
+    .agents,
+    .ai,
+    .out,
+    .status,
+    .status__dot {
+      animation: none;
+    }
+
+    .role {
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .handoff {
+      stroke-dashoffset: 0;
+      opacity: 0.5;
+    }
+
+    .cost,
+    .one,
+    .orbit,
+    .ai,
+    .status {
+      opacity: 1;
+      transform: none;
+    }
+
+    .out {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

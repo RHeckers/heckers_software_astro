@@ -16,6 +16,9 @@ interface Props {
   subject: string;
   secondaryLabel: string;
   secondaryHref: string;
+  /** False when the aside cannot be read on a phone (a graph, say): it is
+      then shown from 650px up and the copy carries the hero below that. */
+  asideOnPhones?: boolean;
   /** The evidence card. Omit it when the `aside` slot is filled. */
   fact?: {
     value: string;
@@ -32,6 +35,7 @@ const {
   subject,
   secondaryLabel,
   secondaryHref,
+  asideOnPhones = true,
   fact,
 } = Astro.props;
 ---
@@ -52,7 +56,12 @@ const {
 
     {
       Astro.slots.has("aside") ? (
-        <div class="service-hero__aside">
+        <div
+          class:list={[
+            "service-hero__aside",
+            { "service-hero__aside--wide": !asideOnPhones },
+          ]}
+        >
           <slot name="aside" />
         </div>
       ) : (
@@ -185,6 +194,12 @@ const {
   .service-hero__aside {
     width: 100%;
     max-width: 34rem;
+  }
+
+  @media (max-width: 649px) {
+    .service-hero__aside--wide {
+      display: none;
+    }
   }
 
   /* --- Evidence card --- */

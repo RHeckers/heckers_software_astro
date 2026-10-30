@@ -213,6 +213,13 @@ const nextSteps = [
     turnstileLoaded = true;
     const placeholder = document.getElementById("turnstilePlaceholder");
     if (placeholder) placeholder.hidden = true;
+    // The normal widget is 300px wide and does not shrink. On a narrow
+    // phone the form is not that wide (least of all inside the contact
+    // dialog), so ask for the compact widget before the script renders it.
+    const widget = document.getElementById("turnstileWidget");
+    if (widget && window.matchMedia("(max-width: 399px)").matches) {
+      widget.dataset.size = "compact";
+    }
     const script = document.createElement("script");
     script.src = TURNSTILE_SRC;
     script.async = true;
@@ -501,7 +508,9 @@ const nextSteps = [
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr;
+    /* minmax(0, …): a fixed-width child such as the spam-protection widget
+       must not widen the column, and with it the page, on a narrow phone. */
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
   }
@@ -718,6 +727,11 @@ const nextSteps = [
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
+    /* Should the widget still be wider than the form, cut it off rather
+       than let it scroll the page or the dialog sideways. */
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   .turnstile-placeholder[hidden] {

@@ -1,0 +1,609 @@
+---
+/**
+ * The one thing the company does, as a diagram: three pilots that never
+ * left the demo stage, and the four stages that take one of them into
+ * production. Stage i lights up at slot i of the loop; the runner crosses
+ * the stages in the same slots. Inline SVG, CSS animation only.
+ */
+interface Props {
+  /** Extra class for the figure, so the page can place it in its grid.
+      The page's scoped-style attribute arrives with it and is spread
+      onto the figure, so the page's rules for that class apply. */
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+  caption?: string;
+}
+
+const {
+  class: className,
+  caption = "Most pilots stay a demo. One owner takes the right one through discovery, build and integration into production.",
+  ...rest
+} = Astro.props;
+
+const stages = ["Discover", "Build", "Integrate", "Ship"];
+---
+
+<figure class:list={["pilot", className]} {...rest}>
+  <svg
+    class="art"
+    viewBox="0 0 470 280"
+    role="img"
+    aria-label="Three pilots that stayed demos, and one that is taken through discovery, build and integration into production."
+  >
+    <g class="ghosts">
+      <rect class="ghost" x="24" y="22" width="120" height="28" rx="7"></rect>
+      <text class="ghost-label" x="84" y="40">Demo, 2024</text>
+      <rect class="ghost" x="44" y="60" width="120" height="28" rx="7"></rect>
+      <text class="ghost-label" x="104" y="78">Pilot, 2025</text>
+      <rect class="pick" x="64" y="98" width="120" height="28" rx="7"></rect>
+      <text class="pick-label" x="124" y="116">Proof of concept</text>
+    </g>
+
+    <path
+      class="lead"
+      pathLength="1"
+      d="M 124 126 C 124 160, 40 150, 40 190"></path>
+
+    <g class="stages">
+      {
+        stages.map((stage, i) => (
+          <g class={`stage stage--${i}`}>
+            <rect x={16 + i * 108} y="190" width="94" height="30" rx="8" />
+            <text x={63 + i * 108} y="209">
+              {stage}
+            </text>
+          </g>
+        ))
+      }
+      {
+        [0, 1, 2].map((i) => (
+          <path
+            class={`link link--${i}`}
+            pathLength="1"
+            d={`M ${110 + i * 108} 205 H ${124 + i * 108}`}
+          />
+        ))
+      }
+    </g>
+
+    <g class="prod">
+      <path class="link link--3" pathLength="1" d="M 434 205 H 450"></path>
+      <circle class="live" cx="458" cy="205" r="4.5"></circle>
+    </g>
+
+    <circle class="runner" r="5"></circle>
+
+    <g class="status">
+      <rect x="278" y="236" width="176" height="28" rx="14"></rect>
+      <circle class="status__dot" cx="296" cy="250" r="4"></circle>
+      <text x="310" y="254" text-anchor="start">In production, owned</text>
+    </g>
+  </svg>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+  .pilot {
+    margin: 0;
+    width: 100%;
+    max-width: 34rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .art {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    font-family: chillax, sans-serif;
+    --loop: 10s;
+  }
+
+  .art text {
+    font-size: 12.5px;
+    font-weight: 500;
+    text-anchor: middle;
+    fill: rgba(232, 237, 246, 0.8);
+  }
+
+  figcaption {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.55);
+    max-width: 40ch;
+  }
+
+  .ghost {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.35);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+  }
+
+  .ghost-label {
+    fill: rgba(232, 237, 246, 0.45);
+  }
+
+  .pick {
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.6);
+    stroke-width: 1.5;
+  }
+
+  .lead,
+  .link {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.42);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .stage rect {
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.6);
+    stroke-width: 1.5;
+  }
+
+  .live,
+  .status__dot {
+    fill: var(--color-success);
+  }
+
+  .status rect {
+    fill: rgba(232, 237, 246, 0.05);
+    stroke: rgba(232, 237, 246, 0.14);
+    stroke-width: 1;
+  }
+
+  .status text {
+    fill: var(--color-ink-light);
+    font-size: 12px;
+    /* The shared rule centres every label; this one starts at the dot. */
+    text-anchor: start;
+  }
+
+  .runner {
+    fill: var(--color-accent);
+    opacity: 0;
+    offset-path: path("M 124 126 C 124 160, 40 150, 40 190 L 63 205 H 452");
+  }
+
+  /*
+    One loop: the picked pilot lights up, the lead edge draws, then each
+    stage turns accent as the runner reaches it, the link after it draws,
+    and the whole thing resets for the next pilot. Stage i owns the slot
+    from 25% + i * 12% to 37% + i * 12%.
+  */
+  .pick {
+    animation: art-pick var(--loop) ease-in-out infinite;
+  }
+
+  .lead {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: art-lead var(--loop) cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  }
+
+  .stage rect,
+  .stage text {
+    animation-duration: var(--loop);
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  .link {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation-duration: var(--loop);
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation-iteration-count: infinite;
+  }
+
+  .stage--0 rect {
+    animation-name: art-stage-0;
+  }
+
+  .stage--0 text {
+    animation-name: art-label-0;
+  }
+
+  .link--0 {
+    animation-name: art-link-0;
+  }
+
+  .stage--1 rect {
+    animation-name: art-stage-1;
+  }
+
+  .stage--1 text {
+    animation-name: art-label-1;
+  }
+
+  .link--1 {
+    animation-name: art-link-1;
+  }
+
+  .stage--2 rect {
+    animation-name: art-stage-2;
+  }
+
+  .stage--2 text {
+    animation-name: art-label-2;
+  }
+
+  .link--2 {
+    animation-name: art-link-2;
+  }
+
+  .stage--3 rect {
+    animation-name: art-stage-3;
+  }
+
+  .stage--3 text {
+    animation-name: art-label-3;
+  }
+
+  .link--3 {
+    animation-name: art-link-3;
+  }
+
+  .runner {
+    animation: art-runner var(--loop) linear infinite;
+  }
+
+  .live {
+    animation: art-live var(--loop) ease-in-out infinite;
+  }
+
+  .status {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: art-status var(--loop) cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  }
+
+  .status__dot {
+    animation: art-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes art-pick {
+    0%,
+    6% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    12%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+  }
+
+  @keyframes art-lead {
+    0%,
+    12% {
+      stroke-dashoffset: 1;
+    }
+    22%,
+    90% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  @keyframes art-stage-0 {
+    0%,
+    31% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    37%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+  }
+
+  @keyframes art-label-0 {
+    0%,
+    31% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    37%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+  }
+
+  @keyframes art-link-0 {
+    0%,
+    37% {
+      stroke-dashoffset: 1;
+    }
+    43%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  @keyframes art-stage-1 {
+    0%,
+    43% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    49%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+  }
+
+  @keyframes art-label-1 {
+    0%,
+    43% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    49%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+  }
+
+  @keyframes art-link-1 {
+    0%,
+    49% {
+      stroke-dashoffset: 1;
+    }
+    55%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  @keyframes art-stage-2 {
+    0%,
+    55% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    61%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+  }
+
+  @keyframes art-label-2 {
+    0%,
+    55% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    61%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+  }
+
+  @keyframes art-link-2 {
+    0%,
+    61% {
+      stroke-dashoffset: 1;
+    }
+    67%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  @keyframes art-stage-3 {
+    0%,
+    67% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+    73%,
+    88% {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.06);
+      stroke: rgba(232, 237, 246, 0.6);
+    }
+  }
+
+  @keyframes art-label-3 {
+    0%,
+    67% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+    73%,
+    88% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.8);
+    }
+  }
+
+  @keyframes art-link-3 {
+    0%,
+    73% {
+      stroke-dashoffset: 1;
+    }
+    79%,
+    88% {
+      stroke-dashoffset: 0;
+    }
+    96%,
+    100% {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  /* The runner reaches each stage just as that stage switches on. */
+  @keyframes art-runner {
+    0%,
+    12% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    14% {
+      opacity: 1;
+    }
+    25% {
+      offset-distance: 20%;
+    }
+    34% {
+      offset-distance: 26%;
+    }
+    46% {
+      offset-distance: 47%;
+    }
+    58% {
+      offset-distance: 67%;
+    }
+    70% {
+      offset-distance: 88%;
+    }
+    76% {
+      offset-distance: 100%;
+      opacity: 1;
+    }
+    79%,
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes art-live {
+    0%,
+    75% {
+      opacity: 0.25;
+    }
+    79%,
+    90% {
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0.25;
+    }
+  }
+
+  @keyframes art-status {
+    0%,
+    76% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    82%,
+    90% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes art-pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  /* Reduced motion: the finished picture, nothing moving. */
+  @media (prefers-reduced-motion: reduce) {
+    .pick,
+    .lead,
+    .stage rect,
+    .stage text,
+    .link,
+    .runner,
+    .live,
+    .status,
+    .status__dot {
+      animation: none;
+    }
+
+    .pick,
+    .stage rect {
+      fill: rgba(47, 125, 209, 0.28);
+      stroke: #2f7dd1;
+    }
+
+    .lead,
+    .link {
+      stroke-dashoffset: 0;
+    }
+
+    .status {
+      opacity: 1;
+      transform: none;
+    }
+
+    .runner {
+      display: none;
+    }
+  }
+</style>

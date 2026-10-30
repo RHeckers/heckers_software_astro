@@ -1,12 +1,12 @@
 ---
 /**
  * Service page: the architecture assessment. The page sells a diagnosis,
- * so it is built like one: a preview of the ranked findings in the hero,
+ * so it is built like one: the project graph untangling in the hero,
  * the market data, the self-check, what we have learned reading other
  * people's code, how the assessment runs, and then a page of the report
  * itself next to what it costs in time. Light ground throughout, with the
  * self-check as the one dark panel. No two sections with a card on the
- * same side follow each other: the hero's report preview is separated
+ * same side follow each other: the hero's graph is separated
  * from the self-check panel by the evidence band, and the report sheet
  * comes after the process steps. The page ends on
  * the three tiers: proof, questions and the other services come before
@@ -16,7 +16,7 @@
  */
 import PageLayout from "../../layouts/PageLayout.astro";
 import ServiceHero from "../../components/services/ServiceHero.astro";
-import FindingsPreview from "../../components/services/FindingsPreview.astro";
+import NxGraph from "../../components/art/NxGraph.astro";
 import ReportSample from "../../components/services/ReportSample.astro";
 import EvidenceBand from "../../components/services/EvidenceBand.astro";
 import SymptomCheck from "../../components/services/SymptomCheck.astro";
@@ -126,8 +126,14 @@ const jsonLd = {
     subject={service.subject}
     secondaryLabel="Score your codebase first"
     secondaryHref="#self-check"
+    asideOnPhones={false}
   >
-    <FindingsPreview slot="aside" />
+    <NxGraph
+      slot="aside"
+      before="Found"
+      after="After the roadmap"
+      caption="The first thing an assessment draws is your project graph. The first thing it finds is the circular dependencies in it."
+    />
   </ServiceHero>
 
   <EvidenceBand

@@ -1,0 +1,575 @@
+---
+/**
+ * A stylised Nx project graph that alternates between a tangled workspace
+ * full of circular dependencies and the same workspace untangled into a
+ * one-directional graph. It sits in the hero of the architecture
+ * assessment page: the graph is the first thing an assessment draws, and
+ * the circular dependencies are the first thing it finds.
+ *
+ * No JavaScript for the loop, no canvas: an inline SVG whose nodes move
+ * with transforms while the edges follow by animating their path geometry,
+ * and whose circular edges fade in and out. Hovering the graph releases
+ * the animation so it settles (with a transition) into the tidy version
+ * and stays there; hovering a node lights up its dependencies via
+ * generated `:has()` rules.
+ */
+interface Props {
+  /** Extra class for the figure, so the page can place it in its grid.
+      The page's scoped-style attribute arrives with it and is spread
+      onto the figure, so the page's rules for that class apply. */
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+  /** Status pill while the graph is tangled. The count is appended. */
+  before?: string;
+  /** Status pill once the graph is tidy. */
+  after?: string;
+  caption: string;
+}
+
+const {
+  class: className,
+  before = "Today",
+  after = "After our work",
+  caption,
+  ...rest
+} = Astro.props;
+
+// A small, believable slice of an Nx workspace: apps depend on feature
+// libraries, which depend on shared libraries. `tidy` is the final layout
+// (tiers); `tangled` is a deliberately scrambled but non-overlapping layout
+// (x, y, rotation in degrees) so the mess is still legible.
+const nodes = [
+  { id: "customer-portal", w: 156, tidy: [62, 40], tangled: [300, 330, -5] },
+  { id: "admin-dashboard", w: 164, tidy: [330, 40], tangled: [40, 210, 4] },
+  { id: "feature-checkout", w: 158, tidy: [16, 190], tangled: [380, 170, 6] },
+  { id: "feature-orders", w: 144, tidy: [206, 190], tangled: [200, 100, -7] },
+  { id: "feature-reports", w: 152, tidy: [386, 190], tangled: [30, 20, 5] },
+  { id: "ui-forms", w: 112, tidy: [58, 340], tangled: [400, 40, -4] },
+  { id: "data-access", w: 126, tidy: [222, 340], tangled: [70, 330, 6] },
+  { id: "util-auth", w: 112, tidy: [392, 340], tangled: [240, 230, -6] },
+];
+
+const NODE_H = 40;
+const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+
+// Arrows point from the dependent to its dependency, as in the Nx graph.
+const edges: [string, string][] = [
+  ["customer-portal", "feature-checkout"],
+  ["customer-portal", "feature-orders"],
+  ["admin-dashboard", "feature-orders"],
+  ["admin-dashboard", "feature-reports"],
+  ["feature-checkout", "ui-forms"],
+  ["feature-checkout", "data-access"],
+  ["feature-orders", "data-access"],
+  ["feature-orders", "util-auth"],
+  ["feature-reports", "data-access"],
+  ["feature-reports", "util-auth"],
+];
+
+// Circular dependencies that only exist in the tangled state.
+const cycles: [string, string][] = [
+  ["ui-forms", "customer-portal"],
+  ["feature-orders", "customer-portal"],
+  ["data-access", "feature-orders"],
+  ["util-auth", "admin-dashboard"],
+  ["feature-reports", "feature-checkout"],
+  ["feature-checkout", "feature-reports"],
+  ["util-auth", "data-access"],
+  ["data-access", "util-auth"],
+  ["ui-forms", "feature-orders"],
+];
+
+// Resting highlight: the tidy graph looks as if this node were hovered, so
+// the hover behaviour is discoverable before anyone touches it.
+const RESTING = "feature-orders";
+const hotEdges = new Set(
+  edges
+    .filter(([from, to]) => from === RESTING || to === RESTING)
+    .map(([from, to]) => `${from}→${to}`),
+);
+const hotNodes = new Set([
+  RESTING,
+  ...edges.flatMap(([from, to]) =>
+    from === RESTING ? [to] : to === RESTING ? [from] : [],
+  ),
+]);
+
+// Bottom-centre of `from` to top-centre of `to`, in either layout. Both use
+// one cubic segment so the browser can interpolate between them.
+const edgePath = (from: string, to: string, layout: "tidy" | "tangled") => {
+  const a = byId[from];
+  const b = byId[to];
+  const x1 = a[layout][0] + a.w / 2;
+  const y1 = a[layout][1] + NODE_H;
+  const x2 = b[layout][0] + b.w / 2;
+  const y2 = b[layout][1];
+  return `M ${x1} ${y1} C ${x1} ${y1 + 60}, ${x2} ${y2 - 60}, ${x2} ${y2}`;
+};
+const edgeStyle = (from: string, to: string) =>
+  `--d-tidy: path('${edgePath(from, to, "tidy")}'); --d-tangled: path('${edgePath(from, to, "tangled")}')`;
+
+// Hover rules, generated per node: its edges and direct dependencies light
+// up in the accent colour. Pure CSS via :has(), no script needed.
+const neighbours: Record<string, string[]> = {};
+for (const [a, b] of edges) {
+  (neighbours[a] ??= []).push(b);
+  (neighbours[b] ??= []).push(a);
+}
+const hoverCss = nodes
+  .map(({ id }) => {
+    const on = `.nx-graph:has([data-node="${id}"]:hover)`;
+    const lit = [id, ...(neighbours[id] ?? [])];
+    return [
+      `${on} [data-from="${id}"], ${on} [data-to="${id}"] { stroke: var(--color-accent); stroke-width: 2; marker-end: url(#nx-arrow-hot); }`,
+      `${lit.map((n) => `${on} [data-node="${n}"] rect`).join(", ")} { fill: rgba(47, 125, 209, 0.18); stroke: var(--color-accent); }`,
+      `${lit.map((n) => `${on} [data-node="${n}"] text`).join(", ")} { fill: var(--color-light-raised); }`,
+    ].join("\n");
+  })
+  .join("\n");
+---
+
+<figure class:list={["nx-graph", className]} {...rest}>
+  <div class="graph-status">
+    <span class="graph-status__before" aria-hidden="true">
+      <i></i>{before}: {cycles.length} circular dependencies
+    </span>
+    <span class="graph-status__after">
+      <i></i>{after}: 0 circular dependencies
+    </span>
+  </div>
+  <svg
+    viewBox="0 0 560 400"
+    role="img"
+    aria-label="An Nx project graph alternating between a tangle of circular dependencies and the same workspace untangled into a one-directional graph: applications depend on feature libraries, which depend on shared libraries."
+  >
+    <defs>
+      <marker
+        id="nx-arrow"
+        viewBox="0 0 10 10"
+        refX="9"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        markerUnits="userSpaceOnUse"
+        orient="auto"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(232, 237, 246, 0.5)" />
+      </marker>
+      <marker
+        id="nx-arrow-hot"
+        viewBox="0 0 10 10"
+        refX="9"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        markerUnits="userSpaceOnUse"
+        orient="auto"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7dd1" />
+      </marker>
+      <marker
+        id="nx-arrow-cycle"
+        viewBox="0 0 10 10"
+        refX="9"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        markerUnits="userSpaceOnUse"
+        orient="auto"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#c2413b" />
+      </marker>
+    </defs>
+
+    <g class="graph">
+      <g class="cycles">
+        {
+          cycles.map(([from, to]) => (
+            <path
+              class="edge edge--cycle"
+              d={edgePath(from, to, "tidy")}
+              style={edgeStyle(from, to)}
+            />
+          ))
+        }
+      </g>
+      <g class="edges">
+        {
+          edges.map(([from, to]) => (
+            <path
+              d={edgePath(from, to, "tidy")}
+              style={edgeStyle(from, to)}
+              data-from={from}
+              data-to={to}
+              class:list={[
+                "edge",
+                { "edge--hot": hotEdges.has(`${from}→${to}`) },
+              ]}
+            />
+          ))
+        }
+      </g>
+      {
+        nodes.map((n) => (
+          <g
+            class:list={["node", { "node--hot": hotNodes.has(n.id) }]}
+            data-node={n.id}
+            style={`--tx: ${n.tangled[0] - n.tidy[0]}px; --ty: ${n.tangled[1] - n.tidy[1]}px; --r: ${n.tangled[2]}deg`}
+          >
+            <rect x={n.tidy[0]} y={n.tidy[1]} width={n.w} height={NODE_H} rx="10" />
+            <text x={n.tidy[0] + n.w / 2} y={n.tidy[1] + NODE_H / 2 + 1}>
+              {n.id}
+            </text>
+          </g>
+        ))
+      }
+    </g>
+  </svg>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<!-- Reset the default highlight while a node is hovered, then the
+     per-node rules below light up the hovered node's dependencies. -->
+<style
+  is:inline
+  set:html={`.nx-graph:has(.node:hover) .edge--hot { stroke: rgba(232, 237, 246, 0.22); stroke-width: 1.5; marker-end: url(#nx-arrow); }
+.nx-graph:has(.node:hover) .node--hot rect { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.16); }
+.nx-graph:has(.node:hover) .node--hot text { fill: var(--color-ink-light); }
+${hoverCss}`}
+/>
+
+<style>
+  .nx-graph {
+    margin: 0;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .nx-graph svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  figcaption {
+    margin-top: 0.75rem;
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    color: rgba(232, 237, 246, 0.55);
+    text-align: center;
+  }
+
+  /* Status label above the graph: "before" and "after" share one grid
+     cell and cross-fade on the same timeline as the graph. */
+  .graph-status {
+    display: grid;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .graph-status span {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(232, 237, 246, 0.14);
+    background: rgba(232, 237, 246, 0.05);
+    color: var(--color-ink-light);
+    white-space: nowrap;
+  }
+
+  .graph-status i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+  }
+
+  .graph-status__before {
+    opacity: 0;
+  }
+
+  .graph-status__before i {
+    background: var(--color-danger);
+  }
+
+  .graph-status__after i {
+    background: var(--color-success);
+  }
+
+  .edge {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.22);
+    stroke-width: 1.5;
+    marker-end: url(#nx-arrow);
+  }
+
+  .edge--hot {
+    stroke: var(--color-accent);
+    stroke-width: 2;
+    marker-end: url(#nx-arrow-hot);
+  }
+
+  .edge--cycle {
+    stroke: rgba(194, 65, 59, 0.85);
+    stroke-width: 1.75;
+    marker-end: url(#nx-arrow-cycle);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .node {
+    cursor: default;
+  }
+
+  .node rect {
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.16);
+    stroke-width: 1;
+  }
+
+  .node text {
+    font-family: "chillax", sans-serif;
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    fill: var(--color-ink-light);
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+
+  .node--hot rect {
+    fill: rgba(47, 125, 209, 0.18);
+    stroke: var(--color-accent);
+  }
+
+  .node--hot text {
+    fill: var(--color-light-raised);
+  }
+
+  /*
+    Timeline: one 5 s animation, alternating forever.
+      0 – 40 %   tangled, full of circular dependencies (what you see on load)
+      40 – 60 %  flows into place
+      60 – 100 % tidy graph (the CSS resting state)
+    then the same in reverse. Every part shares the timing so the edges stay
+    attached to the nodes. The negative delay skips most of the first
+    tangled hold, so the page load shows the tangle briefly and then flows
+    into place. After a hover the script moves the loop into the tidy hold
+    (72 %), so it resumes without a jump. Reduced-motion users (global
+    `animation: none`) see the tidy graph.
+  */
+  .graph,
+  .node,
+  .edge,
+  .graph-status span {
+    animation-duration: 5s;
+    animation-delay: -1.4s;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-fill-mode: both;
+  }
+
+  .graph {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-name: nx-graph-breathe;
+  }
+
+  .node {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-name: nx-node-shuffle;
+  }
+
+  .edge {
+    animation-name: nx-edge-follow;
+  }
+
+  .edge--cycle {
+    animation-name: nx-edge-follow, nx-cycle-appear;
+  }
+
+  .graph-status__before {
+    animation-name: nx-status-before;
+  }
+
+  .graph-status__after {
+    animation-name: nx-status-after;
+  }
+
+  @keyframes nx-graph-breathe {
+    0%,
+    40% {
+      transform: scale(1.06);
+    }
+    60%,
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes nx-node-shuffle {
+    0%,
+    40% {
+      opacity: 0.85;
+      transform: translate(var(--tx), var(--ty)) rotate(var(--r));
+    }
+    60%,
+    100% {
+      opacity: 1;
+      transform: translate(0, 0) rotate(0deg);
+    }
+  }
+
+  @keyframes nx-edge-follow {
+    0%,
+    40% {
+      d: var(--d-tangled);
+    }
+    60%,
+    100% {
+      d: var(--d-tidy);
+    }
+  }
+
+  @keyframes nx-cycle-appear {
+    0%,
+    40% {
+      opacity: 1;
+    }
+    60%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes nx-status-before {
+    0%,
+    44% {
+      opacity: 1;
+    }
+    56%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes nx-status-after {
+    0%,
+    44% {
+      opacity: 0;
+    }
+    56%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* Hover settling into the tidy graph is handled by the script below (a
+     CSS transition cannot pick up from a running animation's value). */
+  .edge {
+    transition:
+      stroke 0.2s,
+      stroke-width 0.2s;
+  }
+
+  .node rect {
+    transition:
+      fill 0.2s,
+      stroke 0.2s;
+  }
+
+  .node text {
+    transition: fill 0.2s;
+  }
+</style>
+
+<script>
+  // Hover: settle the graph into its tidy state from wherever the loop is,
+  // and hold it there until the pointer leaves. A CSS transition cannot start
+  // from a running animation's value, so this pauses the CSS animations and
+  // layers a short Web Animations tween on top; on leave the loop is moved
+  // into its tidy hold (see the CSS timeline) before the tween is removed,
+  // so it resumes without a jump.
+  const figure = document.querySelector<HTMLElement>(".nx-graph");
+
+  if (figure && typeof Element.prototype.animate === "function") {
+    // Same feel as the loop's own transition (see the CSS timeline).
+    const SETTLE_MS = 900;
+    const EASING = "cubic-bezier(0.45, 0, 0.2, 1)";
+    // 72 % of the 5 s loop: inside the tidy hold (60 – 100 %).
+    const TIDY_TIME_MS = 3600;
+    const parts = Array.from(
+      figure.querySelectorAll<Element>(".graph, .node, .edge, .graph-status span"),
+    );
+    const overlays = new Map<Element, Animation>();
+
+    const loopAnimations = (el: Element) =>
+      el.getAnimations().filter((a) => a instanceof CSSAnimation);
+
+    // Tidy-state values per part, matching the 60 – 100 % keyframes in the CSS.
+    function tidyKeyframe(el: Element): Record<string, string> {
+      const cls = el.classList;
+      if (cls.contains("node") || cls.contains("graph")) {
+        return { transform: "none", opacity: "1" };
+      }
+      if (cls.contains("edge")) {
+        const d = getComputedStyle(el).getPropertyValue("--d-tidy").trim();
+        return {
+          ...(d ? { d } : {}),
+          opacity: cls.contains("edge--cycle") ? "0" : "1",
+        };
+      }
+      return { opacity: cls.contains("graph-status__before") ? "0" : "1" };
+    }
+
+    function currentKeyframe(el: Element, keys: string[]) {
+      const cs = getComputedStyle(el);
+      const from: Record<string, string> = {};
+      for (const key of keys) from[key] = cs.getPropertyValue(key);
+      return from;
+    }
+
+    figure.addEventListener("mouseenter", () => {
+      for (const el of parts) {
+        const to = tidyKeyframe(el);
+        const from = currentKeyframe(el, Object.keys(to));
+        // Browsers without the CSS `d` property report nothing useful here.
+        if ("d" in to && (!from.d || from.d === "none")) {
+          delete to.d;
+          delete from.d;
+        }
+        overlays.get(el)?.cancel();
+        loopAnimations(el).forEach((a) => a.pause());
+        overlays.set(
+          el,
+          el.animate([from, to], {
+            duration: SETTLE_MS,
+            easing: EASING,
+            fill: "forwards",
+          }),
+        );
+      }
+    });
+
+    figure.addEventListener("mouseleave", () => {
+      for (const el of parts) {
+        loopAnimations(el).forEach((a) => {
+          // currentTime counts from before the (negative) delay, so add it
+          // back to land on the intended point of the loop.
+          const delay = a.effect?.getTiming().delay ?? 0;
+          a.currentTime = TIDY_TIME_MS + delay;
+          a.play();
+        });
+        overlays.get(el)?.cancel();
+        overlays.delete(el);
+      }
+    });
+  }
+</script>
