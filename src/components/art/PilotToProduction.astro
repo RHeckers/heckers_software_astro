@@ -1,9 +1,17 @@
 ---
 /**
- * The one thing the company does, as a diagram: three pilots that never
- * left the demo stage, and the four stages that take one of them into
- * production. Stage i lights up at slot i of the loop; the runner crosses
- * the stages in the same slots. Inline SVG, CSS animation only.
+ * The one thing the company does, as a diagram, in the order the work
+ * really happens: discovery looks at the pile of stalled pilots and picks
+ * the one worth finishing, then build, integration and shipping take it
+ * into production. Inline SVG, CSS animation only, no script.
+ *
+ * One loop (12 s): Discover lights up and a comet climbs from it into the
+ * pile; the pilots are scanned one by one and the proof of concept lifts
+ * off the pile, lit; the comet comes back down into Build and runs the
+ * rail, lighting each stage as it passes; the production beacon ripples
+ * when it arrives and the status pill lands. Then everything resets for
+ * the next pilot. The per-stage keyframes are generated below, so the
+ * slots stay in step with the comet's schedule.
  */
 interface Props {
   /** Extra class for the figure, so the page can place it in its grid.
@@ -16,77 +24,303 @@ interface Props {
 
 const {
   class: className,
-  caption = "Most pilots stay a demo. One owner takes the right one through discovery, build and integration into production.",
+  caption = "Most pilots stay a demo. Discovery picks the one worth finishing, and one owner takes it through build and integration into production.",
   ...rest
 } = Astro.props;
 
-const stages = ["Discover", "Build", "Integrate", "Ship"];
+const stages = [
+  { label: "Discover", icon: "search" },
+  { label: "Build", icon: "code" },
+  { label: "Integrate", icon: "link" },
+  { label: "Ship", icon: "arrow" },
+] as const;
+
+/* Geometry, in viewBox units (560 x 380). */
+const CARD = { w: 176, h: 42 };
+const pilots = [
+  { x: 28, y: 24, label: "Demo" },
+  { x: 44, y: 76, label: "Pilot" },
+  { x: 60, y: 128, label: "Proof of concept", picked: true },
+];
+const picked = pilots[2];
+/* Where the route enters the pile and where it leaves it: both on the
+   underside of the picked card, so the comet slides along it while the
+   pile is scanned. */
+const pileIn = { x: picked.x + 40, y: picked.y + CARD.h };
+const pileOut = { x: picked.x + 140, y: picked.y + CARD.h };
+
+const STAGE = { w: 100, h: 56, y: 236, gap: 22 };
+const stageX = (i: number) => 16 + i * (STAGE.w + STAGE.gap);
+const stageMid = (i: number) => stageX(i) + STAGE.w / 2;
+const railY = STAGE.y + STAGE.h / 2;
+const BEACON = { x: 528, y: railY };
+
+/* Discover up into the pile, and the pile down into Build. */
+const upCurve = `C ${stageMid(0)} ${STAGE.y - 36}, ${pileIn.x} ${pileIn.y + 36}, ${pileIn.x} ${pileIn.y}`;
+const downCurve = `C ${pileOut.x} ${pileOut.y + 36}, ${stageMid(1)} ${STAGE.y - 36}, ${stageMid(1)} ${STAGE.y}`;
+const leadUpPath = `M ${stageMid(0)} ${STAGE.y} ${upCurve}`;
+const leadDownPath = `M ${pileOut.x} ${pileOut.y} ${downCurve}`;
+const linkPath = (i: number) =>
+  i < stages.length - 1
+    ? `M ${stageX(i) + STAGE.w} ${railY} H ${stageX(i + 1)}`
+    : `M ${stageX(i) + STAGE.w} ${railY} H ${BEACON.x - 14}`;
+/* The rail between Discover and Build is not travelled: the route goes
+   through the pile instead. */
+const links = [1, 2, 3];
+const cometPath = `M ${stageMid(0)} ${railY} V ${STAGE.y} ${upCurve} H ${pileOut.x} ${downCurve} V ${railY} H ${BEACON.x - 14}`;
+
+/*
+  Schedule, in percent of the loop. Discover lights at 6 %. The comet
+  climbs into the pile (10 – 17 %), slides under the picked card while the
+  pilots are scanned (17 – 31 %), comes down into Build (31 – 38 %), then
+  reaches Integrate at 50 %, Ship at 62 % and the beacon at 72 %. Each
+  stage lights as the comet arrives; the link after it draws as the comet
+  crosses it. The hold ends at 90 %; by 96 % everything is idle again.
+*/
+const arrive = [6, 38, 50, 62];
+const idleBox = "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
+const litBox = "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
+const timeline = stages
+  .map((_, i) => {
+    const on = arrive[i];
+    const lit = on + 4;
+    const linkOn = on + 7;
+    const linkDone = on + 10;
+    const link = links.includes(i)
+      ? `
+@keyframes p2p-link-${i} { 0%, ${linkOn}% { stroke-dashoffset: 1; } ${linkDone}%, 90% { stroke-dashoffset: 0; } 96%, 100% { stroke-dashoffset: 1; } }
+.p2p .link--${i} { animation-name: p2p-link-${i}; }`
+      : "";
+    return `
+@keyframes p2p-stage-${i} { 0%, ${on}% { ${idleBox} } ${lit}%, 90% { ${litBox} } 96%, 100% { ${idleBox} } }
+@keyframes p2p-halo-${i} { 0%, ${on}% { opacity: 0; } ${lit}%, 90% { opacity: 0.55; } 96%, 100% { opacity: 0; } }
+@keyframes p2p-ink-${i} { 0%, ${on}% { color: rgba(232, 237, 246, 0.62); } ${lit}%, 90% { color: #ffffff; } 96%, 100% { color: rgba(232, 237, 246, 0.62); } }
+.p2p .stage--${i} .stage__box { animation-name: p2p-stage-${i}; }
+.p2p .stage--${i} .stage__halo { animation-name: p2p-halo-${i}; }
+.p2p .stage--${i} .stage__ink { animation-name: p2p-ink-${i}; }${link}`;
+  })
+  .join("\n");
 ---
 
-<figure class:list={["pilot", className]} {...rest}>
+<figure class:list={["p2p", className]} {...rest}>
   <svg
     class="art"
-    viewBox="0 0 470 280"
+    viewBox="0 0 560 380"
     role="img"
-    aria-label="Three pilots that stayed demos, and one that is taken through discovery, build and integration into production."
+    aria-label="Discovery looks at three stalled pilots, picks the proof of concept and takes it through build and integration into production."
   >
-    <g class="ghosts">
-      <rect class="ghost" x="24" y="22" width="120" height="28" rx="7"></rect>
-      <text class="ghost-label" x="84" y="40">Demo, 2024</text>
-      <rect class="ghost" x="44" y="60" width="120" height="28" rx="7"></rect>
-      <text class="ghost-label" x="104" y="78">Pilot, 2025</text>
-      <rect class="pick" x="64" y="98" width="120" height="28" rx="7"></rect>
-      <text class="pick-label" x="124" y="116">Proof of concept</text>
+    <defs>
+      <pattern
+        id="p2p-dots"
+        width="18"
+        height="18"
+        patternUnits="userSpaceOnUse"
+      >
+        <circle cx="1.5" cy="1.5" r="1.1" fill="rgba(232, 237, 246, 0.12)"></circle>
+      </pattern>
+      <radialGradient id="p2p-fade" cx="50%" cy="60%" r="62%">
+        <stop offset="0" stop-color="#ffffff"></stop>
+        <stop offset="1" stop-color="#000000"></stop>
+      </radialGradient>
+      <mask id="p2p-mask">
+        <rect width="560" height="380" fill="url(#p2p-fade)"></rect>
+      </mask>
+      <radialGradient id="p2p-ambient" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="rgba(47, 125, 209, 0.22)"></stop>
+        <stop offset="1" stop-color="rgba(47, 125, 209, 0)"></stop>
+      </radialGradient>
+      <radialGradient id="p2p-ambient-live" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="rgba(63, 174, 140, 0.28)"></stop>
+        <stop offset="1" stop-color="rgba(63, 174, 140, 0)"></stop>
+      </radialGradient>
+      <filter id="p2p-blur" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="9"></feGaussianBlur>
+      </filter>
+      <filter id="p2p-glow" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur stdDeviation="3"></feGaussianBlur>
+      </filter>
+    </defs>
+
+    <!-- Backdrop: a dot grid that fades at the edges, and a soft glow
+         under the rail that turns green when the work goes live. -->
+    <rect
+      class="grid"
+      width="560"
+      height="380"
+      fill="url(#p2p-dots)"
+      mask="url(#p2p-mask)"></rect>
+    <ellipse
+      class="ambient"
+      cx="290"
+      cy={railY}
+      rx="270"
+      ry="80"
+      fill="url(#p2p-ambient)"></ellipse>
+    <ellipse
+      class="ambient ambient--live"
+      cx={BEACON.x - 60}
+      cy={railY}
+      rx="160"
+      ry="80"
+      fill="url(#p2p-ambient-live)"></ellipse>
+
+    <!-- Headings for the three regions. -->
+    <text class="eyebrow" x={pilots[0].x} y="12">Your pilots</text>
+    <text class="eyebrow" x={stageX(0)} y={STAGE.y + STAGE.h + 20}>
+      Our work
+    </text>
+    <text class="eyebrow eyebrow--end" x={BEACON.x} y={STAGE.y - 14}>
+      Live
+    </text>
+
+    <!-- The pile of pilots. Each looks like a document: a title and two
+         lines of greyed-out text. -->
+    <g class="pilots">
+      {
+        pilots.map((p, i) => (
+          <g class:list={["pilot", `pilot--${i}`, { "pilot--picked": p.picked }]}>
+            {p.picked && (
+              <rect
+                class="pilot__halo"
+                x={p.x}
+                y={p.y}
+                width={CARD.w}
+                height={CARD.h}
+                rx="10"
+                filter="url(#p2p-blur)"
+              />
+            )}
+            <rect
+              class="pilot__box"
+              x={p.x}
+              y={p.y}
+              width={CARD.w}
+              height={CARD.h}
+              rx="10"
+            />
+            <text class="pilot__title" x={p.x + 14} y={p.y + 18}>
+              {p.label}
+            </text>
+            <rect class="pilot__line" x={p.x + 14} y={p.y + 27} width="66" height="4" rx="2" />
+            <rect class="pilot__line" x={p.x + 86} y={p.y + 27} width="38" height="4" rx="2" />
+          </g>
+        ))
+      }
     </g>
 
-    <path
-      class="lead"
-      pathLength="1"
-      d="M 124 126 C 124 160, 40 150, 40 190"></path>
+    <!-- The route, faint before it is travelled. -->
+    <g class="tracks">
+      <path class="track" d={leadUpPath}></path>
+      <path class="track" d={leadDownPath}></path>
+      {links.map((i) => <path class="track" d={linkPath(i)} />)}
+    </g>
 
+    <path class="lead lead--up" pathLength="1" d={leadUpPath}></path>
+    <path class="lead lead--down" pathLength="1" d={leadDownPath}></path>
+
+    <!-- The delivery rail: four stages with an icon each. -->
     <g class="stages">
       {
         stages.map((stage, i) => (
           <g class={`stage stage--${i}`}>
-            <rect x={16 + i * 108} y="190" width="94" height="30" rx="8" />
-            <text x={63 + i * 108} y="209">
-              {stage}
+            <rect
+              class="stage__halo"
+              x={stageX(i)}
+              y={STAGE.y}
+              width={STAGE.w}
+              height={STAGE.h}
+              rx="12"
+              filter="url(#p2p-blur)"
+            />
+            <rect
+              class="stage__box"
+              x={stageX(i)}
+              y={STAGE.y}
+              width={STAGE.w}
+              height={STAGE.h}
+              rx="12"
+            />
+            <g
+              class="stage__ink stage__icon"
+              transform={`translate(${stageMid(i)} ${STAGE.y + 19})`}
+            >
+              {stage.icon === "search" && (
+                <>
+                  <circle cx="-2" cy="-2" r="5" />
+                  <path d="M 2 2 L 7 7" />
+                </>
+              )}
+              {stage.icon === "code" && (
+                <path d="M -4 -6 L -10 0 L -4 6 M 4 -6 L 10 0 L 4 6" />
+              )}
+              {stage.icon === "link" && (
+                <>
+                  <circle cx="-7" cy="0" r="3" />
+                  <circle cx="7" cy="0" r="3" />
+                  <path d="M -4 0 H 4" />
+                </>
+              )}
+              {stage.icon === "arrow" && (
+                <path d="M -6 6 L 6 -6 M -1 -6 H 6 V 1" />
+              )}
+            </g>
+            <text class="stage__ink stage__label" x={stageMid(i)} y={STAGE.y + 44}>
+              {stage.label}
             </text>
           </g>
         ))
       }
       {
-        [0, 1, 2].map((i) => (
-          <path
-            class={`link link--${i}`}
-            pathLength="1"
-            d={`M ${110 + i * 108} 205 H ${124 + i * 108}`}
-          />
+        links.map((i) => (
+          <path class={`link link--${i}`} pathLength="1" d={linkPath(i)} />
         ))
       }
     </g>
 
-    <g class="prod">
-      <path class="link link--3" pathLength="1" d="M 434 205 H 450"></path>
-      <circle class="live" cx="458" cy="205" r="4.5"></circle>
+    <!-- Production: a beacon that ripples once the work is live. -->
+    <g class="beacon">
+      <circle class="ring ring--1" cx={BEACON.x} cy={BEACON.y} r="12"></circle>
+      <circle class="ring ring--2" cx={BEACON.x} cy={BEACON.y} r="12"></circle>
+      <circle
+        class="beacon__glow"
+        cx={BEACON.x}
+        cy={BEACON.y}
+        r="9"
+        filter="url(#p2p-glow)"></circle>
+      <circle class="beacon__core" cx={BEACON.x} cy={BEACON.y} r="7"></circle>
     </g>
 
-    <circle class="runner" r="5"></circle>
+    <!-- The comet and its tail, on the same path. offset-path is set
+         inline because it is built from the geometry above. -->
+    <circle
+      class="comet comet--tail"
+      r="9"
+      filter="url(#p2p-glow)"
+      style={`offset-path: path("${cometPath}")`}></circle>
+    <circle
+      class="comet comet--head"
+      r="4"
+      style={`offset-path: path("${cometPath}")`}></circle>
 
     <g class="status">
-      <rect x="278" y="236" width="176" height="28" rx="14"></rect>
-      <circle class="status__dot" cx="296" cy="250" r="4"></circle>
-      <text x="310" y="254" text-anchor="start">In production, owned</text>
+      <rect x={BEACON.x - 176} y="318" width="176" height="30" rx="15"></rect>
+      <circle class="status__dot" cx={BEACON.x - 158} cy="333" r="4"></circle>
+      <text x={BEACON.x - 144} y="337">In production, owned</text>
     </g>
   </svg>
   <figcaption>{caption}</figcaption>
 </figure>
 
+<!-- Per-stage keyframes, generated from the schedule above. Global on
+     purpose: keyframe names are page-wide anyway, and every selector is
+     rooted at .p2p. -->
+<style is:inline set:html={timeline} />
+
 <style>
-  .pilot {
+  .p2p {
     margin: 0;
     width: 100%;
-    max-width: 34rem;
+    max-width: 560px;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -97,14 +331,15 @@ const stages = ["Discover", "Build", "Integrate", "Ship"];
     height: auto;
     overflow: visible;
     font-family: chillax, sans-serif;
-    --loop: 10s;
+    --loop: 12s;
+    --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .art text {
     font-size: 12.5px;
     font-weight: 500;
-    text-anchor: middle;
-    fill: rgba(232, 237, 246, 0.8);
+    fill: rgba(232, 237, 246, 0.82);
   }
 
   figcaption {
@@ -112,171 +347,322 @@ const stages = ["Discover", "Build", "Integrate", "Ship"];
     font-size: var(--font-sm);
     line-height: 1.5;
     color: rgba(232, 237, 246, 0.55);
-    max-width: 40ch;
+    max-width: 44ch;
   }
 
-  .ghost {
-    fill: none;
-    stroke: rgba(232, 237, 246, 0.35);
-    stroke-width: 1.5;
+  .art .eyebrow {
+    font-family: synonym, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    fill: rgba(232, 237, 246, 0.42);
+  }
+
+  .art .eyebrow--end {
+    text-anchor: middle;
+  }
+
+  /* --- Pilots --- */
+
+  .pilot__box {
+    fill: rgba(232, 237, 246, 0.03);
+    stroke: rgba(232, 237, 246, 0.3);
+    stroke-width: 1.25;
     stroke-dasharray: 4 4;
   }
 
-  .ghost-label {
-    fill: rgba(232, 237, 246, 0.45);
+  .pilot__title {
+    fill: rgba(232, 237, 246, 0.5);
   }
 
-  .pick {
+  .pilot__line {
+    fill: rgba(232, 237, 246, 0.14);
+  }
+
+  .pilot--picked .pilot__box {
     fill: rgba(232, 237, 246, 0.06);
     stroke: rgba(232, 237, 246, 0.6);
     stroke-width: 1.5;
+    stroke-dasharray: none;
+  }
+
+  .pilot--picked .pilot__title {
+    fill: rgba(232, 237, 246, 0.9);
+  }
+
+  .pilot--picked .pilot__line {
+    fill: rgba(232, 237, 246, 0.22);
+  }
+
+  .pilot__halo {
+    fill: #2f7dd1;
+    opacity: 0;
+  }
+
+  /* --- Route --- */
+
+  .track {
+    fill: none;
+    stroke: rgba(232, 237, 246, 0.16);
+    stroke-width: 1.25;
+    stroke-dasharray: 3 5;
+    stroke-linecap: round;
   }
 
   .lead,
   .link {
     fill: none;
-    stroke: rgba(232, 237, 246, 0.42);
-    stroke-width: 1.5;
+    stroke: #2f7dd1;
+    stroke-width: 2;
     stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
   }
 
-  .stage rect {
-    fill: rgba(232, 237, 246, 0.06);
-    stroke: rgba(232, 237, 246, 0.6);
+  /* --- Stages --- */
+
+  .stage__box {
+    fill: rgba(232, 237, 246, 0.05);
+    stroke: rgba(232, 237, 246, 0.35);
     stroke-width: 1.5;
   }
 
-  .live,
-  .status__dot {
-    fill: var(--color-success);
+  .stage__halo {
+    fill: #2f7dd1;
+    opacity: 0;
+  }
+
+  .stage__ink {
+    color: rgba(232, 237, 246, 0.62);
+  }
+
+  .stage__icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .stage__label {
+    fill: currentColor;
+    text-anchor: middle;
+  }
+
+  /* --- Beacon --- */
+
+  .beacon__core {
+    fill: #3fae8c;
+    opacity: 0.35;
+  }
+
+  .beacon__glow {
+    fill: #3fae8c;
+    opacity: 0;
+  }
+
+  .ring {
+    fill: none;
+    stroke: #3fae8c;
+    stroke-width: 1.5;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .ambient--live {
+    opacity: 0;
+  }
+
+  /* --- Comet --- */
+
+  .comet {
+    fill: #ffffff;
+    opacity: 0;
+  }
+
+  .comet--tail {
+    fill: #7fb6ef;
+  }
+
+  /* --- Status pill --- */
+
+  .status {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   .status rect {
-    fill: rgba(232, 237, 246, 0.05);
-    stroke: rgba(232, 237, 246, 0.14);
+    fill: rgba(232, 237, 246, 0.06);
+    stroke: rgba(232, 237, 246, 0.16);
     stroke-width: 1;
   }
 
   .status text {
     fill: var(--color-ink-light);
     font-size: 12px;
-    /* The shared rule centres every label; this one starts at the dot. */
-    text-anchor: start;
-  }
-
-  .runner {
-    fill: var(--color-accent);
-    opacity: 0;
-    offset-path: path("M 124 126 C 124 160, 40 150, 40 190 L 63 205 H 452");
-  }
-
-  /*
-    One loop: the picked pilot lights up, the lead edge draws, then each
-    stage turns accent as the runner reaches it, the link after it draws,
-    and the whole thing resets for the next pilot. Stage i owns the slot
-    from 25% + i * 12% to 37% + i * 12%.
-  */
-  .pick {
-    animation: art-pick var(--loop) ease-in-out infinite;
-  }
-
-  .lead {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: art-lead var(--loop) cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
-  }
-
-  .stage rect,
-  .stage text {
-    animation-duration: var(--loop);
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-  }
-
-  .link {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation-duration: var(--loop);
-    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
-    animation-iteration-count: infinite;
-  }
-
-  .stage--0 rect {
-    animation-name: art-stage-0;
-  }
-
-  .stage--0 text {
-    animation-name: art-label-0;
-  }
-
-  .link--0 {
-    animation-name: art-link-0;
-  }
-
-  .stage--1 rect {
-    animation-name: art-stage-1;
-  }
-
-  .stage--1 text {
-    animation-name: art-label-1;
-  }
-
-  .link--1 {
-    animation-name: art-link-1;
-  }
-
-  .stage--2 rect {
-    animation-name: art-stage-2;
-  }
-
-  .stage--2 text {
-    animation-name: art-label-2;
-  }
-
-  .link--2 {
-    animation-name: art-link-2;
-  }
-
-  .stage--3 rect {
-    animation-name: art-stage-3;
-  }
-
-  .stage--3 text {
-    animation-name: art-label-3;
-  }
-
-  .link--3 {
-    animation-name: art-link-3;
-  }
-
-  .runner {
-    animation: art-runner var(--loop) linear infinite;
-  }
-
-  .live {
-    animation: art-live var(--loop) ease-in-out infinite;
-  }
-
-  .status {
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: art-status var(--loop) cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
   }
 
   .status__dot {
-    animation: art-pulse 2s ease-in-out infinite;
+    fill: #3fae8c;
   }
 
-  @keyframes art-pick {
+  /* --- The loop --- */
+
+  .pilot,
+  .pilot__box,
+  .pilot__halo,
+  .lead,
+  .stage__box,
+  .stage__halo,
+  .stage__ink,
+  .link,
+  .beacon__core,
+  .beacon__glow,
+  .ring,
+  .ambient--live,
+  .comet,
+  .status {
+    animation-duration: var(--loop);
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+
+  /* Discovery scans the pile: each pilot brightens in turn, and the
+     proof of concept is the one that stays lit, lifts off the pile and
+     leaves the other two dimmed behind it. */
+  .pilot--0 .pilot__box {
+    animation-name: p2p-scan-0;
+  }
+
+  .pilot--1 .pilot__box {
+    animation-name: p2p-scan-1;
+  }
+
+  .pilot--picked {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-name: p2p-pick-lift;
+    animation-timing-function: var(--ease-pop);
+  }
+
+  .pilot--picked .pilot__box {
+    animation-name: p2p-pick-box;
+  }
+
+  .pilot__halo {
+    animation-name: p2p-pick-halo;
+  }
+
+  .pilot:not(.pilot--picked) {
+    animation-name: p2p-ghost;
+  }
+
+  .lead {
+    animation-timing-function: var(--ease-soft);
+  }
+
+  .lead--up {
+    animation-name: p2p-lead-up;
+  }
+
+  .lead--down {
+    animation-name: p2p-lead-down;
+  }
+
+  .link {
+    animation-timing-function: var(--ease-soft);
+  }
+
+  .beacon__core {
+    animation-name: p2p-beacon-core;
+  }
+
+  .beacon__glow {
+    animation-name: p2p-beacon-glow;
+  }
+
+  .ambient--live {
+    animation-name: p2p-ambient-live;
+  }
+
+  .ring--1 {
+    animation-name: p2p-ring-1;
+    animation-timing-function: ease-out;
+  }
+
+  .ring--2 {
+    animation-name: p2p-ring-2;
+    animation-timing-function: ease-out;
+  }
+
+  .comet {
+    animation-name: p2p-comet;
+    animation-timing-function: linear;
+  }
+
+  /* The tail runs the same schedule a moment behind the head. */
+  .comet--tail {
+    animation-delay: 0.1s;
+  }
+
+  .status {
+    animation-name: p2p-status;
+    animation-timing-function: var(--ease-pop);
+  }
+
+  @keyframes p2p-scan-0 {
     0%,
-    6% {
+    16% {
+      stroke: rgba(232, 237, 246, 0.3);
+      fill: rgba(232, 237, 246, 0.03);
+    }
+    18%,
+    20% {
+      stroke: rgba(232, 237, 246, 0.95);
+      fill: rgba(232, 237, 246, 0.1);
+    }
+    23%,
+    100% {
+      stroke: rgba(232, 237, 246, 0.3);
+      fill: rgba(232, 237, 246, 0.03);
+    }
+  }
+
+  @keyframes p2p-scan-1 {
+    0%,
+    20% {
+      stroke: rgba(232, 237, 246, 0.3);
+      fill: rgba(232, 237, 246, 0.03);
+    }
+    22%,
+    24% {
+      stroke: rgba(232, 237, 246, 0.95);
+      fill: rgba(232, 237, 246, 0.1);
+    }
+    27%,
+    100% {
+      stroke: rgba(232, 237, 246, 0.3);
+      fill: rgba(232, 237, 246, 0.03);
+    }
+  }
+
+  @keyframes p2p-pick-box {
+    0%,
+    24% {
       fill: rgba(232, 237, 246, 0.06);
       stroke: rgba(232, 237, 246, 0.6);
     }
-    12%,
-    88% {
-      fill: rgba(47, 125, 209, 0.28);
+    26%,
+    28% {
+      fill: rgba(232, 237, 246, 0.14);
+      stroke: #ffffff;
+    }
+    31%,
+    90% {
+      fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
     }
     96%,
@@ -286,12 +672,57 @@ const stages = ["Discover", "Build", "Integrate", "Ship"];
     }
   }
 
-  @keyframes art-lead {
+  @keyframes p2p-pick-lift {
     0%,
-    12% {
+    27% {
+      transform: translateY(0);
+    }
+    32%,
+    90% {
+      transform: translateY(-4px);
+    }
+    96%,
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes p2p-pick-halo {
+    0%,
+    27% {
+      opacity: 0;
+    }
+    32%,
+    90% {
+      opacity: 0.5;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes p2p-ghost {
+    0%,
+    27% {
+      opacity: 1;
+    }
+    32%,
+    90% {
+      opacity: 0.45;
+    }
+    96%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes p2p-lead-up {
+    0%,
+    10% {
       stroke-dashoffset: 1;
     }
-    22%,
+    17%,
     90% {
       stroke-dashoffset: 0;
     }
@@ -301,46 +732,13 @@ const stages = ["Discover", "Build", "Integrate", "Ship"];
     }
   }
 
-  @keyframes art-stage-0 {
+  @keyframes p2p-lead-down {
     0%,
     31% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
+      stroke-dashoffset: 1;
     }
     37%,
-    88% {
-      fill: rgba(47, 125, 209, 0.28);
-      stroke: #2f7dd1;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-  }
-
-  @keyframes art-label-0 {
-    0%,
-    31% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-    37%,
-    88% {
-      fill: #ffffff;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-  }
-
-  @keyframes art-link-0 {
-    0%,
-    37% {
-      stroke-dashoffset: 1;
-    }
-    43%,
-    88% {
+    90% {
       stroke-dashoffset: 0;
     }
     96%,
@@ -349,247 +747,181 @@ const stages = ["Discover", "Build", "Integrate", "Ship"];
     }
   }
 
-  @keyframes art-stage-1 {
+  /* The comet's stops, as fractions of its path: up out of Discover
+     (4.4 %), into the pile (16.8 %), along the picked card (32.7 %), down
+     into Build (48.3 %), then Integrate (67.6 %), Ship (87 %), beacon. */
+  @keyframes p2p-comet {
     0%,
-    43% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-    49%,
-    88% {
-      fill: rgba(47, 125, 209, 0.28);
-      stroke: #2f7dd1;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-  }
-
-  @keyframes art-label-1 {
-    0%,
-    43% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-    49%,
-    88% {
-      fill: #ffffff;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-  }
-
-  @keyframes art-link-1 {
-    0%,
-    49% {
-      stroke-dashoffset: 1;
-    }
-    55%,
-    88% {
-      stroke-dashoffset: 0;
-    }
-    96%,
-    100% {
-      stroke-dashoffset: 1;
-    }
-  }
-
-  @keyframes art-stage-2 {
-    0%,
-    55% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-    61%,
-    88% {
-      fill: rgba(47, 125, 209, 0.28);
-      stroke: #2f7dd1;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-  }
-
-  @keyframes art-label-2 {
-    0%,
-    55% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-    61%,
-    88% {
-      fill: #ffffff;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-  }
-
-  @keyframes art-link-2 {
-    0%,
-    61% {
-      stroke-dashoffset: 1;
-    }
-    67%,
-    88% {
-      stroke-dashoffset: 0;
-    }
-    96%,
-    100% {
-      stroke-dashoffset: 1;
-    }
-  }
-
-  @keyframes art-stage-3 {
-    0%,
-    67% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-    73%,
-    88% {
-      fill: rgba(47, 125, 209, 0.28);
-      stroke: #2f7dd1;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
-    }
-  }
-
-  @keyframes art-label-3 {
-    0%,
-    67% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-    73%,
-    88% {
-      fill: #ffffff;
-    }
-    96%,
-    100% {
-      fill: rgba(232, 237, 246, 0.8);
-    }
-  }
-
-  @keyframes art-link-3 {
-    0%,
-    73% {
-      stroke-dashoffset: 1;
-    }
-    79%,
-    88% {
-      stroke-dashoffset: 0;
-    }
-    96%,
-    100% {
-      stroke-dashoffset: 1;
-    }
-  }
-
-  /* The runner reaches each stage just as that stage switches on. */
-  @keyframes art-runner {
-    0%,
-    12% {
+    7% {
       offset-distance: 0%;
       opacity: 0;
     }
-    14% {
+    9%,
+    10% {
+      offset-distance: 0%;
       opacity: 1;
     }
-    25% {
-      offset-distance: 20%;
+    17% {
+      offset-distance: 16.8%;
     }
-    34% {
-      offset-distance: 26%;
+    31% {
+      offset-distance: 32.7%;
     }
-    46% {
-      offset-distance: 47%;
-    }
-    58% {
-      offset-distance: 67%;
-    }
-    70% {
-      offset-distance: 88%;
-    }
-    76% {
-      offset-distance: 100%;
-      opacity: 1;
-    }
-    79%,
-    100% {
-      offset-distance: 100%;
-      opacity: 0;
-    }
-  }
-
-  @keyframes art-live {
-    0%,
-    75% {
-      opacity: 0.25;
-    }
-    79%,
-    90% {
-      opacity: 1;
-    }
-    96%,
-    100% {
-      opacity: 0.25;
-    }
-  }
-
-  @keyframes art-status {
-    0%,
-    76% {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    82%,
-    90% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    96%,
-    100% {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-  }
-
-  @keyframes art-pulse {
-    0%,
-    100% {
-      opacity: 0.4;
+    38% {
+      offset-distance: 48.3%;
     }
     50% {
+      offset-distance: 67.6%;
+    }
+    62% {
+      offset-distance: 87%;
+    }
+    71% {
+      offset-distance: 100%;
       opacity: 1;
+    }
+    74%,
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes p2p-beacon-core {
+    0%,
+    70% {
+      opacity: 0.35;
+    }
+    74%,
+    90% {
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0.35;
+    }
+  }
+
+  @keyframes p2p-beacon-glow {
+    0%,
+    70% {
+      opacity: 0;
+    }
+    74%,
+    90% {
+      opacity: 0.9;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes p2p-ambient-live {
+    0%,
+    70% {
+      opacity: 0;
+    }
+    76%,
+    90% {
+      opacity: 1;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Two ripples each while the work is live. */
+  @keyframes p2p-ring-1 {
+    0%,
+    71% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    72% {
+      opacity: 0.8;
+    }
+    80% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+    81% {
+      transform: scale(0.5);
+      opacity: 0.8;
+    }
+    89%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+
+  @keyframes p2p-ring-2 {
+    0%,
+    75.5% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    76.5% {
+      opacity: 0.6;
+    }
+    84.5% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+    85.5% {
+      transform: scale(0.5);
+      opacity: 0.6;
+    }
+    90%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+
+  @keyframes p2p-status {
+    0%,
+    73% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.92);
+    }
+    79%,
+    90% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.92);
     }
   }
 
   /* Reduced motion: the finished picture, nothing moving. */
   @media (prefers-reduced-motion: reduce) {
-    .pick,
-    .lead,
-    .stage rect,
-    .stage text,
-    .link,
-    .runner,
-    .live,
-    .status,
-    .status__dot {
-      animation: none;
+    .art * {
+      animation: none !important;
     }
 
-    .pick,
-    .stage rect {
-      fill: rgba(47, 125, 209, 0.28);
+    .pilot--picked .pilot__box,
+    .stage__box {
+      fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
+    }
+
+    .pilot:not(.pilot--picked) {
+      opacity: 0.45;
+    }
+
+    .pilot__halo,
+    .stage__halo {
+      opacity: 0.4;
+    }
+
+    .stage__ink {
+      color: #ffffff;
     }
 
     .lead,
@@ -597,12 +929,19 @@ const stages = ["Discover", "Build", "Integrate", "Ship"];
       stroke-dashoffset: 0;
     }
 
+    .beacon__core,
+    .ambient--live,
     .status {
       opacity: 1;
       transform: none;
     }
 
-    .runner {
+    .beacon__glow {
+      opacity: 0.9;
+    }
+
+    .comet,
+    .ring {
       display: none;
     }
   }
