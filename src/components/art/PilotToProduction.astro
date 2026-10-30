@@ -37,10 +37,12 @@ const stages = [
 
 /* Geometry, in viewBox units (560 x 380). */
 const CARD = { w: 176, h: 42 };
+/* One aligned list, like a backlog: nothing in it looks chosen until
+   discovery picks the bottom one. */
 const pilots = [
   { x: 28, y: 24, label: "Demo" },
-  { x: 44, y: 76, label: "Pilot" },
-  { x: 60, y: 128, label: "Proof of concept", picked: true },
+  { x: 28, y: 76, label: "Pilot" },
+  { x: 28, y: 128, label: "Proof of concept", picked: true },
 ];
 const picked = pilots[2];
 /* Where the route enters the pile and where it leaves it: both on the
@@ -380,21 +382,6 @@ const timeline = stages
     fill: rgba(232, 237, 246, 0.14);
   }
 
-  .pilot--picked .pilot__box {
-    fill: rgba(232, 237, 246, 0.06);
-    stroke: rgba(232, 237, 246, 0.6);
-    stroke-width: 1.5;
-    stroke-dasharray: none;
-  }
-
-  .pilot--picked .pilot__title {
-    fill: rgba(232, 237, 246, 0.9);
-  }
-
-  .pilot--picked .pilot__line {
-    fill: rgba(232, 237, 246, 0.22);
-  }
-
   .pilot__halo {
     fill: #2f7dd1;
     opacity: 0;
@@ -514,6 +501,8 @@ const timeline = stages
   .pilot,
   .pilot__box,
   .pilot__halo,
+  .pilot__title,
+  .pilot__line,
   .lead,
   .stage__box,
   .stage__halo,
@@ -550,6 +539,14 @@ const timeline = stages
 
   .pilot--picked .pilot__box {
     animation-name: p2p-pick-box;
+  }
+
+  .pilot--picked .pilot__title {
+    animation-name: p2p-pick-title;
+  }
+
+  .pilot--picked .pilot__line {
+    animation-name: p2p-pick-line;
   }
 
   .pilot__halo {
@@ -649,26 +646,62 @@ const timeline = stages
     }
   }
 
+  /* The picked card starts out like the other two (dashed, dim) and
+     turns solid and blue when discovery lands on it. */
   @keyframes p2p-pick-box {
     0%,
     24% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
+      fill: rgba(232, 237, 246, 0.03);
+      stroke: rgba(232, 237, 246, 0.3);
+      stroke-dasharray: 4 4;
     }
     26%,
     28% {
       fill: rgba(232, 237, 246, 0.14);
       stroke: #ffffff;
+      stroke-dasharray: 8 0;
     }
     31%,
     90% {
       fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
+      stroke-dasharray: 8 0;
     }
     96%,
     100% {
-      fill: rgba(232, 237, 246, 0.06);
-      stroke: rgba(232, 237, 246, 0.6);
+      fill: rgba(232, 237, 246, 0.03);
+      stroke: rgba(232, 237, 246, 0.3);
+      stroke-dasharray: 4 4;
+    }
+  }
+
+  @keyframes p2p-pick-title {
+    0%,
+    24% {
+      fill: rgba(232, 237, 246, 0.5);
+    }
+    28%,
+    90% {
+      fill: #ffffff;
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.5);
+    }
+  }
+
+  @keyframes p2p-pick-line {
+    0%,
+    24% {
+      fill: rgba(232, 237, 246, 0.14);
+    }
+    28%,
+    90% {
+      fill: rgba(232, 237, 246, 0.3);
+    }
+    96%,
+    100% {
+      fill: rgba(232, 237, 246, 0.14);
     }
   }
 
@@ -909,6 +942,11 @@ const timeline = stages
     .stage__box {
       fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
+      stroke-dasharray: none;
+    }
+
+    .pilot--picked .pilot__title {
+      fill: #ffffff;
     }
 
     .pilot:not(.pilot--picked) {
