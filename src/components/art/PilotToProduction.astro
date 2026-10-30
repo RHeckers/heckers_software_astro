@@ -7,7 +7,8 @@
  * integrations and then AI integration and returns for validation;
  * validation climbs into a demo and then a pilot, and the last drop,
  * from the pilot down to deployment, is where most initiatives stall.
- * Inline SVG, CSS animation only.
+ * The main-line stops are solid pills; the branch stops are dashed and
+ * dim until the route reaches them. Inline SVG, CSS animation only.
  *
  * One loop (14 s): a comet runs the whole route, lighting each stop as
  * it arrives and drawing the link after it. It pauses at the pilot, the
@@ -111,12 +112,25 @@ const along = (i: number) => ((at[i] / total) * 100).toFixed(2);
 */
 const arrive = [5, 14, 21, 28, 34, 41, 48, 54, 65];
 const BEACON_AT = 72;
-const idle = "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
-const lit = "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
+/* Main-line stops are solid; the branch stops are dashed and dimmer, like
+   something not yet certain, until the route reaches them. */
+const isSub = (i: number) => stops[i].row > 0;
+const idleFor = (i: number) =>
+  isSub(i)
+    ? "fill: rgba(232, 237, 246, 0.03); stroke: rgba(232, 237, 246, 0.3); stroke-dasharray: 4 4;"
+    : "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
+const litFor = (i: number) =>
+  isSub(i)
+    ? "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1; stroke-dasharray: 8 0;"
+    : "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
+const inkIdle = (i: number) =>
+  isSub(i) ? "rgba(232, 237, 246, 0.5)" : "rgba(232, 237, 246, 0.66)";
 const stopCss = stops
   .map((_, i) => {
     const on = arrive[i];
     const full = on + 3;
+    const idle = idleFor(i);
+    const lit = litFor(i);
     const [linkOn, linkDone] =
       i === GAP_AFTER
         ? [56, 64]
@@ -126,7 +140,7 @@ const stopCss = stops
     return `
 @keyframes p2p-stop-${i} { 0%, ${on}% { ${idle} } ${full}%, 90% { ${lit} } 96%, 100% { ${idle} } }
 @keyframes p2p-halo-${i} { 0%, ${on}% { opacity: 0; } ${full}%, 90% { opacity: 0.5; } 96%, 100% { opacity: 0; } }
-@keyframes p2p-ink-${i} { 0%, ${on}% { fill: rgba(232, 237, 246, 0.66); } ${full}%, 90% { fill: #ffffff; } 96%, 100% { fill: rgba(232, 237, 246, 0.66); } }
+@keyframes p2p-ink-${i} { 0%, ${on}% { fill: ${inkIdle(i)}; } ${full}%, 90% { fill: #ffffff; } 96%, 100% { fill: ${inkIdle(i)}; } }
 @keyframes p2p-link-${i} { 0%, ${linkOn}% { stroke-dashoffset: 1; } ${linkDone}%, 90% { stroke-dashoffset: 0; } 96%, 100% { stroke-dashoffset: 1; } }
 .p2p .stop--${i} .stop__box { animation-name: p2p-stop-${i}; }
 .p2p .stop--${i} .stop__halo { animation-name: p2p-halo-${i}; }
@@ -265,7 +279,7 @@ const gapLabel = {
     <g class="stops">
       {
         stops.map((stop, i) => (
-          <g class={`stop stop--${i}`}>
+          <g class:list={["stop", `stop--${i}`, { "stop--sub": stop.row > 0 }]}>
             <rect
               class="stop__halo"
               x={cx(i) - stop.w / 2}
@@ -437,6 +451,18 @@ const gapLabel = {
   .stop__label {
     fill: rgba(232, 237, 246, 0.66);
     text-anchor: middle;
+  }
+
+  /* Branch stops: dashed and dimmer until the route reaches them. */
+  .stop--sub .stop__box {
+    fill: rgba(232, 237, 246, 0.03);
+    stroke: rgba(232, 237, 246, 0.3);
+    stroke-width: 1.25;
+    stroke-dasharray: 4 4;
+  }
+
+  .stop--sub .stop__label {
+    fill: rgba(232, 237, 246, 0.5);
   }
 
   /* --- Beacon --- */
@@ -699,6 +725,7 @@ const gapLabel = {
     .stop__box {
       fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
+      stroke-dasharray: none;
     }
 
     .stop__halo {
