@@ -1,19 +1,19 @@
 ---
 /**
- * The one thing the company does, as a diagram, in the order the work
- * really happens: discovery, development, AI integration and deployment,
- * each card naming the milestone it produces (what to build, a proof of
- * concept and demo, a working pilot, production). The rail climbs a step
- * per stage, and the step between the pilot and deployment is drawn as a
- * broken track with "where most stall" under it; the route bridges it.
+ * The one thing the company does, as a route map: a main line along the
+ * bottom (Discover, Develop, Validate, Deploy) with the milestones that
+ * branch up off it and come back down. Discovery climbs into a proof of
+ * concept and returns for development; development climbs into
+ * integrations and then AI integration and returns for validation;
+ * validation climbs into a demo and then a pilot, and the last drop,
+ * from the pilot down to deployment, is where most initiatives stall.
  * Inline SVG, CSS animation only.
  *
- * One loop (12 s): Discover lights and a comet sets off along the rail,
- * lighting each stage as it arrives and drawing the link after it. At
- * the gap the comet slows, the bridge draws across, the stall label
- * fades, Deploy lights, the beacon ripples and the status pill lands.
- * Then everything resets. The per-stage keyframes are generated from one
- * schedule so the comet and the stages stay in step.
+ * One loop (14 s): a comet runs the whole route, lighting each stop as
+ * it arrives and drawing the link after it. It pauses at the pilot, the
+ * bridge draws down to Deploy, the stall label fades, the beacon ripples
+ * and the status pill lands. Then everything resets. Every keyframe that
+ * depends on a stop is generated below from one schedule.
  */
 interface Props {
   /** Extra class for the figure, so the page can place it in its grid.
@@ -30,38 +30,39 @@ const {
   ...rest
 } = Astro.props;
 
-/* The steps, each with the milestone it ends in and the width its text
-   needs. */
-const stages = [
-  { label: "Discover", outcome: "what to build first", icon: "search", w: 100 },
-  { label: "Develop", outcome: "proof of concept, demo", icon: "code", w: 118 },
-  { label: "Integrate AI", outcome: "a working pilot", icon: "spark", w: 100 },
-  { label: "Deploy", outcome: "in production", icon: "up", w: 84 },
+/* The stops, in route order. `row` is the line they sit on: 0 is the
+   main line, 1 and 2 the branches above it. `x` is the centre; the
+   widths fit the labels and keep stops on the same row apart. */
+const stops = [
+  { label: "Discover", row: 0, x: 54, w: 96 },
+  { label: "Proof of concept", row: 1, x: 122, w: 132 },
+  { label: "Develop", row: 0, x: 190, w: 92 },
+  { label: "Integrations", row: 1, x: 252, w: 108 },
+  { label: "Integrate AI", row: 2, x: 296, w: 110 },
+  { label: "Validate", row: 0, x: 334, w: 90 },
+  { label: "Demo", row: 1, x: 402, w: 72 },
+  { label: "Pilot", row: 2, x: 438, w: 70 },
+  { label: "Deploy", row: 0, x: 474, w: 86 },
 ] as const;
 
-/* Geometry, in viewBox units (560 x 300). The rail climbs one step per
-   stage, bottom left to top right. The step after the pilot (Integrate
-   AI to Deploy) is wider than the others: that is the gap. */
-const STAGE = { h: 66, gap: 20, rise: 44, baseY: 206 };
-const GAP_AFTER = 2;
-const GAP_WIDTH = 46;
-const last = stages.length - 1;
-const gapAfter = (i: number) => (i === GAP_AFTER ? GAP_WIDTH : STAGE.gap);
-const stageX = (i: number) =>
-  12 + stages.slice(0, i).reduce((x, s, j) => x + s.w + gapAfter(j), 0);
-const stageY = (i: number) => STAGE.baseY - i * STAGE.rise;
-const stageMid = (i: number) => stageX(i) + stages[i].w / 2;
-const stageEnd = (i: number) => stageX(i) + stages[i].w;
-const rail = (i: number) => stageY(i) + STAGE.h / 2;
-const BEACON = { x: 536, y: rail(last) };
-const pathEnd = BEACON.x - 14;
+/* Geometry, in viewBox units (560 x 330). */
+const PILL = { h: 32, rx: 16 };
+const ROW_TOP = 236;
+const ROW_GAP = 76;
+const rowTop = (row: number) => ROW_TOP - row * ROW_GAP;
+const cy = (i: number) => rowTop(stops[i].row) + PILL.h / 2;
+const cx = (i: number) => stops[i].x;
+const last = stops.length - 1;
+const GAP_AFTER = last - 1; // Pilot → Deploy
+const BEACON = { x: 540, y: cy(last) };
+const pathEnd = BEACON.x - 12;
 
-/* The step between two stages: an S-curve from the right edge of one to
-   the left edge of the next. Its length is sampled so the comet's stops
-   can be placed as exact fractions of the path. */
-const step = (x1: number, y1: number, x2: number, y2: number) => {
-  const c1 = [x1 + (x2 - x1) * 0.55, y1];
-  const c2 = [x2 - (x2 - x1) * 0.55, y2];
+/* A link between two stops: an S-curve with horizontal tangents, from
+   centre to centre (the pills are drawn on top). Its length is sampled
+   so the comet's stops can be placed as exact fractions of the path. */
+const curve = (x1: number, y1: number, x2: number, y2: number) => {
+  const c1 = [x1 + (x2 - x1) * 0.5, y1];
+  const c2 = [x2 - (x2 - x1) * 0.5, y2];
   const point = (t: number) => {
     const u = 1 - t;
     return [
@@ -71,8 +72,8 @@ const step = (x1: number, y1: number, x2: number, y2: number) => {
   };
   let len = 0;
   let prev = point(0);
-  for (let k = 1; k <= 24; k++) {
-    const next = point(k / 24);
+  for (let k = 1; k <= 32; k++) {
+    const next = point(k / 32);
     len += Math.hypot(next[0] - prev[0], next[1] - prev[1]);
     prev = next;
   }
@@ -81,71 +82,87 @@ const step = (x1: number, y1: number, x2: number, y2: number) => {
 
 const linkPath = (i: number) =>
   i < last
-    ? `M ${stageEnd(i)} ${rail(i)} ${step(stageEnd(i), rail(i), stageX(i + 1), rail(i + 1)).d}`
-    : `M ${stageEnd(i)} ${rail(i)} H ${pathEnd}`;
-const gapCentre = {
-  x: (stageEnd(GAP_AFTER) + stageX(GAP_AFTER + 1)) / 2,
-  y: rail(GAP_AFTER) + 50,
-};
+    ? `M ${cx(i)} ${cy(i)} ${curve(cx(i), cy(i), cx(i + 1), cy(i + 1)).d}`
+    : `M ${cx(i)} ${cy(i)} H ${pathEnd}`;
 
-/* The comet path runs through every stage centre; `at` holds the
-   distance to each centre, so the keyframes can stop there exactly. */
-const cometParts = [`M ${stageMid(0)} ${rail(0)}`];
+/* The comet path runs the whole route; `at` holds the distance to each
+   stop, so the keyframes can halt there exactly. */
+const parts = [`M ${cx(0)} ${cy(0)}`];
 const at = [0];
-let cometLen = 0;
-for (let i = 0; i <= last; i++) {
-  cometParts.push(`H ${stageEnd(i)}`);
-  cometLen += stageEnd(i) - stageMid(i);
-  if (i < last) {
-    const s = step(stageEnd(i), rail(i), stageX(i + 1), rail(i + 1));
-    cometParts.push(s.d, `H ${stageMid(i + 1)}`);
-    cometLen += s.len + stageMid(i + 1) - stageX(i + 1);
-    at.push(cometLen);
-  } else {
-    cometParts.push(`H ${pathEnd}`);
-    cometLen += pathEnd - stageEnd(i);
-  }
+let total = 0;
+for (let i = 0; i < last; i++) {
+  const c = curve(cx(i), cy(i), cx(i + 1), cy(i + 1));
+  parts.push(c.d);
+  total += c.len;
+  at.push(total);
 }
-const cometPath = cometParts.join(" ");
-const along = (i: number) => ((at[i] / cometLen) * 100).toFixed(1);
+parts.push(`H ${pathEnd}`);
+total += pathEnd - cx(last);
+const cometPath = parts.join(" ");
+const along = (i: number) => ((at[i] / total) * 100).toFixed(2);
 
 /*
-  Schedule, in percent of the loop. The comet leaves Discover at 10 %,
-  reaches Develop at 20 % and Integrate AI at 34 %. The gap takes longer:
-  the comet crosses it from 46 % to 56 % while the bridge draws under it,
-  Deploy lights at 56 %, and the beacon goes live at 66 %. Each stage
-  lights as the comet arrives; each link draws as the comet crosses it.
-  The hold ends at 90 %; by 96 % everything is idle again.
+  Schedule, in percent of the loop. The comet leaves Discover at 8 % and
+  reaches the next stops at the times below. It halts at the pilot for a
+  beat, then takes the long drop to Deploy (56 – 65 %) while the bridge
+  draws under it, and reaches the beacon at 72 %. Each stop lights as the
+  comet arrives; each link draws as the comet runs it. The hold ends at
+  90 %; by 96 % everything is idle again.
 */
-const arrive = [6, 20, 34, 56];
-const idleBox = "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
-const litBox = "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
-const timeline = stages
+const arrive = [5, 14, 21, 28, 34, 41, 48, 54, 65];
+const BEACON_AT = 72;
+const idle = "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
+const lit = "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
+const stopCss = stops
   .map((_, i) => {
     const on = arrive[i];
-    const lit = on + 4;
+    const full = on + 3;
     const [linkOn, linkDone] =
-      i === GAP_AFTER ? [44, 54] : i === last ? [60, 64] : [on + 8, on + 12];
+      i === GAP_AFTER
+        ? [56, 64]
+        : i === last
+          ? [BEACON_AT - 5, BEACON_AT - 1]
+          : [on + 2, arrive[i + 1]];
     return `
-@keyframes p2p-stage-${i} { 0%, ${on}% { ${idleBox} } ${lit}%, 90% { ${litBox} } 96%, 100% { ${idleBox} } }
-@keyframes p2p-halo-${i} { 0%, ${on}% { opacity: 0; } ${lit}%, 90% { opacity: 0.55; } 96%, 100% { opacity: 0; } }
-@keyframes p2p-ink-${i} { 0%, ${on}% { color: rgba(232, 237, 246, 0.62); } ${lit}%, 90% { color: #ffffff; } 96%, 100% { color: rgba(232, 237, 246, 0.62); } }
+@keyframes p2p-stop-${i} { 0%, ${on}% { ${idle} } ${full}%, 90% { ${lit} } 96%, 100% { ${idle} } }
+@keyframes p2p-halo-${i} { 0%, ${on}% { opacity: 0; } ${full}%, 90% { opacity: 0.5; } 96%, 100% { opacity: 0; } }
+@keyframes p2p-ink-${i} { 0%, ${on}% { fill: rgba(232, 237, 246, 0.66); } ${full}%, 90% { fill: #ffffff; } 96%, 100% { fill: rgba(232, 237, 246, 0.66); } }
 @keyframes p2p-link-${i} { 0%, ${linkOn}% { stroke-dashoffset: 1; } ${linkDone}%, 90% { stroke-dashoffset: 0; } 96%, 100% { stroke-dashoffset: 1; } }
-.p2p .stage--${i} .stage__box { animation-name: p2p-stage-${i}; }
-.p2p .stage--${i} .stage__halo { animation-name: p2p-halo-${i}; }
-.p2p .stage--${i} .stage__ink { animation-name: p2p-ink-${i}; }
+.p2p .stop--${i} .stop__box { animation-name: p2p-stop-${i}; }
+.p2p .stop--${i} .stop__halo { animation-name: p2p-halo-${i}; }
+.p2p .stop--${i} .stop__label { animation-name: p2p-ink-${i}; }
 .p2p .link--${i} { animation-name: p2p-link-${i}; }`;
   })
   .join("\n");
+
+/* The comet: invisible at the start, visible from 8 %, at each stop at
+   its arrival time, a beat at the pilot, then the beacon. */
+const cometFrames = [
+  `0%, 6% { offset-distance: 0%; opacity: 0; }`,
+  `8% { offset-distance: 0%; opacity: 1; }`,
+  ...stops.slice(1).map((_, k) => {
+    const i = k + 1;
+    const hold = i === GAP_AFTER ? `, 56%` : "";
+    return `${arrive[i]}%${hold} { offset-distance: ${along(i)}%; }`;
+  }),
+  `${BEACON_AT}% { offset-distance: 100%; opacity: 1; }`,
+  `${BEACON_AT + 3}%, 100% { offset-distance: 100%; opacity: 0; }`,
+];
+const cometCss = `@keyframes p2p-comet { ${cometFrames.join(" ")} }`;
+const timeline = `${stopCss}\n${cometCss}`;
+
+const gapLabel = {
+  x: cx(GAP_AFTER) + 64,
+  y: rowTop(1) + PILL.h / 2 + 4,
+};
 ---
 
 <figure class:list={["p2p", className]} {...rest}>
   <svg
     class="art"
-    viewBox="0 0 560 300"
+    viewBox="0 0 560 330"
     role="img"
-    aria-label="A route from discovery through development and AI integration to deployment, bridging the gap between the pilot and production where most initiatives stall."
-    style={`--at-1: ${along(1)}%; --at-2: ${along(2)}%; --at-3: ${along(3)}%`}
+    aria-label="A route map from discovery to production: discovery climbs into a proof of concept and returns for development; development climbs into integrations and AI integration and returns for validation; validation climbs into a demo and a pilot, and the last drop into deployment, where most initiatives stall, is bridged."
   >
     <defs>
       <pattern
@@ -161,10 +178,10 @@ const timeline = stages
         <stop offset="1" stop-color="#000000"></stop>
       </radialGradient>
       <mask id="p2p-mask">
-        <rect width="560" height="300" fill="url(#p2p-fade)"></rect>
+        <rect width="560" height="330" fill="url(#p2p-fade)"></rect>
       </mask>
       <radialGradient id="p2p-ambient" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stop-color="rgba(47, 125, 209, 0.22)"></stop>
+        <stop offset="0" stop-color="rgba(47, 125, 209, 0.2)"></stop>
         <stop offset="1" stop-color="rgba(47, 125, 209, 0)"></stop>
       </radialGradient>
       <radialGradient id="p2p-ambient-live" cx="50%" cy="50%" r="50%">
@@ -172,7 +189,7 @@ const timeline = stages
         <stop offset="1" stop-color="rgba(63, 174, 140, 0)"></stop>
       </radialGradient>
       <filter id="p2p-blur" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="9"></feGaussianBlur>
+        <feGaussianBlur stdDeviation="8"></feGaussianBlur>
       </filter>
       <filter id="p2p-glow" x="-100%" y="-100%" width="300%" height="300%">
         <feGaussianBlur stdDeviation="3"></feGaussianBlur>
@@ -180,41 +197,48 @@ const timeline = stages
     </defs>
 
     <!-- Backdrop: a dot grid that fades at the edges, and a soft glow
-         along the rail that turns green when the work goes live. -->
+         along the route that turns green when the work goes live. -->
     <rect
       class="grid"
       width="560"
-      height="300"
+      height="330"
       fill="url(#p2p-dots)"
       mask="url(#p2p-mask)"></rect>
     <ellipse
       class="ambient"
       cx="280"
-      cy={(rail(0) + rail(last)) / 2}
-      rx="280"
-      ry="90"
-      transform={`rotate(-14 280 ${(rail(0) + rail(last)) / 2})`}
+      cy={rowTop(1) + PILL.h / 2}
+      rx="290"
+      ry="110"
       fill="url(#p2p-ambient)"></ellipse>
     <ellipse
       class="ambient ambient--live"
-      cx={BEACON.x - 60}
-      cy={BEACON.y}
-      rx="160"
-      ry="90"
+      cx={BEACON.x - 70}
+      cy={BEACON.y - 30}
+      rx="170"
+      ry="110"
       fill="url(#p2p-ambient-live)"></ellipse>
 
-    <text class="eyebrow" x={stageX(0)} y={stageY(0) + STAGE.h + 24}>
+    <!-- The main line itself, faint, so the branches read as detours. -->
+    <line
+      class="mainline"
+      x1={cx(0)}
+      y1={cy(0)}
+      x2={pathEnd}
+      y2={cy(0)}></line>
+
+    <text class="eyebrow" x={cx(0) - stops[0].w / 2} y="302">
       The road to production
     </text>
-    <text class="eyebrow eyebrow--end" x={BEACON.x} y={stageY(last) - 18}>
+    <text class="eyebrow eyebrow--end" x={BEACON.x} y={cy(last) - 24}>
       Live
     </text>
 
-    <!-- The route, faint before it is travelled. The step after the pilot
-         is the gap: broken and tinted, with the stall label under it. -->
+    <!-- The route, faint before it is travelled. The drop from the pilot
+         to deployment is the gap: broken and tinted, labelled beside it. -->
     <g class="tracks">
       {
-        stages.map((_, i) => (
+        stops.map((_, i) => (
           <path
             class:list={["track", { "track--gap": i === GAP_AFTER }]}
             d={linkPath(i)}
@@ -222,75 +246,47 @@ const timeline = stages
         ))
       }
     </g>
-    <text class="stall" x={gapCentre.x} y={gapCentre.y}>
-      where most stall
-    </text>
+    <text class="stall" x={gapLabel.x} y={gapLabel.y}>where most stall</text>
 
-    <!-- The rail: four steps, each with an icon, its name and the
-         milestone it ends in. -->
-    <g class="stages">
+    <!-- The travelled route, drawn link by link under the comet. -->
+    <g class="links">
       {
-        stages.map((stage, i) => (
-          <g class={`stage stage--${i}`}>
-            <rect
-              class="stage__halo"
-              x={stageX(i)}
-              y={stageY(i)}
-              width={stage.w}
-              height={STAGE.h}
-              rx="12"
-              filter="url(#p2p-blur)"
-            />
-            <rect
-              class="stage__box"
-              x={stageX(i)}
-              y={stageY(i)}
-              width={stage.w}
-              height={STAGE.h}
-              rx="12"
-            />
-            <g
-              class="stage__ink stage__icon"
-              transform={`translate(${stageMid(i)} ${stageY(i) + 17})`}
-            >
-              {stage.icon === "search" && (
-                <>
-                  <circle cx="-2" cy="-2" r="5" />
-                  <path d="M 2 2 L 7 7" />
-                </>
-              )}
-              {stage.icon === "code" && (
-                <path d="M -4 -6 L -10 0 L -4 6 M 4 -6 L 10 0 L 4 6" />
-              )}
-              {stage.icon === "spark" && (
-                <>
-                  <path d="M -2 -7 L -0.4 -2.4 L 4 -1 L -0.4 0.4 L -2 5 L -3.6 0.4 L -8 -1 L -3.6 -2.4 Z" />
-                  <path d="M 6 2 L 6.9 4.1 L 9 5 L 6.9 5.9 L 6 8 L 5.1 5.9 L 3 5 L 5.1 4.1 Z" />
-                </>
-              )}
-              {stage.icon === "up" && (
-                <>
-                  <path d="M 0 6 V -6 M -5 -1 L 0 -6 L 5 -1" />
-                  <path d="M -7 8 H 7" />
-                </>
-              )}
-            </g>
-            <text class="stage__ink stage__label" x={stageMid(i)} y={stageY(i) + 41}>
-              {stage.label}
-            </text>
-            <text class="stage__outcome" x={stageMid(i)} y={stageY(i) + 56}>
-              {stage.outcome}
-            </text>
-          </g>
-        ))
-      }
-      {
-        stages.map((_, i) => (
+        stops.map((_, i) => (
           <path
             class:list={["link", `link--${i}`, { "link--bridge": i === GAP_AFTER }]}
             pathLength="1"
             d={linkPath(i)}
           />
+        ))
+      }
+    </g>
+
+    <!-- The stops. -->
+    <g class="stops">
+      {
+        stops.map((stop, i) => (
+          <g class={`stop stop--${i}`}>
+            <rect
+              class="stop__halo"
+              x={cx(i) - stop.w / 2}
+              y={rowTop(stop.row)}
+              width={stop.w}
+              height={PILL.h}
+              rx={PILL.rx}
+              filter="url(#p2p-blur)"
+            />
+            <rect
+              class="stop__box"
+              x={cx(i) - stop.w / 2}
+              y={rowTop(stop.row)}
+              width={stop.w}
+              height={PILL.h}
+              rx={PILL.rx}
+            />
+            <text class="stop__label" x={cx(i)} y={rowTop(stop.row) + 20.5}>
+              {stop.label}
+            </text>
+          </g>
         ))
       }
     </g>
@@ -321,17 +317,17 @@ const timeline = stages
       style={`offset-path: path("${cometPath}")`}></circle>
 
     <g class="status">
-      <rect x={BEACON.x - 196} y={BEACON.y + 100} width="196" height="30" rx="15"></rect>
-      <circle class="status__dot" cx={BEACON.x - 178} cy={BEACON.y + 115} r="4"></circle>
-      <text x={BEACON.x - 164} y={BEACON.y + 119}>Live, handed to your team</text>
+      <rect x={BEACON.x - 196} y="284" width="196" height="30" rx="15"></rect>
+      <circle class="status__dot" cx={BEACON.x - 178} cy="299" r="4"></circle>
+      <text x={BEACON.x - 164} y="303">Live, handed to your team</text>
     </g>
   </svg>
   <figcaption>{caption}</figcaption>
 </figure>
 
-<!-- Per-stage keyframes, generated from the schedule above. Global on
-     purpose: keyframe names are page-wide anyway, and every selector is
-     rooted at .p2p. -->
+<!-- Keyframes generated from the schedule above. Global on purpose:
+     keyframe names are page-wide anyway, and every selector is rooted
+     at .p2p. -->
 <style is:inline set:html={timeline} />
 
 <style>
@@ -349,13 +345,13 @@ const timeline = stages
     height: auto;
     overflow: visible;
     font-family: chillax, sans-serif;
-    --loop: 12s;
+    --loop: 14s;
     --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
     --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .art text {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
     fill: rgba(232, 237, 246, 0.82);
   }
@@ -383,9 +379,15 @@ const timeline = stages
 
   /* --- Route --- */
 
+  .mainline {
+    stroke: rgba(232, 237, 246, 0.08);
+    stroke-width: 6;
+    stroke-linecap: round;
+  }
+
   .track {
     fill: none;
-    stroke: rgba(232, 237, 246, 0.16);
+    stroke: rgba(232, 237, 246, 0.18);
     stroke-width: 1.25;
     stroke-dasharray: 3 5;
     stroke-linecap: round;
@@ -393,7 +395,7 @@ const timeline = stages
 
   /* The gap: a broken, reddish track. */
   .track--gap {
-    stroke: rgba(229, 117, 110, 0.55);
+    stroke: rgba(229, 117, 110, 0.6);
     stroke-dasharray: 2 6;
   }
 
@@ -419,42 +421,22 @@ const timeline = stages
     stroke-width: 2.5;
   }
 
-  /* --- Stages --- */
+  /* --- Stops --- */
 
-  .stage__box {
+  .stop__box {
     fill: rgba(232, 237, 246, 0.05);
     stroke: rgba(232, 237, 246, 0.35);
     stroke-width: 1.5;
   }
 
-  .stage__halo {
+  .stop__halo {
     fill: #2f7dd1;
     opacity: 0;
   }
 
-  .stage__ink {
-    color: rgba(232, 237, 246, 0.62);
-  }
-
-  .stage__icon {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .stage__label {
-    fill: currentColor;
+  .stop__label {
+    fill: rgba(232, 237, 246, 0.66);
     text-anchor: middle;
-  }
-
-  .art .stage__outcome {
-    font-family: synonym, sans-serif;
-    font-size: 9.5px;
-    font-weight: 400;
-    text-anchor: middle;
-    fill: rgba(232, 237, 246, 0.5);
   }
 
   /* --- Beacon --- */
@@ -518,9 +500,9 @@ const timeline = stages
 
   /* --- The loop --- */
 
-  .stage__box,
-  .stage__halo,
-  .stage__ink,
+  .stop__box,
+  .stop__halo,
+  .stop__label,
   .link,
   .stall,
   .beacon__core,
@@ -564,6 +546,7 @@ const timeline = stages
     animation-timing-function: ease-out;
   }
 
+  /* The comet's keyframes are generated with the schedule. */
   .comet {
     animation-name: p2p-comet;
     animation-timing-function: linear;
@@ -579,51 +562,13 @@ const timeline = stages
     animation-timing-function: var(--ease-pop);
   }
 
-  /* The comet reaches each stage as that stage switches on: 20 %, 34 %,
-     then crosses the gap slowly to Deploy at 56 % and reaches the beacon
-     at 66 %. The stops are the stage centres as fractions of the path,
-     set inline on the svg from the geometry. */
-  @keyframes p2p-comet {
-    0%,
-    7% {
-      offset-distance: 0%;
-      opacity: 0;
-    }
-    9%,
-    10% {
-      offset-distance: 0%;
-      opacity: 1;
-    }
-    20% {
-      offset-distance: var(--at-1);
-    }
-    34% {
-      offset-distance: var(--at-2);
-    }
-    46% {
-      offset-distance: var(--at-2);
-    }
-    56% {
-      offset-distance: var(--at-3);
-    }
-    66% {
-      offset-distance: 100%;
-      opacity: 1;
-    }
-    69%,
-    100% {
-      offset-distance: 100%;
-      opacity: 0;
-    }
-  }
-
   /* The stall label gives way once the bridge is across. */
   @keyframes p2p-stall {
     0%,
-    50% {
+    60% {
       opacity: 1;
     }
-    57%,
+    66%,
     92% {
       opacity: 0;
     }
@@ -635,10 +580,10 @@ const timeline = stages
 
   @keyframes p2p-beacon-core {
     0%,
-    65% {
+    71% {
       opacity: 0.35;
     }
-    69%,
+    75%,
     90% {
       opacity: 1;
     }
@@ -650,10 +595,10 @@ const timeline = stages
 
   @keyframes p2p-beacon-glow {
     0%,
-    65% {
+    71% {
       opacity: 0;
     }
-    69%,
+    75%,
     90% {
       opacity: 0.9;
     }
@@ -665,10 +610,10 @@ const timeline = stages
 
   @keyframes p2p-ambient-live {
     0%,
-    65% {
+    71% {
       opacity: 0;
     }
-    72%,
+    78%,
     90% {
       opacity: 1;
     }
@@ -681,36 +626,12 @@ const timeline = stages
   /* Two ripples each while the work is live. */
   @keyframes p2p-ring-1 {
     0%,
-    66% {
-      transform: scale(0.5);
-      opacity: 0;
-    }
-    67% {
-      opacity: 0.8;
-    }
-    76% {
-      transform: scale(2.4);
-      opacity: 0;
-    }
-    77% {
-      transform: scale(0.5);
-      opacity: 0.8;
-    }
-    86%,
-    100% {
-      transform: scale(2.4);
-      opacity: 0;
-    }
-  }
-
-  @keyframes p2p-ring-2 {
-    0%,
-    71% {
-      transform: scale(0.5);
-      opacity: 0;
-    }
     72% {
-      opacity: 0.6;
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    73% {
+      opacity: 0.8;
     }
     81% {
       transform: scale(2.4);
@@ -718,7 +639,7 @@ const timeline = stages
     }
     82% {
       transform: scale(0.5);
-      opacity: 0.6;
+      opacity: 0.8;
     }
     90%,
     100% {
@@ -727,13 +648,37 @@ const timeline = stages
     }
   }
 
+  @keyframes p2p-ring-2 {
+    0%,
+    76.5% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    77.5% {
+      opacity: 0.6;
+    }
+    85.5% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+    86.5% {
+      transform: scale(0.5);
+      opacity: 0.6;
+    }
+    92%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+
   @keyframes p2p-status {
     0%,
-    69% {
+    75% {
       opacity: 0;
       transform: translateY(8px) scale(0.92);
     }
-    75%,
+    81%,
     90% {
       opacity: 1;
       transform: translateY(0) scale(1);
@@ -751,17 +696,17 @@ const timeline = stages
       animation: none !important;
     }
 
-    .stage__box {
+    .stop__box {
       fill: rgba(47, 125, 209, 0.3);
       stroke: #2f7dd1;
     }
 
-    .stage__halo {
+    .stop__halo {
       opacity: 0.4;
     }
 
-    .stage__ink {
-      color: #ffffff;
+    .stop__label {
+      fill: #ffffff;
     }
 
     .link {
