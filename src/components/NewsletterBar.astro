@@ -6,8 +6,8 @@
  *
  * It is never shown to someone who already subscribed, to someone who
  * dismissed it in the last 30 days, or while the cookie banner is open, so
- * two bars never stack. On narrow screens it is a single line with a link
- * that jumps to the full card instead of an inline form.
+ * two bars never stack. On narrow screens the form drops under the text
+ * so the reader can subscribe without leaving their place in the article.
  */
 import NewsletterForm from "./NewsletterForm.astro";
 
@@ -36,7 +36,6 @@ const { watch, target } = Astro.props;
   <div class="nl-bar__form">
     <NewsletterForm id="newsletter-bar-form" variant="bare" />
   </div>
-  <a class="nl-bar__jump" href={`#${target}`}>Subscribe</a>
   <button type="button" class="nl-bar__close" aria-label="Dismiss">
     <svg
       width="14"
@@ -122,15 +121,6 @@ const { watch, target } = Astro.props;
     width: min(100%, 380px);
   }
 
-  .nl-bar__jump {
-    display: none;
-    color: var(--color-link);
-    font-weight: var(--font-weight-semi-bold);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    white-space: nowrap;
-  }
-
   .nl-bar__close {
     display: grid;
     place-items: center;
@@ -149,24 +139,24 @@ const { watch, target } = Astro.props;
     color: var(--color-ink);
   }
 
-  /* Narrow screens: one line, a link to the card instead of a form. */
+  /* Narrow screens: the text and the close button on one row, the form
+     full width underneath. */
   @media (max-width: 640px) {
     .nl-bar {
+      flex-wrap: wrap;
       justify-content: space-between;
-      gap: 0.5rem;
+      gap: 0.5rem 0.75rem;
+      padding: 0.6rem 1rem 0.75rem;
     }
 
-    .nl-bar__sub {
-      display: none;
+    .nl-bar__text {
+      flex: 1;
+      min-width: 0;
     }
 
     .nl-bar__form {
-      display: none;
-    }
-
-    .nl-bar__jump {
-      display: inline;
-      margin-left: auto;
+      order: 1;
+      width: 100%;
     }
   }
 </style>
@@ -264,13 +254,6 @@ const { watch, target } = Astro.props;
         /* session-only dismissal */
       }
       finish();
-    });
-
-    bar.querySelector(".nl-bar__jump")?.addEventListener("click", () => {
-      finish();
-      target
-        ?.querySelector<HTMLInputElement>('input[type="email"]')
-        ?.focus({ preventScroll: true });
     });
 
     window.addEventListener("newsletter-subscribed", () => {
