@@ -98,6 +98,7 @@ const frameName = `${id}-frame`;
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
+    min-width: 0;
   }
 
   .nl__group {
@@ -201,6 +202,9 @@ const frameName = `${id}-frame`;
 
   .nl--inline {
     display: grid;
+    /* minmax(0, …) lets the column shrink below the form's intrinsic width
+       (email input + button) so narrow phones never scroll sideways. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
     align-items: center;
     padding: 1.5rem 1.75rem;
@@ -252,6 +256,11 @@ const frameName = `${id}-frame`;
 
     .nl--inline {
       padding: 1.25rem;
+    }
+
+    .nl--inline .nl__group button {
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
 </style>
