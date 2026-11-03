@@ -96,7 +96,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-Two of those options are worth explaining. In development, CopilotKit shows an *inspector*: a floating button that opens a debugging panel. It is useful when something goes wrong, but it sits on top of the chat, so I turned it off here. `defaultToolRendering: true` makes the chat show each tool call as a small row with its name and status, like `set_date_range · Complete` in the recordings. Without it, tool calls are invisible in the chat. CopilotKit hides them on purpose until you decide how to show them. Showing them with your own Angular components is what part 2 is about.
+Two of those options are worth explaining. In development, CopilotKit shows an *inspector*: a floating button that opens a debugging panel. It is useful when something goes wrong, but it sits on top of the chat, so I turned it off here. `defaultToolRendering: true` makes the chat show each tool call as a small row with its name and status, like `set_date_range · Complete` in the recordings. Without it, tool calls are invisible in the chat. CopilotKit hides them on purpose until you decide how to show them. Showing them with your own Angular components is what part 3 is about.
 
 The chat itself is a ready-made standalone component. The app puts it next to the dashboard:
 
@@ -287,6 +287,6 @@ The recordings are from a real Chromium session against the real runtime, with o
 
 ## Next in the series
 
-The tool calls in the chat are generic rows right now. In part 2, we replace them with Angular components: a chart preview, a confirmation card, a widget the user can click. After that comes human in the loop, where the agent asks before it does something you want to approve, and then shared state between your app and an agent that runs on the server.
+Nothing is kept yet: reload the page and the dashboard is back to the default. In [part 2](https://www.heckerssoftware.com/blog/copilotkit-angular-dashboard-description/), the dashboard gets one saved description that defines it. You change it in the chat or edit the text yourself, and the dashboard rebuilds from it and stays that way when you come back. The tool calls in the chat are generic rows right now; in part 3, we replace them with Angular components: a chart preview, a confirmation card, a widget the user can click. After that comes human in the loop, where the agent asks before it does something you want to approve, and then shared state between your app and an agent that runs on the server.
 
 If you want to bring agentic features like this into your own Angular application, and do it with the guardrails a production app needs, that is what my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops#ai) covers, on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.
