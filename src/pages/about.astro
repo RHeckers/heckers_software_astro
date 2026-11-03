@@ -235,7 +235,7 @@ const jsonLd = {
               {item.links && (
                 <span class="cred__links">
                   {item.links.map((talk) => (
-                    <a href={talk.url}>{talk.event}</a>
+                    <a href={talk.url} target="_blank" rel="noopener noreferrer">{talk.event}</a>
                   ))}
                 </span>
               )}
@@ -313,7 +313,7 @@ const jsonLd = {
                     {chapter.book && (
                       <p class="phase__copy">
                         He wrote those lessons down.{" "}
-                        <a href={PROFILES.book.url}>
+                        <a href={PROFILES.book.url} target="_blank" rel="noopener noreferrer">
                           <em>{PROFILES.book.title}</em>
                         </a>{" "}
                         ({PROFILES.book.publisher}, {PROFILES.book.year}) is a
@@ -321,9 +321,9 @@ const jsonLd = {
                         with Nx, RxJS and NgRx, and it is the reason teams
                         across Europe know the name before he walks in. He takes
                         the same material on stage:{" "}
-                        <a href={PROFILES.talks[0].url}>ngPoland</a>,{" "}
-                        <a href={PROFILES.talks[1].url}>Angular Zurich</a> and{" "}
-                        <a href={PROFILES.talks[2].url}>
+                        <a href={PROFILES.talks[0].url} target="_blank" rel="noopener noreferrer">ngPoland</a>,{" "}
+                        <a href={PROFILES.talks[1].url} target="_blank" rel="noopener noreferrer">Angular Zurich</a> and{" "}
+                        <a href={PROFILES.talks[2].url} target="_blank" rel="noopener noreferrer">
                           The Dutch Angular Group
                         </a>{" "}
                         have had him talk about architecture, monorepos and the
@@ -394,7 +394,7 @@ const jsonLd = {
           <div>
             <dt>Book</dt>
             <dd>
-              <a href={PROFILES.book.url}>{PROFILES.book.title}</a> ({
+              <a href={PROFILES.book.url} target="_blank" rel="noopener noreferrer">{PROFILES.book.title}</a> ({
                 PROFILES.book.publisher
               }, {PROFILES.book.year})
             </dd>
@@ -404,7 +404,7 @@ const jsonLd = {
             <dd class="facts__talks">
               {
                 PROFILES.talks.map((talk) => (
-                  <a href={talk.url}>{talk.event}</a>
+                  <a href={talk.url} target="_blank" rel="noopener noreferrer">{talk.event}</a>
                 ))
               }
             </dd>
@@ -428,7 +428,7 @@ const jsonLd = {
               <div>
                 <dt>Profile</dt>
                 <dd>
-                  <a href={PROFILES.linkedin} rel="me">
+                  <a href={PROFILES.linkedin} rel="me noopener noreferrer" target="_blank">
                     LinkedIn
                   </a>
                 </dd>

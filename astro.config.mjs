@@ -1,11 +1,14 @@
 // @ts-check
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
+import rehypeExternalLinks from "./src/plugins/rehype-external-links.mjs";
 import rehypeWrapTables from "./src/plugins/rehype-wrap-tables.mjs";
+
+const site = "https://heckerssoftware.com";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://heckerssoftware.com",
+  site,
   build: {
     // Inline every stylesheet into the HTML. The three external CSS files
     // (~17 KiB compressed in total) were render-blocking and delayed the
@@ -19,6 +22,7 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    rehypePlugins: [rehypeWrapTables],
+    // Tables get a scroll wrapper; links to other sites open in a new tab.
+    rehypePlugins: [rehypeWrapTables, [rehypeExternalLinks, { site }]],
   },
 });

@@ -125,14 +125,14 @@ const jsonLd = {
         {
           PROFILES.linkedin && (
             <li>
-              <a href={PROFILES.linkedin} rel="me">
+              <a href={PROFILES.linkedin} rel="me noopener noreferrer" target="_blank">
                 LinkedIn
               </a>
             </li>
           )
         }
         <li>
-          <a href={PROFILES.book.url}>
+          <a href={PROFILES.book.url} target="_blank" rel="noopener noreferrer">
             {PROFILES.book.title} ({PROFILES.book.publisher},{" "}
             {PROFILES.book.year})
           </a>
