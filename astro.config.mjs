@@ -15,6 +15,10 @@ export default defineConfig({
     // discovery of the web fonts; a single HTML response removes that chain.
     inlineStylesheets: "always",
   },
+  image: {
+    // Sharp for everything, except animated GIFs, which are served as-is.
+    service: { entrypoint: "./src/plugins/image-service.mjs" },
+  },
   integrations: [
     sitemap({
       // Legal pages carry no search value; keep them out of the sitemap.
