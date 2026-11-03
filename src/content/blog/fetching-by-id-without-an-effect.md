@@ -3,7 +3,7 @@ title: "The Effect That Always Bothered Me: Fetching by Id with resource() and a
 description: "Every detail page has one: the subscription or effect that watches a route parameter and kicks off a load. It works, mostly, and it has bothered me for years. Angular's resource() removes it, but naively it also removes your data from the global store and leaves you with component-scoped state. This article shows the problem, the half-solution, and the combination that gives you both."
 pubDate: "2026-10-23"
 heroImage: "../../assets/blog-images/fetch-without-effect.png"
-categories: ["Angular"]
+categories: ["Angular", "Architecture"]
 ---
 
 Every application with a detail page has the same five lines somewhere. The page gets an id from the route, and something has to turn _the id changed_ into _go fetch the thing_. For most of Angular's life that something was a subscription; since signals it has mostly been an `effect`. Both work. Both have bothered me, for the same reason, and it took `resource()` arriving for me to put a finger on what that reason was.

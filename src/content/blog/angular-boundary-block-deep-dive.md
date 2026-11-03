@@ -3,7 +3,7 @@ title: "Angular's @boundary Block: What It Catches, What It Does Not, and How It
 description: "Angular 22.2 added error boundaries to templates. The docs show the syntax. This article goes into the compiler and the runtime to explain exactly which errors reach a boundary, what happens to the view when one does, how $reset really works, and the handful of behaviors you only find out about from the source."
 pubDate: "2026-10-20"
 heroImage: "../../assets/blog-images/angular-boundary-block.png"
-categories: ["Angular"]
+categories: ["Angular", "Error Handling"]
 ---
 
 For most of Angular's life, a rendering error had one destination: the global `ErrorHandler`, and from there usually the console and a blank screen. If a component three levels deep threw during change detection, there was no way to contain it to that component. Either you caught it yourself inside the component, or the whole application stopped updating.

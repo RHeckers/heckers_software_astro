@@ -1,0 +1,283 @@
+---
+/**
+ * A slim opt-in bar for blog posts that only appears once a reader has
+ * actually read: it slides in after they scroll past half of the article
+ * and goes away again as soon as the full signup card scrolls into view.
+ *
+ * It is never shown to someone who already subscribed, to someone who
+ * dismissed it in the last 30 days, or while the cookie banner is open, so
+ * two bars never stack. On narrow screens it is a single line with a link
+ * that jumps to the full card instead of an inline form.
+ */
+import NewsletterForm from "./NewsletterForm.astro";
+
+interface Props {
+  /** Selector of the article body; the bar appears halfway through it. */
+  watch: string;
+  /** Id of the full signup card; the bar hides when it is in view. */
+  target: string;
+}
+
+const { watch, target } = Astro.props;
+---
+
+<div
+  class="nl-bar"
+  id="newsletter-bar"
+  role="region"
+  aria-label="Newsletter"
+  data-watch={watch}
+  data-target={target}
+  hidden
+>
+  <p class="nl-bar__text">
+    Enjoying this? <span class="nl-bar__sub">Get the next post by email.</span>
+  </p>
+  <div class="nl-bar__form">
+    <NewsletterForm id="newsletter-bar-form" variant="bare" />
+  </div>
+  <a class="nl-bar__jump" href={`#${target}`}>Subscribe</a>
+  <button type="button" class="nl-bar__close" aria-label="Dismiss">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      aria-hidden="true"
+    >
+      <path d="M2 2l10 10M12 2L2 12"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .nl-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-light-raised);
+    border-top: 1px solid var(--color-stroke);
+    box-shadow: 0 -8px 30px rgba(7, 16, 32, 0.12);
+    color: var(--color-ink);
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-sm);
+    transform: translateY(0);
+    transition:
+      transform 240ms ease,
+      opacity 240ms ease;
+  }
+
+  .nl-bar[hidden] {
+    display: none;
+  }
+
+  .nl-bar.is-leaving {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nl-bar.is-entering {
+      animation: nl-bar-in 280ms ease;
+    }
+  }
+
+  @keyframes nl-bar-in {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  :global(:root[data-theme="dark"]) .nl-bar {
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  .nl-bar__text {
+    margin: 0;
+    line-height: 1.4;
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .nl-bar__sub {
+    font-weight: var(--font-weight-normal);
+    color: var(--color-ink-muted);
+  }
+
+  .nl-bar__form {
+    width: min(100%, 380px);
+  }
+
+  .nl-bar__jump {
+    display: none;
+    color: var(--color-link);
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+  }
+
+  .nl-bar__close {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .nl-bar__close:hover {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+  }
+
+  /* Narrow screens: one line, a link to the card instead of a form. */
+  @media (max-width: 640px) {
+    .nl-bar {
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .nl-bar__sub {
+      display: none;
+    }
+
+    .nl-bar__form {
+      display: none;
+    }
+
+    .nl-bar__jump {
+      display: inline;
+      margin-left: auto;
+    }
+  }
+</style>
+
+<script>
+  const SUBSCRIBED_KEY = "newsletter-subscribed";
+  const DISMISSED_KEY = "newsletter-bar-dismissed";
+  const DISMISS_DAYS = 30;
+  const SHOW_AFTER = 0.5; // fraction of the article scrolled past
+
+  const bar = document.getElementById("newsletter-bar");
+
+  function read(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  function dismissedRecently(): boolean {
+    const stamp = Number(read(DISMISSED_KEY));
+    return stamp > 0 && Date.now() - stamp < DISMISS_DAYS * 86_400_000;
+  }
+
+  function cookieBannerOpen(): boolean {
+    const cc = document.getElementById("cookie-consent");
+    return !!cc && !cc.hidden;
+  }
+
+  if (bar && !read(SUBSCRIBED_KEY) && !dismissedRecently()) {
+    const article = document.querySelector<HTMLElement>(
+      bar.dataset.watch ?? "",
+    );
+    const target = document.getElementById(bar.dataset.target ?? "");
+
+    let earned = false; // reader scrolled far enough
+    let done = false; // dismissed, subscribed, or reached the card
+
+    const visible = () => earned && !done && !cookieBannerOpen();
+
+    function sync() {
+      if (!bar) return;
+      if (visible() && bar.hidden) {
+        bar.hidden = false;
+        bar.classList.add("is-entering");
+      } else if (!visible() && !bar.hidden) {
+        bar.hidden = true;
+        bar.classList.remove("is-entering", "is-leaving");
+      }
+    }
+
+    function finish() {
+      if (!bar || done) return;
+      done = true;
+      if (bar.hidden) return;
+      bar.classList.add("is-leaving");
+      bar.addEventListener("transitionend", sync, { once: true });
+      setTimeout(sync, 300);
+    }
+
+    function onScroll() {
+      if (!article) return;
+      const rect = article.getBoundingClientRect();
+      const progress = (window.innerHeight - rect.top) / rect.height;
+      if (progress >= SHOW_AFTER) {
+        earned = true;
+        window.removeEventListener("scroll", onScroll);
+        sync();
+      }
+    }
+
+    if (article) {
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+
+    if (target && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            finish();
+            io.disconnect();
+          }
+        },
+        { threshold: 0.2 },
+      );
+      io.observe(target);
+    }
+
+    bar.querySelector(".nl-bar__close")?.addEventListener("click", () => {
+      try {
+        localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+      } catch {
+        /* session-only dismissal */
+      }
+      finish();
+    });
+
+    bar.querySelector(".nl-bar__jump")?.addEventListener("click", () => {
+      finish();
+      target
+        ?.querySelector<HTMLInputElement>('input[type="email"]')
+        ?.focus({ preventScroll: true });
+    });
+
+    window.addEventListener("newsletter-subscribed", () => {
+      // Let the "You're in" message sit for a moment before leaving.
+      setTimeout(finish, 2500);
+    });
+
+    window.addEventListener("cookie-consent-changed", sync);
+  }
+</script>

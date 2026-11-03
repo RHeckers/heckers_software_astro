@@ -1,6 +1,8 @@
 ---
 import { render } from "astro:content";
 import CategoryChips from "../../components/CategoryChips.astro";
+import NewsletterBar from "../../components/NewsletterBar.astro";
+import NewsletterForm from "../../components/NewsletterForm.astro";
 import PageLayout from "../../layouts/PageLayout.astro";
 import logo from "../../assets/logos/logo.png";
 import { AUTHOR, PROFILES, SITE_TITLE, profileLinks } from "../../consts";
@@ -101,9 +103,16 @@ const jsonLd = {
       }
     </header>
 
-    <div class="prose">
+    <div class="prose" id="post-body">
       <Content />
     </div>
+
+    <NewsletterForm
+      id="newsletter"
+      variant="card"
+      heading="Liked this one? The next one can land in your inbox."
+      text="Every post, the day it goes out, and nothing else: one real problem from an Angular, Nx or .NET codebase, worked through to a decision you can reuse."
+    />
 
     <aside class="author" aria-labelledby="author-heading">
       <p class="author__label" id="author-heading">Written by</p>
@@ -129,58 +138,6 @@ const jsonLd = {
           </a>
         </li>
       </ul>
-    </aside>
-
-    <aside class="newsletter">
-      <div class="newsletter-content">
-        <h2>Get practical engineering insights straight to your inbox</h2>
-        <p>
-          Join developers who receive our deep dives on Angular architecture, Nx
-          monorepo strategies, and scalable frontend patterns. No spam, no fluff
-          just actionable content you can apply today.
-        </p>
-      </div>
-      <form
-        class="newsletter-form"
-        id="newsletterForm"
-        method="POST"
-        action="https://zcv2-zcmp.maillist-manage.eu/weboptin.zc"
-        target="zcFrame"
-      >
-        <div class="fields">
-          <div class="input-group">
-            <input
-              type="email"
-              name="CONTACT_EMAIL"
-              id="newsletterEmail"
-              placeholder="Enter your email"
-              required
-              aria-label="Email address"
-            />
-            <button type="submit">Subscribe</button>
-          </div>
-        </div>
-        <span class="newsletter-msg" id="newsletterMsg"></span>
-        <input type="hidden" name="submitType" value="optinCustomView" />
-        <input type="hidden" name="formType" value="QuickForm" />
-        <input type="hidden" name="zx" value="14aec560cd" />
-        <input type="hidden" name="zcvers" value="2.0" />
-        <input type="hidden" name="mode" value="OptinCreateView" />
-        <input type="hidden" name="zcld" value="13ce2114ace6871e" />
-        <input type="hidden" name="zctd" value="13ce2114ace68541" />
-        <input type="hidden" name="zc_trackCode" value="ZCFORMVIEW" />
-        <input
-          type="hidden"
-          name="zc_formIx"
-          value="3zdd934e667aaf45237dedcebdfc4f8ab98f75d0617ab556be86d925d0ec82e9fc"
-        />
-        <input type="hidden" name="viewFrom" value="URL_ACTION" />
-      </form>
-      <iframe
-        name="zcFrame"
-        id="zcFrame"
-        style="display:none;"
-        aria-hidden="true"></iframe>
     </aside>
 
     <aside class="cta">
@@ -216,6 +173,8 @@ const jsonLd = {
       <a href="/blog/">&larr; Back to all posts</a>
     </footer>
   </article>
+
+  <NewsletterBar watch="#post-body" target="newsletter" />
 </PageLayout>
 
 <style>
@@ -233,9 +192,7 @@ const jsonLd = {
   .prose :global(h2),
   .prose :global(h3),
   .prose :global(th),
-  .newsletter-content h2,
   .cta h2,
-  .input-group button,
   .cta-button {
     font-family: "chillax", sans-serif;
   }
@@ -422,118 +379,15 @@ const jsonLd = {
     margin: 2rem 0;
   }
 
-  /* --- Newsletter --- */
-
-  .newsletter {
+  /* The signup card follows the article body directly. */
+  .post > :global(.nl) {
     margin-top: 3rem;
-    padding: 2.5rem;
-    border: 1px solid var(--color-stroke);
-    border-radius: 12px;
-    background: var(--color-light-alt);
-  }
-
-  .newsletter-content {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .newsletter-content h2 {
-    font-size: var(--font-xl);
-    font-weight: var(--font-weight-bold);
-    line-height: 1.2;
-    margin: 0 0 0.75rem;
-  }
-
-  .newsletter-content p {
-    color: var(--color-ink-muted);
-    line-height: 1.7;
-    max-width: 520px;
-    margin: 0 auto;
-  }
-
-  .newsletter-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .fields {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-  }
-
-  .fields input[name="FIRSTNAME"] {
-    width: 100%;
-    max-width: 460px;
-    padding: 0.8rem 1rem;
-    background: var(--color-light-raised);
-    border: 1px solid var(--color-stroke-strong);
-    border-radius: 8px;
-    outline: none;
-  }
-
-  .fields input[name="FIRSTNAME"]::placeholder,
-  .input-group input::placeholder {
-    color: var(--color-ink-muted);
-    opacity: 0.6;
-  }
-
-  .input-group {
-    display: flex;
-    width: 100%;
-    max-width: 460px;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--color-stroke-strong);
-    background: var(--color-light-raised);
-  }
-
-  .input-group input {
-    flex: 1;
-    border: none;
-    padding: 0.8rem 1rem;
-    background: transparent;
-    color: var(--color-ink);
-    outline: none;
-    min-width: 0;
-  }
-
-  .input-group button {
-    flex-shrink: 0;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    font-weight: var(--font-weight-semi-bold);
-    color: #fff;
-    background: var(--color-accent);
-    cursor: pointer;
-    transition: background 200ms ease;
-  }
-
-  .input-group button:hover {
-    background: var(--color-accent-strong);
-  }
-
-  .newsletter-msg {
-    font-size: var(--font-sm);
-    min-height: 1.2em;
-  }
-
-  .newsletter-msg.success {
-    color: var(--color-success);
-  }
-
-  .newsletter-msg.error {
-    color: var(--color-danger);
   }
 
   /* --- CTA --- */
 
   .cta {
-    margin-top: 1.5rem;
+    margin-top: 3rem;
     padding: 2.5rem;
     background: var(--color-dark);
     border-radius: 12px;
@@ -708,38 +562,3 @@ const jsonLd = {
     font-weight: var(--font-weight-medium);
   }
 </style>
-
-<script>
-  const form = document.getElementById("newsletterForm") as HTMLFormElement;
-  const nameInput = document.getElementById(
-    "newsletterName",
-  ) as HTMLInputElement;
-  const emailInput = document.getElementById(
-    "newsletterEmail",
-  ) as HTMLInputElement;
-  const msg = document.getElementById("newsletterMsg") as HTMLSpanElement;
-
-  form.addEventListener("submit", () => {
-    const email = emailInput.value.trim();
-    if (!email) return;
-
-    const btn = form.querySelector("button") as HTMLButtonElement;
-    btn.disabled = true;
-    btn.textContent = "Subscribing...";
-    msg.textContent = "";
-    msg.className = "newsletter-msg";
-
-    // Zoho processes the POST in the hidden iframe.
-    // Show success after a short delay (Zoho doesn't return a
-    // cross-origin readable response, so we optimistically confirm).
-    setTimeout(() => {
-      msg.textContent =
-        "You're in! Check your inbox to confirm (don't forget to check your spam folder).";
-      msg.classList.add("success");
-      nameInput.value = "";
-      emailInput.value = "";
-      btn.disabled = false;
-      btn.textContent = "Subscribe";
-    }, 1500);
-  });
-</script>

@@ -1,5 +1,6 @@
 ---
 import BlogFilterBar from "./BlogFilterBar.astro";
+import NewsletterForm from "./NewsletterForm.astro";
 import PostCard from "./PostCard.astro";
 import type { BlogPost } from "../lib/blog";
 import type { BlogCategory } from "../lib/categories";
@@ -15,6 +16,11 @@ interface Props {
 }
 
 const { heading, intro, posts, categories, active } = Astro.props;
+
+// The signup block sits after the second post: far enough in that the reader
+// has shown interest, early enough that most visitors still see it. With one
+// post it simply follows that post.
+const signupAfter = Math.min(1, posts.length - 1);
 ---
 
 <section class="blog-listing">
@@ -26,10 +32,22 @@ const { heading, intro, posts, categories, active } = Astro.props;
 
   <ul>
     {
-      posts.map((post) => (
-        <li>
-          <PostCard post={post} />
-        </li>
+      posts.map((post, index) => (
+        <>
+          <li>
+            <PostCard post={post} />
+          </li>
+          {index === signupAfter && (
+            <li class="blog-listing__signup">
+              <NewsletterForm
+                id="newsletter"
+                variant="inline"
+                heading="New posts, straight to your inbox"
+                text="One practical article on Angular, Nx or .NET at a time, sent the day it goes out. Nothing else."
+              />
+            </li>
+          )}
+        </>
       ))
     }
   </ul>
