@@ -24,7 +24,7 @@ import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
 import ProofRow from "../../components/ProofRow.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
-import { AUTHOR, COMPANY } from "../../consts";
+import { COMPANY } from "../../consts";
 import { getService } from "../../lib/services";
 import { TAILORED_WORKSHOP, WORKSHOPS } from "../../lib/workshops";
 import { PRICING, VAT_NOTE, euro } from "../../lib/pricing";
@@ -32,10 +32,9 @@ import { PRICING, VAT_NOTE, euro } from "../../lib/pricing";
 const service = getService("workshops");
 const price = PRICING.workshops;
 
-const title =
-  "Angular and Nx workshops for enterprise teams — Heckers Software";
+const title = "Angular & Nx Workshops for Enterprise Teams | Heckers";
 const description =
-  "Hands-on workshops on AI-native development, AI-driven front-end systems, Nx monorepos and enterprise Angular architecture, run on your own codebase and ending in rules your build enforces.";
+  "Hands-on workshops on AI-native development, Nx monorepos and Angular architecture, run on your own codebase and ending in rules your build enforces.";
 
 const tiers = [
   {
@@ -91,8 +90,9 @@ const jsonLd = {
   url: new URL(service.href, Astro.site).toString(),
   provider: {
     "@type": "Organization",
+    "@id": new URL("/#organization", Astro.site).href,
     name: COMPANY.name,
-    url: AUTHOR.url,
+    url: Astro.site?.href,
     email: COMPANY.email,
     telephone: COMPANY.phone,
   },
@@ -113,6 +113,7 @@ const jsonLd = {
   title={title}
   description={description}
   jsonLd={jsonLd}
+  breadcrumbs={[{ name: "Workshops", path: service.href }]}
   compactFooter
 >
   <ServiceHero

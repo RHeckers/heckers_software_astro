@@ -1,6 +1,7 @@
 ---
 title: "Your tooling should not dictate your folder structure"
 description: "Almost every Nx workspace I get to work in has the same two folders in the root: apps and libs. That is what Nx gives you, and for a long time I took it as a given, but now I know your tooling should not dictate your folder structure."
+metaDescription: "Almost every Nx workspace has apps and libs folders in the root. Why that is a tooling default, not architecture, and why folders should describe your system."
 pubDate: "2026-09-14"
 heroImage: "../../assets/blog-images/nx-folder-structre.png"
 categories: ["Angular", "Nx", "Architecture"]

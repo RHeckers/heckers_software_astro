@@ -8,6 +8,14 @@ const blog = defineCollection({
     z.object({
       title: z.string(),
       description: z.string(),
+      /**
+       * Search-result versions of the title and description. Search engines
+       * cut titles at about 60 characters and descriptions at about 155;
+       * these fill the <title> and meta description when the full versions
+       * (still used for the heading, the post cards and RSS) are longer.
+       */
+      metaTitle: z.string().max(60).optional(),
+      metaDescription: z.string().max(160).optional(),
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       heroImage: image().optional(),

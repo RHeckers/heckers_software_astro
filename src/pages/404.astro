@@ -1,0 +1,119 @@
+---
+/**
+ * Served by Azure Static Web Apps for any path that has no page (see the
+ * 404 override in staticwebapp.config.json). Kept out of search results,
+ * and every way forward is one click: the services, the blog, the start.
+ */
+import PageLayout from "../layouts/PageLayout.astro";
+import { SERVICES } from "../lib/services";
+---
+
+<PageLayout
+  title="Page not found | Heckers Software"
+  description="This page does not exist. Find our services, the blog or the homepage from here."
+  noindex
+>
+  <section class="nf">
+    <div class="nf__inner">
+      <p class="nf__code" aria-hidden="true">404</p>
+      <h1 class="nf__title">This page does not exist</h1>
+      <p class="nf__lead">
+        The link may be old, or the address may have a typo. These are the
+        pages most people are looking for:
+      </p>
+      <ul class="nf__links">
+        {
+          SERVICES.map((service) => (
+            <li>
+              <a href={service.href}>{service.name}</a>
+            </li>
+          ))
+        }
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/about/">About Heckers Software</a></li>
+      </ul>
+      <a href="/" class="nf__home">Back to the homepage</a>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .nf {
+    min-height: 80vh;
+    display: grid;
+    place-items: center;
+    padding: clamp(7rem, 14vw, 10rem) 1.5rem 5rem;
+    background: var(--color-light-alt);
+  }
+
+  .nf__inner {
+    width: 100%;
+    max-width: 40rem;
+  }
+
+  .nf__code {
+    font-family: "chillax", sans-serif;
+    font-size: clamp(4rem, 14vw, 7rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1;
+    color: var(--color-accent-strong);
+    margin-bottom: 1rem;
+  }
+
+  .nf__title {
+    font-family: "chillax", sans-serif;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.15;
+    color: var(--color-ink);
+    margin-bottom: 1rem;
+  }
+
+  .nf__lead {
+    font-family: "synonym", sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .nf__links {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    border-top: 1px solid var(--color-stroke);
+  }
+
+  .nf__links li {
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .nf__links a {
+    display: block;
+    padding: 0.9rem 0;
+    font-family: "chillax", sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  .nf__links a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+  }
+
+  .nf__home {
+    display: inline-flex;
+    padding: 0.85em 1.8em;
+    border-radius: 100px;
+    background: var(--color-accent-strong);
+    color: #fff;
+    font-family: "chillax", sans-serif;
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: none;
+  }
+
+  .nf__home:hover {
+    background: var(--color-accent-ink);
+  }
+</style>

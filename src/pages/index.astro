@@ -3,7 +3,7 @@ import HeroSection from "../components/HeroSection.astro";
 import {
   AUTHOR,
   COMPANY,
-  SITE_TITLE,
+  HOME_TITLE,
   SITE_DESCRIPTION,
   profileLinks,
 } from "../consts";
@@ -65,14 +65,14 @@ const jsonLd = {
       logo: new URL(logo.src, Astro.site).href,
       email: COMPANY.email,
       telephone: COMPANY.phone,
-      founder: { "@type": "Person", "@id": `${siteUrl}about#person`, name: AUTHOR.name },
+      founder: { "@type": "Person", "@id": `${siteUrl}about/#person`, name: AUTHOR.name },
       sameAs: profileLinks(),
     },
   ],
 };
 ---
 
-<PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION} jsonLd={jsonLd}>
+<PageLayout title={HOME_TITLE} description={SITE_DESCRIPTION} jsonLd={jsonLd}>
   <div class="home">
   {/* 1. The promise */}
   <HeroSection />

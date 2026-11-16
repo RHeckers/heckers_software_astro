@@ -1,6 +1,8 @@
 ---
 title: "Angular's @boundary Block: What It Catches, What It Does Not, and How It Works Underneath"
 description: "Angular 22.2 added error boundaries to templates. The docs show the syntax. This article goes into the compiler and the runtime to explain exactly which errors reach a boundary, what happens to the view when one does, how $reset really works, and the handful of behaviors you only find out about from the source."
+metaTitle: "Angular @boundary Block: How Error Boundaries Really Work"
+metaDescription: "Angular 22.2 added template error boundaries. Which errors reach a @boundary, what happens to the view, how $reset works, and the edge cases in the source."
 pubDate: "2026-10-20"
 heroImage: "../../assets/blog-images/angular-boundary-block.png"
 categories: ["Angular", "Error Handling"]
@@ -257,7 +259,7 @@ There is one difference, and it is the kind you only find out about by reading t
 
 The template block does not have this gap, because `ɵɵboundaryUpdate` wraps the entire view creation in a `try`. So the capability table is:
 
-|                                    | `@boundary` | `createComponent({ onError })` |
+| Error source                       | `@boundary` | `createComponent({ onError })` |
 | ---------------------------------- | ----------- | ------------------------------ |
 | Constructor errors                 | caught      | **thrown to caller**           |
 | Lifecycle hooks, bindings, effects | caught      | caught                         |

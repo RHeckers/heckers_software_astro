@@ -1,6 +1,8 @@
 ---
 title: "Build a Plugin-Based Global Error Handler for Your Angular Nx Monorepo"
 description: "Stop hardcoding error integrations. Learn how to build an extendible, plugin-based ErrorHandler using Angular's dependency injection and multi-providers, designed for scalable Nx workspaces."
+metaTitle: "Plugin-Based Global Error Handler for Angular Nx Monorepos"
+metaDescription: "Stop hardcoding error integrations. Build a plugin-based Angular ErrorHandler with dependency injection and multi-providers that scales across Nx workspaces."
 pubDate: "2026-03-29"
 heroImage: "../../assets/blog-images/Plugin-Based-Global-Error-Handler-for-Your-Angular-Nx-Monorepo.png"
 categories: ["Angular", "Nx", "Error Handling", "Architecture"]

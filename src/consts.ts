@@ -1,5 +1,7 @@
 export const SITE_TITLE = "Heckers Software - Angular, Nx and AI engineering for enterprises";
-export const SITE_DESCRIPTION = "Forward-deployed engineering: one industry expert, amplified by AI, who comes into your company and delivers software and AI end to end, from discovery to production.";
+export const SITE_DESCRIPTION = "Forward-deployed engineering: one industry expert, amplified by AI, who comes into your company and delivers software and AI end to end, into production.";
+/** The homepage <title>: the main offer first, the brand last, under 60 characters. */
+export const HOME_TITLE = "Forward-Deployed Engineering & AI | Heckers Software";
 
 export const COMPANY = {
   name: "Heckers Software",
@@ -15,7 +17,7 @@ export const COMPANY = {
 
 export const AUTHOR = {
   name: "Roberto Heckers",
-  url: "https://heckerssoftware.com/about",
+  url: "https://heckerssoftware.com/about/",
   jobTitle: "Founder and senior software engineer",
   /** One paragraph, used under blog posts and in structured data. */
   bio: "Founder of Heckers Software, author of Effective Angular (Packt, 2024) and speaker at ngPoland, Angular Zurich and The Dutch Angular Group. Builds and untangles Angular, Nx and .NET systems for enterprises, delivers software and AI end to end as a forward-deployed engineer, and keeps the company at the edge of AI through knowledge groups with industry leaders.",

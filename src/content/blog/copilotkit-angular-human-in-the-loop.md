@@ -1,6 +1,8 @@
 ---
 title: "CopilotKit and Angular, Part 4: Let the User Approve the Change"
 description: "Human in the loop in Angular: the agent stops, asks in the chat, and waits for your answer before it removes anything. Built with CopilotKit's registerHumanInTheLoop, with the approval enforced in code, and the pitfalls I found while testing it, including one that silently loses the user's answer."
+metaTitle: "CopilotKit + Angular, Part 4: Human-in-the-Loop Approval"
+metaDescription: "Human in the loop in Angular: the agent asks in the chat and waits for approval, enforced in code with CopilotKit, and a pitfall that loses the answer."
 pubDate: "2026-11-15"
 heroImage: "../../assets/blog-images/copilotkit-angular-human-in-the-loop.png"
 categories: ["Angular", "AI"]
@@ -18,7 +20,7 @@ Some changes deserve a question first. In this part, the agent asks before it re
 
 Part 3 already had buttons on cards, and one of them, **Add to dashboard**, also lets the user decide before something lands on the dashboard. So it is worth being precise about what is new here. The difference is who is waiting for whom.
 
-| | Part 3: Undo | Part 3: Add to dashboard | Part 4: Approve |
+| Aspect | Part 3: Undo | Part 3: Add to dashboard | Part 4: Approve |
 | --- | --- | --- | --- |
 | When | After the agent acted | After the agent answered | Before the agent acts |
 | Who starts it | The agent | The user picks up a suggestion | The agent asks |
@@ -309,4 +311,4 @@ Asking is not a permission system. The approval decides whether this user wants 
 
 So far, everything the agent knows about the dashboard comes from the browser, in the context we send with every message. In part 5, the dashboard spec becomes shared state between the Angular app and an agent that runs on the server, so both sides can read and change it, and the conversation can be saved.
 
-If you want to bring features like this into your own Angular application, my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops#ai) covers them on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.
+If you want to bring features like this into your own Angular application, my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops/#ai) covers them on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.

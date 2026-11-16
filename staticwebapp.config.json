@@ -1,4 +1,5 @@
 {
+  "trailingSlash": "auto",
   "routes": [
     {
       "route": "/api/*",
@@ -6,8 +7,19 @@
     },
     {
       "route": "/services/application-development",
-      "redirect": "/services/forward-deployed-engineering",
+      "redirect": "/services/forward-deployed-engineering/",
+      "statusCode": 301
+    },
+    {
+      "route": "/services/application-development/",
+      "redirect": "/services/forward-deployed-engineering/",
       "statusCode": 301
     }
-  ]
+  ],
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    }
+  }
 }

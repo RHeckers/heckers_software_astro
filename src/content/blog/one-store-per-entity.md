@@ -1,6 +1,8 @@
 ---
 title: "One Store per Entity: Granular Signal Stores for Code You Actually Want to Share"
 description: "A store that answers two questions drags both into every application that needs one. Here is why I keep NgRx Signal Stores to a single entity, how composition replaces merging, and how one store method can serve very different callers without branching."
+metaTitle: "One Store per Entity: Granular NgRx Signal Stores"
+metaDescription: "Why I keep NgRx Signal Stores to a single entity, how composition replaces merging, and how one store method serves very different callers without branching."
 pubDate: "2026-10-05"
 heroImage: "../../assets/blog-images/one-store-per-entity.png"
 categories: ["Angular", "Nx", "Architecture"]

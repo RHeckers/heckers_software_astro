@@ -1,6 +1,8 @@
 ---
 title: "FieldTree vs FieldState: The One Distinction That Makes Signal Forms Click"
 description: "Most confusion with Angular Signal Forms comes down to one question: am I holding a FieldTree or a FieldState? This article goes into the Angular source to explain exactly what each one is, how a pair of parentheses turns one into the other, and how to never get it wrong again."
+metaTitle: "FieldTree vs FieldState in Angular Signal Forms"
+metaDescription: "Most Angular Signal Forms confusion is one question: FieldTree or FieldState? What each one is in the source, and how parentheses turn one into the other."
 pubDate: "2026-10-06"
 heroImage: "../../assets/blog-images/fieldtree-vs-fieldstate.png"
 categories: ["Angular", "Forms"]
@@ -30,7 +32,7 @@ interface IncidentReport {
 
 Here are the three objects you will meet, side by side.
 
-|                        | `SchemaPath`                                   | `FieldTree`                               | `FieldState`                                          |
+| Question               | `SchemaPath`                                   | `FieldTree`                               | `FieldState`                                          |
 | ---------------------- | ---------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
 | **What it is**         | A location in the form, before the form exists | A navigable map of the live form          | The state of one field, right now                     |
 | **When it exists**     | Inside the schema function passed to `form()`  | After `form()` returns                    | Whenever you call a `FieldTree`                       |

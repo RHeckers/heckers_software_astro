@@ -15,21 +15,24 @@ import talk from "../../assets/workshop/talk_2.png";
     <Image
       src={stage}
       alt="Roberto Heckers on stage at ngPoland"
-      width={900}
+      widths={[360, 480, 720]}
+      sizes="(min-width: 900px) 340px, 62vw"
       loading="eager"
       class="photos__item photos__item--main"
     />
     <Image
       src={zurich}
       alt="Workshop at Angular Zurich"
-      width={600}
+      widths={[360, 480, 600]}
+      sizes="(min-width: 900px) 340px, 62vw"
       loading="lazy"
       class="photos__item photos__item--second"
     />
     <Image
       src={talk}
       alt="A hands-on workshop session"
-      width={600}
+      widths={[280, 400, 520]}
+      sizes="(min-width: 900px) 260px, 48vw"
       loading="lazy"
       class="photos__item photos__item--third"
     />

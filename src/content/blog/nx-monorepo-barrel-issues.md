@@ -1,6 +1,8 @@
 ---
 title: "Your Nx monorepo barrel files are causing you trouble without you noticing"
 description: "You have code in your bundle you never import and your main bundle is growing without you ever knowing it. In this article you'll learn about the dangers of barrel files in your Nx monorepo and how to resolve them."
+metaTitle: "Nx Monorepo Barrel Files: The Hidden Cost in Your Bundle"
+metaDescription: "Code you never import is ending up in your bundle. The dangers of barrel files in an Nx monorepo, how to spot them, and how to resolve them."
 pubDate: "2026-09-13"
 heroImage: "../../assets/blog-images/nx-monorepo-barrel-files.png"
 categories: ["Angular", "Nx", "Architecture"]

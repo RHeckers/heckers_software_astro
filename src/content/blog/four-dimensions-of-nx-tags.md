@@ -1,12 +1,13 @@
 ---
 title: "Four Dimensions of Nx Tags, and Why One Is Not Enough"
 description: "Nx tags are the only thing standing between a large workspace and a plate of spaghetti. Here is why the default single scope stops working, and the four-axis system I use instead."
+metaDescription: "Nx tags keep a large workspace from turning into spaghetti. Why a single scope tag stops working, and the four-axis tagging system I use instead."
 pubDate: "2026-9-18"
 heroImage: "../../assets/blog-images/nx-tags.png"
 categories: ["Angular", "Nx", "Architecture"]
 ---
 
-In the [previous article](/blog/your-tooling-should-not-dictate-your-folder-structure) I argued that the `apps` and `libs` split is a consequence of how Nx caches and rebuilds, and that your folder structure should describe your system instead. I finished with a claim I did not back up: that a folder structure which depends on people remembering it is documentation, not architecture.
+In the [previous article](/blog/your-tooling-should-not-dictate-your-folder-structure/) I argued that the `apps` and `libs` split is a consequence of how Nx caches and rebuilds, and that your folder structure should describe your system instead. I finished with a claim I did not back up: that a folder structure which depends on people remembering it is documentation, not architecture.
 
 This article is about the part that makes it architecture. It is longer and more detailed than the last one, because tags are one of those subjects where the interesting parts are all in the corners.
 

@@ -51,7 +51,8 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
               <Image
                 src={images[workshop.id].src}
                 alt={workshop.title}
-                width={960}
+                widths={[400, 640, 960]}
+                sizes="(min-width: 900px) 480px, 90vw"
                 loading="lazy"
                 style={`object-position: ${images[workshop.id].position};`}
               />
@@ -307,7 +308,7 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
   }
 
   .workshop--tailored .workshop__cta {
-    color: var(--color-accent);
+    color: var(--color-accent-strong);
     background-color: var(--color-ink-light);
   }
 

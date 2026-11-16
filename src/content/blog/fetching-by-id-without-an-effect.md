@@ -1,6 +1,8 @@
 ---
 title: "The Effect That Always Bothered Me: Fetching by Id with resource() and a Store That Stays Global"
 description: "Every detail page has one: the subscription or effect that watches a route parameter and kicks off a load. It works, mostly, and it has bothered me for years. Angular's resource() removes it, but naively it also removes your data from the global store and leaves you with component-scoped state. This article shows the problem, the half-solution, and the combination that gives you both."
+metaTitle: "Fetch by Id in Angular With resource(), No effect() Needed"
+metaDescription: "Angular's resource() removes the effect that loads data by route id, but can scope your data to the component. How to drop the effect and keep a global store."
 pubDate: "2026-10-23"
 heroImage: "../../assets/blog-images/fetch-without-effect.png"
 categories: ["Angular", "Architecture"]

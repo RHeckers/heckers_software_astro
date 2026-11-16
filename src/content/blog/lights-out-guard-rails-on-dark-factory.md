@@ -1,6 +1,8 @@
 ---
 title: "Lights Out, Guard Rails On: Building Your First Software Dark Factory"
 description: "A dark factory runs with the lights off: coding agents pick up tickets and open pull requests while nobody watches. The agents are the easy part. This is a tour of the guard rails that decide whether you wake up to merged features or to a very confident mess."
+metaTitle: "Lights Out, Guard Rails On: Your First Software Dark Factory"
+metaDescription: "Coding agents pick up tickets and open pull requests while nobody watches. The guard rails that decide whether you wake up to features or a confident mess."
 pubDate: "2026-10-29"
 heroImage: "../../assets/blog-images/lights-out-dark-factory.png"
 categories: ["AI", "Architecture", "Nx"]
@@ -168,8 +170,8 @@ A software dark factory is not a smarter agent. It is a line built around ordina
 
 You can build all of this yourself, and this article should give you a head start. But most of what makes a factory work is in the details between the sections: the exact shape of a story, the reviewer prompt that finds real problems instead of style nits, the gate thresholds for *your* test suite, the first ten stories that prove the line before anyone trusts it.
 
-That is what my workshop **[AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops#ai)** is for. It runs on your own codebase, not a toy project: we set up the agents, the ledger, the gates and the chain from ticket to pull request together, so your team leaves with a working line and knows how to keep it honest.
+That is what my workshop **[AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops/#ai)** is for. It runs on your own codebase, not a toy project: we set up the agents, the ledger, the gates and the chain from ticket to pull request together, so your team leaves with a working line and knows how to keep it honest.
 
-If you would rather have the line built and running before your team takes it over, that is a [forward-deployed engagement](https://heckerssoftware.com/services/forward-deployed-engineering): I come into your team, build the factory on your repositories, run the first stories through it with you, and hand it over with the decisions written down.
+If you would rather have the line built and running before your team takes it over, that is a [forward-deployed engagement](https://heckerssoftware.com/services/forward-deployed-engineering/): I come into your team, build the factory on your repositories, run the first stories through it with you, and hand it over with the decisions written down.
 
 Either way, it starts with a short conversation about where you are. [Get in touch](https://heckerssoftware.com/#contactForm), and I will tell you honestly what your first factory should look like, and which dark spots you are likely to hit first.

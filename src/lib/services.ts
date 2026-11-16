@@ -32,7 +32,7 @@ export interface Service {
 export const SERVICES: readonly Service[] = [
   {
     slug: "forward-deployed-engineering",
-    href: "/services/forward-deployed-engineering",
+    href: "/services/forward-deployed-engineering/",
     navLabel: "Forward-Deployed Engineering",
     name: "Forward-Deployed Engineering",
     summary:
@@ -42,7 +42,7 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "architecture-assessment",
-    href: "/services/architecture-assessment",
+    href: "/services/architecture-assessment/",
     navLabel: "Architecture Assessment",
     name: "Architecture assessment",
     summary:
@@ -52,7 +52,7 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "workshops",
-    href: "/services/workshops",
+    href: "/services/workshops/",
     navLabel: "Workshops",
     name: "Angular and Nx workshops",
     summary:

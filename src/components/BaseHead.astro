@@ -1,8 +1,8 @@
 ---
 import "../styles/global.scss";
 import type { ImageMetadata } from "astro";
-import FallbackImage from "../assets/logos/html_logo.png";
 import { SITE_TITLE } from "../consts";
+import { ogCardPath } from "../lib/og-cards";
 
 export interface ArticleMeta {
   publishedTime: Date;
@@ -14,13 +14,30 @@ export interface ArticleMeta {
 interface Props {
   title: string;
   description: string;
-  image?: ImageMetadata;
+  /**
+   * Social preview image: an imported asset, or a site path such as the
+   * generated card at /og/<page>.png. Defaults to the card for the page's
+   * own path when one is generated, and to the logo otherwise.
+   */
+  image?: ImageMetadata | string;
   /** Open Graph type; posts pass "article". */
   type?: "website" | "article";
   /** Article-specific Open Graph metadata (only used when type is "article"). */
   article?: ArticleMeta;
   /** JSON-LD structured data, serialized into the head. */
   jsonLd?: Record<string, unknown>;
+  /** Keep the page out of search results (the 404 page). */
+  noindex?: boolean;
+  /**
+   * Trail from the homepage to this page, emitted as BreadcrumbList data.
+   * The homepage is added automatically; the last item is this page.
+   */
+  breadcrumbs?: readonly Breadcrumb[];
+}
+
+export interface Breadcrumb {
+  name: string;
+  path: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -28,11 +45,37 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const {
   title,
   description,
-  image = FallbackImage,
+  image,
   type = "website",
   article,
   jsonLd,
+  noindex = false,
+  breadcrumbs,
 } = Astro.props;
+
+const breadcrumbLd = breadcrumbs?.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [{ name: "Home", path: "/" }, ...breadcrumbs].map(
+        (crumb, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: crumb.name,
+          item: new URL(crumb.path, Astro.site).href,
+        }),
+      ),
+    }
+  : undefined;
+
+// Pages without their own image get the generated 1200x630 card for their
+// path (see src/pages/og/[...card].png.ts).
+const isCard = typeof image !== "object";
+const imageSrc =
+  typeof image === "object"
+    ? image.src
+    : (image ?? ogCardPath(Astro.url.pathname));
+const imageURL = new URL(imageSrc, Astro.site);
 
 const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
 ---
@@ -101,15 +144,25 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
 <!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="description" content={description} />
+{noindex && <meta name="robots" content="noindex, follow" />}
 
 <!-- Open Graph / Facebook -->
 <meta property="og:site_name" content="Heckers Software" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:type" content={type} />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image.src, Astro.url)} />
+<meta property="og:image" content={imageURL} />
+{
+  isCard && (
+    <Fragment>
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+    </Fragment>
+  )
+}
+<meta property="og:image:alt" content={title} />
 {
   type === "article" && article && (
     <Fragment>
@@ -135,7 +188,7 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={new URL(image.src, Astro.url)} />
+<meta name="twitter:image" content={imageURL} />
 <meta name="twitter:image:alt" content={title} />
 
 <!-- Structured data -->
@@ -145,6 +198,15 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
       is:inline
       type="application/ld+json"
       set:html={JSON.stringify(jsonLd)}
+    />
+  )
+}
+{
+  breadcrumbLd && (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(breadcrumbLd)}
     />
   )
 }

@@ -1,6 +1,8 @@
 ---
 title: "CopilotKit and Angular, Part 3: Angular Components Inside the Chat"
 description: "Replace the generic tool rows in the chat with your own Angular components: a card that shows exactly what the agent changed, with an undo button, and a chart the agent answers with, which you can add to the dashboard in one click. Built with CopilotKit's Angular package, with the details that make it trustworthy."
+metaTitle: "CopilotKit + Angular, Part 3: Angular Components in Chat"
+metaDescription: "Replace the generic tool rows in a CopilotKit chat with your own Angular components: a change card with undo, and a chart you add to the dashboard."
 pubDate: "2026-11-11"
 heroImage: "../../assets/blog-images/copilotkit-angular-components-in-chat.png"
 categories: ["Angular", "AI"]
@@ -248,4 +250,4 @@ This shows a change after it happened. In part 2, I mentioned a preview of a cha
 
 Part 4 is human in the loop: the agent proposes a change, the chat shows it as a component with **Apply** and **Cancel**, and nothing happens until you choose. After that comes shared state between your app and an agent that runs on the server.
 
-If you want to bring features like this into your own Angular application, my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops#ai) covers them on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.
+If you want to bring features like this into your own Angular application, my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops/#ai) covers them on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.

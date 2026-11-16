@@ -138,13 +138,14 @@ const frameName = `${id}-frame`;
     font-family: "chillax", sans-serif;
     font-weight: var(--font-weight-semi-bold);
     color: #fff;
-    background: var(--color-accent);
+    /* White on the base accent is 4.2:1; the stronger blue passes. */
+    background: var(--color-accent-strong);
     cursor: pointer;
     transition: background 200ms ease;
   }
 
   .nl__group button:hover {
-    background: var(--color-accent-strong);
+    background: var(--color-accent-ink);
   }
 
   .nl__group button:disabled {

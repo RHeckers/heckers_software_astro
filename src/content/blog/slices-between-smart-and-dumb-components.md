@@ -1,6 +1,8 @@
 ---
 title: "Smart and Dumb Components Are Not Enough: The Slice in Between"
 description: "Container and presentational components are a good start, and a bad place to stop. Here is where the friction comes from in a large Angular workspace, what a domain slice and a feature slice are, when a slice is the right call, and what goes wrong when it is not."
+metaTitle: "Beyond Smart and Dumb Components: Slices in Angular"
+metaDescription: "Container and presentational components are a good start and a bad place to stop. Domain and feature slices in large Angular workspaces, and when to use them."
 pubDate: "2026-10-16"
 heroImage: "../../assets/blog-images/slices-between-smart-and-dumb.png"
 categories: ["Angular", "Nx", "Architecture"]
@@ -319,7 +321,7 @@ A **domain slice** lives in `libs/<domain>/slices` and knows one domain. `next-f
 
 A **feature slice** lives in `apps/<app>/slices` and may know things a domain slice may not. `shift-summary` shows the zoo keeper how many animals are fed, how many are overdue, and which enclosure to go to next. It reads the animals, feeding and enclosures stores, and it applies a rule only the keeper app has: feedings are overdue relative to the keeper's shift start. That combination is not allowed in a domain, because `libs/animals` may not import `libs/feeding`. The application may import both, so a slice in the application can compose them. Tagged `app:keeper-mobile` and `type:slice`, it is reusable within that application, across its screens, and not beyond. The test: **is this reusable within one application, but either combines domains or applies a rule only that application has?** If it could live in a domain with no loss, move it there.
 
-|                 | Domain slice           | Feature slice                          |
+| Rule            | Domain slice           | Feature slice                          |
 | --------------- | ---------------------- | -------------------------------------- |
 | Lives in        | `libs/<domain>/slices` | `apps/<app>/slices`                    |
 | May inject      | that domain's stores   | any store, including app-specific ones |
@@ -351,7 +353,7 @@ The folder tells you which rules apply, which is the principle the [folder struc
 
 ## The options side by side
 
-|                                          | Container + presentational | Content projection | Everything smart                              | Abstract dependency                       | Slice                       |
+| Criterion                                | Container + presentational | Content projection | Everything smart                              | Abstract dependency                       | Slice                       |
 | ---------------------------------------- | -------------------------- | ------------------ | --------------------------------------------- | ----------------------------------------- | --------------------------- |
 | Drilling                                 | high                       | low at one level   | none                                          | none                                      | none                        |
 | Hidden dependencies                      | none                       | none               | everywhere                                    | per host                                  | one store, declared by type |

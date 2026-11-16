@@ -1,6 +1,8 @@
 ---
 title: "One Shared Component, Different Behavior in Every App, and Nothing in the Wrong Bundle"
 description: "A shared Angular component needs a camera on mobile and a file dialog on desktop. Here is why a flag, an input, and content projection all fail, and how dependency injection solves it without shipping both implementations to both applications."
+metaTitle: "One Shared Angular Component, Different Behavior Per App"
+metaDescription: "A shared Angular component needs a camera on mobile and a file dialog on desktop. Why flags and inputs fail, and how DI fixes it without bloating a bundle."
 pubDate: "2026-10-03"
 heroImage: "../../assets/blog-images/shared-component-per-app.png"
 categories: ["Angular", "Nx", "Architecture"]
@@ -519,7 +521,7 @@ Three modules: a camera component that imports a deliberately large mobile-only 
 
 Built with esbuild, minified, measured by grepping the output for a marker that only the camera module contains:
 
-|                                    | bytes | camera code in output |
+| Implementation                     | bytes | camera code in output |
 | ---------------------------------- | ----- | --------------------- |
 | picker with `@if` on both branches | 252   | yes                   |
 | file input imported directly       | 74    | no                    |

@@ -1,5 +1,5 @@
 ---
-import BaseHead, { type ArticleMeta } from "../components/BaseHead.astro";
+import BaseHead, { type ArticleMeta, type Breadcrumb } from "../components/BaseHead.astro";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import CookieConsent from "../components/CookieConsent.astro";
@@ -12,6 +12,8 @@ interface Props {
   type?: "website" | "article";
   article?: ArticleMeta;
   jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+  breadcrumbs?: readonly Breadcrumb[];
   /**
    * Opt the page into light/dark theming: resolves the stored theme before
    * the first paint and puts the switch in the navbar. Pages that leave this
@@ -29,6 +31,8 @@ const {
   type,
   article,
   jsonLd,
+  noindex,
+  breadcrumbs,
   themeToggle = false,
   compactFooter = false,
 } = Astro.props;
@@ -43,6 +47,8 @@ const {
       type={type}
       article={article}
       jsonLd={jsonLd}
+      noindex={noindex}
+      breadcrumbs={breadcrumbs}
     />
     {themeToggle && <ThemeScript />}
   </head>

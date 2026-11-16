@@ -1,6 +1,8 @@
 ---
 title: "CopilotKit and Angular, Part 1: A Dashboard You Can Steer With Chat"
 description: "Your first agentic UI in Angular: a sales dashboard with a chat next to it, where the agent can read what is on screen and change it through functions you control. Built with CopilotKit's Angular package, step by step, with the gotchas I ran into along the way."
+metaTitle: "CopilotKit + Angular, Part 1: A Dashboard Steered by Chat"
+metaDescription: "Your first agentic UI in Angular: a dashboard with a chat agent that reads the screen and changes it through functions you control. Built with CopilotKit."
 pubDate: "2026-11-03"
 heroImage: "../../assets/blog-images/copilotkit-angular-dashboard.png"
 categories: ["Angular", "AI"]
@@ -289,4 +291,4 @@ The recordings are from a real Chromium session against the real runtime, with o
 
 Nothing is kept yet: reload the page and the dashboard is back to the default. In [part 2](https://www.heckerssoftware.com/blog/copilotkit-angular-dashboard-description/), the dashboard gets one saved description that defines it. You change it in the chat or edit the text yourself, and the dashboard rebuilds from it and stays that way when you come back. The tool calls in the chat are generic rows right now; in part 3, we replace them with Angular components: a chart preview, a confirmation card, a widget the user can click. After that comes human in the loop, where the agent asks before it does something you want to approve, and then shared state between your app and an agent that runs on the server.
 
-If you want to bring agentic features like this into your own Angular application, and do it with the guardrails a production app needs, that is what my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops#ai) covers, on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.
+If you want to bring agentic features like this into your own Angular application, and do it with the guardrails a production app needs, that is what my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops/#ai) covers, on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.

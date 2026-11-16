@@ -28,16 +28,16 @@ import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
 import ProofRow from "../../components/ProofRow.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
-import { AUTHOR, COMPANY } from "../../consts";
+import { COMPANY } from "../../consts";
 import { getService } from "../../lib/services";
 import { PRICING, VAT_NOTE, euro } from "../../lib/pricing";
 
 const service = getService("architecture-assessment");
 const price = PRICING.assessment;
 
-const title = "Architecture assessment for Angular and Nx — Heckers Software";
+const title = "Angular & Nx Architecture Assessment | Heckers Software";
 const description =
-  "A fixed-scope assessment of your Angular or Nx codebase by senior engineers: every finding ranked by what it costs you, with the fix, and a roadmap your own team can execute.";
+  "A fixed-scope assessment of your Angular or Nx codebase by senior engineers: every finding ranked by cost, with the fix, and a roadmap your team can execute.";
 
 const tiers = [
   {
@@ -93,8 +93,9 @@ const jsonLd = {
   url: new URL(service.href, Astro.site).toString(),
   provider: {
     "@type": "Organization",
+    "@id": new URL("/#organization", Astro.site).href,
     name: COMPANY.name,
-    url: AUTHOR.url,
+    url: Astro.site?.href,
     email: COMPANY.email,
     telephone: COMPANY.phone,
   },
@@ -115,6 +116,7 @@ const jsonLd = {
   title={title}
   description={description}
   jsonLd={jsonLd}
+  breadcrumbs={[{ name: "Architecture assessment", path: service.href }]}
   compactFooter
 >
   <ServiceHero

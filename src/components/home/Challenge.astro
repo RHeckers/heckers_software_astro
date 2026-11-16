@@ -7,7 +7,8 @@
  * Laid out like the evidence band on the service pages: from 900px up the
  * claim on the left stays pinned while the pains scroll past it on the
  * right, and each pain lights up as it arrives (its red rule draws down,
- * the text comes to full strength). Scroll-driven CSS, no script; fully
+ * the row settles into place; the text is always at full strength so it
+ * stays readable). Scroll-driven CSS, no script; fully
  * drawn where that is unsupported or motion is reduced.
  *
  * Source: MIT NANDA, The GenAI Divide: State of AI in Business 2025 (about
@@ -194,7 +195,7 @@ const pains = [
 
   @supports (animation-timeline: view()) {
     .pain {
-      opacity: 0.3;
+      transform: translateY(1.5rem);
       animation: pain-in linear both;
       animation-timeline: view();
       animation-range: entry 30% cover 38%;
@@ -210,7 +211,7 @@ const pains = [
 
   @keyframes pain-in {
     to {
-      opacity: 1;
+      transform: none;
     }
   }
 
@@ -222,7 +223,7 @@ const pains = [
 
   @media (prefers-reduced-motion: reduce) {
     .pain {
-      opacity: 1;
+      transform: none;
     }
 
     .pain::before {

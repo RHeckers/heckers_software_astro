@@ -71,11 +71,11 @@ export function llmsIndex(site: URL, posts: PostSummary[]): string {
   lines.push("", "## Workshops", "");
   for (const workshop of [...WORKSHOPS, TAILORED_WORKSHOP]) {
     lines.push(
-      `- [${workshop.title}](${abs(site, `/services/workshops#${workshop.id}`)}): ${workshop.description}`,
+      `- [${workshop.title}](${abs(site, `/services/workshops/#${workshop.id}`)}): ${workshop.description}`,
     );
   }
   lines.push("", "## About", "");
-  lines.push(`- [About ${COMPANY.name} and ${AUTHOR.name}](${abs(site, "/about")}): ${AUTHOR.bio}`);
+  lines.push(`- [About ${COMPANY.name} and ${AUTHOR.name}](${abs(site, "/about/")}): ${AUTHOR.bio}`);
   lines.push(`- [${PROFILES.book.title}](${PROFILES.book.url}): ${PROFILES.book.subtitle} (${PROFILES.book.publisher}, ${PROFILES.book.year}).`);
   lines.push(`- [GitHub](${PROFILES.github})`);
   if (PROFILES.linkedin) lines.push(`- [LinkedIn](${PROFILES.linkedin})`);
@@ -115,7 +115,7 @@ export function llmsFull(site: URL, posts: PostSummary[]): string {
     }
   }
 
-  lines.push("# About", "", `URL: ${abs(site, "/about")}`, "", ABOUT_SUMMARY, "", AUTHOR.bio, "");
+  lines.push("# About", "", `URL: ${abs(site, "/about/")}`, "", ABOUT_SUMMARY, "", AUTHOR.bio, "");
   lines.push(
     `How the work is done: one expert amplified by AI coding agents, with more hands brought in when an outcome needs them; a fixed price per outcome; everything built in the client's own repositories to the client's standards, with decisions written down and handed over.`,
     "",

@@ -4,6 +4,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 import {
   categoryGroups,
   getSortedPosts,
+  postHref,
   type BlogPost,
 } from "../../../lib/blog";
 import type { BlogCategory } from "../../../lib/categories";
@@ -32,11 +33,38 @@ export async function getStaticPaths() {
 
 const { category, posts, categories } = Astro.props;
 const count = posts.length;
-const title = `${category} articles — Heckers Software`;
+const title = `${category} Articles | Heckers Software Blog`;
 const description = `${count} ${count === 1 ? "article" : "articles"} about ${category} from Heckers Software: practical guidance on Angular, Nx monorepos, and frontend architecture.`;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: `${category} articles`,
+  description,
+  url: pageUrl,
+  isPartOf: { "@id": new URL("/#website", Astro.site).href },
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: posts.map((post, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: new URL(postHref(post), Astro.site).href,
+      name: post.data.title,
+    })),
+  },
+};
 ---
 
-<PageLayout title={title} description={description} themeToggle>
+<PageLayout
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  breadcrumbs={[
+    { name: "Blog", path: "/blog/" },
+    { name: category, path: Astro.url.pathname },
+  ]}
+  themeToggle
+>
   <BlogListing
     heading={`${category} articles`}
     intro={`Everything we have written about ${category}.`}

@@ -28,15 +28,14 @@ import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
 import ProofRow from "../../components/ProofRow.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
-import { AUTHOR, COMPANY } from "../../consts";
+import { COMPANY } from "../../consts";
 import { getService } from "../../lib/services";
 
 const service = getService("forward-deployed-engineering");
 
-const title =
-  "Forward-deployed engineering: software and AI delivered end to end inside your company — Heckers Software";
+const title = "Forward-Deployed Engineering: Software & AI, End to End";
 const description =
-  "An industry expert who comes into your company and delivers outcomes end to end: discovery, development, AI integration and deployment. With AI, one senior engineer ships what a team did before. Hand over a backlog, or let us find the highest-impact work first.";
+  "An industry expert inside your company who delivers end to end: discovery, development, AI integration and deployment. One senior engineer, amplified by AI.";
 
 const tiers = [
   {
@@ -100,8 +99,9 @@ const jsonLd = {
   url: new URL(service.href, Astro.site).toString(),
   provider: {
     "@type": "Organization",
+    "@id": new URL("/#organization", Astro.site).href,
     name: COMPANY.name,
-    url: AUTHOR.url,
+    url: Astro.site?.href,
     email: COMPANY.email,
     telephone: COMPANY.phone,
   },
@@ -127,6 +127,7 @@ const jsonLd = {
   title={title}
   description={description}
   jsonLd={jsonLd}
+  breadcrumbs={[{ name: "Forward-deployed engineering", path: service.href }]}
   compactFooter
 >
   <ServiceHero

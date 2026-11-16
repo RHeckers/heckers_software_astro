@@ -1,6 +1,8 @@
 ---
 title: "Compound Components: Building Angular Components From Definition Directives"
 description: "Some components should not be configured, they should be put together: a parent plus small definition directives that only make sense inside it. This article explains how that works in Angular, looks at how Angular Material, PrimeNG and Angular Aria do it, and builds the same table four ways to show where each approach stops working."
+metaTitle: "Angular Compound Components With Definition Directives"
+metaDescription: "Build Angular components from a parent plus definition directives. How Angular Material, PrimeNG and Angular Aria do it, and one table built four ways."
 pubDate: "2026-11-02"
 heroImage: "../../assets/blog-images/compound-components-definition-directives.png"
 categories: ["Angular", "Architecture"]

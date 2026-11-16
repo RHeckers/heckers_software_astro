@@ -1,6 +1,8 @@
 ---
 title: "Signal Forms in Angular v22: One Source of Truth for Your Form State"
 description: "Angular v22 ships Signal Forms as a stable API. Learn what problem they solve, how they differ from Reactive Forms, and how to build a clean, validated form step by step."
+metaTitle: "Angular v22 Signal Forms: One Source of Truth for Forms"
+metaDescription: "Angular v22 ships Signal Forms as a stable API. What they solve, how they differ from Reactive Forms, and how to build a validated form step by step."
 pubDate: "2026-08-11"
 heroImage: "../../assets/blog-images/signal-forms-onme-source-of-truth.png"
 categories: ["Angular", "Forms"]

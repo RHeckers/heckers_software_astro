@@ -1,6 +1,8 @@
 ---
 title: "Onboarding an Existing Project into Your Nx Monorepo Without Rewriting It"
 description: "Most monorepo migrations stall halfway, with a project stuck between the shape it had and the shape the workspace needs. Here is why that happens, and an approach that brings a tangled codebase in, seals it, and untangles it from the leaves up, with every step leaving the workspace in a complete state."
+metaTitle: "Onboarding an Existing Project Into an Nx Monorepo"
+metaDescription: "Most monorepo migrations stall halfway. Bring a tangled codebase into your Nx workspace without a rewrite: seal it first, then untangle it from the leaves up."
 pubDate: "2026-10-25"
 heroImage: "../../assets/blog-images/onboarding-existing-projects.png"
 categories: ["Angular", "Nx", "Architecture"]

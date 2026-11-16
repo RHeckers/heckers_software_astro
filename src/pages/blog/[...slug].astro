@@ -6,7 +6,7 @@ import NewsletterBar from "../../components/NewsletterBar.astro";
 import NewsletterForm from "../../components/NewsletterForm.astro";
 import PageLayout from "../../layouts/PageLayout.astro";
 import logo from "../../assets/logos/logo.png";
-import { AUTHOR, PROFILES, SITE_TITLE, profileLinks } from "../../consts";
+import { AUTHOR, COMPANY, PROFILES, profileLinks } from "../../consts";
 import {
   formatDate,
   getSortedPosts,
@@ -30,8 +30,16 @@ export async function getStaticPaths() {
 
 const { post, related } = Astro.props;
 const { Content } = await render(post);
-const { title, description, pubDate, updatedDate, heroImage, categories } =
-  post.data;
+const {
+  title,
+  description,
+  metaTitle,
+  metaDescription,
+  pubDate,
+  updatedDate,
+  heroImage,
+  categories,
+} = post.data;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const heroURL = heroImage ? new URL(heroImage.src, Astro.site).href : undefined;
@@ -46,6 +54,7 @@ const jsonLd = {
   dateModified: (updatedDate ?? pubDate).toISOString(),
   author: {
     "@type": "Person",
+    "@id": new URL("/about/#person", Astro.site).href,
     name: AUTHOR.name,
     url: AUTHOR.url,
     jobTitle: AUTHOR.jobTitle,
@@ -53,7 +62,8 @@ const jsonLd = {
   },
   publisher: {
     "@type": "Organization",
-    name: SITE_TITLE,
+    "@id": new URL("/#organization", Astro.site).href,
+    name: COMPANY.name,
     url: Astro.site?.href,
     logo: {
       "@type": "ImageObject",
@@ -69,8 +79,8 @@ const jsonLd = {
 ---
 
 <PageLayout
-  title={title}
-  description={description}
+  title={metaTitle ?? title}
+  description={metaDescription ?? description}
   image={heroImage}
   type="article"
   article={{
@@ -80,6 +90,10 @@ const jsonLd = {
     tags: categories,
   }}
   jsonLd={jsonLd}
+  breadcrumbs={[
+    { name: "Blog", path: "/blog/" },
+    { name: metaTitle ?? title, path: postHref(post) },
+  ]}
   themeToggle
 >
   <article class="post">
@@ -125,11 +139,11 @@ const jsonLd = {
     <aside class="author" aria-labelledby="author-heading">
       <p class="author__label" id="author-heading">Written by</p>
       <p class="author__name">
-        <a href="/about">{AUTHOR.name}</a>
+        <a href="/about/">{AUTHOR.name}</a>
       </p>
       <p class="author__bio">{AUTHOR.bio}</p>
       <ul class="author__links">
-        <li><a href="/about">About Heckers Software</a></li>
+        <li><a href="/about/">About Heckers Software</a></li>
         {
           PROFILES.linkedin && (
             <li>
@@ -332,6 +346,12 @@ const jsonLd = {
 
   .prose :global(code) {
     font-size: 0.9em;
+  }
+
+  /* github-dark paints comments #6A737D, 3:1 on its background. This grey
+     keeps them visibly secondary at 5.5:1. */
+  .prose :global(pre span[style*="color:#6A737D"]) {
+    color: #959da5 !important;
   }
 
   .prose :global(:not(pre) > code) {

@@ -1,6 +1,8 @@
 ---
 title: "CopilotKit and Angular, Part 2: A Dashboard Defined by a Description"
 description: "One saved description defines the whole dashboard. Change it in the chat or edit it yourself, and the dashboard rebuilds and stays that way when you come back, down to which numbers each card shows. Built with CopilotKit's Angular package, with the design decisions that make it reliable."
+metaTitle: "CopilotKit + Angular, Part 2: A Dashboard From a Description"
+metaDescription: "One saved description defines the whole dashboard. Change it in the chat or by hand, and the Angular dashboard rebuilds and persists. Built with CopilotKit."
 pubDate: "2026-11-03"
 heroImage: "../../assets/blog-images/copilotkit-angular-description.png"
 categories: ["Angular", "AI"]
@@ -274,4 +276,4 @@ What you save is what you render. Because the spec is validated before it is app
 
 The tool calls in the chat are still the generic rows CopilotKit shows by default. In part 3, we replace them with real Angular components rendered inside the chat, such as a preview of the change before it is applied.
 
-If you want to bring features like this into your own Angular application, my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops#ai) covers them on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.
+If you want to bring features like this into your own Angular application, my workshop [AI-Native Development: From Autocomplete to Automation](https://heckerssoftware.com/services/workshops/#ai) covers them on your own codebase. Or [get in touch](https://heckerssoftware.com/#contactForm) if you would like help building it with your team.

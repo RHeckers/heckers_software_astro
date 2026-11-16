@@ -24,13 +24,13 @@ import logo from "../assets/logos/logo.png";
 import { AUTHOR, COMPANY, PROFILES, profileLinks } from "../consts";
 import { SERVICES } from "../lib/services";
 
-const title = `About ${COMPANY.name}: ${AUTHOR.name}, Angular, Nx and AI engineering from the Netherlands`;
-const description = `${COMPANY.name} brings software and AI into production inside companies. Founded by ${AUTHOR.name}, author of ${PROFILES.book.title} and speaker at ngPoland, Angular Zurich and The Dutch Angular Group, with a seat in AI knowledge groups alongside industry leaders.`;
+const title = `About ${COMPANY.name} and ${AUTHOR.name}`;
+const description = `${COMPANY.name} brings software and AI into production inside companies. Founded by ${AUTHOR.name}, author of ${PROFILES.book.title} and conference speaker.`;
 
 const siteUrl = Astro.site?.href ?? "https://heckerssoftware.com/";
 const orgId = `${siteUrl}#organization`;
-const personId = `${siteUrl}about#person`;
-const bookId = `${siteUrl}about#book`;
+const personId = `${siteUrl}about/#person`;
+const bookId = `${siteUrl}about/#book`;
 const knowsAbout = [
   "Angular",
   "TypeScript",
