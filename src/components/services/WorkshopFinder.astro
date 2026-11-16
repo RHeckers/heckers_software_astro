@@ -308,9 +308,9 @@ for (const question of questions) {
         step.hidden = key !== current;
       });
       const atStart = path.length === 0;
-      back.hidden = atStart;
-      restart.hidden = atStart;
-      trail.replaceChildren(
+      back!.hidden = atStart;
+      restart!.hidden = atStart;
+      trail!.replaceChildren(
         ...path.map(({ answer }) => {
           const item = document.createElement("li");
           item.className = "quiz__crumb";
