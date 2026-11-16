@@ -106,14 +106,16 @@ import { SERVICES } from "../lib/services";
     display: inline-flex;
     padding: 0.85em 1.8em;
     border-radius: 100px;
-    background: var(--color-accent-strong);
-    color: #fff;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
     font-family: "chillax", sans-serif;
     font-weight: var(--font-weight-semi-bold);
     text-decoration: none;
   }
 
   .nf__home:hover {
-    background: var(--color-accent-ink);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 </style>

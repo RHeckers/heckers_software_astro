@@ -58,63 +58,85 @@
   font-display: swap;
 }
 
-:root {
-  /* Dark foundation — authority & trust */
-  --color-dark: #0b1220;        /* primary brand dark (navy-black) */
-  --color-dark-alt: #0f1a2b;    /* sections / gradients */
-  --color-dark-strong: #16243a; /* elevated dark surfaces */
-  --color-dark-soft: #1d2f4a;   /* cards on dark */
+:root,
+:root[data-palette="sand"] {
+  /* Palette: three colours, nothing else. Every colour on the site is one
+     of these three, a mix of two of them, or one of them with transparency.
+       --c-light  backgrounds, text on dark sections
+       --c-dark   large text, body text, dark sections
+       --c-accent anything that should pull the eye: CTAs, markers, key
+                  states, highlights. As text it is only used on --c-dark;
+                  on --c-light it is a fill or marker behind dark text.
+     Two palettes, switched with data-palette on <html> (see PALETTE in
+     src/consts.ts, or ?palette=aurora to preview):
+       sand    soft sand #F0E5DB, mocha green #474329, watermelon pink #FC75B4
+       aurora  ice white #E1E8F2, soft black #151C2B, aurora green #2BF08A
+       harbor  ivory #F2EEE6, midnight navy #16233A, bright gold #FFBF2E
+       granite stone #ECEAE5, blue-graphite #1F2B30, vivid aqua #1FE6CF */
+  --c-light: #f0e5db;
+  --c-dark: #474329;
+  --c-accent: #fc75b4;
 
+  /* Dark foundation — mocha */
+  --color-dark: var(--c-dark);
+  --color-dark-alt: var(--c-dark);
+  --color-dark-strong: color-mix(in srgb, var(--c-light) 10%, var(--c-dark));
+  --color-dark-soft: var(--c-dark);
 
-  /* Light foundation — clarity & elegance */
-  --color-light: #f4f6f9;        /* main background */
-  --color-light-alt: #e9edf3;    /* cards / sections */
-  --color-light-raised: #ffffff; /* modals / elevated surfaces */
+  /* Light foundation — sand */
+  --color-light: var(--c-light);
+  --color-light-alt: color-mix(in srgb, var(--c-dark) 5%, var(--c-light));
+  --color-light-raised: var(--c-light);
 
   /* Text */
-  --color-ink: #363d4b;         /* primary text on light */
-  --color-ink-muted: #5c667a;   /* secondary text */
-  --color-ink-light: #e8edf6;   /* text on dark */
+  --color-ink: var(--c-dark);
+  --color-ink-muted: color-mix(in srgb, var(--c-dark) 85%, var(--c-light));
+  --color-ink-light: var(--c-light);
 
   /* Lines & structure */
-  --color-stroke: #d6dbe5;
-  --color-stroke-strong: #c2c9d6;
+  --color-stroke: color-mix(in srgb, var(--c-dark) 14%, var(--c-light));
+  --color-stroke-strong: color-mix(in srgb, var(--c-dark) 26%, var(--c-light));
 
-  /* Accent — expertise & confidence */
-  --color-accent: #2f7dd1;         /* primary accent / CTA */
-  --color-accent-strong: #2563a8;  /* hover / emphasis */
-  --color-accent-ink: #1f4f87;     /* links on light */
+  /* Accent slots
+     --color-accent        pink: CTAs, markers, focus rings, active states
+     --color-accent-strong mocha: text on sand buttons, quiet filled buttons
+     --color-accent-ink    mocha: links on light */
+  --color-accent: var(--c-accent);
+  --color-accent-strong: var(--c-dark);
+  --color-accent-ink: var(--c-dark);
+  --color-on-accent: var(--c-dark);   /* text on a pink fill */
+  /* Accent as large text on the light ground: the accent deepened with the
+     dark colour, 3.5-4:1 in every palette (fine at 24px and up). */
+  --color-accent-text: color-mix(in srgb, var(--c-accent) 55%, var(--c-dark));
+  --color-accent-glow: color-mix(in srgb, var(--c-accent) 40%, transparent);
 
-  /* Link slots — the dark theme remaps these two (see "Dark theme" below)
-     while the accents above stay fixed. */
-  --color-link: #1f4f87;       /* link text on a surface */
-  --color-link-hover: #2563a8; /* link text, hovered */
+  /* Pink text: only on mocha. On sand the "highlight" falls back to mocha
+     (paired with a pink underline or marker where it is used). */
+  --color-highlight: var(--c-dark);
+  --color-highlight-on-dark: var(--c-accent);
 
-  /* Optional secondary accent (very controlled) */
-  --color-accent-secondary: #3aa3a0; /* diagrams, highlights */
+  /* Link slots — the dark theme remaps these two (see "Dark theme" below). */
+  --color-link: var(--c-dark);
+  --color-link-hover: var(--c-dark);
 
-  /* Transparent helpers */
+  /* Status: pink is the attention colour, so it carries errors and
+     "live/good" states alike; the copy says which. */
+  --color-danger: var(--c-accent);
+  --color-warning: var(--c-accent);
+  --color-success: var(--c-accent);
 
-  /* Optional “status” tones (kept muted & on-brand) */
-  --color-danger: #c2413b; /* controlled, professional error state */
-  --color-warning: #b0892f;
-  --color-success: #27775f; /* darkened from #2e8b6f: 4.5:1+ as text on the light surfaces */
+--background-gradient-primary: var(--c-dark);
 
---background-gradient-primary:
-  linear-gradient(180deg, #0f1a2b 0%, #0b1220 100%);
-
---background-gradient-secondary:
-  linear-gradient(180deg, #16243a 0%, #0f1a2b 100%);
+--background-gradient-secondary: var(--color-dark-strong);
 
 --background-gradient-transparent:
   linear-gradient(135deg,
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0.02)
+    color-mix(in srgb, var(--c-light) 8%, transparent),
+    color-mix(in srgb, var(--c-light) 2%, transparent)
   );
 
-  --background-gradient-white: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
+  --background-gradient-white: var(--c-light);
 
-  
   --font-xs: 0.75rem; /* 12px */
   --font-sm: 0.875rem; /* 14px */
   --font-md: 1rem; /* 16px */
@@ -143,6 +165,29 @@
   --spacer-3xl: 4rem; /* 64px */
 }
 
+/* Harbor: trust and experience. Midnight navy on warm ivory, with a bright
+   gold as the one accent: warm, confident and clearly the thing to click.
+   Gold on navy 9.5:1, navy on ivory 13.6:1. */
+:root[data-palette="harbor"] {
+  --c-light: #f2eee6; /* ivory */
+  --c-dark: #16233a;  /* midnight navy */
+  --c-accent: #ffbf2e; /* bright gold */
+}
+
+/* Granite: calm and strong. Blue-graphite on warm stone, with a vivid aqua
+   as the accent: calm base, real energy where it counts. Aqua on graphite 9.2:1, graphite on stone 12.1:1. */
+:root[data-palette="granite"] {
+  --c-light: #eceae5; /* stone */
+  --c-dark: #1f2b30;  /* blue-graphite */
+  --c-accent: #1fe6cf; /* vivid aqua */
+}
+
+:root[data-palette="aurora"] {
+  --c-light: #e1e8f2; /* ice white, a touch more blue than #EBEEF2 */
+  --c-dark: #151c2b;  /* soft black, a little lighter than #000412 */
+  --c-accent: #2bf08a; /* aurora green */
+}
+
 /* --------------------------------------------------------------------------
    Dark theme
    --------------------------------------------------------------------------
@@ -165,28 +210,23 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  /* Surfaces: the light foundation's slots, with dark values */
-  --color-light: #0f1726;        /* main background */
-  --color-light-alt: #182131;    /* cards / sections */
-  --color-light-raised: #1d283b; /* modals / elevated surfaces */
+  /* Surfaces: mocha, with a touch of sand for raised layers */
+  --color-light: var(--c-dark);
+  --color-light-alt: color-mix(in srgb, var(--c-light) 6%, var(--c-dark));
+  --color-light-raised: color-mix(in srgb, var(--c-light) 10%, var(--c-dark));
 
   /* Text */
-  --color-ink: #e6ecf7;       /* primary text */
-  --color-ink-muted: #9fadc4; /* secondary text, 7.5:1 on the background */
+  --color-ink: var(--c-light);
+  --color-ink-muted: color-mix(in srgb, var(--c-light) 78%, var(--c-dark));
 
   /* Lines & structure */
-  --color-stroke: #2c3a52;
-  --color-stroke-strong: #3d4c68;
+  --color-stroke: color-mix(in srgb, var(--c-light) 16%, var(--c-dark));
+  --color-stroke-strong: color-mix(in srgb, var(--c-light) 28%, var(--c-dark));
 
-  /* Links lift off the dark background. --color-accent itself stays put so
-     the filled buttons keep the contrast they were tuned for. */
-  --color-link: #7fb6ef;
-  --color-link-hover: #a8d0f8;
-
-  /* Status tones, lightened for a dark surface */
-  --color-danger: #e5756e;
-  --color-warning: #d2a84f;
-  --color-success: #4fb492;
+  /* Links lift off the dark background in pink. */
+  --color-link: var(--c-accent);
+  --color-link-hover: var(--c-light);
+  --color-highlight: var(--c-accent);
 }
 
 /* Only themed pages take their background from the body; elsewhere the
@@ -267,7 +307,19 @@
 }
 
 .accent .accent__copy {
-  color: var(--color-success);
+  color: var(--accent-color, var(--c-accent));
+}
+
+/* <Accent marker>: on sand, pink text is too faint to read, so the wipe
+   paints a pink highlighter stroke behind the mocha text instead. */
+.accent--marker .accent__copy {
+  color: var(--c-dark);
+}
+
+.accent__mark {
+  background: linear-gradient(transparent 58%, var(--c-accent) 58%, var(--c-accent) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* <Accent wrap>: a phrase long enough to need line breaks. */
@@ -282,7 +334,7 @@
 }
 
 .danger .accent__copy {
-  color: var(--color-danger);
+  color: var(--c-accent);
 }
 
 .accent__base,

@@ -330,14 +330,14 @@ const FIGURES: Record<FigureId, string> = {
     font-family: synonym, sans-serif;
     font-size: clamp(1.05rem, 1.4vw, 1.2rem);
     line-height: 1.55;
-    color: rgba(232, 237, 246, 0.72);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
   }
 
   .insight-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid rgba(232, 237, 246, 0.16);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
   }
 
   .insight {
@@ -345,7 +345,7 @@ const FIGURES: Record<FigureId, string> = {
     grid-template-columns: 1fr;
     gap: 1.25rem 3rem;
     padding: clamp(1.75rem, 4vw, 2.5rem) 0;
-    border-bottom: 1px solid rgba(232, 237, 246, 0.12);
+    border-bottom: 1px solid color-mix(in srgb, var(--c-light) 12%, transparent);
   }
 
   .insight__lead {
@@ -370,7 +370,7 @@ const FIGURES: Record<FigureId, string> = {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
     letter-spacing: 0.12em;
-    color: #7fb6ef;
+    color: var(--color-highlight-on-dark);
     margin-bottom: 0.35rem;
   }
 
@@ -393,7 +393,7 @@ const FIGURES: Record<FigureId, string> = {
     font-family: synonym, sans-serif;
     font-size: clamp(1rem, 1.3vw, 1.1rem);
     line-height: 1.6;
-    color: rgba(232, 237, 246, 0.8);
+    color: color-mix(in srgb, var(--c-light) 80%, transparent);
     max-width: 58ch;
   }
 
@@ -405,14 +405,14 @@ const FIGURES: Record<FigureId, string> = {
     max-width: 56ch;
     padding: 0.8rem 1rem;
     border-radius: 12px;
-    background: rgba(47, 125, 209, 0.1);
-    border: 1px solid rgba(47, 125, 209, 0.25);
+    background: color-mix(in srgb, var(--c-accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 25%, transparent);
   }
 
   .insight__takeaway-label {
     font-family: chillax, sans-serif;
     font-weight: var(--font-weight-semi-bold);
-    color: #7fb6ef;
+    color: var(--color-highlight-on-dark);
     margin-right: 0.35rem;
   }
 
@@ -446,8 +446,8 @@ const FIGURES: Record<FigureId, string> = {
 
   .insights--light .insight__takeaway {
     color: var(--color-ink);
-    background: rgba(47, 125, 209, 0.08);
-    border-color: rgba(47, 125, 209, 0.3);
+    background: color-mix(in srgb, var(--c-accent) 8%, transparent);
+    border-color: color-mix(in srgb, var(--c-accent) 30%, transparent);
   }
 
   .insights--light .insight__takeaway-label {
@@ -522,15 +522,15 @@ const FIGURES: Record<FigureId, string> = {
      the .fig class. Colours are the home page's: light strokes on dark,
      one accent, red for the problem; the light tone swaps the greys. */
   .fig {
-    --fig-edge: rgba(232, 237, 246, 0.42);
-    --fig-node-fill: rgba(232, 237, 246, 0.06);
-    --fig-node-stroke: rgba(232, 237, 246, 0.6);
-    --fig-text: rgba(232, 237, 246, 0.8);
-    --fig-bright: #ffffff;
-    --fig-line: rgba(232, 237, 246, 0.55);
-    --fig-accent: #2f7dd1;
-    --fig-accent-fill: rgba(47, 125, 209, 0.28);
-    --fig-danger: #c2413b;
+    --fig-edge: color-mix(in srgb, var(--c-light) 42%, transparent);
+    --fig-node-fill: color-mix(in srgb, var(--c-light) 6%, transparent);
+    --fig-node-stroke: color-mix(in srgb, var(--c-light) 60%, transparent);
+    --fig-text: color-mix(in srgb, var(--c-light) 80%, transparent);
+    --fig-bright: var(--c-light);
+    --fig-line: color-mix(in srgb, var(--c-light) 55%, transparent);
+    --fig-accent: var(--c-accent);
+    --fig-accent-fill: color-mix(in srgb, var(--c-accent) 28%, transparent);
+    --fig-danger: var(--c-accent);
     --fig-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
     --fig-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     overflow: visible;
@@ -538,13 +538,13 @@ const FIGURES: Record<FigureId, string> = {
   }
 
   .insights--light .fig {
-    --fig-edge: rgba(11, 18, 32, 0.32);
-    --fig-node-fill: rgba(11, 18, 32, 0.035);
-    --fig-node-stroke: rgba(11, 18, 32, 0.45);
-    --fig-text: rgba(11, 18, 32, 0.75);
-    --fig-bright: #0b1220;
-    --fig-line: rgba(11, 18, 32, 0.35);
-    --fig-accent-fill: rgba(47, 125, 209, 0.18);
+    --fig-edge: color-mix(in srgb, var(--c-dark) 32%, transparent);
+    --fig-node-fill: color-mix(in srgb, var(--c-dark) 3.5%, transparent);
+    --fig-node-stroke: color-mix(in srgb, var(--c-dark) 45%, transparent);
+    --fig-text: color-mix(in srgb, var(--c-dark) 75%, transparent);
+    --fig-bright: var(--c-dark);
+    --fig-line: color-mix(in srgb, var(--c-dark) 35%, transparent);
+    --fig-accent-fill: color-mix(in srgb, var(--c-accent) 18%, transparent);
   }
 
   .fig .n {
@@ -633,7 +633,7 @@ const FIGURES: Record<FigureId, string> = {
   }
 
   .fig .fig-badge text {
-    fill: #ffffff;
+    fill: var(--c-dark);
     font-size: 14px;
     font-weight: 700;
     text-anchor: middle;
@@ -645,7 +645,7 @@ const FIGURES: Record<FigureId, string> = {
 
   .fig .fig-check path {
     fill: none;
-    stroke: #ffffff;
+    stroke: var(--c-dark);
     stroke-width: 1.6;
     stroke-linecap: round;
     stroke-linejoin: round;

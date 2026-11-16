@@ -204,12 +204,12 @@ const {
     padding: 0.8em 1.8em;
     font-size: 1rem;
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
-    background-color: var(--color-accent-strong);
-    border: 1px solid var(--color-accent-strong);
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-accent);
     border-radius: 999px;
     text-decoration: none;
-    box-shadow: 0 14px 30px rgba(37, 99, 168, 0.28);
+    box-shadow: 0 14px 30px color-mix(in srgb, var(--c-accent) 30%, transparent);
     transition:
       background-color 0.2s,
       border-color 0.2s,
@@ -217,9 +217,11 @@ const {
   }
 
   .process__cta:hover {
-    background-color: var(--color-accent-ink);
-    border-color: var(--color-accent-ink);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    border-color: var(--color-accent);
     transform: translateY(-1px);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .process__cta:focus-visible {
@@ -240,7 +242,7 @@ const {
     color: var(--color-ink-light);
     border-radius: 22px;
     padding: clamp(1.5rem, 3.5vw, 2.5rem);
-    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
     view-timeline-name: --plan-reveal;
   }
 
@@ -273,7 +275,7 @@ const {
   }
 
   .phase:not(:last-child)::before {
-    background: rgba(232, 237, 246, 0.14);
+    background: color-mix(in srgb, var(--c-light) 14%, transparent);
   }
 
   .phase:not(:last-child)::after {
@@ -291,7 +293,7 @@ const {
     justify-content: center;
     font-size: var(--font-sm);
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
+    color: var(--color-on-accent);
     background: var(--color-accent);
     box-shadow: 0 0 0 4px var(--color-dark-strong);
     position: relative;
@@ -326,15 +328,15 @@ const {
     margin-left: 0.4rem;
     padding: 0.1rem 0.5rem;
     border-radius: 999px;
-    border: 1px solid rgba(47, 125, 209, 0.5);
-    color: rgba(232, 237, 246, 0.8);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 50%, transparent);
+    color: color-mix(in srgb, var(--c-light) 80%, transparent);
     vertical-align: middle;
   }
 
   .phase__when {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
     white-space: nowrap;
   }
 
@@ -342,7 +344,7 @@ const {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
     line-height: 1.5;
-    color: rgba(232, 237, 246, 0.78);
+    color: color-mix(in srgb, var(--c-light) 78%, transparent);
     max-width: 48ch;
   }
 

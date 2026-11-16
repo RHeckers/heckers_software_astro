@@ -32,13 +32,13 @@ const href = postHref(post);
   }
 
   .post-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--c-dark) 8%, transparent);
   }
 
   /* A soft shadow is invisible on a dark page; lift the border instead. */
   :global(:root[data-theme="dark"]) .post-card:hover {
     border-color: var(--color-stroke-strong);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--c-dark) 45%, transparent);
   }
 
   .post-card__body {
@@ -69,9 +69,20 @@ const href = postHref(post);
 
   h2 a:hover,
   h2 a:focus-visible {
-    color: var(--color-link);
     text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
     text-underline-offset: 3px;
+  }
+
+  /* Tags stay quiet on the cards. */
+  .post-card :global(.chip) {
+    color: var(--color-ink-muted);
+  }
+
+  .post-card :global(.chip:hover),
+  .post-card :global(.chip:focus-visible) {
+    color: var(--color-on-accent);
   }
 
   p {

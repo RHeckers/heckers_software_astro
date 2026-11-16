@@ -137,8 +137,8 @@ const facts = [
     aspect-ratio: 4 / 5;
     border-radius: 22px;
     overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.14);
+    background: var(--color-light-raised);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 14%, transparent);
   }
 
   .who__photo :global(img) {
@@ -227,7 +227,7 @@ const facts = [
     aspect-ratio: 3 / 2;
     object-fit: cover;
     border-radius: 18px;
-    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.14);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 14%, transparent);
   }
 
   .event figcaption {

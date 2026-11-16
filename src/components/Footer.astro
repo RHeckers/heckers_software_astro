@@ -61,8 +61,11 @@ const year = new Date().getFullYear();
   .footer {
     position: relative;
     z-index: 10;
-    background: var(--color-dark);
-    color: rgba(249, 251, 255, 0.7);
+    /* Sand footer, so the page ends on the light colour after the mocha
+       contact band. */
+    background: var(--c-light);
+    color: var(--color-ink-muted);
+    border-top: 1px solid var(--color-stroke);
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
     padding: 1.1rem clamp(1.25rem, 6vw, 5rem);
@@ -89,7 +92,7 @@ const year = new Date().getFullYear();
 
   .footer__links a,
   .footer__link-button {
-    color: rgba(249, 251, 255, 0.85);
+    color: var(--c-dark);
     text-decoration: none;
     transition: color 180ms ease;
   }
@@ -106,8 +109,10 @@ const year = new Date().getFullYear();
   .footer__links a:focus-visible,
   .footer__link-button:hover,
   .footer__link-button:focus-visible {
-    color: var(--color-light-raised);
+    color: var(--c-dark);
     text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 2px;
     text-underline-offset: 3px;
   }
 </style>

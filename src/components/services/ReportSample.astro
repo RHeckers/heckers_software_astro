@@ -146,8 +146,8 @@ const { id = "report", title, intro, points, finding, note } = Astro.props;
     border-radius: 6px;
     padding: clamp(1.5rem, 3vw, 2.5rem);
     box-shadow:
-      0 1px 0 rgba(11, 18, 32, 0.04),
-      0 24px 48px rgba(11, 18, 32, 0.1);
+      0 1px 0 color-mix(in srgb, var(--c-dark) 4%, transparent),
+      0 24px 48px color-mix(in srgb, var(--c-dark) 10%, transparent);
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -165,7 +165,7 @@ const { id = "report", title, intro, points, finding, note } = Astro.props;
 
   .sheet__severity {
     font-weight: var(--font-weight-semi-bold);
-    color: var(--color-danger);
+    color: var(--color-ink);
     padding: 0.2rem 0.6rem;
     border: 1px solid currentColor;
     border-radius: 100px;

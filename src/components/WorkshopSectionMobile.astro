@@ -71,7 +71,6 @@ const workshops = WORKSHOPS.map((item) => ({
     /* Same treatment as the pinned desktop panel: one sweep per viewport
        height, then the gradient's end colour. */
     background-color: var(--color-dark);
-    background-image: var(--background-gradient-primary);
     background-attachment: fixed;
     background-size: 100% 100svh;
     background-repeat: no-repeat;
@@ -98,7 +97,7 @@ const workshops = WORKSHOPS.map((item) => ({
     line-height: 1.5;
     text-align: center;
     text-wrap: balance;
-    color: rgba(232, 237, 246, 0.74);
+    color: color-mix(in srgb, var(--c-light) 74%, transparent);
     max-width: 52ch;
     margin: 0 auto clamp(1.5rem, 6vw, 2.5rem);
   }
@@ -125,11 +124,11 @@ const workshops = WORKSHOPS.map((item) => ({
     display: grid;
     grid-template-columns: 1fr;
     align-items: stretch;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f4f2 100%);
+    background: linear-gradient(180deg, var(--c-light) 0%, var(--c-light) 100%);
     border: 1px solid var(--color-stroke);
     border-radius: 18px;
     padding: clamp(1rem, 5vw, 1.35rem);
-    box-shadow: 0 26px 60px rgba(40, 12, 19, 0.14);
+    box-shadow: 0 26px 60px color-mix(in srgb, var(--c-dark) 14%, transparent);
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -157,7 +156,7 @@ const workshops = WORKSHOPS.map((item) => ({
     inset: 0;
     background: radial-gradient(
       circle at 35% 15%,
-      rgba(58, 120, 105, 0.12),
+      color-mix(in srgb, var(--c-accent) 12%, transparent),
       transparent 40%
     );
     pointer-events: none;
@@ -170,7 +169,7 @@ const workshops = WORKSHOPS.map((item) => ({
     inset: 0;
     background: radial-gradient(
       circle at 120% 50%,
-      rgba(44, 16, 23, 0.14),
+      color-mix(in srgb, var(--c-dark) 14%, transparent),
       transparent 45%
     );
     pointer-events: none;
@@ -186,7 +185,7 @@ const workshops = WORKSHOPS.map((item) => ({
     background: var(--color-light-alt);
     position: relative;
     z-index: 1;
-    box-shadow: 0 10px 24px rgba(40, 12, 19, 0.08);
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--c-dark) 8%, transparent);
   }
 
   .card-media :global(img) {
@@ -257,7 +256,7 @@ const workshops = WORKSHOPS.map((item) => ({
     padding: 0.8rem 1.6rem;
     font-size: var(--font-md);
     font-weight: var(--font-weight-bold);
-    color: var(--color-ink-light);
+    color: var(--color-on-accent);
     background-color: var(--color-accent);
     border-radius: 50px;
     text-decoration: none;
@@ -268,9 +267,9 @@ const workshops = WORKSHOPS.map((item) => ({
 
   .card-cta:hover,
   .card-cta:focus-visible {
-    outline: 2px solid var(--color-accent-strong);
-    color: var(--color-light-alt);
-    background-color: var(--color-accent-strong);
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .card-cta:active {

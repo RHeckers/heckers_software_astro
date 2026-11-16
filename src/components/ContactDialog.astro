@@ -51,12 +51,12 @@ import Contact from "./Contact.astro";
     border-radius: 20px;
     background: var(--color-light-alt);
     color: var(--color-ink);
-    box-shadow: 0 40px 80px rgba(5, 10, 20, 0.45);
+    box-shadow: 0 40px 80px color-mix(in srgb, var(--c-dark) 45%, transparent);
     overflow: auto;
   }
 
   .contact-dialog::backdrop {
-    background: rgba(11, 18, 32, 0.7);
+    background: color-mix(in srgb, var(--c-dark) 70%, transparent);
     backdrop-filter: blur(4px);
   }
 
@@ -82,7 +82,7 @@ import Contact from "./Contact.astro";
   .contact-dialog__close:hover,
   .contact-dialog__close:focus-visible {
     border-color: var(--color-accent);
-    color: var(--color-accent);
+    color: var(--color-highlight);
   }
 
   /* The contact section brings its own generous padding; trim it a little

@@ -173,11 +173,11 @@ const {
 
   .tier--recommended {
     --ink: var(--color-ink-light);
-    --muted: rgba(232, 237, 246, 0.72);
-    --rule: rgba(232, 237, 246, 0.14);
+    --muted: color-mix(in srgb, var(--c-light) 80%, transparent);
+    --rule: color-mix(in srgb, var(--c-light) 14%, transparent);
     background: var(--background-gradient-secondary);
     border-color: transparent;
-    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
   }
 
   .tier__badge {
@@ -195,7 +195,7 @@ const {
 
   .tier--recommended .tier__badge {
     border-color: var(--color-accent);
-    background: rgba(47, 125, 209, 0.18);
+    background: color-mix(in srgb, var(--c-accent) 18%, transparent);
     color: var(--color-light-raised);
   }
 
@@ -227,7 +227,7 @@ const {
   }
 
   .tier--recommended .tier__duration {
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
   }
 
   .tier__price {
@@ -302,8 +302,9 @@ const {
   }
 
   .tier__cta:hover {
-    background: var(--color-accent-strong);
-    color: var(--color-light-raised);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   .tier__cta:focus-visible {
@@ -312,14 +313,14 @@ const {
   }
 
   .tier--recommended .tier__cta {
-    color: var(--color-accent-strong);
-    background: var(--color-ink-light);
-    border-color: var(--color-ink-light);
+    color: var(--color-on-accent);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
   }
 
   .tier--recommended .tier__cta:hover {
     color: var(--color-accent-strong);
-    outline: 4px solid var(--color-accent-strong);
+    outline: 4px solid var(--color-accent);
   }
 
   .tiers__note {

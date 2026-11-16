@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import CookieConsent from "../components/CookieConsent.astro";
 import ThemeScript from "../components/ThemeScript.astro";
+import { PALETTE, PALETTES } from "../consts";
 
 interface Props {
   title: string;
@@ -38,8 +39,20 @@ const {
 } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" data-palette={PALETTE}>
   <head>
+    {/* Preview the other palette with ?palette=<name>; kept for the session. */}
+    <script is:inline define:vars={{ palettes: Object.keys(PALETTES) }}>
+      (function () {
+        try {
+          var p = new URLSearchParams(location.search).get("palette");
+          if (p && palettes.indexOf(p) !== -1) sessionStorage.setItem("palette", p);
+          var stored = sessionStorage.getItem("palette");
+          if (stored && palettes.indexOf(stored) !== -1)
+            document.documentElement.setAttribute("data-palette", stored);
+        } catch (e) {}
+      })();
+    </script>
     <BaseHead
       title={title}
       description={description}

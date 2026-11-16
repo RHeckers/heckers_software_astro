@@ -113,7 +113,6 @@ const headingId = `fact-${stat.replace(/[^a-z0-9]/gi, "").toLowerCase()}`;
        point on screen. Stretching the gradient over each box instead makes
        a short band and a 2,400px one look nothing alike. */
     background-color: var(--color-dark);
-    background-image: var(--background-gradient-primary);
     background-attachment: fixed;
     background-size: 100% 100svh;
     background-repeat: no-repeat;
@@ -127,7 +126,7 @@ const headingId = `fact-${stat.replace(/[^a-z0-9]/gi, "").toLowerCase()}`;
 
     .fact__value,
     .fact__link {
-      color: rgb(47, 125, 209);
+      color: var(--c-accent);
     }
   }
 
@@ -208,7 +207,7 @@ const headingId = `fact-${stat.replace(/[^a-z0-9]/gi, "").toLowerCase()}`;
     aspect-ratio: 3 / 2;
     object-fit: cover;
     border-radius: 18px;
-    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.18);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 18%, transparent);
   }
 
   @media (min-width: 900px) {

@@ -441,8 +441,8 @@ const jsonLd = {
   .cta-button {
     display: inline-block;
     font-weight: var(--font-weight-semi-bold);
-    color: var(--color-dark);
-    background: var(--color-light);
+    color: var(--color-on-accent);
+    background: var(--color-accent);
     padding: 0.75rem 2rem;
     border-radius: 8px;
     text-decoration: none;
@@ -452,7 +452,7 @@ const jsonLd = {
   }
 
   .cta-button:hover {
-    background: #fff;
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
     transform: translateY(-1px);
   }
 
@@ -462,10 +462,6 @@ const jsonLd = {
     border: 1px solid var(--color-stroke);
   }
 
-  :global(:root[data-theme="dark"]) .cta-button {
-    color: var(--color-dark);
-    background: var(--color-ink);
-  }
 
   /* --- More posts --- */
 

@@ -141,7 +141,6 @@ const workshops = WORKSHOPS.map((item) => ({
     /* Same viewport-painted gradient as the fact band above, so the two
        blocks are the same colour at the same point on screen. */
     background-color: var(--color-dark);
-    background-image: var(--background-gradient-primary);
     background-attachment: fixed;
     background-size: 100% 100svh;
     background-repeat: no-repeat;
@@ -228,13 +227,13 @@ const workshops = WORKSHOPS.map((item) => ({
     width: min(660px, 98vw);
     max-width: 700px;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.96);
+    background: color-mix(in srgb, var(--c-light) 96%, transparent);
     /* No border: overflow clips children at the padding edge, so a framed
        card would always show a hairline above the photo that bleeds to
        its top corners. The shadow carries the edge instead. */
     border-radius: 18px;
     padding: 2.2rem 2.6rem 2.1rem 2.4rem;
-    box-shadow: 0 26px 60px rgba(40, 12, 19, 0.16);
+    box-shadow: 0 26px 60px color-mix(in srgb, var(--c-dark) 16%, transparent);
     display: flex;
     flex-direction: column;
     z-index: 2;
@@ -252,7 +251,7 @@ const workshops = WORKSHOPS.map((item) => ({
     height: min(370px, 80vw);
     border-radius: 50%;
     overflow: hidden;
-    box-shadow: 0 30px 70px rgba(40, 12, 19, 0.2);
+    box-shadow: 0 30px 70px color-mix(in srgb, var(--c-dark) 20%, transparent);
     background: var(--color-light-alt);
   }
 
@@ -332,7 +331,7 @@ const workshops = WORKSHOPS.map((item) => ({
     padding: 0.85rem 2.2rem;
     font-size: 1.13rem;
     font-weight: var(--font-weight-bold);
-    color: var(--color-ink-light);
+    color: var(--color-on-accent);
     background-color: var(--color-accent);
     border-radius: 999px;
     text-decoration: none;
@@ -344,8 +343,9 @@ const workshops = WORKSHOPS.map((item) => ({
 
   .card-cta:hover,
   .card-cta:focus-visible {
-    outline: 2px solid var(--color-accent-strong);
-    background-color: var(--color-accent-strong);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 </style>
 

@@ -69,3 +69,18 @@ export function profileLinks(): string[] {
     PROFILES.talks[0].url,
   ].filter((url) => url.length > 0);
 }
+
+/**
+ * Site colour palette. Each palette is three colours (light, dark, accent);
+ * global.scss maps every colour on the site onto them via data-palette on
+ * <html>. Any page can be previewed in the other palette with
+ * ?palette=<name> in the URL (remembered for the session).
+ */
+export const PALETTES = {
+  sand: { light: "#f0e5db", dark: "#474329", accent: "#fc75b4" },
+  aurora: { light: "#e1e8f2", dark: "#151c2b", accent: "#2bf08a" },
+  harbor: { light: "#f2eee6", dark: "#16233a", accent: "#ffbf2e" },
+  granite: { light: "#eceae5", dark: "#1f2b30", accent: "#1fe6cf" },
+} as const;
+export type PaletteName = keyof typeof PALETTES;
+export const PALETTE: PaletteName = "harbor";

@@ -121,7 +121,7 @@ const hoverCss = nodes
     const lit = [id, ...(neighbours[id] ?? [])];
     return [
       `${on} [data-from="${id}"], ${on} [data-to="${id}"] { stroke: var(--color-accent); stroke-width: 2; marker-end: url(#nx-arrow-hot); }`,
-      `${lit.map((n) => `${on} [data-node="${n}"] rect`).join(", ")} { fill: rgba(47, 125, 209, 0.18); stroke: var(--color-accent); }`,
+      `${lit.map((n) => `${on} [data-node="${n}"] rect`).join(", ")} { fill: color-mix(in srgb, var(--c-accent) 18%, transparent); stroke: var(--color-accent); }`,
       `${lit.map((n) => `${on} [data-node="${n}"] text`).join(", ")} { fill: var(--color-light-raised); }`,
     ].join("\n");
   })
@@ -153,7 +153,7 @@ const hoverCss = nodes
         markerUnits="userSpaceOnUse"
         orient="auto"
       >
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(232, 237, 246, 0.5)" />
+        <path d="M 0 0 L 10 5 L 0 10 z" style="fill: color-mix(in srgb, var(--c-light) 50%, transparent)" />
       </marker>
       <marker
         id="nx-arrow-hot"
@@ -165,7 +165,7 @@ const hoverCss = nodes
         markerUnits="userSpaceOnUse"
         orient="auto"
       >
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f7dd1" />
+        <path d="M 0 0 L 10 5 L 0 10 z" style="fill: var(--c-accent)" />
       </marker>
       <marker
         id="nx-arrow-cycle"
@@ -177,7 +177,7 @@ const hoverCss = nodes
         markerUnits="userSpaceOnUse"
         orient="auto"
       >
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="#c2413b" />
+        <path d="M 0 0 L 10 5 L 0 10 z" style="fill: var(--c-accent)" />
       </marker>
     </defs>
 
@@ -232,8 +232,8 @@ const hoverCss = nodes
      per-node rules below light up the hovered node's dependencies. -->
 <style
   is:inline
-  set:html={`.nx-graph:has(.node:hover) .edge--hot { stroke: rgba(232, 237, 246, 0.22); stroke-width: 1.5; marker-end: url(#nx-arrow); }
-.nx-graph:has(.node:hover) .node--hot rect { fill: rgba(232, 237, 246, 0.06); stroke: rgba(232, 237, 246, 0.16); }
+  set:html={`.nx-graph:has(.node:hover) .edge--hot { stroke: color-mix(in srgb, var(--c-light) 22%, transparent); stroke-width: 1.5; marker-end: url(#nx-arrow); }
+.nx-graph:has(.node:hover) .node--hot rect { fill: color-mix(in srgb, var(--c-light) 6%, transparent); stroke: color-mix(in srgb, var(--c-light) 16%, transparent); }
 .nx-graph:has(.node:hover) .node--hot text { fill: var(--color-ink-light); }
 ${hoverCss}`}
 />
@@ -256,7 +256,7 @@ ${hoverCss}`}
     margin-top: 0.75rem;
     font-family: "synonym", sans-serif;
     font-size: var(--font-sm);
-    color: rgba(232, 237, 246, 0.55);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
     text-align: center;
   }
 
@@ -278,8 +278,8 @@ ${hoverCss}`}
     gap: 0.5rem;
     padding: 0.35rem 0.9rem;
     border-radius: 999px;
-    border: 1px solid rgba(232, 237, 246, 0.14);
-    background: rgba(232, 237, 246, 0.05);
+    border: 1px solid color-mix(in srgb, var(--c-light) 14%, transparent);
+    background: color-mix(in srgb, var(--c-light) 5%, transparent);
     color: var(--color-ink-light);
     white-space: nowrap;
   }
@@ -304,7 +304,7 @@ ${hoverCss}`}
 
   .edge {
     fill: none;
-    stroke: rgba(232, 237, 246, 0.22);
+    stroke: color-mix(in srgb, var(--c-light) 22%, transparent);
     stroke-width: 1.5;
     marker-end: url(#nx-arrow);
   }
@@ -316,7 +316,7 @@ ${hoverCss}`}
   }
 
   .edge--cycle {
-    stroke: rgba(194, 65, 59, 0.85);
+    stroke: color-mix(in srgb, var(--c-accent) 85%, transparent);
     stroke-width: 1.75;
     marker-end: url(#nx-arrow-cycle);
     opacity: 0;
@@ -328,8 +328,8 @@ ${hoverCss}`}
   }
 
   .node rect {
-    fill: rgba(232, 237, 246, 0.06);
-    stroke: rgba(232, 237, 246, 0.16);
+    fill: color-mix(in srgb, var(--c-light) 6%, transparent);
+    stroke: color-mix(in srgb, var(--c-light) 16%, transparent);
     stroke-width: 1;
   }
 
@@ -343,7 +343,7 @@ ${hoverCss}`}
   }
 
   .node--hot rect {
-    fill: rgba(47, 125, 209, 0.18);
+    fill: color-mix(in srgb, var(--c-accent) 18%, transparent);
     stroke: var(--color-accent);
   }
 

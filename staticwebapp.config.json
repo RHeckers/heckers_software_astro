@@ -9,11 +9,6 @@
       "route": "/services/application-development",
       "redirect": "/services/forward-deployed-engineering/",
       "statusCode": 301
-    },
-    {
-      "route": "/services/application-development/",
-      "redirect": "/services/forward-deployed-engineering/",
-      "statusCode": 301
     }
   ],
   "responseOverrides": {

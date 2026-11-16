@@ -487,7 +487,7 @@ const jsonLd = {
   .hero__eyebrow {
     font-family: synonym, sans-serif;
     font-weight: var(--font-weight-medium);
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
     padding-left: 1.25rem;
     position: relative;
   }
@@ -516,7 +516,7 @@ const jsonLd = {
     font-family: synonym, sans-serif;
     font-size: clamp(1.05rem, 1.4vw, 1.2rem);
     line-height: 1.55;
-    color: rgba(232, 237, 246, 0.78);
+    color: color-mix(in srgb, var(--c-light) 78%, transparent);
     max-width: 56ch;
   }
 
@@ -546,20 +546,22 @@ const jsonLd = {
 
   .btn--primary {
     font-weight: var(--font-weight-bold);
-    background: var(--color-accent-strong);
-    border-color: var(--color-accent-strong);
-    color: var(--color-light-raised);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   .btn--primary:hover,
   .btn--primary:focus-visible {
-    background: var(--color-accent-ink);
-    border-color: var(--color-accent-ink);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .btn--ghost {
     color: var(--color-ink-light);
-    border-color: rgba(232, 237, 246, 0.35);
+    border-color: color-mix(in srgb, var(--c-light) 35%, transparent);
   }
 
   .btn--ghost:hover,
@@ -581,7 +583,7 @@ const jsonLd = {
     max-width: 1200px;
     margin: clamp(3rem, 6vw, 4.5rem) auto 0;
     padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid rgba(232, 237, 246, 0.14);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 14%, transparent);
     list-style: none;
     display: grid;
     grid-template-columns: 1fr;
@@ -608,7 +610,7 @@ const jsonLd = {
     font-family: synonym, sans-serif;
     font-size: 0.95rem;
     line-height: 1.5;
-    color: rgba(232, 237, 246, 0.72);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
     max-width: 30ch;
   }
 
@@ -744,7 +746,7 @@ const jsonLd = {
     color: var(--color-ink-light);
     border-radius: 22px;
     padding: clamp(1.5rem, 3.5vw, 2.5rem);
-    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
     view-timeline-name: --plan-reveal;
   }
 
@@ -777,7 +779,7 @@ const jsonLd = {
   }
 
   .phase:not(:last-child)::before {
-    background: rgba(232, 237, 246, 0.14);
+    background: color-mix(in srgb, var(--c-light) 14%, transparent);
   }
 
   .phase:not(:last-child)::after {
@@ -795,7 +797,7 @@ const jsonLd = {
     justify-content: center;
     font-size: var(--font-sm);
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
+    color: var(--color-on-accent);
     background: var(--color-accent);
     box-shadow: 0 0 0 4px var(--color-dark-strong);
     position: relative;
@@ -826,7 +828,7 @@ const jsonLd = {
   .phase__when {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
     white-space: nowrap;
   }
 
@@ -834,7 +836,7 @@ const jsonLd = {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
     line-height: 1.55;
-    color: rgba(232, 237, 246, 0.78);
+    color: color-mix(in srgb, var(--c-light) 78%, transparent);
     max-width: 60ch;
   }
 
@@ -923,8 +925,8 @@ const jsonLd = {
     gap: 0.35rem;
     padding: 1.1rem 1.25rem;
     border-radius: 14px;
-    background: rgba(47, 125, 209, 0.08);
-    border: 1px solid rgba(47, 125, 209, 0.25);
+    background: color-mix(in srgb, var(--c-accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 25%, transparent);
     font-family: synonym, sans-serif;
     line-height: 1.5;
   }
@@ -975,7 +977,7 @@ const jsonLd = {
     border: 1px solid var(--color-stroke);
     border-radius: 22px;
     padding: clamp(1.5rem, 3vw, 2.25rem);
-    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.08);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 8%, transparent);
   }
 
   .facts dl {

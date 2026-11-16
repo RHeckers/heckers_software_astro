@@ -76,11 +76,12 @@ const changes = [
     background: var(--color-dark-soft);
     color: var(--color-ink-light);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
-    /* The status tones as they are tuned for a dark surface. */
-    --gain: #4fb492;
-    --pain: #e5756e;
-    --rule: rgba(232, 237, 246, 0.16);
-    --muted: rgba(232, 237, 246, 0.72);
+    /* Three colours only: mocha ground, sand text, pink for the gain.
+       The crossed-out pain is drawn in sand so the eye goes to the pink. */
+    --gain: var(--c-accent);
+    --pain: var(--c-light);
+    --rule: color-mix(in srgb, var(--c-light) 16%, transparent);
+    --muted: color-mix(in srgb, var(--c-light) 72%, transparent);
   }
 
   .gains__inner {
@@ -169,17 +170,17 @@ const changes = [
 
     .change__strike {
       background-size: 0% 2px;
-      animation: change-strike linear both;
+      animation: change-strike ease-in-out both;
       animation-timeline: --change;
-      animation-range: entry 80% cover 32%;
+      animation-range: cover 25% cover 46%;
     }
 
     .change__arrow,
     .change__after {
       opacity: 0.25;
-      animation: change-gain linear both;
+      animation: change-gain ease-in-out both;
       animation-timeline: --change;
-      animation-range: cover 28% cover 42%;
+      animation-range: cover 38% cover 54%;
     }
   }
 
@@ -223,7 +224,7 @@ const changes = [
   /* Wide screens: the list is one grid and every row borrows its columns,
      so the right column is as wide as the longest gain and no wider. That
      pushes all four gains as far right as they can go while they still
-     start on the same vertical line, green rules one under the other. The
+     start on the same vertical line, pink rules one under the other. The
      arrow sits in the middle of the space that is left. */
   @media (min-width: 760px) {
     .changes {

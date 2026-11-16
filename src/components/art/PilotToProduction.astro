@@ -137,15 +137,15 @@ const BEACON_AT = 72;
 const isSub = (i: number) => stops[i].row > 0;
 const idleFor = (i: number) =>
   isSub(i)
-    ? "fill: rgba(232, 237, 246, 0.03); stroke: rgba(232, 237, 246, 0.3);"
-    : "fill: rgba(232, 237, 246, 0.05); stroke: rgba(232, 237, 246, 0.35);";
+    ? "fill: color-mix(in srgb, var(--c-light) 3%, transparent); stroke: color-mix(in srgb, var(--c-light) 30%, transparent);"
+    : "fill: color-mix(in srgb, var(--c-light) 5%, transparent); stroke: color-mix(in srgb, var(--c-light) 35%, transparent);";
 const litFor = (i: number) =>
   isSub(i)
-    ? "fill: rgba(47, 125, 209, 0.14); stroke: rgba(127, 182, 239, 0.75);"
-    : "fill: rgba(47, 125, 209, 0.3); stroke: #2f7dd1;";
+    ? "fill: color-mix(in srgb, var(--c-light) 6%, transparent); stroke: color-mix(in srgb, var(--c-accent) 60%, transparent);"
+    : "fill: color-mix(in srgb, var(--c-light) 12%, transparent); stroke: var(--c-accent);";
 const inkIdle = (i: number) =>
-  isSub(i) ? "rgba(232, 237, 246, 0.5)" : "rgba(232, 237, 246, 0.7)";
-const inkLit = (i: number) => (isSub(i) ? "rgba(232, 237, 246, 0.86)" : "#ffffff");
+  isSub(i) ? "color-mix(in srgb, var(--c-light) 50%, transparent)" : "color-mix(in srgb, var(--c-light) 70%, transparent)";
+const inkLit = (i: number) => (isSub(i) ? "color-mix(in srgb, var(--c-light) 86%, transparent)" : "var(--c-light)");
 const haloLit = (i: number) => (isSub(i) ? 0.22 : 0.5);
 const stopCss = stops
   .map((_, i) => {
@@ -207,22 +207,22 @@ const gapLabel = {
         height="18"
         patternUnits="userSpaceOnUse"
       >
-        <circle cx="1.5" cy="1.5" r="1.1" fill="rgba(232, 237, 246, 0.12)"></circle>
+        <circle cx="1.5" cy="1.5" r="1.1" style="fill: color-mix(in srgb, var(--c-light) 12%, transparent)"></circle>
       </pattern>
       <radialGradient id="p2p-fade" cx="50%" cy="50%" r="62%">
-        <stop offset="0" stop-color="#ffffff"></stop>
+        <stop offset="0" style="stop-color: var(--c-light)"></stop>
         <stop offset="1" stop-color="#000000"></stop>
       </radialGradient>
       <mask id="p2p-mask">
         <rect width="600" height="340" fill="url(#p2p-fade)"></rect>
       </mask>
       <radialGradient id="p2p-ambient" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stop-color="rgba(47, 125, 209, 0.2)"></stop>
-        <stop offset="1" stop-color="rgba(47, 125, 209, 0)"></stop>
+        <stop offset="0" style="stop-color: color-mix(in srgb, var(--c-accent) 10%, transparent)"></stop>
+        <stop offset="1" style="stop-color: color-mix(in srgb, var(--c-accent) 0%, transparent)"></stop>
       </radialGradient>
       <radialGradient id="p2p-ambient-live" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stop-color="rgba(63, 174, 140, 0.28)"></stop>
-        <stop offset="1" stop-color="rgba(63, 174, 140, 0)"></stop>
+        <stop offset="0" style="stop-color: color-mix(in srgb, var(--c-accent) 28%, transparent)"></stop>
+        <stop offset="1" style="stop-color: color-mix(in srgb, var(--c-accent) 0%, transparent)"></stop>
       </radialGradient>
       <filter id="p2p-blur" x="-60%" y="-60%" width="220%" height="220%">
         <feGaussianBlur stdDeviation="8"></feGaussianBlur>
@@ -390,14 +390,14 @@ const gapLabel = {
   .art text {
     font-size: 14px;
     font-weight: 500;
-    fill: rgba(232, 237, 246, 0.82);
+    fill: color-mix(in srgb, var(--c-light) 82%, transparent);
   }
 
   figcaption {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
     line-height: 1.5;
-    color: rgba(232, 237, 246, 0.55);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
     max-width: 48ch;
   }
 
@@ -407,7 +407,7 @@ const gapLabel = {
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    fill: rgba(232, 237, 246, 0.42);
+    fill: color-mix(in srgb, var(--c-light) 42%, transparent);
   }
 
   .art .eyebrow--end {
@@ -417,14 +417,14 @@ const gapLabel = {
   /* --- Route --- */
 
   .mainline {
-    stroke: rgba(232, 237, 246, 0.08);
+    stroke: color-mix(in srgb, var(--c-light) 8%, transparent);
     stroke-width: 6;
     stroke-linecap: round;
   }
 
   .track {
     fill: none;
-    stroke: rgba(232, 237, 246, 0.18);
+    stroke: color-mix(in srgb, var(--c-light) 18%, transparent);
     stroke-width: 1.5;
     stroke-dasharray: 3 5;
     stroke-linecap: round;
@@ -432,7 +432,7 @@ const gapLabel = {
 
   /* The gap: a broken, reddish track. */
   .track--gap {
-    stroke: rgba(229, 117, 110, 0.6);
+    stroke: color-mix(in srgb, var(--c-accent) 60%, transparent);
     stroke-dasharray: 2 6;
   }
 
@@ -441,12 +441,12 @@ const gapLabel = {
     font-size: 11.5px;
     font-weight: 400;
     text-anchor: middle;
-    fill: rgba(229, 117, 110, 0.85);
+    fill: color-mix(in srgb, var(--c-accent) 85%, transparent);
   }
 
   .link {
     fill: none;
-    stroke: #2f7dd1;
+    stroke: var(--c-accent);
     stroke-width: 2.25;
     stroke-linecap: round;
     stroke-dasharray: 1;
@@ -461,49 +461,49 @@ const gapLabel = {
   /* --- Stops --- */
 
   .stop__box {
-    fill: rgba(232, 237, 246, 0.05);
-    stroke: rgba(232, 237, 246, 0.35);
+    fill: color-mix(in srgb, var(--c-light) 5%, transparent);
+    stroke: color-mix(in srgb, var(--c-light) 35%, transparent);
     stroke-width: 1.5;
   }
 
   .stop__halo {
-    fill: #2f7dd1;
+    fill: var(--c-accent);
     opacity: 0;
   }
 
   .stop__label {
-    fill: rgba(232, 237, 246, 0.7);
+    fill: color-mix(in srgb, var(--c-light) 70%, transparent);
     text-anchor: middle;
   }
 
   /* Stacked stops: dashed and dimmer, and they stay dashed once reached
      (the dash pattern is not animated, only the colours are). */
   .stop--sub .stop__box {
-    fill: rgba(232, 237, 246, 0.03);
-    stroke: rgba(232, 237, 246, 0.3);
+    fill: color-mix(in srgb, var(--c-light) 3%, transparent);
+    stroke: color-mix(in srgb, var(--c-light) 30%, transparent);
     stroke-width: 1.5;
     stroke-dasharray: 5 5;
   }
 
   .stop--sub .stop__label {
-    fill: rgba(232, 237, 246, 0.5);
+    fill: color-mix(in srgb, var(--c-light) 50%, transparent);
   }
 
   /* --- Beacon --- */
 
   .beacon__core {
-    fill: #3fae8c;
+    fill: var(--c-accent);
     opacity: 0.35;
   }
 
   .beacon__glow {
-    fill: #3fae8c;
+    fill: var(--c-accent);
     opacity: 0;
   }
 
   .ring {
     fill: none;
-    stroke: #3fae8c;
+    stroke: var(--c-accent);
     stroke-width: 1.5;
     opacity: 0;
     transform-box: fill-box;
@@ -517,12 +517,12 @@ const gapLabel = {
   /* --- Comet --- */
 
   .comet {
-    fill: #ffffff;
+    fill: var(--c-light);
     opacity: 0;
   }
 
   .comet--tail {
-    fill: #7fb6ef;
+    fill: var(--c-accent);
   }
 
   /* --- Status pill --- */
@@ -534,8 +534,8 @@ const gapLabel = {
   }
 
   .status rect {
-    fill: rgba(232, 237, 246, 0.06);
-    stroke: rgba(232, 237, 246, 0.16);
+    fill: color-mix(in srgb, var(--c-light) 6%, transparent);
+    stroke: color-mix(in srgb, var(--c-light) 16%, transparent);
     stroke-width: 1;
   }
 
@@ -545,7 +545,7 @@ const gapLabel = {
   }
 
   .status__dot {
-    fill: #3fae8c;
+    fill: var(--c-accent);
   }
 
   /* --- The loop --- */
@@ -747,13 +747,13 @@ const gapLabel = {
     }
 
     .stop__box {
-      fill: rgba(47, 125, 209, 0.3);
-      stroke: #2f7dd1;
+      fill: color-mix(in srgb, var(--c-light) 12%, transparent);
+      stroke: var(--c-accent);
     }
 
     .stop--sub .stop__box {
-      fill: rgba(47, 125, 209, 0.14);
-      stroke: rgba(127, 182, 239, 0.75);
+      fill: color-mix(in srgb, var(--c-light) 6%, transparent);
+      stroke: color-mix(in srgb, var(--c-accent) 60%, transparent);
     }
 
     .stop__halo {
@@ -765,11 +765,11 @@ const gapLabel = {
     }
 
     .stop__label {
-      fill: #ffffff;
+      fill: var(--c-light);
     }
 
     .stop--sub .stop__label {
-      fill: rgba(232, 237, 246, 0.86);
+      fill: color-mix(in srgb, var(--c-light) 86%, transparent);
     }
 
     .link {

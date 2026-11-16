@@ -75,7 +75,7 @@ const stack = [
             assessment we read your Angular or Nx codebase from the outside,
             talk to the people who work in it every day, and hand you every
             finding
-            <Accent range="entry 40% cover 35%" wrap>ranked by what it costs you, not by how ugly it looks</Accent>,
+            <Accent range="entry 40% cover 35%" wrap marker>ranked by what it costs you, not by how ugly it looks</Accent>,
             with the fix and the effort next to each. Fixed scope, fixed
             price, two to three weeks, and a roadmap your own team can run.
           </p>
@@ -259,12 +259,12 @@ const stack = [
     padding: 0.8em 1.8em;
     font-size: 1rem;
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
-    background-color: var(--color-accent-strong);
-    border: 1px solid var(--color-accent-strong);
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-accent);
     border-radius: 999px;
     text-decoration: none;
-    box-shadow: 0 14px 30px rgba(37, 99, 168, 0.28);
+    box-shadow: 0 14px 30px color-mix(in srgb, var(--c-accent) 30%, transparent);
     transition:
       background-color 0.2s,
       border-color 0.2s,
@@ -272,9 +272,11 @@ const stack = [
   }
 
   .assessment__cta:hover {
-    background-color: var(--color-accent-ink);
-    border-color: var(--color-accent-ink);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    border-color: var(--color-accent);
     transform: translateY(-1px);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .assessment__cta:focus-visible {
@@ -313,7 +315,7 @@ const stack = [
     display: flex;
     flex-direction: column;
     gap: var(--spacer-xl);
-    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
     view-timeline-name: --plan-reveal;
   }
 
@@ -330,7 +332,7 @@ const stack = [
 
   .plan__intro {
     font-family: synonym, sans-serif;
-    color: rgba(232, 237, 246, 0.7);
+    color: color-mix(in srgb, var(--c-light) 70%, transparent);
   }
 
   .phases {
@@ -364,7 +366,7 @@ const stack = [
   }
 
   .phase:not(:last-child)::before {
-    background: rgba(232, 237, 246, 0.14);
+    background: color-mix(in srgb, var(--c-light) 14%, transparent);
   }
 
   .phase:not(:last-child)::after {
@@ -382,7 +384,7 @@ const stack = [
     justify-content: center;
     font-size: var(--font-sm);
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
+    color: var(--color-on-accent);
     background: var(--color-accent);
     box-shadow: 0 0 0 4px var(--color-dark-strong);
     position: relative;
@@ -412,7 +414,7 @@ const stack = [
   .phase__when {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
     white-space: nowrap;
   }
 
@@ -420,7 +422,7 @@ const stack = [
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
     line-height: 1.5;
-    color: rgba(232, 237, 246, 0.78);
+    color: color-mix(in srgb, var(--c-light) 78%, transparent);
     max-width: 48ch;
   }
 
@@ -429,13 +431,13 @@ const stack = [
     flex-direction: column;
     gap: 0.6rem;
     padding-top: var(--spacer-lg);
-    border-top: 1px solid rgba(232, 237, 246, 0.12);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 12%, transparent);
   }
 
   .plan__stack-label {
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
-    color: rgba(232, 237, 246, 0.6);
+    color: color-mix(in srgb, var(--c-light) 60%, transparent);
   }
 
   .stack {
@@ -451,7 +453,7 @@ const stack = [
     font-weight: var(--font-weight-medium);
     padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    border: 1px solid rgba(232, 237, 246, 0.2);
+    border: 1px solid color-mix(in srgb, var(--c-light) 20%, transparent);
     color: var(--color-ink-light);
   }
 

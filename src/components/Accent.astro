@@ -17,7 +17,7 @@
  * The accent copy is aria-hidden; assistive technology reads the slot once.
  */
 interface Props {
-  /** Colour token: "accent" (success green) or "danger" (red). */
+  /** Both tones reveal in pink; "danger" is kept for older call sites. */
   tone?: "accent" | "danger";
   /** animation-range for the reveal, e.g. "entry 80% entry 95%". */
   range?: string;
@@ -37,9 +37,14 @@ interface Props {
    * they break at the same places and the wipe still lines up.
    */
   wrap?: boolean;
+  /**
+   * For text on sand: pink text is too faint there, so reveal a pink
+   * highlighter stroke behind the (mocha) text instead.
+   */
+  marker?: boolean;
 }
 
-const { tone = "accent", range, mobileRange, timeline, wrap = false } = Astro.props;
+const { tone = "accent", range, mobileRange, timeline, wrap = false, marker = false } = Astro.props;
 
 const style = [
   range && `--accent-range: ${range}`,
@@ -50,11 +55,11 @@ const style = [
   .join("; ");
 ---
 
-<span class:list={[tone, { "accent--wrap": wrap }]} style={style || undefined}>
+<span class:list={[tone, { "accent--wrap": wrap, "accent--marker": marker }]} style={style || undefined}>
   <span class="accent__base">
     <span class="accent__base-copy"><slot /></span>
   </span>
   <span class="accent__clip" aria-hidden="true">
-    <span class="accent__copy"><slot /></span>
+    <span class="accent__copy">{marker ? <span class="accent__mark"><slot /></span> : <slot />}</span>
   </span>
 </span>

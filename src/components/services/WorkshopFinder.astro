@@ -399,7 +399,7 @@ for (const question of questions) {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    box-shadow: 0 24px 48px rgba(11, 18, 32, 0.08);
+    box-shadow: 0 24px 48px color-mix(in srgb, var(--c-dark) 8%, transparent);
   }
 
   .quiz__trail {
@@ -471,7 +471,7 @@ for (const question of questions) {
   .quiz__option:hover,
   .quiz__option:focus-visible {
     border-color: var(--color-accent);
-    background: rgba(47, 125, 209, 0.06);
+    background: color-mix(in srgb, var(--c-accent) 6%, transparent);
     transform: translateX(2px);
   }
 
@@ -540,8 +540,8 @@ for (const question of questions) {
     color: var(--color-ink-muted);
     padding: 0.9rem 1.1rem;
     border-radius: 12px;
-    background: rgba(47, 125, 209, 0.08);
-    border: 1px solid rgba(47, 125, 209, 0.3);
+    background: color-mix(in srgb, var(--c-accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 30%, transparent);
     max-width: 58ch;
   }
 
@@ -572,8 +572,8 @@ for (const question of questions) {
     padding: 0.85rem 2rem;
     font-size: var(--font-md);
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
-    background-color: var(--color-accent-strong);
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
     border-radius: 50px;
     text-decoration: none;
     transition: background-color 0.2s;
@@ -581,7 +581,9 @@ for (const question of questions) {
 
   .quiz__cta:hover,
   .quiz__cta:focus-visible {
-    background-color: var(--color-accent-ink);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .quiz__link {

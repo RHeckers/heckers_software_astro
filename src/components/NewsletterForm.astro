@@ -112,7 +112,7 @@ const frameName = `${id}-frame`;
 
   .nl__group:focus-within {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(47, 125, 209, 0.2);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 20%, transparent);
   }
 
   .nl__group input {
@@ -137,15 +137,17 @@ const frameName = `${id}-frame`;
     padding: 0.8rem 1.5rem;
     font-family: "chillax", sans-serif;
     font-weight: var(--font-weight-semi-bold);
-    color: #fff;
+    color: var(--color-on-accent);
     /* White on the base accent is 4.2:1; the stronger blue passes. */
-    background: var(--color-accent-strong);
+    background: var(--color-accent);
     cursor: pointer;
     transition: background 200ms ease;
   }
 
   .nl__group button:hover {
-    background: var(--color-accent-ink);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .nl__group button:disabled {
@@ -161,7 +163,8 @@ const frameName = `${id}-frame`;
   }
 
   .nl__msg.is-success {
-    color: var(--color-success);
+    color: inherit;
+    font-weight: var(--font-weight-semi-bold);
   }
 
   iframe[hidden] {

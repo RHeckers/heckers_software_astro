@@ -40,7 +40,7 @@ const verbs = [
         {
           verbs.map((item) => (
             <li class="verb">
-              <Accent range="entry 100% cover 35%">{item.verb}</Accent>
+              <Accent range="cover 30% cover 70%" mobileRange="cover 30% cover 75%">{item.verb}</Accent>
               {item.rest}
             </li>
           ))
@@ -125,7 +125,7 @@ const verbs = [
     font-family: synonym, sans-serif;
     font-size: clamp(1.1rem, 1.6vw, 1.35rem);
     line-height: 1.5;
-    color: rgba(232, 237, 246, 0.76);
+    color: color-mix(in srgb, var(--c-light) 76%, transparent);
     max-width: 40ch;
   }
 
@@ -133,14 +133,14 @@ const verbs = [
     list-style: none;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid rgba(232, 237, 246, 0.16);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
   }
 
   .verb {
     /* Tall rows on purpose: the copy has to be longer than the pinned
        photograph beside it for the photograph to hold while it passes. */
     padding: clamp(1.25rem, 3.4vw, 2.75rem) 0;
-    border-bottom: 1px solid rgba(232, 237, 246, 0.16);
+    border-bottom: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
     font-size: clamp(1.6rem, 2.8vw, 2.4rem);
     font-weight: var(--font-weight-light);
     line-height: 1.15;
@@ -149,7 +149,7 @@ const verbs = [
 
   /* The light-page green is too muddy on a dark ground. */
   .verb :global(.accent__copy) {
-    color: #4fb492;
+    color: var(--c-accent);
   }
 
   /* Speaker on the right, audience on the left: cropped from the right
@@ -157,7 +157,7 @@ const verbs = [
   .what__photo {
     border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.4);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 40%, transparent);
   }
 
   .what__photo :global(img) {

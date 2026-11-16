@@ -87,7 +87,7 @@ import PilotToProduction from "./art/PilotToProduction.astro";
     font-family: "synonym", sans-serif;
     font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
     line-height: 1.6;
-    color: rgba(232, 237, 246, 0.74);
+    color: color-mix(in srgb, var(--c-light) 74%, transparent);
     max-width: 44ch;
     margin: 0 0 2rem;
   }
@@ -123,26 +123,25 @@ import PilotToProduction from "./art/PilotToProduction.astro";
     outline-offset: 3px;
   }
 
-  /* accent-strong keeps white text at >= 4.5:1 contrast */
+  /* The primary action is pink: the one thing on the hero meant to pull the eye. */
   .btn-primary {
-    background-color: var(--color-accent-strong);
-    border-color: var(--color-accent-strong);
-    color: var(--color-light-raised);
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
     font-weight: var(--font-weight-bold);
   }
 
   .btn-primary:hover {
-    background-color: var(--color-accent-ink);
-    border-color: var(--color-accent-ink);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .btn-ghost {
     color: var(--color-ink-light);
-    border-color: rgba(232, 237, 246, 0.3);
+    border-color: color-mix(in srgb, var(--c-light) 30%, transparent);
   }
 
   .btn-ghost:hover {
-    border-color: rgba(232, 237, 246, 0.7);
+    border-color: color-mix(in srgb, var(--c-light) 70%, transparent);
     color: var(--color-light-raised);
   }
 

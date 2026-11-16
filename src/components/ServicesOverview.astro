@@ -21,14 +21,20 @@
  * than stylesheet rules, so they render the same everywhere.
  */
 import { PRICING, VAT_NOTE, euro } from "../lib/pricing";
+import ProofQuote from "./ProofQuote.astro";
+import type { SnippetKey } from "../lib/testimonials";
 
-const ACCENT = "#2f7dd1";
-const DANGER = "#c2413b";
+/* Two clients under the three answers: what working together left behind.
+   Neither quote is used elsewhere on the home page. */
+const proofs: SnippetKey[] = ["peterLasting", "ferdiBeyondScope"];
+
+const ACCENT = "var(--c-accent)";
+const DANGER = "var(--c-accent)";
 const EDGES =
-  'fill="none" stroke="rgba(54, 61, 75, 0.4)" stroke-width="1.5" stroke-linecap="round"';
+  'fill="none" stroke-width="1.5" stroke-linecap="round" style="stroke: color-mix(in srgb, var(--c-dark) 40%, transparent)"';
 const NODES =
-  'fill="rgba(54, 61, 75, 0.04)" stroke="rgba(54, 61, 75, 0.55)" stroke-width="1.5"';
-const ACCENT_NODE = `fill="rgba(47, 125, 209, 0.14)" stroke="${ACCENT}"`;
+  'stroke-width="1.5" style="fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent)"';
+const ACCENT_NODE = `style="fill: color-mix(in srgb, var(--c-accent) 14%, transparent); stroke: ${ACCENT}"`;
 const FONT = 'font-family="chillax, sans-serif" text-anchor="middle"';
 
 const services = [
@@ -40,16 +46,16 @@ const services = [
     /* Three connected stages: discover, build, ship. */
     art: `
       <g ${EDGES}>
-        <path class="art-flow" d="M 110 48 L 110 62" />
-        <path class="art-flow" d="M 110 92 L 110 106" />
+        <path class="art-flow art-flow-1" d="M 110 48 L 110 62" />
+        <path class="art-flow art-flow-2" d="M 110 92 L 110 106" />
       </g>
       <g ${NODES}>
-        <rect x="40" y="16" width="140" height="32" rx="8" ${ACCENT_NODE} />
-        <rect class="art-layer" x="40" y="62" width="140" height="30" rx="8" />
-        <rect class="art-layer" x="40" y="106" width="140" height="30" rx="8" />
+        <rect class="art-layer art-step-1" x="40" y="16" width="140" height="32" rx="8" />
+        <rect class="art-layer art-step-2" x="40" y="62" width="140" height="30" rx="8" />
+        <rect class="art-layer art-step-3" x="40" y="106" width="140" height="30" rx="8" />
       </g>
-      <g ${FONT} font-size="12.5" font-weight="500" fill="#363d4b">
-        <text x="110" y="36.5" fill="#1f4f87">Discover</text>
+      <g ${FONT} font-size="12.5" font-weight="500" style="fill: var(--c-dark)">
+        <text x="110" y="36.5" style="fill: var(--c-dark)">Discover</text>
         <text class="art-label" x="110" y="81.5">Build and integrate AI</text>
         <text class="art-label" x="110" y="125.5">Ship to production</text>
       </g>
@@ -72,7 +78,7 @@ const services = [
         <path d="M 125 86 C 125 98, 152 98, 152 110" />
         <path d="M 190 86 C 190 98, 166 98, 166 110" />
       </g>
-      <path class="art-loop" d="M 172 110 C 210 96, 212 46, 186 30" fill="none" stroke="${DANGER}" stroke-width="1.75" stroke-linecap="round" stroke-dasharray="5 4" />
+      <path class="art-loop" d="M 172 110 C 210 96, 212 46, 186 30" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-dasharray="5 4" style="stroke: ${DANGER}" />
       <g ${NODES}>
         <rect x="62" y="18" width="56" height="22" rx="6" />
         <rect x="132" y="18" width="56" height="22" rx="6" />
@@ -83,8 +89,8 @@ const services = [
         <rect x="131" y="110" width="56" height="22" rx="6" />
       </g>
       <g class="art-flag">
-        <circle cx="206" cy="46" r="11" fill="${DANGER}" />
-        <text x="206" y="50.5" fill="#ffffff" ${FONT} font-size="15" font-weight="700">!</text>
+        <circle cx="206" cy="46" r="11" style="fill: ${DANGER}" />
+        <text x="206" y="50.5" ${FONT} font-size="15" font-weight="700" style="fill: var(--c-dark)">!</text>
       </g>
     `,
   },
@@ -99,7 +105,7 @@ const services = [
       <g ${NODES}>
         <rect x="30" y="14" width="160" height="72" rx="8" ${ACCENT_NODE} />
       </g>
-      <g fill="rgba(31, 79, 135, 0.4)">
+      <g style="fill: color-mix(in srgb, var(--c-dark) 40%, transparent)">
         <rect class="art-line" x="44" y="28" width="60" height="5" rx="2.5" />
         <rect class="art-line" x="56" y="41" width="88" height="5" rx="2.5" />
         <rect class="art-line" x="56" y="54" width="52" height="5" rx="2.5" />
@@ -118,8 +124,8 @@ const services = [
         <path d="M 151 136 C 151 122, 179 122, 179 136" />
       </g>
       <g class="art-spark">
-        <circle cx="174" cy="105" r="6.5" fill="${ACCENT}" />
-        <path d="M 170.8 105.2 L 173.2 107.6 L 177.4 102.8" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="174" cy="105" r="6.5" style="fill: ${ACCENT}" />
+        <path d="M 170.8 105.2 L 173.2 107.6 L 177.4 102.8" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="stroke: var(--c-dark)" />
       </g>
     `,
   },
@@ -128,15 +134,15 @@ const services = [
 /* What each column says, in the order of `services`. */
 const lines = [
   {
-    says: "We have a backlog nobody gets to, or a pilot that stalled.",
+    says: "Our pilot or backlog is stuck",
     terms: "Fixed price per outcome",
   },
   {
-    says: "We want the diagnosis before we commit.",
+    says: "We want an expert diagnosis",
     terms: `From ${euro(PRICING.assessment.minimum)}`,
   },
   {
-    says: "Our own team has to keep the pace.",
+    says: "Our team want to improve",
     terms: `From ${euro(PRICING.workshops.oneDay)} a day`,
   },
 ];
@@ -182,6 +188,9 @@ const offers = services.map((service, index) => ({
       }
     </ul>
 
+    <div class="services__proof">
+      {proofs.map((snippet) => <ProofQuote snippet={snippet} class="services__quote" />)}
+    </div>
   </div>
 </section>
 
@@ -190,9 +199,16 @@ const offers = services.map((service, index) => ({
     background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+    /* At least one full screen, content centred in it. */
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .services__inner {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -201,7 +217,7 @@ const offers = services.map((service, index) => ({
   }
 
   .services__title {
-    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-size: clamp(2.5rem, 5.5vw, 4.75rem);
     font-weight: var(--font-weight-medium);
     line-height: 1.02;
     letter-spacing: -0.01em;
@@ -233,9 +249,12 @@ const offers = services.map((service, index) => ({
     border-radius: 8px;
   }
 
+  /* Sized by height so all three diagrams (and the text under them) line
+     up, even though the middle column is narrower than the outer two. */
   .offer__art {
-    width: min(100%, 250px);
-    height: auto;
+    height: clamp(9rem, 15vw, 12rem);
+    width: auto;
+    max-width: 100%;
     overflow: visible;
     margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
     transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -253,8 +272,11 @@ const offers = services.map((service, index) => ({
   /* The sentence is the headline of the column: it is what the visitor
      recognises, before the name of anything. */
   .offer__says {
-    font-size: clamp(1.4rem, 2.1vw, 1.8rem);
-    font-weight: var(--font-weight-medium);
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: var(--font-weight-semi-bold);
+    /* The accent, so the eye lands here first. Deepened with the dark
+       colour because pure accent text is too faint on the light ground. */
+    color: var(--color-accent-text);
     line-height: 1.15;
     letter-spacing: -0.01em;
     margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
@@ -267,7 +289,7 @@ const offers = services.map((service, index) => ({
     display: inline-flex;
     align-items: baseline;
     gap: 0.6rem;
-    font-size: var(--font-lg);
+    font-size: clamp(1.15rem, 1.45vw, 1.3rem);
     font-weight: var(--font-weight-medium);
     color: var(--color-link);
   }
@@ -278,7 +300,7 @@ const offers = services.map((service, index) => ({
 
   .offer__terms {
     font-family: synonym, sans-serif;
-    font-size: var(--font-md);
+    font-size: var(--font-lg);
     color: var(--color-ink-muted);
     margin-top: 0.2rem;
   }
@@ -296,6 +318,30 @@ const offers = services.map((service, index) => ({
   .offer__link:hover .offer__name,
   .offer__link:focus-visible .offer__name {
     color: var(--color-link-hover);
+  }
+
+  /* Client quotes under the columns: two side by side on wide screens,
+     a little larger than elsewhere so they hold their own next to the
+     headlines above. */
+  /* Only on really large screens, where the section would otherwise have
+     empty space to fill; everywhere else the three answers stand alone. */
+  .services__proof {
+    display: none;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1rem, 2vw, 1.5rem);
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .services__proof :global(.services__quote .proof__quote p) {
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+  }
+
+  @media (min-width: 1600px) {
+    .services__proof {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .services__vat {
@@ -336,71 +382,66 @@ const offers = services.map((service, index) => ({
      Each loop is slow and leaves the diagram in its drawn state for most
      of the cycle; with reduced motion the global rule stops them there. */
 
-  /* Engineering: the three stages light up top to bottom, hold, reset. */
-  .offer__art :global(.art-layer) {
-    animation: art-stage 7s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  /* Engineering: nothing pink, then the three stages turn pink one by
+     one (top to bottom, the connector drawing in between), hold all pink,
+     reset together, and repeat. One shared 8s cycle with the steps placed
+     by keyframe offsets, not animation-delay, so no stage can be out of
+     step with the others when the loop resets. */
+  .offer__art :global(.art-step-1) {
+    animation: art-step-1 8s ease-in-out infinite;
   }
 
-  .offer__art :global(.art-label) {
-    animation: art-stage-label 7s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  .offer__art :global(.art-step-2) {
+    animation: art-step-2 8s ease-in-out infinite;
   }
 
-  .offer__art :global(.art-layer:nth-child(3)),
-  .offer__art :global(.art-label:nth-child(3)) {
-    animation-delay: 0.9s;
+  .offer__art :global(.art-step-3) {
+    animation: art-step-3 8s ease-in-out infinite;
   }
 
   .offer__art :global(.art-flow) {
+    /* Drawn at rest, so with reduced motion the connectors still show. */
     stroke-dasharray: 14;
-    animation: art-draw 7s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    stroke-dashoffset: 0;
   }
 
-  .offer__art :global(.art-flow:nth-child(2)) {
-    animation-delay: 0.9s;
+  .offer__art :global(.art-flow-1) {
+    animation: art-flow-1 8s ease-in-out infinite;
   }
 
-  @keyframes art-stage {
-    0%,
-    12% {
-      fill: rgba(54, 61, 75, 0.04);
-      stroke: rgba(54, 61, 75, 0.55);
-    }
-    24%,
-    78% {
-      fill: rgba(47, 125, 209, 0.14);
-      stroke: #2f7dd1;
-    }
-    90%,
-    100% {
-      fill: rgba(54, 61, 75, 0.04);
-      stroke: rgba(54, 61, 75, 0.55);
-    }
+  .offer__art :global(.art-flow-2) {
+    animation: art-flow-2 8s ease-in-out infinite;
   }
 
-  @keyframes art-stage-label {
-    0%,
-    12% {
-      fill: #363d4b;
-    }
-    24%,
-    78% {
-      fill: #1f4f87;
-    }
-    90%,
-    100% {
-      fill: #363d4b;
-    }
+  /* off: sand node, mocha outline. on: pink wash, pink outline. */
+  @keyframes art-step-1 {
+    0%, 8% { fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent); }
+    14%, 80% { fill: color-mix(in srgb, var(--c-accent) 14%, transparent); stroke: var(--c-accent); }
+    88%, 100% { fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent); }
   }
 
-  @keyframes art-draw {
-    0%,
-    6% {
-      stroke-dashoffset: 14;
-    }
-    16%,
-    100% {
-      stroke-dashoffset: 0;
-    }
+  @keyframes art-step-2 {
+    0%, 26% { fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent); }
+    32%, 80% { fill: color-mix(in srgb, var(--c-accent) 14%, transparent); stroke: var(--c-accent); }
+    88%, 100% { fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent); }
+  }
+
+  @keyframes art-step-3 {
+    0%, 44% { fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent); }
+    50%, 80% { fill: color-mix(in srgb, var(--c-accent) 14%, transparent); stroke: var(--c-accent); }
+    88%, 100% { fill: color-mix(in srgb, var(--c-dark) 4%, transparent); stroke: color-mix(in srgb, var(--c-dark) 55%, transparent); }
+  }
+
+  @keyframes art-flow-1 {
+    0%, 16% { stroke-dashoffset: 14; }
+    25%, 80% { stroke-dashoffset: 0; }
+    88%, 100% { stroke-dashoffset: 14; }
+  }
+
+  @keyframes art-flow-2 {
+    0%, 34% { stroke-dashoffset: 14; }
+    43%, 80% { stroke-dashoffset: 0; }
+    88%, 100% { stroke-dashoffset: 14; }
   }
 
   /* Assessment: the circular dependency marches and its flag pulses. */
@@ -505,6 +546,13 @@ const offers = services.map((service, index) => ({
     .offer__link:hover .offer__arrow,
     .offer__link:focus-visible .offer__arrow {
       transform: none;
+    }
+  }
+
+  /* Wide enough that every service name fits on one line next to its arrow. */
+  @media (min-width: 1100px) {
+    .offer__name {
+      white-space: nowrap;
     }
   }
 

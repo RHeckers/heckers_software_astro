@@ -11,6 +11,12 @@ import sharp from "sharp";
 import { decompress } from "wawoff2";
 import { categoryGroups, getSortedPosts } from "../../lib/blog";
 import { OG_CARDS, categoryCardKey, type OgCard } from "../../lib/og-cards";
+import { PALETTE, PALETTES } from "../../consts";
+
+/** satori cannot read CSS variables: the card takes the palette directly. */
+const C = PALETTES[PALETTE];
+const alpha = (hex: string, a: number) =>
+  hex + Math.round(a * 255).toString(16).padStart(2, "0");
 
 export const getStaticPaths = (async () => {
   const categories = categoryGroups(await getSortedPosts()).map(
@@ -65,10 +71,10 @@ export const GET: APIRoute = async ({ props }) => {
         alignItems: "center",
         justifyContent: "center",
         fontFamily: "chillax",
-        color: "#e8edf6",
-        backgroundColor: "#0b1220",
+        color: C.light,
+        backgroundColor: C.dark,
         backgroundImage:
-          "radial-gradient(circle at 85% 10%, #1d2f4a 0%, rgba(11,18,32,0) 55%), linear-gradient(160deg, #0f1a2b 0%, #0b1220 70%)",
+          `linear-gradient(160deg, ${C.dark} 0%, ${C.dark} 100%)`,
       },
       h("div", {
         width: 1040,
@@ -78,10 +84,10 @@ export const GET: APIRoute = async ({ props }) => {
         justifyContent: "space-between",
       }, [
         h("div", { display: "flex", flexDirection: "column" }, [
-          h("div", { width: 72, height: 6, borderRadius: 3, backgroundColor: "#2f7dd1", marginBottom: 36 }),
+          h("div", { width: 72, height: 6, borderRadius: 3, backgroundColor: C.accent, marginBottom: 36 }),
           h(
             "div",
-            { fontSize: 30, fontWeight: 500, color: "#7fb6ef", letterSpacing: 2, textTransform: "uppercase", marginBottom: 24 },
+            { fontSize: 30, fontWeight: 500, color: C.accent, letterSpacing: 2, textTransform: "uppercase", marginBottom: 24 },
             card.eyebrow,
           ),
           h(
@@ -95,7 +101,7 @@ export const GET: APIRoute = async ({ props }) => {
           { display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28, fontWeight: 500 },
           [
             h("div", { fontWeight: 600, letterSpacing: 3, textTransform: "uppercase" }, "Heckers Software"),
-            h("div", { color: "#9fadc4" }, "heckerssoftware.com"),
+            h("div", { color: alpha(C.light, 0.75) }, "heckerssoftware.com"),
           ],
         ),
       ]),

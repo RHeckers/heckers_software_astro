@@ -200,12 +200,12 @@ const reviews = TESTIMONIALS.map((item) => ({
     flex-direction: column;
     align-items: flex-start;
     background: var(--background-gradient-transparent);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid color-mix(in srgb, var(--c-light) 10%, transparent);
     border-radius: 18px;
     padding: var(--spacer-xl);
     text-align: left;
     isolation: isolate;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--c-dark) 6%, transparent);
     gap: var(--spacer-md);
   }
   .review-img {
@@ -213,7 +213,7 @@ const reviews = TESTIMONIALS.map((item) => ({
     height: 58px;
     border-radius: 16px;
     object-fit: cover;
-    border: 2px solid var(--color-accent);
+    border: 2px solid var(--c-dark);
     flex-shrink: 0;
   }
   .review-info {
@@ -229,12 +229,12 @@ const reviews = TESTIMONIALS.map((item) => ({
   }
   .review-title {
     font-size: var(--font-md);
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
   }
   .review-content {
     margin: 0;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.85);
+    color: color-mix(in srgb, var(--c-light) 85%, transparent);
     padding: 0 var(--spacer-sm);
     font-size: var(--font-md);
   }
@@ -246,8 +246,8 @@ const reviews = TESTIMONIALS.map((item) => ({
     margin-right: var(--spacer-md);
   }
   .reviews-card-button {
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(15, 26, 43, 0.7);
+    border: 2px solid color-mix(in srgb, var(--c-light) 30%, transparent);
+    background: color-mix(in srgb, var(--c-dark) 70%, transparent);
     color: var(--color-ink-light);
     width: 40px;
     height: 40px;

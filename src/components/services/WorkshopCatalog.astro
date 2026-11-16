@@ -161,7 +161,7 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     border: 1px solid var(--color-stroke);
     border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.08);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 8%, transparent);
   }
 
   .workshop__media {
@@ -234,15 +234,15 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     color: var(--color-ink);
     padding: 0.9rem 1.1rem;
     border-radius: 12px;
-    background: rgba(46, 139, 111, 0.08);
-    border: 1px solid rgba(46, 139, 111, 0.3);
+    background: color-mix(in srgb, var(--c-accent) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 30%, transparent);
     margin-top: 0.5rem;
   }
 
   .workshop__outcome-label {
     font-family: chillax, sans-serif;
     font-weight: var(--font-weight-semi-bold);
-    color: var(--color-success);
+    color: var(--color-ink);
     margin-right: 0.35rem;
   }
 
@@ -255,15 +255,17 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     padding: 0.8rem 1.5rem;
     font-size: 1rem;
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
-    background-color: var(--color-accent-strong);
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
     border-radius: 999px;
     text-decoration: none;
     transition: background-color 0.2s;
   }
 
   .workshop__cta:hover {
-    background-color: var(--color-accent-ink);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .workshop__cta:focus-visible {
@@ -278,11 +280,11 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     background: var(--background-gradient-secondary);
     color: var(--color-ink-light);
     border-color: transparent;
-    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.22);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
   }
 
   .workshop--tailored .workshop__tag {
-    color: var(--color-accent);
+    color: var(--color-highlight-on-dark);
   }
 
   .workshop--tailored .workshop__title {
@@ -290,7 +292,7 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
   }
 
   .workshop--tailored .workshop__description {
-    color: rgba(232, 237, 246, 0.75);
+    color: color-mix(in srgb, var(--c-light) 75%, transparent);
   }
 
   .workshop--tailored .workshop__bullets li {
@@ -301,15 +303,19 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     color: var(--color-accent);
   }
 
+  .workshop--tailored .workshop__outcome-label {
+    color: var(--color-ink-light);
+  }
+
   .workshop--tailored .workshop__outcome {
     color: var(--color-ink-light);
-    background: rgba(46, 139, 111, 0.14);
-    border-color: rgba(46, 139, 111, 0.4);
+    background: color-mix(in srgb, var(--c-accent) 14%, transparent);
+    border-color: color-mix(in srgb, var(--c-accent) 40%, transparent);
   }
 
   .workshop--tailored .workshop__cta {
-    color: var(--color-accent-strong);
-    background-color: var(--color-ink-light);
+    color: var(--color-on-accent);
+    background-color: var(--color-accent);
   }
 
   .workshop--tailored .workshop__cta:hover {

@@ -42,7 +42,7 @@ const nextSteps = [
         showSteps && (
           <ol class="next-steps">
             {nextSteps.map((step, index) => (
-              <li class="next-step">
+              <li class="next-step" style={`--i: ${index}`}>
                 <span class="next-step__marker" aria-hidden="true">
                   {index + 1}
                 </span>
@@ -169,6 +169,25 @@ const nextSteps = [
 </form>
   </div>
 </section>
+
+<script>
+  // 1-2-3 next steps: play the pop-in once the list is well in view.
+  document.querySelectorAll<HTMLElement>(".next-steps").forEach((list) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!("IntersectionObserver" in window)) return;
+    list.classList.add("next-steps--armed");
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          list.classList.add("next-steps--play");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(list);
+  });
+</script>
 
 <script>
   // Links such as "Plan your project" or "Book workshop" carry a
@@ -533,7 +552,7 @@ const nextSteps = [
 
   .contact--dark .contact__lede,
   .contact--dark .contact__direct {
-    color: rgba(232, 237, 246, 0.76);
+    color: color-mix(in srgb, var(--c-light) 76%, transparent);
   }
 
   .contact--dark .next-step__copy {
@@ -542,15 +561,16 @@ const nextSteps = [
 
   .contact--dark .next-step__marker {
     background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   .contact--dark .contact__direct a {
-    color: #7fb6ef;
+    color: var(--color-highlight-on-dark);
   }
 
   .contact--dark .contact__direct a:hover,
   .contact--dark .contact__direct a:focus-visible {
-    color: #a8d0f8;
+    color: var(--color-ink-light);
   }
 
   .contact__inner {
@@ -611,8 +631,8 @@ const nextSteps = [
     justify-content: center;
     font-size: var(--font-sm);
     font-weight: var(--font-weight-bold);
-    color: var(--color-light-raised);
-    background: var(--color-accent-strong);
+    color: var(--color-on-accent);
+    background: var(--color-accent);
   }
 
   .next-step__copy {
@@ -621,6 +641,56 @@ const nextSteps = [
     color: var(--color-ink);
     padding-top: 0.15rem;
     max-width: 44ch;
+  }
+
+  /* The 1-2-3 pop in one after another once the list is well in view:
+     each pink marker grows in with a ring pulsing out of it, then its line
+     slides in. Time-based rather than scroll-driven, because the list sits
+     near the bottom of the page and the page cannot scroll far enough for
+     a scroll range to finish. The script below arms the list (hidden) and
+     starts it; without JS the steps simply show. */
+  .next-steps--armed .next-step__marker,
+  .next-steps--armed .next-step__copy {
+    opacity: 0;
+  }
+
+  .next-steps--play .next-step__marker {
+    animation: next-step-pop 0.9s ease-out calc(var(--i) * 0.45s + 0.2s) both;
+  }
+
+  .next-steps--play .next-step__copy {
+    animation: next-step-in 0.7s ease-out calc(var(--i) * 0.45s + 0.45s) both;
+  }
+
+  @keyframes next-step-pop {
+    0% {
+      opacity: 1;
+      transform: scale(0);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 60%, transparent);
+    }
+    55% {
+      transform: scale(1.18);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 60%, transparent);
+    }
+    75% {
+      transform: scale(1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 0 10px color-mix(in srgb, var(--c-accent) 0%, transparent);
+    }
+  }
+
+  @keyframes next-step-in {
+    from {
+      opacity: 0;
+      transform: translateX(-12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   .contact__direct {
@@ -651,7 +721,7 @@ const nextSteps = [
     background: var(--color-light-raised);
     border: 1px solid var(--color-stroke);
     border-radius: 22px;
-    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.1);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 10%, transparent);
     width: 100%;
   }
 
@@ -693,7 +763,7 @@ const nextSteps = [
 
   .contact-form input::placeholder,
   .contact-form textarea::placeholder {
-    color: #8a93a6;
+    color: color-mix(in srgb, var(--c-dark) 55%, transparent);
   }
 
   .contact-form input:focus,
@@ -701,7 +771,7 @@ const nextSteps = [
   .contact-form textarea:focus {
     border-color: var(--color-accent);
     background: var(--color-light-raised);
-    box-shadow: 0 0 0 3px rgba(47, 125, 209, 0.22);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 22%, transparent);
   }
 
   .contact-form select {
@@ -730,9 +800,9 @@ const nextSteps = [
   }
 
   .contact-form button[type="submit"] {
-    background: var(--color-accent-strong);
-    color: var(--color-light-raised);
-    border: 1px solid var(--color-accent-strong);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border: 1px solid var(--color-accent);
     padding: 0.8rem 1.6rem;
     border-radius: 999px;
     font-size: 1rem;
@@ -744,8 +814,10 @@ const nextSteps = [
   }
 
   .contact-form button[type="submit"]:hover:not(:disabled) {
-    background: var(--color-accent-ink);
-    border-color: var(--color-accent-ink);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   .contact-form button[type="submit"]:focus-visible {
@@ -766,7 +838,8 @@ const nextSteps = [
 
   .error-message {
     font-family: synonym, sans-serif;
-    color: var(--color-danger);
+    color: var(--color-ink);
+    font-weight: var(--font-weight-semi-bold);
     font-size: 0.9rem;
     margin-top: 0.2rem;
     min-height: 1.2em;
@@ -816,8 +889,9 @@ const nextSteps = [
   }
 
   .turnstile-placeholder button:hover {
-    background: var(--color-accent-strong);
-    color: var(--color-light-raised);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-glow);
   }
 
   /* --- Wider screens --- */

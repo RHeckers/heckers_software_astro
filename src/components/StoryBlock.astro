@@ -19,12 +19,12 @@ import Accent from "./Accent.astro";
         y2="200"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset="0%" stop-color="#0b1220"></stop>
-        <stop offset="36%" stop-color="#0b1220"></stop>
-        <stop offset="36%" stop-color="#2e8b6f"></stop>
-        <stop offset="63.5%" stop-color="#2e8b6f"></stop>
-        <stop offset="63.5%" stop-color="#f4f6f9"></stop>
-        <stop offset="100%" stop-color="#f4f6f9"></stop>
+        <stop offset="0%" style="stop-color: var(--c-dark)"></stop>
+        <stop offset="36%" style="stop-color: var(--c-dark)"></stop>
+        <stop offset="36%" style="stop-color: var(--c-accent)"></stop>
+        <stop offset="63.5%" style="stop-color: var(--c-accent)"></stop>
+        <stop offset="63.5%" style="stop-color: var(--c-light)"></stop>
+        <stop offset="100%" style="stop-color: var(--c-light)"></stop>
       </linearGradient>
     </defs>
 
@@ -161,7 +161,7 @@ import Accent from "./Accent.astro";
     /* Brighter green on the dark cards, the light-page token is too muddy there. */
     .story-block-2 :global(.accent__copy),
     .story-block-3 :global(.accent__copy) {
-      color: #3fae8c;
+      color: var(--c-accent);
     }
 
     .sticky-wrapper {
@@ -213,7 +213,7 @@ import Accent from "./Accent.astro";
       margin-top: min(var(--spacer-xl), 3svh);
       font-family: synonym, sans-serif;
       font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-      color: rgba(232, 237, 246, 0.72);
+      color: color-mix(in srgb, var(--c-light) 72%, transparent);
       max-width: 40ch;
       padding: 0 var(--spacer-md);
     }

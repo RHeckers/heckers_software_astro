@@ -89,8 +89,8 @@ const position = proof.company
     --muted: var(--color-ink-muted);
     --rule: var(--color-stroke);
     background: var(--color-light-alt);
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 20px 40px rgba(5, 10, 20, 0.35);
+    border-color: color-mix(in srgb, var(--c-light) 35%, transparent);
+    box-shadow: 0 20px 40px color-mix(in srgb, var(--c-dark) 35%, transparent);
   }
 
   .proof__quote {
@@ -121,7 +121,7 @@ const position = proof.company
     height: 44px;
     border-radius: 12px;
     object-fit: cover;
-    border: 2px solid var(--color-accent);
+    border: 2px solid var(--c-dark);
     flex-shrink: 0;
   }
 

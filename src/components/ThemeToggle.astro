@@ -52,7 +52,7 @@
   }
 
   .theme-toggle:hover {
-    background: rgba(11, 18, 32, 0.12);
+    background: color-mix(in srgb, var(--c-dark) 12%, transparent);
   }
 
   .theme-toggle:focus-visible {
@@ -76,7 +76,7 @@
   }
 
   :global(:root[data-theme="dark"]) .theme-toggle:hover {
-    background: rgba(232, 237, 246, 0.14);
+    background: color-mix(in srgb, var(--c-light) 14%, transparent);
   }
 
   :global(:root[data-theme="dark"]) .theme-toggle__icon--moon {

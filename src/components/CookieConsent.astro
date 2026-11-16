@@ -41,8 +41,8 @@
     padding: 0.6rem 1rem;
     background: var(--color-dark-soft);
     border-top: 1px solid var(--color-stroke-strong);
-    box-shadow: 0 -8px 30px rgba(7, 16, 32, 0.4);
-    color: rgba(249, 251, 255, 0.85);
+    box-shadow: 0 -8px 30px color-mix(in srgb, var(--c-dark) 40%, transparent);
+    color: color-mix(in srgb, var(--c-light) 85%, transparent);
     font-size: var(--font-sm);
   }
 
@@ -82,22 +82,23 @@
 
   .cc__btn--ghost {
     background: transparent;
-    border-color: rgba(249, 251, 255, 0.3);
-    color: rgba(249, 251, 255, 0.85);
+    border-color: color-mix(in srgb, var(--c-light) 30%, transparent);
+    color: color-mix(in srgb, var(--c-light) 85%, transparent);
   }
 
   .cc__btn--ghost:hover {
-    border-color: rgba(249, 251, 255, 0.6);
-    color: #fff;
+    border-color: color-mix(in srgb, var(--c-light) 60%, transparent);
+    color: var(--color-ink-light);
   }
 
   .cc__btn--accept {
-    background: var(--color-accent-strong);
-    color: #fff;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   .cc__btn--accept:hover {
-    background: var(--color-accent-ink);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   @media (min-width: 721px) {
