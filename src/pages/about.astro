@@ -1,25 +1,38 @@
 ---
 /**
- * The company page: what Heckers Software is for, the story of the person
- * behind it, and why a company should want him inside its codebase. Built
- * like the service pages: a dark hero with a diagram of the engine behind
- * the company (a team's worth of roles folding into one expert with coding
- * agents) and the credentials in a strip under it, then the goal as three cards on light ground, then the
- * story in the same dark stepped panel the service pages use for their
- * process, with the facts panel pinned beside it. Surfaces alternate
- * slowly on purpose: dark hero, light goal, light story with one dark
- * panel inside, dark testimonials, contact. It reads as one argument,
- * from a self-taught start through a book and the conference circuit to
- * AI, and ends on what that buys a customer. The facts a reader, a search
- * engine or an AI assistant might lift are stated plainly in the side
- * panel and repeated in the structured data: organisation, person and
- * book as one graph, with the same public profiles the footer and the
- * blog link to.
+ * The company page: what Heckers Software is for, the person behind it,
+ * and why a company should want him inside its codebase. Built from the
+ * same blocks as the service pages, a line per point, no paragraphs, with
+ * three elements of its own: the hero picture of a team folding into one
+ * expert, the mission as one large statement with a highlighted phrase,
+ * and the sheet of plain facts beside the portrait.
+ *
+ * Grounds alternate dark and light all the way down:
+ *
+ *   1. The promise      Hero (RolesToOne)              dark
+ *   2. Why we exist     The mission statement          light
+ *   3. The story        ProcessSteps, as five steps    dark
+ *      Proof            ProofRow, tight under it       dark
+ *   4. What it buys you Outcomes                       light
+ *   5. Three ways in    The services as three links    dark
+ *   6. The facts        Portrait and fact sheet        light
+ *   7. Take the leap    Contact                        dark
+ *
+ * The facts a reader, a search engine or an AI assistant might lift are
+ * stated plainly in the fact sheet and repeated in the structured data:
+ * organisation, person and book as one graph, with the same public
+ * profiles the footer and the blog link to.
  */
 import PageLayout from "../layouts/PageLayout.astro";
 import Contact from "../components/Contact.astro";
 import ProofRow from "../components/ProofRow.astro";
-import TeamToOne from "../components/art/TeamToOne.astro";
+import { Image } from "astro:assets";
+import HeroShell from "../components/services/hero/HeroShell.astro";
+import RolesToOne from "../components/services/hero/RolesToOne.astro";
+import ProcessSteps from "../components/services/ProcessSteps.astro";
+import Outcomes from "../components/services/Outcomes.astro";
+import Accent from "../components/Accent.astro";
+import portrait from "../assets/pointing.jpg";
 import logo from "../assets/logos/logo.png";
 import { AUTHOR, COMPANY, PROFILES, profileLinks } from "../consts";
 import { SERVICES } from "../lib/services";
@@ -45,82 +58,14 @@ const knowsAbout = [
   "Large language model applications",
 ];
 
-interface Credential {
-  title: string;
-  detail: string;
-  href?: string;
-  links?: readonly { event: string; url: string }[];
-}
+const talkNames = PROFILES.talks.map((talk) => talk.event.replace(/ \d{4}$/, ""));
 
-const credentials: Credential[] = [
-  {
-    title: "A book",
-    detail: `${PROFILES.book.title}, ${PROFILES.book.publisher} ${PROFILES.book.year}: Angular at any size with Nx, RxJS and NgRx.`,
-    href: PROFILES.book.url,
-  },
-  {
-    title: "Conference stages",
-    detail:
-      "Architecture, monorepos and AI-driven front ends, most recently at:",
-    links: PROFILES.talks,
-  },
-  {
-    title: "Enterprise solutions",
-    detail:
-      "Energy, healthcare, industry and government, in codebases with hundreds of projects.",
-  },
-  {
-    title: "AI at the source",
-    detail:
-      "Knowledge groups with industry leaders and the conferences where next year's tooling shows first.",
-  },
-];
-
-const chapters = [
-  {
-    title: "From the first line of AngularJS to Angular at scale",
-    when: "Where it started",
-    paragraphs: [
-      `${AUTHOR.name} started as a self-taught developer building AngularJS applications and spent the years that followed inside the systems large organisations actually run on: Angular and TypeScript on the front, .NET and Node.js behind it, SQL and Azure underneath. Energy, healthcare, industry and government, codebases with hundreds of projects and teams in several countries. That is where he learned what separates software that ships every two weeks for years from software that quietly stops.`,
-    ],
-    book: true,
-  },
-  {
-    title: "Then AI changed what one engineer can ship",
-    when: "Since coding agents",
-    paragraphs: [
-      "Delivering end to end used to take a team: a front-end developer, a back-end developer, someone for the data, someone for the pipeline, and a lead to keep them aligned. Most of the cost was the alignment. With coding agents doing the typing, one senior engineer who understands the whole stack now ships what that team shipped, and the coordination cost disappears because it is one head.",
-      `That is the engine behind ${COMPANY.name}. One expert, amplified by AI, accountable for an outcome in production, with more hands brought in under the same lead when the work needs them. It is also why we can price per outcome instead of per hour: we know what it takes.`,
-    ],
-  },
-  {
-    title: "Plugged into the people figuring AI out",
-    when: "Every week",
-    paragraphs: [
-      `AI moves faster than any one company can follow from the inside, so we make a point of not following it from the inside. ${AUTHOR.name} sits in several AI knowledge groups alongside industry leaders, where the people building with these models compare notes on what is working in production and what only works in a demo. He attends the conferences where the next year of tooling is shown first, and he runs the newest agents and models on real client-shaped code before recommending any of them.`,
-      "You get the benefit twice. The cutting edge arrives in your company already tested, and the experiments that did not pan out never reach your budget. When a model does not earn its place in your workflow, we say so, because we have usually already seen someone else try.",
-    ],
-  },
-];
-
-const benefits = [
-  {
-    title: "Depth where it counts.",
-    copy: "The person reading your codebase wrote the book on structuring it.",
-  },
-  {
-    title: "No learning on your time.",
-    copy: "AI tooling, agent workflows and model choices arrive proven, from groups and conferences you do not have to attend.",
-  },
-  {
-    title: "One accountable owner.",
-    copy: "Discovery, build, integration, deployment and handover, under one name, at a fixed price per outcome.",
-  },
-  {
-    title: "A team that keeps the pace.",
-    copy: "Everything we learn about your company goes into your repositories, and your developers are trained on their own code before we leave.",
-  },
-];
+/* Each service in one line, for the links at the foot of the page. */
+const wayLines: Record<string, string> = {
+  "forward-deployed-engineering": "One senior engineer who delivers end to end, at a fixed price per outcome.",
+  "architecture-assessment": "Know what your Angular or Nx codebase costs you, and what to fix first.",
+  workshops: "One team, one way of working, on your own codebase.",
+};
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -194,911 +139,560 @@ const jsonLd = {
 ---
 
 <PageLayout title={title} description={description} jsonLd={jsonLd}>
-  <section class="hero" aria-labelledby="about-heading">
-    <div class="hero__inner">
-      <div class="hero__copy">
-        <p class="hero__eyebrow">About {COMPANY.name}</p>
-        <h1 class="hero__title" id="about-heading">
-          We exist to get software and AI out of the pilot and into production.
-        </h1>
-        <p class="hero__lead">
-          Most companies do not lack ideas, budgets or talent. They lack someone
-          who will own an outcome until it is live and the people inside can run
-          it. {COMPANY.name} is built to be that someone: an industry expert who comes
-          in, finds the highest-impact work, builds it end to end, ships it, and leaves
-          the know-how in your repositories.
-        </p>
-        <div class="hero__actions">
-          <a
-            href="#contactForm"
-            class="btn btn--primary"
-            data-subject="Development"
-          >
-            Talk to us
-          </a>
-          <a href={SERVICES[0].href} class="btn btn--ghost">
-            How an engagement runs
-          </a>
+  {/* 1. The promise */}
+  <HeroShell
+    eyebrow={`About ${COMPANY.name}`}
+    ctaLabel="Book a discovery call"
+    subject="Development"
+    note="Founder-led. Fixed price per outcome."
+  >
+    <RolesToOne />
+    <Fragment slot="title">
+      One expert.<br />A team's worth of <em>output.</em>
+    </Fragment>
+  </HeroShell>
+
+  {/* 2. Why we exist */}
+  <section class="mission" aria-labelledby="mission-heading">
+    <div class="mission__inner">
+      <p class="mission__label" id="mission-heading">Why we exist</p>
+      <p class="mission__statement">
+        Companies do not lack ideas, budgets or talent. They lack someone who
+        <Accent marker wrap range="cover 30% cover 55%" mobileRange="cover 25% cover 55%">owns the outcome until it is live.</Accent>
+      </p>
+      <ul class="mission__pillars">
+        {
+          [
+            ["Find", "the highest-impact work"],
+            ["Build", "it end to end"],
+            ["Ship", "it into production"],
+            ["Hand over", "the know-how, in your repositories"],
+          ].map(([verb, rest], index) => (
+            <li class="mission__pillar" style={`--i: ${index}`}>
+              <strong>{verb}</strong>
+              <span>{rest}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* 3. The story */}
+  <ProcessSteps
+    id="story"
+    surface="dark"
+    title="Enterprise code, one book, a front-row seat on AI"
+    intro={`How ${AUTHOR.name} got here, in five steps.`}
+    deliverablesTitle="On the record"
+    deliverables={[
+      `${PROFILES.book.title}, ${PROFILES.book.publisher} ${PROFILES.book.year}`,
+      `Speaker at ${talkNames.slice(0, -1).join(", ")} and ${talkNames.at(-1)}`,
+      "Energy, healthcare, industry and government",
+      "AI knowledge groups with industry leaders",
+    ]}
+    steps={[
+      {
+        title: "Self-taught, on AngularJS",
+        when: "Where it started",
+        copy: "Then years inside the systems large organisations run on: Angular, .NET, Node.js, SQL and Azure.",
+      },
+      {
+        title: "Angular at enterprise scale",
+        when: "Hundreds of projects",
+        copy: "Codebases with teams in several countries. Where software either ships every two weeks for years, or quietly stops.",
+      },
+      {
+        title: "The book and the stage",
+        when: PROFILES.book.year,
+        copy: `${PROFILES.book.title}, and the same material on stage at ${talkNames.slice(0, -1).join(", ")} and ${talkNames.at(-1)}.`,
+      },
+      {
+        title: "AI changed what one engineer ships",
+        when: "Since coding agents",
+        copy: "Agents do the typing. One senior engineer who knows the whole stack ships what a team shipped.",
+      },
+      {
+        title: "Plugged into the people figuring AI out",
+        when: "Every week",
+        copy: "New agents and models are tested on real code before they reach yours. What does not work never reaches your budget.",
+      },
+    ]}
+    ctaLabel="Book a discovery call"
+    subject="Development"
+  />
+
+  {/* 5. Proof */}
+  <ProofRow
+    title="From the people we have worked with"
+    lede="The words of people who had us inside their team."
+    snippets={["ferdiFullStack", "peterMentoring", "nicoTeam"]}
+  />
+
+  {/* 4. What it buys you */}
+  <Outcomes
+    id="promise"
+    tone="light"
+    title="What every client should be able to say"
+    outcomes={[
+      {
+        title: "“What we needed is live.”",
+        detail: "In production, wired into your systems, used on a Monday morning.",
+      },
+      {
+        title: "“Our own developers can run it.”",
+        detail: "Every decision written down, every rule enforced in the build.",
+      },
+      {
+        title: "“We know what to build next.”",
+        detail: "A ranked list of the next outcomes, with what each is worth.",
+      },
+    ]}
+  />
+
+  {/* 7. Three ways in */}
+  <section class="ways" aria-labelledby="ways-heading">
+    <div class="ways__inner">
+      <h2 class="ways__title" id="ways-heading">Three ways in</h2>
+      <ul class="ways__list">
+        {
+          SERVICES.map((service, index) => (
+            <li>
+              <a class="way" href={service.href}>
+                <span class="way__index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span class="way__name">{service.name}</span>
+                <span class="way__line">{wayLines[service.slug]}</span>
+                <span class="way__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* 6. The facts */}
+  <section class="facts" aria-labelledby="facts-heading">
+    <div class="facts__inner">
+      <div class="facts__lead">
+        <h2 class="facts__title" id="facts-heading">The facts</h2>
+        <div class="facts__photo">
+          <Image
+            src={portrait}
+            alt={`${AUTHOR.name}, founder of ${COMPANY.name}`}
+            widths={[320, 480, 640]}
+            sizes="(min-width: 900px) 320px, 70vw"
+            loading="lazy"
+          />
         </div>
       </div>
 
-      <TeamToOne class="hero__art" />
-    </div>
-
-    <ul class="creds" aria-label="Credentials">
-      {
-        credentials.map((item) => (
-          <li class="cred">
-            <h2 class="cred__title">{item.title}</h2>
-            <p class="cred__detail">
-              {item.href ? <a href={item.href}>{item.detail}</a> : item.detail}
-              {item.links && (
-                <span class="cred__links">
-                  {item.links.map((talk) => (
-                    <a href={talk.url} target="_blank" rel="noopener noreferrer">{talk.event}</a>
-                  ))}
-                </span>
-              )}
-            </p>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="goal" aria-labelledby="goal-heading">
-    <div class="goal__inner">
-      <header class="goal__head">
-        <h2 class="goal__title" id="goal-heading">
-          Every company we work with should be able to say three things.
-        </h2>
-      </header>
-      <ol class="goal__list">
-        <li>
-          <span class="goal__index">01</span>
-          <strong>The software and AI we needed is live.</strong>
-          <span>
-            Not demoed. In production, integrated with the ERP, the identity
-            provider and the data, with people using it on a Monday morning.
-          </span>
-        </li>
-        <li>
-          <span class="goal__index">02</span>
-          <strong>Our own developers can run it.</strong>
-          <span>
-            Every decision is written down, every rule is enforced in the build,
-            and the agent instructions that made us fast are in your repository,
-            not in our heads.
-          </span>
-        </li>
-        <li>
-          <span class="goal__index">03</span>
-          <strong>We know what to build next.</strong>
-          <span>
-            A ranked list of the next outcomes, with what each is worth, so the
-            next quarter starts with a decision instead of a workshop.
-          </span>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="story" aria-labelledby="story-heading">
-    <div class="story__inner">
-      <div class="story__main">
-        <header class="story__head">
-          <h2 class="story__title" id="story-heading">
-            A career of enterprise code, one book, and a front-row seat on AI.
-          </h2>
-        </header>
-
-        <aside class="plan" aria-label="Step by step">
-          <ol class="phases">
+      <dl class="facts__list">
+        <div>
+          <dt>Company</dt>
+          <dd>{COMPANY.name}</dd>
+        </div>
+        <div>
+          <dt>Founder</dt>
+          <dd>{AUTHOR.name}</dd>
+        </div>
+        <div>
+          <dt>Based in</dt>
+          <dd>{COMPANY.city}, {COMPANY.country}</dd>
+        </div>
+        <div>
+          <dt>Works</dt>
+          <dd>On site across the Netherlands and Belgium, remote globally</dd>
+        </div>
+        <div>
+          <dt>Languages</dt>
+          <dd>Dutch, English</dd>
+        </div>
+        <div>
+          <dt>Stack</dt>
+          <dd>Angular, TypeScript, Nx, .NET, Node.js, SQL, Azure, Claude and OpenAI APIs</dd>
+        </div>
+        <div>
+          <dt>Book</dt>
+          <dd>
+            <a href={PROFILES.book.url} target="_blank" rel="noopener noreferrer">{PROFILES.book.title}</a>
+            ({PROFILES.book.publisher}, {PROFILES.book.year})
+          </dd>
+        </div>
+        <div>
+          <dt>Talks</dt>
+          <dd class="facts__talks">
             {
-              chapters.map((chapter, index) => (
-                <li class="phase" style={`--i: ${index}`}>
-                  <span class="phase__marker" aria-hidden="true">
-                    {index + 1}
-                  </span>
-                  <div class="phase__body">
-                    <div class="phase__row">
-                      <h3 class="phase__title">{chapter.title}</h3>
-                      <span class="phase__when">{chapter.when}</span>
-                    </div>
-                    {chapter.paragraphs.map((paragraph) => (
-                      <p class="phase__copy">{paragraph}</p>
-                    ))}
-                    {chapter.book && (
-                      <p class="phase__copy">
-                        He wrote those lessons down.{" "}
-                        <a href={PROFILES.book.url} target="_blank" rel="noopener noreferrer">
-                          <em>{PROFILES.book.title}</em>
-                        </a>{" "}
-                        ({PROFILES.book.publisher}, {PROFILES.book.year}) is a
-                        full book on building Angular applications of any size
-                        with Nx, RxJS and NgRx, and it is the reason teams
-                        across Europe know the name before he walks in. He takes
-                        the same material on stage:{" "}
-                        <a href={PROFILES.talks[0].url} target="_blank" rel="noopener noreferrer">ngPoland</a>,{" "}
-                        <a href={PROFILES.talks[1].url} target="_blank" rel="noopener noreferrer">Angular Zurich</a> and{" "}
-                        <a href={PROFILES.talks[2].url} target="_blank" rel="noopener noreferrer">
-                          The Dutch Angular Group
-                        </a>{" "}
-                        have had him talk about architecture, monorepos and the
-                        way AI is changing how front ends are built.
-                      </p>
-                    )}
-                  </div>
-                </li>
+              PROFILES.talks.map((talk) => (
+                <a href={talk.url} target="_blank" rel="noopener noreferrer">{talk.event}</a>
               ))
             }
-          </ol>
-        </aside>
-
-        <h3 class="story__sub">What that means for you</h3>
-        <ul class="benefits">
-          {
-            benefits.map((item) => (
-              <li class="benefit">
-                <strong>{item.title}</strong>
-                <span>{item.copy}</span>
-              </li>
-            ))
-          }
-        </ul>
-
-        <h3 class="story__sub">Three ways in</h3>
-        <ul class="ways">
-          {
-            SERVICES.map((service) => (
-              <li class="way">
-                <a href={service.href}>{service.name}</a>
-                <span>{service.summary}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-
-      <aside class="facts" aria-label="Facts">
-        <dl>
-          <div>
-            <dt>Company</dt>
-            <dd>{COMPANY.name}</dd>
-          </div>
-          <div>
-            <dt>Founder</dt>
-            <dd>{AUTHOR.name}</dd>
-          </div>
-          <div>
-            <dt>Based in</dt>
-            <dd>{COMPANY.city}, {COMPANY.country}</dd>
-          </div>
-          <div>
-            <dt>Works</dt>
-            <dd>On site across the Netherlands and Belgium, remote globally</dd>
-          </div>
-          <div>
-            <dt>Languages</dt>
-            <dd>Dutch, English</dd>
-          </div>
-          <div>
-            <dt>Stack</dt>
-            <dd>
-              Angular, TypeScript, Nx, .NET, Node.js, SQL, Azure, Claude and
-              OpenAI APIs
-            </dd>
-          </div>
-          <div>
-            <dt>Book</dt>
-            <dd>
-              <a href={PROFILES.book.url} target="_blank" rel="noopener noreferrer">{PROFILES.book.title}</a> ({
-                PROFILES.book.publisher
-              }, {PROFILES.book.year})
-            </dd>
-          </div>
-          <div>
-            <dt>Talks</dt>
-            <dd class="facts__talks">
-              {
-                PROFILES.talks.map((talk) => (
-                  <a href={talk.url} target="_blank" rel="noopener noreferrer">{talk.event}</a>
-                ))
-              }
-            </dd>
-          </div>
-          <div>
-            <dt>AI</dt>
-            <dd>
-              Member of AI knowledge groups with industry leaders; regular at AI
-              and Angular conferences
-            </dd>
-          </div>
-          <div>
-            <dt>Clients include</dt>
-            <dd>
-              Ministry of Defense, Vattenfall, Marel, Wit-Gele Kruis
-              West-Vlaanderen
-            </dd>
-          </div>
-          {
-            PROFILES.linkedin && (
-              <div>
-                <dt>Profile</dt>
-                <dd>
-                  <a href={PROFILES.linkedin} rel="me noopener noreferrer" target="_blank">
-                    LinkedIn
-                  </a>
-                </dd>
-              </div>
-            )
-          }
-          <div>
-            <dt>Registration</dt>
-            <dd>KVK {COMPANY.kvk}</dd>
-          </div>
-          <div>
-            <dt>Contact</dt>
-            <dd>
-              <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a><br />
-              <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a>
-            </dd>
-          </div>
-        </dl>
-      </aside>
+          </dd>
+        </div>
+        <div>
+          <dt>AI</dt>
+          <dd>Member of AI knowledge groups with industry leaders</dd>
+        </div>
+        <div>
+          <dt>Clients include</dt>
+          <dd>Ministry of Defense, Vattenfall, Marel, Wit-Gele Kruis West-Vlaanderen</dd>
+        </div>
+        {
+          PROFILES.linkedin && (
+            <div>
+              <dt>Profile</dt>
+              <dd>
+                <a href={PROFILES.linkedin} rel="me noopener noreferrer" target="_blank">LinkedIn</a>
+              </dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>Registration</dt>
+          <dd>KVK {COMPANY.kvk}</dd>
+        </div>
+        <div>
+          <dt>Contact</dt>
+          <dd>
+            <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a><br />
+            <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a>
+          </dd>
+        </div>
+      </dl>
     </div>
   </section>
 
-  <ProofRow snippets={["ferdiFullStack", "peterMentoring", "nicoTeam"]} />
-
-  <Contact />
+  {/* 8. Take the leap */}
+  <Contact tone="dark" />
 </PageLayout>
 
 <style>
-  /* --- Hero: dark, copy, the diagram, and the credentials strip --- */
+  /* --- Why we exist: one statement, large, on the light ground --- */
 
-  .hero {
-    background: linear-gradient(
-      to bottom,
-      var(--color-dark) 0%,
-      var(--color-dark-alt) 100%
-    );
-    color: var(--color-ink-light);
-    padding: clamp(7rem, 14vw, 10rem) clamp(1.25rem, 6vw, 5rem)
-      clamp(3rem, 6vw, 4.5rem);
-  }
-
-  .hero__inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(2.5rem, 6vw, 4.5rem);
-    align-items: center;
-  }
-
-  .hero__copy {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-lg);
-  }
-
-  /* Same eyebrow, title and buttons as ServiceHero. */
-  .hero__eyebrow {
-    font-family: synonym, sans-serif;
-    font-weight: var(--font-weight-medium);
-    color: var(--color-highlight-on-dark);
-    padding-left: 1.25rem;
-    position: relative;
-  }
-
-  .hero__eyebrow::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 0.75rem;
-    height: 2px;
-    background: var(--color-accent);
-    border-radius: 2px;
-  }
-
-  .hero__title {
-    font-size: clamp(2.4rem, 5.4vw, 4.5rem);
-    font-weight: var(--font-weight-light);
-    line-height: 1.04;
-    letter-spacing: -0.015em;
-    color: var(--color-light-raised);
-    max-width: 16ch;
-  }
-
-  .hero__lead {
-    font-family: synonym, sans-serif;
-    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
-    line-height: 1.55;
-    color: color-mix(in srgb, var(--c-light) 78%, transparent);
-    max-width: 56ch;
-  }
-
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.85em 1.8em;
-    font-family: chillax, sans-serif;
-    font-size: var(--font-md);
-    font-weight: var(--font-weight-medium);
-    border-radius: 999px;
-    border: 1px solid transparent;
-    text-decoration: none;
-    transition:
-      background-color 0.2s,
-      border-color 0.2s,
-      color 0.2s;
-  }
-
-  .btn--primary {
-    font-weight: var(--font-weight-bold);
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-on-accent);
-  }
-
-  .btn--primary:hover,
-  .btn--primary:focus-visible {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 4px var(--color-accent-glow);
-  }
-
-  .btn--ghost {
-    color: var(--color-ink-light);
-    border-color: color-mix(in srgb, var(--c-light) 35%, transparent);
-  }
-
-  .btn--ghost:hover,
-  .btn--ghost:focus-visible {
-    border-color: var(--color-light-raised);
-    color: var(--color-light-raised);
-  }
-
-  /* --- The diagram: see components/art/TeamToOne --- */
-
-  .hero__art {
-    width: 100%;
-    max-width: 34rem;
-  }
-
-  /* --- Credentials strip, on the hero's own ground --- */
-
-  .creds {
-    max-width: 1200px;
-    margin: clamp(3rem, 6vw, 4.5rem) auto 0;
-    padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid color-mix(in srgb, var(--c-light) 14%, transparent);
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacer-lg);
-  }
-
-  .cred {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.25rem 0 0.25rem 1.25rem;
-    border-left: 3px solid var(--color-accent);
-  }
-
-  .cred__title {
-    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    color: var(--color-light-raised);
-  }
-
-  .cred__detail {
-    font-family: synonym, sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: color-mix(in srgb, var(--c-light) 72%, transparent);
-    max-width: 30ch;
-  }
-
-  .cred__detail a {
-    color: inherit;
-    text-decoration-color: var(--color-accent);
-  }
-
-  .cred__detail a:hover {
-    color: var(--color-light-raised);
-  }
-
-  .cred__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
-    margin-top: 0.35rem;
-  }
-
-  .cred__links a {
-    color: var(--color-light-raised);
-    font-weight: var(--font-weight-medium);
-  }
-
-  /* --- Goal: three cards on light ground --- */
-
-  .goal {
-    background: var(--color-light);
+  .mission {
+    background: var(--color-light-alt);
     color: var(--color-ink);
-    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+    padding: clamp(4.5rem, 11vw, 9rem) clamp(1.25rem, 6vw, 5rem);
   }
 
-  .goal__inner {
+  .mission__inner {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 5vw, 3.5rem);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
   }
 
-  .goal__head {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-lg);
-  }
-
-  .goal__title {
-    font-size: clamp(2.25rem, 5vw, 4rem);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-    max-width: 22ch;
-  }
-
-  .goal__list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacer-lg);
-  }
-
-  .goal__list li {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    padding: clamp(1.5rem, 3vw, 2rem);
-    border: 1px solid var(--color-stroke);
-    border-radius: 18px;
-    background: var(--color-light-raised);
-  }
-
-  .goal__index {
+  .mission__label {
     font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
-    letter-spacing: 0.12em;
-    color: var(--color-accent-ink);
-  }
-
-  .goal__list strong {
-    font-family: chillax, sans-serif;
-    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-size: 0.75rem;
     font-weight: var(--font-weight-medium);
-    line-height: 1.2;
-  }
-
-  .goal__list span:not(.goal__index) {
-    font-family: synonym, sans-serif;
-    line-height: 1.55;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
     color: var(--color-ink-muted);
   }
 
-  /* --- Story: the stepped panel, benefits, ways in, and the facts --- */
+  .mission__statement {
+    font-size: clamp(2rem, 5vw, 4.25rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
 
-  .story {
+  /* The highlighted phrase is covered over its full height, like a
+     marker pen drawn across the line, rather than underlined. */
+  .mission__statement :global(.accent__mark) {
+    background: linear-gradient(
+      transparent 10%,
+      var(--c-accent) 10%,
+      var(--c-accent) 96%,
+      transparent 96%
+    );
+  }
+
+  /* What we do about it: four pillars, a large verb and what it applies
+     to, each behind a short accent rule. No numbers and no connecting
+     line: the story below is the numbered one. As the row scrolls in, each
+     pillar's rule draws down and its words come up, one after the other. */
+  .mission__pillars {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.75rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem);
+    margin-top: clamp(1.5rem, 4vw, 3.5rem);
+    view-timeline-name: --pillars;
+  }
+
+  .mission__pillar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-left: 1.25rem;
+  }
+
+  .mission__pillar::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--c-accent);
+    transform-origin: top;
+  }
+
+  .mission__pillar strong {
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .mission__pillar span {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.35;
+    color: var(--color-ink-muted);
+    max-width: 18ch;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .mission__pillar::before {
+        animation: pillar-rule linear both;
+        animation-timeline: --pillars;
+        animation-range: cover calc(14% + var(--i) * 6%) cover calc(26% + var(--i) * 6%);
+      }
+
+      .mission__pillar strong,
+      .mission__pillar span {
+        animation: pillar-words linear both;
+        animation-timeline: --pillars;
+        animation-range: cover calc(18% + var(--i) * 6%) cover calc(30% + var(--i) * 6%);
+      }
+    }
+  }
+
+  @keyframes pillar-rule {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes pillar-words {
+    from {
+      opacity: 0.25;
+      translate: 0 0.75rem;
+    }
+  }
+
+  @media (min-width: 760px) {
+    .mission__pillars {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* --- The facts: a portrait and a sheet of plain facts --- */
+
+  .facts {
     background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
 
-  .story__inner {
+  .facts__inner {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: clamp(2.5rem, 6vw, 4.5rem);
+    gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
   }
 
-  .story__main {
+  .facts__lead {
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 4vw, 3rem);
-    max-width: 68ch;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
   }
 
-  .story__head {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-lg);
-  }
-
-  .story__title {
+  .facts__title {
     font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: var(--font-weight-medium);
     line-height: 1.02;
     letter-spacing: -0.01em;
   }
 
-  /* --- Stepped panel, as on the service pages --- */
-
-  .plan {
-    background: var(--background-gradient-primary);
-    color: var(--color-ink-light);
+  .facts__photo {
+    width: min(70vw, 320px);
+    aspect-ratio: 4 / 5;
     border-radius: 22px;
-    padding: clamp(1.5rem, 3.5vw, 2.5rem);
-    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
-    view-timeline-name: --plan-reveal;
+    overflow: hidden;
+    background: var(--color-light-raised);
+    border: 1px solid var(--c-dark);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 14%, transparent);
   }
 
-  .phases {
-    list-style: none;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-lg);
-    --marker: 2rem;
+  .facts__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
   }
 
-  .phase {
-    position: relative;
-    display: grid;
-    grid-template-columns: var(--marker) 1fr;
-    gap: var(--spacer-md);
-    align-items: start;
+  .facts__list {
+    border-top: 1px solid var(--color-stroke-strong);
   }
 
-  .phase:not(:last-child)::before,
-  .phase:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: calc(var(--marker) / 2 - 1px);
-    top: calc(var(--marker) / 2);
-    bottom: calc(-1 * var(--spacer-lg) - var(--marker) / 2);
-    width: 2px;
-    border-radius: 2px;
-  }
-
-  .phase:not(:last-child)::before {
-    background: color-mix(in srgb, var(--c-light) 14%, transparent);
-  }
-
-  .phase:not(:last-child)::after {
-    background: var(--color-accent);
-    transform-origin: top;
-    transform: scaleY(1);
-  }
-
-  .phase__marker {
-    width: var(--marker);
-    height: var(--marker);
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-on-accent);
-    background: var(--color-accent);
-    box-shadow: 0 0 0 4px var(--color-dark-strong);
-    position: relative;
-    z-index: 1;
-  }
-
-  .phase__body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    padding-top: 0.2rem;
-  }
-
-  .phase__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.25rem 1rem;
-  }
-
-  .phase__title {
-    font-size: 1.15rem;
-    font-weight: var(--font-weight-semi-bold);
-    line-height: 1.25;
-  }
-
-  .phase__when {
-    font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
-    color: var(--color-highlight-on-dark);
-    white-space: nowrap;
-  }
-
-  .phase__copy {
-    font-family: synonym, sans-serif;
-    font-size: var(--font-md);
-    line-height: 1.55;
-    color: color-mix(in srgb, var(--c-light) 78%, transparent);
-    max-width: 60ch;
-  }
-
-  .phase__copy a {
-    color: var(--color-light-raised);
-    font-weight: var(--font-weight-medium);
-    text-decoration: underline;
-    text-decoration-color: var(--color-accent);
-    text-underline-offset: 3px;
-  }
-
-  @supports (animation-timeline: view()) {
-    .phase:not(:last-child)::after {
-      transform: scaleY(0);
-      animation: plan-rail linear both;
-      animation-timeline: --plan-reveal;
-      animation-range: entry calc(35% + var(--i) * 12%) entry
-        calc(60% + var(--i) * 12%);
-    }
-
-    .phase {
-      opacity: 0.35;
-      animation: plan-phase linear both;
-      animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 12%) entry
-        calc(45% + var(--i) * 12%);
-    }
-
-    .phase__marker {
-      background: var(--color-dark-soft);
-      animation: plan-marker linear both;
-      animation-timeline: --plan-reveal;
-      animation-range: entry calc(20% + var(--i) * 12%) entry
-        calc(45% + var(--i) * 12%);
-    }
-
-    /* Phones and tablets: the panel is taller than the screen, so timing
-       every step off the panel fills them all before the later ones are
-       even in view. Here each step is its own timeline: its marker lights
-       as that step comes up the screen, and its line then draws down to
-       the next one. */
-    @media (max-width: 959.98px) {
-      .phase {
-        view-timeline-name: --phase;
-      }
-
-      .phase,
-      .phase__marker {
-        animation-timeline: --phase;
-        animation-range: cover 16% cover 30%;
-      }
-
-      .phase:not(:last-child)::after {
-        animation-timeline: --phase;
-        animation-range: cover 24% cover 50%;
-      }
-    }
-
-    @media (min-width: 960px) {
-      .phase,
-      .phase__marker {
-        animation-range: cover calc(14% + var(--i) * 9%) cover
-          calc(26% + var(--i) * 9%);
-      }
-
-      .phase:not(:last-child)::after {
-        animation-range: cover calc(20% + var(--i) * 9%) cover
-          calc(34% + var(--i) * 9%);
-      }
-    }
-  }
-
-  @keyframes plan-rail {
-    to {
-      transform: scaleY(1);
-    }
-  }
-
-  @keyframes plan-phase {
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes plan-marker {
-    to {
-      background: var(--color-accent);
-    }
-  }
-
-  .story__sub {
-    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.15;
-    margin-bottom: -1rem;
-  }
-
-  .benefits {
-    list-style: none;
+  .facts__list > div {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--spacer-md);
-  }
-
-  .benefit {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    padding: 1.1rem 1.25rem;
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--c-accent) 8%, transparent);
-    border: 1px solid color-mix(in srgb, var(--c-accent) 25%, transparent);
-    font-family: synonym, sans-serif;
-    line-height: 1.5;
-  }
-
-  .benefit strong {
-    font-family: chillax, sans-serif;
-    font-weight: var(--font-weight-medium);
-    font-size: 1.1rem;
-  }
-
-  .benefit span {
-    font-size: 0.95rem;
-  }
-
-  .ways {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-md);
-  }
-
-  .way {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--color-stroke);
-    border-radius: 14px;
-    background: var(--color-light-raised);
-    font-family: synonym, sans-serif;
-  }
-
-  .way a {
-    font-family: chillax, sans-serif;
-    font-size: 1.1rem;
-    font-weight: var(--font-weight-medium);
-    color: var(--color-link);
-  }
-
-  .way span {
-    color: var(--color-ink-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .facts {
-    background: var(--color-light-raised);
-    border: 1px solid var(--color-stroke);
-    border-radius: 22px;
-    padding: clamp(1.5rem, 3vw, 2.25rem);
-    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 8%, transparent);
-  }
-
-  .facts dl {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .facts dl > div {
-    display: grid;
-    grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
-    gap: 0.5rem 1rem;
-    padding: 0.75rem 0;
+    gap: 0.2rem 1.5rem;
+    padding: 0.95rem 0;
     border-bottom: 1px solid var(--color-stroke);
   }
 
-  .facts dl > div:last-child {
-    border-bottom: 0;
-  }
-
-  .facts dt {
+  .facts__list dt {
     font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
+    font-size: 0.6875rem;
     font-weight: var(--font-weight-medium);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     color: var(--color-ink-muted);
+    padding-top: 0.3rem;
   }
 
-  .facts dd {
+  .facts__list dd {
     font-family: synonym, sans-serif;
+    font-size: var(--font-md);
     line-height: 1.5;
-    /* The email address has no break opportunity; let it break anywhere
-       rather than push the panel past the screen. */
-    overflow-wrap: anywhere;
   }
 
-  .facts a {
-    color: var(--color-link);
+  .facts__list a {
+    color: var(--color-ink);
     font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
 
   .facts__talks {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 0.75rem;
+    gap: 0.25rem 1.25rem;
   }
 
-  @media (min-width: 720px) {
-    .creds {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .benefits {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 560px) {
+    .facts__list > div {
+      grid-template-columns: 9rem 1fr;
     }
   }
 
   @media (min-width: 900px) {
-    .hero__inner {
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    .facts__inner {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     }
 
-    .hero__art {
-      justify-self: end;
-    }
-
-    .creds {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .goal__list {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .story__inner {
-      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 1fr);
-    }
-
-    .facts {
+    .facts__lead {
       position: sticky;
       top: calc(56px + 2rem);
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .phase,
-    .phase__marker,
-    .phase:not(:last-child)::after {
-      animation: none;
-    }
+  /* --- Three ways in: the services as three large links --- */
 
-    .phase {
-      opacity: 1;
-    }
+  .ways {
+    background: var(--c-dark);
+    color: var(--c-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
 
-    .phase:not(:last-child)::after {
-      transform: scaleY(1);
-    }
+  .ways__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
 
-    .phase__marker {
-      background: var(--color-accent);
-    }
+  .ways__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .ways__list {
+    list-style: none;
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
+  }
+
+  .way {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "index name arrow"
+      ". line arrow";
+    align-items: baseline;
+    gap: 0.35rem 0.5rem;
+    padding: clamp(1.4rem, 3vw, 2.25rem) 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--c-light) 12%, transparent);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .way__index {
+    grid-area: index;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.12em;
+    color: var(--c-accent);
+  }
+
+  .way__name {
+    grid-area: name;
+    font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1.1;
+    transition: color 0.25s ease;
+  }
+
+  .way__line {
+    grid-area: line;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+  }
+
+  .way__arrow {
+    grid-area: arrow;
+    align-self: center;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    color: var(--c-accent);
+    transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .way:hover .way__name,
+  .way:focus-visible .way__name {
+    color: var(--c-accent);
+  }
+
+  .way:hover .way__arrow,
+  .way:focus-visible .way__arrow {
+    transform: translateX(8px);
+  }
+
+  .way:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
   }
 </style>

@@ -1,0 +1,430 @@
+---
+/**
+ * The picture behind the about page hero: the idea the company is built
+ * on.
+ *
+ * It opens on a delivery team as it used to be: five roles in a ring, and
+ * between them every line it takes to keep five people aligned, messages
+ * going back and forth along all ten. Then the roles fold into the middle
+ * and become one point of light, the lines between them gone because
+ * there is nobody left to align with. Around that one expert, coding
+ * agents circle, and finished work leaves for production at a steady pace.
+ * Then it fades and the team is drawn again.
+ *
+ * The role names are the only text besides the two labels of the end
+ * state.
+ *
+ * Hovering the call to action speeds everything up, and the picture
+ * drifts back as the page scrolls on. On phones the ring takes the upper
+ * half of the screen.
+ *
+ * Decoration only (aria-hidden). One canvas, redrawn per frame with a few
+ * dozen strokes. Pauses off screen and in hidden tabs, and draws the end
+ * state as a still for visitors who prefer reduced motion.
+ */
+const ROLES = ["Front end", "Back end", "Data", "Pipeline", "Lead"];
+---
+
+<div class="fold" data-roles-to-one aria-hidden="true">
+  <canvas class="fold__canvas"></canvas>
+  {ROLES.map((role) => <span class="fold__role">{role}</span>)}
+  <span class="fold__one">One expert, with agents</span>
+  <span class="fold__live">Production</span>
+</div>
+
+<script>
+  type RGB = [number, number, number];
+
+  const root = document.querySelector<HTMLElement>("[data-roles-to-one]");
+  const hero = root?.closest<HTMLElement>("section");
+  const canvas = root?.querySelector<HTMLCanvasElement>("canvas");
+  const ctx = canvas?.getContext("2d");
+
+  if (root && hero && canvas && ctx) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const roleLabels = Array.from(root.querySelectorAll<HTMLElement>(".fold__role"));
+    const oneLabel = root.querySelector<HTMLElement>(".fold__one");
+    const liveLabel = root.querySelector<HTMLElement>(".fold__live");
+    const cta = hero.querySelector<HTMLElement>("[data-hero-cta]");
+
+    const hex = (name: string, fallback: string): RGB => {
+      const v =
+        getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+        fallback;
+      const m = /^#?([0-9a-f]{6})$/i.exec(v);
+      const n = parseInt(m ? m[1] : fallback.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    };
+    const rgba = (c: RGB, a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+    const ease = (v: number) => {
+      const t = clamp01(v);
+      return t * t * (3 - 2 * t);
+    };
+
+    const DARK = hex("--c-dark", "#16233a");
+    const LIGHT = hex("--c-light", "#f2eee6");
+    const ACCENT = hex("--c-accent", "#ffbf2e");
+
+    /* Timing of one cycle, in seconds. */
+    const TEAM = 3;
+    const MERGE = 1.7;
+    const ONE = 6;
+    const FADE = 0.9;
+    const MERGED = TEAM + MERGE;
+    const CYCLE = MERGED + ONE + FADE;
+    const COUNT = roleLabels.length;
+
+    let w = 0;
+    let h = 0;
+    let narrow = false;
+    let cx = 0;
+    let cy = 0;
+    let radius = 100;
+    let endX = 0;
+    let state = "";
+
+    const angleOf = (i: number) => -Math.PI / 2 + (i * Math.PI * 2) / COUNT;
+
+    const setState = (next: string) => {
+      if (next === state) return;
+      state = next;
+      const team = next === "team";
+      roleLabels.forEach((label) => label.classList.toggle("is-on", team));
+      oneLabel?.classList.toggle("is-on", next === "one");
+      liveLabel?.classList.toggle("is-on", next === "one");
+    };
+
+    const setup = () => {
+      const rect = hero.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = rect.width;
+      h = rect.height;
+      narrow = w < 760;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      if (narrow) {
+        cx = w * 0.42;
+        cy = h * 0.27;
+        radius = Math.min(w * 0.24, h * 0.12);
+        endX = w * 0.9;
+      } else {
+        cx = w * 0.7;
+        cy = h * 0.5;
+        radius = Math.min(w * 0.13, h * 0.25);
+        endX = Math.min(w * 0.95, cx + radius * 2.1);
+      }
+
+      roleLabels.forEach((label, i) => {
+        const a = angleOf(i);
+        const out = radius + (narrow ? 18 : 26);
+        label.style.left = cx + Math.cos(a) * out + "px";
+        label.style.top = cy + Math.sin(a) * out + "px";
+        /* Anchor the label on the side that faces away from the ring. */
+        const ax = Math.cos(a) < -0.3 ? "-100%" : Math.cos(a) > 0.3 ? "0%" : "-50%";
+        const ay = Math.sin(a) < -0.3 ? "-100%" : Math.sin(a) > 0.3 ? "0%" : "-50%";
+        label.style.transform = `translate(${ax}, ${ay})`;
+      });
+      if (oneLabel) {
+        oneLabel.style.left = cx + "px";
+        oneLabel.style.top = cy + radius * 0.72 + (narrow ? 10 : 16) + "px";
+      }
+      if (liveLabel) {
+        liveLabel.style.left = endX + "px";
+        liveLabel.style.top = cy + (narrow ? 14 : 18) + "px";
+      }
+    };
+
+    const halo = (x: number, y: number, r: number, alpha: number) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, rgba(ACCENT, alpha));
+      g.addColorStop(0.35, rgba(ACCENT, alpha * 0.3));
+      g.addColorStop(1, rgba(ACCENT, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    };
+
+    /* Draw the picture at time t (seconds into the cycle). */
+    const draw = (t: number, gain: number) => {
+      ctx.clearRect(0, 0, w, h);
+      const out = t > MERGED + ONE ? Math.max(0, 1 - (t - MERGED - ONE) / FADE) : 1;
+      const alpha = gain * out;
+      const m = ease((t - TEAM) / MERGE);
+      const one = clamp01((t - MERGED) / 0.8);
+
+      setState(out < 1 ? "" : t < TEAM - 0.2 ? "team" : t > MERGED + 0.2 ? "one" : "");
+
+      /* Where the five roles are: on the ring, then spiralling inwards. */
+      const pts: [number, number][] = [];
+      for (let i = 0; i < COUNT; i++) {
+        const a = angleOf(i) + m * 1.4;
+        const r = radius * (1 - m) + Math.sin(t * 0.9 + i * 1.7) * 3 * (1 - m);
+        pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+      }
+
+      ctx.lineCap = "round";
+
+      /* Every line it takes to keep five people aligned, and the messages
+         going back and forth along them. */
+      const lines = (1 - m) * alpha;
+      if (lines > 0.01) {
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = rgba(LIGHT, 0.2 * lines);
+        ctx.beginPath();
+        for (let i = 0; i < COUNT; i++) {
+          for (let j = i + 1; j < COUNT; j++) {
+            ctx.moveTo(pts[i][0], pts[i][1]);
+            ctx.lineTo(pts[j][0], pts[j][1]);
+          }
+        }
+        ctx.stroke();
+        ctx.fillStyle = rgba(LIGHT, 0.75 * lines);
+        let k = 0;
+        for (let i = 0; i < COUNT; i++) {
+          for (let j = i + 1; j < COUNT; j++) {
+            /* Back and forth, each line at its own pace. */
+            const at = 0.5 + 0.5 * Math.sin(t * (1.1 + (k % 4) * 0.35) + k * 1.3);
+            ctx.beginPath();
+            ctx.arc(
+              pts[i][0] + (pts[j][0] - pts[i][0]) * at,
+              pts[i][1] + (pts[j][1] - pts[i][1]) * at,
+              1.8,
+              0,
+              Math.PI * 2,
+            );
+            ctx.fill();
+            k++;
+          }
+        }
+      }
+
+      /* One expert: agents circling, and work leaving for production. */
+      if (one > 0) {
+        const a1 = alpha * one;
+        const since = t - MERGED;
+
+        /* The road to production, and what is on it. */
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = rgba(LIGHT, 0.2 * a1);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + (endX - cx) * ease(since / 0.9), cy);
+        ctx.stroke();
+        let arrived = 1;
+        for (let n = 0; n < 4; n++) {
+          /* One after the other: a piece waits its turn before it leaves. */
+          const started = since * 0.42 - n / 4;
+          if (started < 0) continue;
+          const at = started % 1;
+          const x = cx + (endX - cx) * at;
+          const edge = Math.sin(at * Math.PI);
+          ctx.fillStyle = rgba(ACCENT, (0.35 + 0.65 * edge) * a1);
+          ctx.fillRect(x - 3, cy - 3, 6, 6);
+          arrived = Math.min(arrived, 1 - at);
+        }
+        /* Production lights up as each piece arrives. */
+        const pulse = 1 - clamp01(arrived / 0.12);
+        halo(endX, cy, (narrow ? 26 : 40) * (1 + 0.25 * pulse), (0.28 + 0.3 * pulse) * a1);
+        ctx.beginPath();
+        ctx.arc(endX, cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = rgba(ACCENT, a1);
+        ctx.fill();
+
+        /* Two tilted orbits, three agents on each. */
+        for (let ring = 0; ring < 2; ring++) {
+          const rx = radius * (0.5 + ring * 0.32);
+          const ry = rx * 0.42;
+          const tilt = ring === 0 ? -0.5 : 0.45;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(tilt);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = rgba(LIGHT, 0.14 * a1);
+          ctx.stroke();
+          for (let n = 0; n < 3; n++) {
+            const a = since * (ring === 0 ? 1.5 : -1.1) + (n * Math.PI * 2) / 3 + ring;
+            /* A short tail behind each agent. */
+            ctx.beginPath();
+            ctx.ellipse(0, 0, rx, ry, 0, a - (ring === 0 ? 0.5 : -0.5), a, ring !== 0);
+            ctx.lineWidth = 1.6;
+            ctx.strokeStyle = rgba(LIGHT, 0.5 * a1);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * rx, Math.sin(a) * ry, 2.6, 0, Math.PI * 2);
+            ctx.fillStyle = rgba(LIGHT, a1);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
+      /* The roles themselves: rings on the team, one point of light after. */
+      const breathe = 1 + 0.08 * Math.sin(t * 1.6);
+      if (m > 0) halo(cx, cy, radius * 0.75 * breathe * m, 0.45 * alpha * m);
+      for (let i = 0; i < COUNT; i++) {
+        const r = 7 - 3 * m;
+        ctx.beginPath();
+        ctx.arc(pts[i][0], pts[i][1], r, 0, Math.PI * 2);
+        ctx.fillStyle = rgba(DARK, 1);
+        ctx.fill();
+        ctx.fillStyle = rgba(ACCENT, m * alpha);
+        ctx.fill();
+        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = rgba(LIGHT, 0.6 * (1 - m) * alpha);
+        ctx.stroke();
+      }
+      if (m > 0.6) {
+        const k = clamp01((m - 0.6) / 0.4);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 9 * k * breathe, 0, Math.PI * 2);
+        ctx.fillStyle = rgba(ACCENT, alpha);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3 * k, 0, Math.PI * 2);
+        ctx.fillStyle = rgba(LIGHT, alpha);
+        ctx.fill();
+      }
+    };
+
+    setup();
+
+    if (reduced) {
+      draw(MERGED + 2.4, 1);
+    } else {
+      let raf = 0;
+      let last = 0;
+      let visible = true;
+      let time = 0;
+      let intro = 0;
+      let boost = 0;
+      let boostTarget = 0;
+      let scroll = 0;
+      let scrollTarget = 0;
+
+      const loop = (now: number) => {
+        const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016;
+        last = now;
+        boost += (boostTarget - boost) * Math.min(1, dt * 4);
+        intro = Math.min(1, intro + dt * 1.2);
+        time += dt * (1 + boost * 1.6);
+        if (time >= CYCLE) time = 0;
+        const before = scroll;
+        scroll += (scrollTarget - scroll) * Math.min(1, dt * 7);
+        if (Math.abs(scroll - before) > 0.0005) {
+          root.style.setProperty("--drift", (scroll * h * 0.14).toFixed(1) + "px");
+        }
+        draw(time, intro);
+        raf = requestAnimationFrame(loop);
+      };
+      const play = () => {
+        if (!raf && visible && !document.hidden) {
+          last = 0;
+          raf = requestAnimationFrame(loop);
+        }
+      };
+      const pause = () => {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      };
+
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        visible ? play() : pause();
+      }).observe(hero);
+      document.addEventListener("visibilitychange", () =>
+        document.hidden ? pause() : play(),
+      );
+      window.addEventListener(
+        "scroll",
+        () => (scrollTarget = Math.min(1, Math.max(0, window.scrollY / (h * 0.85)))),
+        { passive: true },
+      );
+
+      const surge = (on: boolean) => () => (boostTarget = on ? 1 : 0);
+      cta?.addEventListener("pointerenter", surge(true));
+      cta?.addEventListener("pointerleave", surge(false));
+      cta?.addEventListener("focus", surge(true));
+      cta?.addEventListener("blur", surge(false));
+
+      play();
+    }
+
+    let resizeTimer = 0;
+    let lastWidth = w;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        /* Phone address bars resize the height constantly; only a real
+           change of width is worth starting the picture over for. */
+        const width = hero.getBoundingClientRect().width;
+        if (Math.abs(width - lastWidth) < 2) return;
+        lastWidth = width;
+        setup();
+        if (reduced) draw(MERGED + 2.4, 1);
+      }, 200);
+    });
+  }
+</script>
+
+<style>
+  .fold {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform: translate3d(0, var(--drift, 0px), 0);
+  }
+
+  .fold__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fold__role,
+  .fold__one,
+  .fold__live {
+    position: absolute;
+    font-family: synonym, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .fold__role {
+    color: color-mix(in srgb, var(--c-light) 70%, transparent);
+  }
+
+  .fold__one,
+  .fold__live {
+    transform: translate(-50%, 0);
+    color: var(--c-accent);
+  }
+
+  .fold__role:global(.is-on),
+  .fold__one:global(.is-on),
+  .fold__live:global(.is-on) {
+    opacity: 1;
+  }
+
+  @media (max-width: 759px) {
+    .fold__role,
+    .fold__one,
+    .fold__live {
+      font-size: 0.5625rem;
+      letter-spacing: 0.14em;
+    }
+
+    .fold__live {
+      transform: translate(-100%, 0);
+    }
+  }
+</style>

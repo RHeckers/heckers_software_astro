@@ -11,8 +11,10 @@
  *
  * One line of text under the field says which of the two states it is in.
  *
- * Before the ring arrives, needles near the pointer turn to look at it;
- * afterwards they hold their heading. Hovering the call to action speeds
+ * Before the ring arrives, needles near the pointer turn to look at it,
+ * each on its own. Once they are aligned the whole field follows the
+ * pointer together, every needle pointing at it, and swings back to its
+ * heading when the pointer leaves. Hovering the call to action speeds
  * everything up, and the picture drifts back as the page scrolls on. On
  * phones the field takes the upper half of the screen.
  *
@@ -149,6 +151,8 @@
     };
 
     const pointer = { x: 0, y: 0, on: false };
+    /* How far the aligned field has turned towards the pointer. */
+    let follow = 0;
 
     /* Draw the picture at time t (seconds into the cycle). */
     const draw = (t: number, gain: number, dt: number) => {
@@ -158,6 +162,8 @@
       const spread = clamp01((t - IDLE) / SPREAD);
       const radius = spread * (far + cell);
       const together = clamp01((t - DONE) / 0.8);
+
+      follow += ((pointer.on ? 1 : 0) - follow) * Math.min(1, dt * 4);
 
       const loose = new Path2D();
       const turned = new Path2D();
@@ -186,7 +192,15 @@
         const wave = Math.sin(t * 1.5 - n.x * 0.012 - n.y * 0.008) * 0.22 * together;
         let d = HEADING - own;
         d = Math.atan2(Math.sin(d), Math.cos(d));
-        const angle = own + d * p + wave;
+        let angle = own + d * p + wave;
+
+        /* Aligned, the team moves as one: every needle on the pointer. */
+        if (follow > 0.01 && p > 0) {
+          const to = Math.atan2(pointer.y - n.y, pointer.x - n.x);
+          let turn = to - angle;
+          turn = Math.atan2(Math.sin(turn), Math.cos(turn));
+          angle += turn * follow * p;
+        }
 
         const cx = Math.cos(angle) * (len / 2);
         const sy = Math.sin(angle) * (len / 2);
