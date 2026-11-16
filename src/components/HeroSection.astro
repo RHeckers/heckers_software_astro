@@ -1,195 +1,556 @@
 ---
-import PilotToProduction from "./art/PilotToProduction.astro";
-
 /**
- * Hero: headline, lead and the two calls to action, with the one thing the
- * company does as a diagram next to them: a pilot taken through discovery,
- * build and integration into production (components/art/PilotToProduction).
- * No script, no canvas; the h1 is the LCP element.
+ * Hero: one headline, one call to action, and the company's promise drawn
+ * as a living picture behind them.
+ *
+ * The picture is a canvas of a few thousand fine threads. They enter from
+ * the left as loose, wandering strands (every stalled pilot and growing
+ * backlog), are gathered into one stream, and pass through a single point
+ * of light, "production", leaving it as one clean beam. The threads bend
+ * away from the pointer, and hovering the button speeds the whole stream up:
+ * whatever you do to it, it still arrives. Scrolling calms it: the loose
+ * strands settle, the stream narrows and quickens, and the picture drifts
+ * back as the page moves on.
+ *
+ * Threads come in two depths (a few thicker, brighter ones in front of many
+ * fine ones), over a ground with a faint lift of light and a fine grain.
+ *
+ * The h1 is plain text and stays the LCP element; the canvas is decoration
+ * (aria-hidden), starts after first paint, pauses off screen, and draws one
+ * still frame for visitors who prefer reduced motion. Colours come from the
+ * palette variables, so the hero follows data-palette.
  */
 ---
 
 <section class="hero">
-  <div class="hero-inner">
-    <div class="hero-copy">
-      <h1>Software and AI that reach production.</h1>
-      <!-- Two versions of the lead; CSS shows one. The phone version says
-           the same in half the words so the buttons stay in the first
-           screenful. -->
-      <p class="hero-lead">
-        <span class="hero-lead__full">
-          Most software and AI projects stall between a promising pilot and a
-          product people use. We come into your company and close that gap:
-          discovery, build, AI integration and deployment, at a fixed price
-          per outcome.
-        </span>
-        <span class="hero-lead__short">
-          Most software and AI initiatives stall between pilot and production.
-          We come into your company and close that gap: discovery, build, AI
-          integration and deployment, at a fixed price per outcome.
-        </span>
-      </p>
-      <div class="hero-actions">
-        <a href="#contactForm" class="btn btn-primary" data-subject="Development"
-          >Book a discovery call</a
-        >
-        <a href="#testimonials" class="btn btn-ghost">See testimonials</a>
-      </div>
-    </div>
+  <canvas class="hero-flow" aria-hidden="true"></canvas>
+  <span class="hero-glow" aria-hidden="true"></span>
+  <span class="hero-live" aria-hidden="true">Production</span>
 
-    <PilotToProduction class="hero-graph" />
+  <div class="hero-inner">
+    <h1>Software and AI that reach <em>production.</em></h1>
+    <a href="#contactForm" class="hero-cta" data-subject="Development">
+      Book a discovery call
+      <span class="hero-cta__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+    <p class="hero-note">Fixed price per outcome. No obligation.</p>
   </div>
 </section>
 
+<script>
+  type RGB = [number, number, number];
+
+  const hero = document.querySelector<HTMLElement>(".hero");
+  const canvas = hero?.querySelector<HTMLCanvasElement>(".hero-flow");
+  const ctx = canvas?.getContext("2d");
+
+  if (hero && canvas && ctx) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cta = hero.querySelector<HTMLElement>(".hero-cta");
+
+    const hex = (name: string, fallback: string): RGB => {
+      const v =
+        getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+        fallback;
+      const m = /^#?([0-9a-f]{6})$/i.exec(v);
+      const n = parseInt(m ? m[1] : fallback.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    };
+    const mix = (a: RGB, b: RGB, t: number): RGB => [
+      a[0] + (b[0] - a[0]) * t,
+      a[1] + (b[1] - a[1]) * t,
+      a[2] + (b[2] - a[2]) * t,
+    ];
+    const rgba = (c: RGB, a: number) =>
+      `rgba(${c[0] | 0}, ${c[1] | 0}, ${c[2] | 0}, ${a})`;
+
+    const DARK = hex("--c-dark", "#16233a");
+    const LIGHT = hex("--c-light", "#f2eee6");
+    const ACCENT = hex("--c-accent", "#ffbf2e");
+
+    /* Threads are pale and faint while loose and turn to the accent as they
+       are gathered. The colour is one continuous gradient across the
+       stream (built in setup, once the gather point is known), so there is
+       no visible step anywhere along the way. */
+    const streamGradient = (to: number, alpha: number, power: number) => {
+      const g = ctx.createLinearGradient(0, 0, Math.max(1, to), 0);
+      const STOPS = 16;
+      for (let i = 0; i <= STOPS; i++) {
+        const t = i / STOPS;
+        g.addColorStop(t, rgba(mix(LIGHT, ACCENT, t * t), alpha + 0.5 * Math.pow(t, power)));
+      }
+      return g;
+    };
+    let fineStyle: CanvasGradient | string = rgba(LIGHT, 0.2);
+    /* A few threads sit nearer: thicker and a little brighter. */
+    let nearStyle: CanvasGradient | string = rgba(LIGHT, 0.26);
+    /* Additive strokes pile up on the beam; a low alpha keeps it the accent
+       colour instead of burning out to white. */
+    const beamStyle = rgba(ACCENT, 0.22);
+    const FINE = 0;
+    const NEAR = 1;
+    const BEAM = 2;
+
+    interface Thread {
+      x: number;
+      y: number;
+      y0: number;
+      seed: number;
+      speed: number;
+      oy: number;
+      voy: number;
+      fresh: boolean;
+      near: boolean;
+    }
+
+    let w = 0;
+    let h = 0;
+    let tx = 0;
+    let ty = 0;
+    let wobble = 40;
+    let threads: Thread[] = [];
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, on: false };
+    let scroll = 0;
+    let scrollTarget = 0;
+    let boost = 0;
+    let boostTarget = 0;
+
+    const spawn = (p: Thread, first: boolean) => {
+      /* The first frame is already the whole picture (it fades in); after
+         that every thread starts again at the left edge. */
+      p.x = first ? Math.random() * w : -Math.random() * 40;
+      p.y0 = (Math.random() * 1.3 - 0.15) * h;
+      p.seed = Math.random() * Math.PI * 2;
+      p.speed = 0.55 + Math.random() * 0.9;
+      p.oy = 0;
+      p.voy = 0;
+      p.fresh = true;
+      p.near = Math.random() < 0.14;
+    };
+
+    const setup = () => {
+      const rect = hero.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = rect.width;
+      h = rect.height;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      /* Where "production" sits comes from CSS, so the label and the
+         point of light always share a position. */
+      const cs = getComputedStyle(hero);
+      tx = w * (parseFloat(cs.getPropertyValue("--tx")) || 0.8);
+      ty = h * (parseFloat(cs.getPropertyValue("--ty")) || 0.5);
+      wobble = w < 760 ? 22 : 42;
+      fineStyle = streamGradient(tx, 0.16, 1.5);
+      nearStyle = streamGradient(tx, 0.22, 1.4);
+
+      const count = Math.round(Math.min(2400, Math.max(520, w * 1.6)));
+      threads = Array.from({ length: count }, () => {
+        const p = {} as Thread;
+        spawn(p, true);
+        return p;
+      });
+
+      ctx.fillStyle = rgba(DARK, 1);
+      ctx.fillRect(0, 0, w, h);
+    };
+
+    const frame = (dt: number, t: number, fade: number, gain: number) => {
+      ctx.globalCompositeOperation = "source-over";
+      if (fade > 0) {
+        ctx.fillStyle = rgba(DARK, fade);
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      const paths = [new Path2D(), new Path2D(), new Path2D()];
+      /* Scrolling calms the stream: less wander, a narrower fan, more pace. */
+      const calm = 1 - 0.75 * scroll;
+      const fan = 1 - 0.5 * scroll;
+      pointer.x += (pointer.tx - pointer.x) * Math.min(1, 0.14 * dt);
+      pointer.y += (pointer.ty - pointer.y) * Math.min(1, 0.14 * dt);
+      const base = (tx / 430) * (1 + boost * 1.6 + scroll * 1.3);
+      const R = 150;
+
+      for (const p of threads) {
+        const px = p.x;
+        const py = p.y;
+        let bucket: number;
+
+        if (p.x < tx) {
+          const prog = Math.max(0, p.x / tx);
+          p.x += base * p.speed * (0.35 + 1.5 * prog * prog) * dt;
+          const q = Math.min(1, Math.max(0, p.x / tx));
+          const gather = q * q * (3 - 2 * q);
+          const loose = Math.pow(1 - q, 1.4);
+          const wob =
+            wobble *
+            calm *
+            loose *
+            (Math.sin(p.y0 * 0.011 + p.x * 0.0052 + t * 0.5 + p.seed) +
+              0.6 * Math.sin(p.x * 0.013 - t * 0.8 + p.seed * 1.7));
+
+          if (pointer.on) {
+            const dx = px - pointer.x;
+            const dy = py - pointer.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < R * R) {
+              const d = Math.sqrt(d2) || 1;
+              p.voy += (dy >= 0 ? 1 : -1) * (1 - d / R) * 1.5 * dt;
+            }
+          }
+          p.voy += -p.oy * 0.018 * dt;
+          p.voy *= 0.9;
+          p.oy += p.voy * dt;
+
+          p.y = ty + (p.y0 - ty) * (1 - gather) * fan + wob + p.oy * (1 - gather);
+          bucket = p.near ? NEAR : FINE;
+        } else {
+          /* Past the point: one fast, almost straight beam. */
+          p.x += base * p.speed * 3.4 * dt;
+          const out = (p.x - tx) / Math.max(1, w - tx);
+          p.y = ty + Math.sin(p.seed * 40) * (0.6 + out * 5);
+          bucket = BEAM;
+        }
+
+        if (!p.fresh) {
+          paths[bucket].moveTo(px, py);
+          paths[bucket].lineTo(p.x, p.y);
+        }
+        p.fresh = false;
+        if (p.x > w + 30) spawn(p, false);
+      }
+
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineCap = "round";
+      ctx.globalAlpha = gain;
+      ctx.lineWidth = 0.8;
+      ctx.strokeStyle = fineStyle;
+      ctx.stroke(paths[FINE]);
+      ctx.lineWidth = 1.7;
+      ctx.strokeStyle = nearStyle;
+      ctx.stroke(paths[NEAR]);
+      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = beamStyle;
+      ctx.stroke(paths[BEAM]);
+      ctx.globalAlpha = 1;
+    };
+
+    setup();
+
+    if (reduced) {
+      /* One still frame: the whole stream drawn at once, no motion. */
+      for (let i = 0; i < 260; i++) frame(1, 3, 0, 0.1);
+    } else {
+      let raf = 0;
+      let last = 0;
+      let visible = true;
+      let intro = 0;
+
+      const loop = (now: number) => {
+        const dt = last ? Math.min(2.2, (now - last) / 16.67) : 1;
+        last = now;
+        boost += (boostTarget - boost) * 0.06 * dt;
+        intro = Math.min(1, intro + 0.012 * dt);
+        const before = scroll;
+        scroll += (scrollTarget - scroll) * Math.min(1, 0.12 * dt);
+        /* The picture drifts back as the page scrolls on (parallax). */
+        if (Math.abs(scroll - before) > 0.0005) {
+          hero.style.setProperty("--drift", (scroll * h * 0.14).toFixed(1) + "px");
+        }
+        /* While the shape of the stream is changing, fade faster so the
+           old shape does not linger as a ghost. */
+        const moving = Math.min(1, Math.abs(scroll - before) * 70);
+        frame(dt, now / 1000, 0.085 + 0.4 * moving, intro);
+        raf = requestAnimationFrame(loop);
+      };
+      const play = () => {
+        if (!raf && visible && !document.hidden) {
+          last = 0;
+          raf = requestAnimationFrame(loop);
+        }
+      };
+      const pause = () => {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      };
+
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        visible ? play() : pause();
+      }).observe(hero);
+      document.addEventListener("visibilitychange", () =>
+        document.hidden ? pause() : play(),
+      );
+
+      hero.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "touch") return;
+        const rect = hero.getBoundingClientRect();
+        pointer.tx = e.clientX - rect.left;
+        pointer.ty = e.clientY - rect.top;
+        if (!pointer.on) {
+          pointer.x = pointer.tx;
+          pointer.y = pointer.ty;
+        }
+        pointer.on = true;
+      });
+      hero.addEventListener("pointerleave", () => (pointer.on = false));
+      window.addEventListener(
+        "scroll",
+        () => (scrollTarget = Math.min(1, Math.max(0, window.scrollY / (h * 0.85)))),
+        { passive: true },
+      );
+
+      const surge = (on: boolean) => () => (boostTarget = on ? 1 : 0);
+      cta?.addEventListener("pointerenter", surge(true));
+      cta?.addEventListener("pointerleave", surge(false));
+      cta?.addEventListener("focus", surge(true));
+      cta?.addEventListener("blur", surge(false));
+
+      play();
+    }
+
+    let resizeTimer = 0;
+    let lastWidth = w;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        /* Phone address bars resize the height constantly; only a real
+           change of width is worth starting the picture over for. */
+        const width = hero.getBoundingClientRect().width;
+        if (Math.abs(width - lastWidth) < 2) return;
+        lastWidth = width;
+        setup();
+        if (reduced) for (let i = 0; i < 260; i++) frame(1, 3, 0, 0.1);
+      }, 200);
+    });
+  }
+</script>
+
 <style>
   .hero {
+    /* Where the stream is gathered, as fractions of the hero's box. Read by
+       the script and used for the label, so both always agree. */
+    --tx: 0.8;
+    --ty: 0.5;
     position: relative;
+    min-height: 100vh;
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     overflow: hidden;
-    /* The gradient is flat for the last stretch, so the hero ends on
-       exactly the colour of the section that follows it. */
-    --hero-fade-end: 90px;
+    color: var(--c-light);
+    background: var(--c-dark);
+  }
+
+  /* Fine static grain over the picture: takes the digital flatness off
+     the dark ground and the glow. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.14;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .hero-flow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(0, var(--drift, 0px), 0);
+  }
+
+  /* A soft shade of the ground colour behind the words, so the threads
+     that pass under the headline never compete with it. */
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background: linear-gradient(
-      to bottom,
-      var(--color-dark) 0%,
-      var(--color-dark-alt) 55%,
-      var(--color-light-alt) calc(100% - var(--hero-fade-end))
+      90deg,
+      color-mix(in srgb, var(--c-dark) 62%, transparent) 0%,
+      color-mix(in srgb, var(--c-dark) 38%, transparent) 38%,
+      transparent 66%
     );
   }
 
-  .hero-inner {
-    flex: 1;
-    width: 100%;
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 7rem 1.5rem 12rem;
-    display: grid;
-    gap: 3rem;
-    align-content: center;
+  /* The point of light the stream passes through: a soft halo and a bright
+     core, breathing slowly. CSS rather than canvas, so the halo is smooth. */
+  .hero-glow {
+    position: absolute;
+    left: calc(var(--tx) * 100%);
+    top: calc(var(--ty) * 100%);
+    width: min(28vw, 30vh);
+    aspect-ratio: 1;
+    translate: -50% calc(-50% + var(--drift, 0px));
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background:
+      radial-gradient(circle, var(--c-light) 0 2px, transparent 3.5px),
+      radial-gradient(
+        circle,
+        color-mix(in srgb, var(--c-accent) 42%, transparent) 0%,
+        color-mix(in srgb, var(--c-accent) 15%, transparent) 16%,
+        color-mix(in srgb, var(--c-accent) 5%, transparent) 38%,
+        transparent 68%
+      );
+    animation: hero-breathe 4.5s ease-in-out infinite;
   }
 
-  /* --- Copy --- */
+  @keyframes hero-breathe {
+    50% {
+      scale: 1.12;
+      opacity: 0.82;
+    }
+  }
+
+  .hero-live {
+    position: absolute;
+    z-index: 1;
+    left: calc(var(--tx) * 100%);
+    top: calc(var(--ty) * 100%);
+    transform: translate(-50%, calc(1.3rem + var(--drift, 0px)));
+    font-family: synonym, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.28em;
+    opacity: 0.8;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    pointer-events: none;
+    animation: hero-in 1.2s 1.6s both;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 7rem clamp(1.25rem, 6vw, 5rem) 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
   h1 {
     font-family: "chillax", sans-serif;
     font-weight: var(--font-weight-light);
-    font-size: clamp(2.5rem, 5.6vw, 4.75rem);
-    line-height: 1.04;
-    letter-spacing: -0.015em;
-    color: var(--color-light-raised);
-    max-width: 13ch;
-    margin: 0 0 1.25rem;
+    font-size: clamp(2.6rem, 7.4vw, 8rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    max-width: 11ch;
+    margin: 0 0 clamp(2rem, 4.5vw, 3.5rem);
+    text-wrap: balance;
   }
 
-  .hero-lead {
-    font-family: "synonym", sans-serif;
-    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
-    line-height: 1.6;
-    color: color-mix(in srgb, var(--c-light) 74%, transparent);
-    max-width: 44ch;
-    margin: 0 0 2rem;
+  h1 em {
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
+    color: var(--c-accent);
   }
 
-  .hero-lead__short {
-    display: none;
-  }
-
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1rem;
-  }
-
-  .btn {
+  /* The one action on the screen: large, the accent colour, and glowing
+     like the point of light the stream is heading for. */
+  .hero-cta {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.85em 1.8em;
-    font-size: var(--font-md);
-    font-weight: var(--font-weight-medium);
-    border-radius: 100px;
-    text-decoration: none;
-    border: 1px solid transparent;
-    transition:
-      background-color 0.2s,
-      color 0.2s,
-      border-color 0.2s;
-  }
-
-  .btn:focus-visible {
-    outline: 2px solid var(--color-light-raised);
-    outline-offset: 3px;
-  }
-
-  /* The primary action is pink: the one thing on the hero meant to pull the eye. */
-  .btn-primary {
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-on-accent);
+    gap: 0.9em;
+    padding: 1.05em 2.1em;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: var(--c-dark);
+    font-size: clamp(1.05rem, 1.35vw, 1.3rem);
     font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--c-light) 45%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--c-accent) 45%, transparent),
+      0 12px 36px color-mix(in srgb, var(--c-accent) 24%, transparent);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+      box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation: hero-in 0.9s 0.35s both;
   }
 
-  .btn-primary:hover {
-    box-shadow: 0 0 0 4px var(--color-accent-glow);
+  .hero-cta__arrow {
+    transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
-  .btn-ghost {
-    color: var(--color-ink-light);
-    border-color: color-mix(in srgb, var(--c-light) 30%, transparent);
+  .hero-cta:hover,
+  .hero-cta:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--c-light) 45%, transparent),
+      0 0 0 6px color-mix(in srgb, var(--c-accent) 22%, transparent),
+      0 18px 56px color-mix(in srgb, var(--c-accent) 42%, transparent);
   }
 
-  .btn-ghost:hover {
-    border-color: color-mix(in srgb, var(--c-light) 70%, transparent);
-    color: var(--color-light-raised);
+  .hero-cta:hover .hero-cta__arrow,
+  .hero-cta:focus-visible .hero-cta__arrow {
+    transform: translateX(6px);
   }
 
-  /* --- Diagram --- */
-
-  .hero-graph {
-    justify-self: center;
+  .hero-cta:focus-visible {
+    outline: 2px solid var(--c-light);
+    outline-offset: 4px;
   }
 
-  /* --- Layout breakpoints --- */
+  .hero-note {
+    margin-top: 1.1rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+    animation: hero-in 0.9s 0.55s both;
+  }
 
-  /* On phones the diagram shrinks below legibility and lands on the light
-     part of the gradient; the headline and buttons carry the hero there. */
-  @media (max-width: 649px) {
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translate(var(--hero-in-x, 0), calc(var(--hero-in-y, 0px) + 14px));
+    }
+  }
+
+  .hero-live {
+    --hero-in-x: -50%;
+    --hero-in-y: 1.3rem;
+  }
+
+  /* Phones: the stream is gathered in the upper right, above the words,
+     and the copy sits at the foot of the screen with the button in reach
+     of a thumb. */
+  @media (max-width: 759px) {
+    .hero {
+      --tx: 0.76;
+      --ty: 0.27;
+      justify-content: flex-end;
+    }
+
+    .hero::after {
+      background: linear-gradient(
+        0deg,
+        color-mix(in srgb, var(--c-dark) 88%, transparent) 0%,
+        color-mix(in srgb, var(--c-dark) 60%, transparent) 45%,
+        transparent 72%
+      );
+    }
+
     .hero-inner {
       padding-top: 6rem;
-      padding-bottom: 10rem;
+      padding-bottom: 3.5rem;
     }
 
-    .hero-graph {
-      display: none;
-    }
-
-    .hero-lead__full {
-      display: none;
-    }
-
-    .hero-lead__short {
-      display: inline;
-    }
-
-    .hero-lead {
-      margin-bottom: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .hero-inner {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 6fr);
-      align-items: center;
-      gap: 4rem;
-      padding-top: 8rem;
-      padding-bottom: 14rem;
-    }
-
-    .hero-graph {
-      justify-self: end;
+    .hero-cta {
+      align-self: stretch;
+      justify-content: center;
     }
   }
 </style>
-
