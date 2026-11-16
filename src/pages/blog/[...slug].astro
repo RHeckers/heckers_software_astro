@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import { render } from "astro:content";
 import CategoryChips from "../../components/CategoryChips.astro";
 import NewsletterBar from "../../components/NewsletterBar.astro";
@@ -98,7 +99,14 @@ const jsonLd = {
       </div>
       {
         heroImage && (
-          <img src={heroImage.src} alt={title} width="960" height="480" />
+          <Image
+            src={heroImage}
+            alt={title}
+            widths={[480, 720, 960, 1440]}
+            sizes="(min-width: 1008px) 912px, calc(100vw - 3rem)"
+            loading="eager"
+            fetchpriority="high"
+          />
         )
       }
     </header>

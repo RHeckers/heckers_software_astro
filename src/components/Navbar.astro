@@ -138,6 +138,13 @@ const { themeToggle = false } = Astro.props;
 
   .hamburger {
     font-size: 20px;
+    /* The glyph is ~18x20px; pad it to a 44x44 touch target and pull the
+       margin back in so the pill keeps its size. */
+    display: inline-grid;
+    place-items: center;
+    min-width: 44px;
+    min-height: 44px;
+    margin: -12px -13px;
   }
 
   .close {

@@ -1,6 +1,13 @@
 ---
 import HeroSection from "../components/HeroSection.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import {
+  AUTHOR,
+  COMPANY,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  profileLinks,
+} from "../consts";
+import logo from "../assets/logos/logo.png";
 import PageLayout from "../layouts/PageLayout.astro";
 
 import ServicesOverview from "../components/ServicesOverview.astro";
@@ -32,9 +39,40 @@ import WhoWeAre from "../components/home/WhoWeAre.astro";
  * the light-alt the hero fades into, and the dark band. No near-white
  * sections; the hero, the logos and the challenge are one unbroken ground.
  */
+
+// The homepage is where search engines look for the site's identity: the
+// WebSite entity plus a compact Organization. The full organisation, person
+// and book graph lives on /about and shares the same @id values.
+const siteUrl = Astro.site?.href ?? "https://heckerssoftware.com/";
+const orgId = `${siteUrl}#organization`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}#website`,
+      url: siteUrl,
+      name: COMPANY.name,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en",
+      publisher: { "@id": orgId },
+    },
+    {
+      "@type": "Organization",
+      "@id": orgId,
+      name: COMPANY.name,
+      url: siteUrl,
+      logo: new URL(logo.src, Astro.site).href,
+      email: COMPANY.email,
+      telephone: COMPANY.phone,
+      founder: { "@type": "Person", "@id": `${siteUrl}about#person`, name: AUTHOR.name },
+      sameAs: profileLinks(),
+    },
+  ],
+};
 ---
 
-<PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<PageLayout title={SITE_TITLE} description={SITE_DESCRIPTION} jsonLd={jsonLd}>
   <div class="home">
   {/* 1. The promise */}
   <HeroSection />

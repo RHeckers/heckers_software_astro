@@ -100,10 +100,11 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
-<meta name="title" content={title} />
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
+<meta property="og:site_name" content="Heckers Software" />
+<meta property="og:locale" content="en_US" />
 <meta property="og:type" content={type} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
@@ -131,11 +132,11 @@ const UMAMI_WEBSITE_ID = "545aa7d1-96e0-4cc0-b51a-0cebb3e14c39";
 }
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(image.src, Astro.url)} />
+<meta name="twitter:image:alt" content={title} />
 
 <!-- Structured data -->
 {
