@@ -1,0 +1,301 @@
+---
+/**
+ * Step 7 of the home page, "Who will I actually work with?". One person,
+ * a portrait, the three facts that make a stranger worth letting into a
+ * codebase, and three photographs of him at work in front of a room. The
+ * long version is the about page.
+ *
+ * From 900px up the portrait on the left stays pinned while the facts and
+ * the event photographs scroll past on the right: the same idiom as the
+ * challenge section, with the trust band between them pinned on the
+ * other side.
+ */
+import { Image } from "astro:assets";
+import portrait from "../../assets/pointing.jpg";
+import onStage from "../../assets/workshop/talk_2.png";
+import mainStage from "../../assets/workshop/ng-poland-2024.6.jpg";
+import workshop from "../../assets/workshop/angular-zurich.png";
+import { AUTHOR, COMPANY, PROFILES } from "../../consts";
+
+const talks = PROFILES.talks.map((talk) => talk.event.replace(/ \d{4}$/, ""));
+
+const events = [
+  {
+    src: mainStage,
+    alt: `${AUTHOR.name} walking a full auditorium through code on the main stage at ngPoland`,
+    caption: "Main stage, ngPoland 2024",
+    position: "center 70%",
+  },
+  {
+    src: workshop,
+    alt: `${AUTHOR.name} teaching a room of developers at their laptops`,
+    caption: "Workshop, Angular Zurich",
+    position: "center 45%",
+  },
+  {
+    src: onStage,
+    alt: `${AUTHOR.name} presenting on stage in front of the ${COMPANY.name} logo`,
+    caption: "On stage for Heckers Software",
+    position: "center 20%",
+  },
+];
+
+const facts = [
+  {
+    title: "Wrote the book",
+    copy: `${PROFILES.book.title} (${PROFILES.book.publisher}, ${PROFILES.book.year}), on Angular at any size with Nx.`,
+  },
+  {
+    title: "On stage",
+    copy: `${talks.slice(0, -1).join(", ")} and ${talks.at(-1)}.`,
+  },
+  {
+    title: "Enterprise code",
+    copy: "Energy, healthcare, industry and government, in codebases with hundreds of projects.",
+  },
+];
+---
+
+<section class="who" aria-labelledby="who-heading">
+  <div class="who__inner">
+    <div class="who__photo">
+      <Image
+        src={portrait}
+        alt={`${AUTHOR.name}, founder of ${COMPANY.name}`}
+        widths={[420, 640, 840]}
+        sizes="(min-width: 900px) 420px, 80vw"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="who__copy">
+      <h2 class="who__title" id="who-heading">
+        You work with the founder, not an account manager
+      </h2>
+      <p class="who__lede">
+        {AUTHOR.name} runs the discovery, writes the code and ships it
+        himself.
+      </p>
+
+      <ul class="facts">
+        {
+          facts.map((fact) => (
+            <li class="fact">
+              <h3 class="fact__title">{fact.title}</h3>
+              <p class="fact__copy">{fact.copy}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a class="who__link" href="/about">The story behind {COMPANY.name}</a>
+
+      <ul class="events" aria-label="At events">
+      {
+        events.map((item) => (
+          <li>
+            <figure class="event">
+              <Image
+                src={item.src}
+                alt={item.alt}
+                widths={[400, 600, 800]}
+                sizes="(min-width: 760px) 30vw, 92vw"
+                loading="lazy"
+                style={`object-position: ${item.position}`}
+              />
+              <figcaption>{item.caption}</figcaption>
+            </figure>
+          </li>
+        ))
+      }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .who {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .who__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  /* The studio shot has a white ground; the frame keeps it white in the
+     dark theme too, so the portrait never floats on a mismatched panel. */
+  .who__photo {
+    justify-self: center;
+    width: min(100%, 420px);
+    aspect-ratio: 4 / 5;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.14);
+  }
+
+  .who__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+  }
+
+  .who__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .who__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    max-width: 16ch;
+  }
+
+  .who__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 46ch;
+  }
+
+  .facts {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .fact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem 1.5rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .fact__title {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .fact__copy {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+  }
+
+  .who__link {
+    align-self: flex-start;
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  .events {
+    list-style: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacer-lg);
+    margin-top: var(--spacer-lg);
+  }
+
+  .event {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .event :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.14);
+  }
+
+  .event figcaption {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  /* Each photograph rises into place as it scrolls in. */
+  @supports (animation-timeline: view()) {
+    .events li {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: who-rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 80%;
+    }
+  }
+
+  @keyframes who-rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .events li {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The main stage wide on top, the other two side by side under it. */
+  @media (min-width: 600px) {
+    .events {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .events li:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .events li:first-child :global(img) {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  .who__link:hover,
+  .who__link:focus-visible {
+    color: var(--color-link-hover);
+  }
+
+  @media (min-width: 560px) {
+    .fact {
+      grid-template-columns: 9.5rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .who__inner {
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    }
+
+    .who__photo {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+</style>

@@ -1,0 +1,185 @@
+---
+/**
+ * Step 3 of the home page, "How can you help me?", in one sentence and
+ * three verbs, next to a photograph of the founder on stage in front of a
+ * full hall, with the client logos in one row under both. A
+ * full-screen dark band: the turn of the page from problem to answer, and
+ * the first piece of social proof below the logos.
+ *
+ * From 900px up the photograph starts level with the heading and stays
+ * pinned while the copy scrolls past it, as in the challenge and trust
+ * sections. Same column, heading weight and hairline rows as the rest of
+ * the site.
+ * The verbs take the accent wipe as they scroll in.
+ */
+import { Image } from "astro:assets";
+import Accent from "../Accent.astro";
+import LogoBanner from "../LogoBanner.astro";
+import stage from "../../assets/workshop/ng-poland-2024.5.jpg";
+import { AUTHOR } from "../../consts";
+
+const verbs = [
+  { verb: "Find", rest: "the highest-impact work" },
+  { verb: "Build", rest: "it end to end" },
+  { verb: "Ship", rest: "it into production" },
+];
+---
+
+<section class="what" aria-labelledby="what-heading">
+  <div class="what__inner">
+    <div class="what__copy">
+      <header class="what__head">
+        <h2 class="what__title" id="what-heading">We come in and deliver.</h2>
+        <p class="what__lede">
+          One senior engineer inside your company, amplified by AI, who owns
+          the outcome until it is live.
+        </p>
+      </header>
+
+      <ol class="verbs">
+        {
+          verbs.map((item) => (
+            <li class="verb">
+              <Accent range="entry 100% cover 35%">{item.verb}</Accent>
+              {item.rest}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="what__photo">
+      <Image
+        src={stage}
+        alt={`${AUTHOR.name} speaking on the main stage at ngPoland, facing a full auditorium`}
+        widths={[560, 840, 1120]}
+        sizes="(min-width: 900px) 46vw, 92vw"
+        loading="lazy"
+      />
+    </div>
+  </div>
+
+  <div class="what__clients">
+    <LogoBanner />
+  </div>
+</section>
+
+<style>
+  .what {
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+    /* A full screen, content centred in it: the two columns, then the
+       logos as a block of their own below them. */
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    row-gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .what__inner {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  /* Outside the two-column grid on purpose. The photograph is pinned
+     within that grid only, so it has left the screen's pinned spot before
+     the logos arrive and can never end up underneath them. */
+  .what__clients {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .what__copy {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  .what__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .what__title {
+    /* One step up from the section headings: this band is the answer the
+       page has been building to. */
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--color-light-raised);
+  }
+
+  .what__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.76);
+    max-width: 40ch;
+  }
+
+  .verbs {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(232, 237, 246, 0.16);
+  }
+
+  .verb {
+    /* Tall rows on purpose: the copy has to be longer than the pinned
+       photograph beside it for the photograph to hold while it passes. */
+    padding: clamp(1.25rem, 3.4vw, 2.75rem) 0;
+    border-bottom: 1px solid rgba(232, 237, 246, 0.16);
+    font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1.15;
+    color: var(--color-light-raised);
+  }
+
+  /* The light-page green is too muddy on a dark ground. */
+  .verb :global(.accent__copy) {
+    color: #4fb492;
+  }
+
+  /* Speaker on the right, audience on the left: cropped from the right
+     edge so the speaker is never the part that is cut. */
+  .what__photo {
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(11, 18, 32, 0.4);
+  }
+
+  .what__photo :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    object-position: right center;
+  }
+
+  @media (min-width: 900px) {
+    .what__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .what__photo {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+
+    .what__photo :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

@@ -249,7 +249,6 @@ const jsonLd = {
   <section class="goal" aria-labelledby="goal-heading">
     <div class="goal__inner">
       <header class="goal__head">
-        <p class="goal__eyebrow">Our goal</p>
         <h2 class="goal__title" id="goal-heading">
           Every company we work with should be able to say three things.
         </h2>
@@ -288,7 +287,6 @@ const jsonLd = {
     <div class="story__inner">
       <div class="story__main">
         <header class="story__head">
-          <p class="story__eyebrow">The person behind it</p>
           <h2 class="story__title" id="story-heading">
             A career of enterprise code, one book, and a front-row seat on AI.
           </h2>
@@ -485,22 +483,31 @@ const jsonLd = {
     gap: var(--spacer-lg);
   }
 
-  .hero__eyebrow,
-  .goal__eyebrow,
-  .story__eyebrow {
+  /* Same eyebrow, title and buttons as ServiceHero. */
+  .hero__eyebrow {
     font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
     color: var(--color-accent);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .hero__eyebrow::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0.75rem;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: 2px;
   }
 
   .hero__title {
-    font-size: clamp(2.4rem, 5.5vw, 4.25rem);
+    font-size: clamp(2.4rem, 5.4vw, 4.5rem);
     font-weight: var(--font-weight-light);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
+    line-height: 1.04;
+    letter-spacing: -0.015em;
     color: var(--color-light-raised);
     max-width: 16ch;
   }
@@ -527,7 +534,7 @@ const jsonLd = {
     padding: 0.85em 1.8em;
     font-family: chillax, sans-serif;
     font-size: var(--font-md);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-medium);
     border-radius: 999px;
     border: 1px solid transparent;
     text-decoration: none;
@@ -538,13 +545,16 @@ const jsonLd = {
   }
 
   .btn--primary {
-    background: var(--color-accent);
+    font-weight: var(--font-weight-bold);
+    background: var(--color-accent-strong);
+    border-color: var(--color-accent-strong);
     color: var(--color-light-raised);
   }
 
   .btn--primary:hover,
   .btn--primary:focus-visible {
-    background: var(--color-accent-strong);
+    background: var(--color-accent-ink);
+    border-color: var(--color-accent-ink);
   }
 
   .btn--ghost {
@@ -645,14 +655,10 @@ const jsonLd = {
     gap: var(--spacer-lg);
   }
 
-  .goal__eyebrow {
-    color: var(--color-accent-ink);
-  }
-
   .goal__title {
-    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: var(--font-weight-medium);
-    line-height: 1.05;
+    line-height: 1.02;
     letter-spacing: -0.01em;
     max-width: 22ch;
   }
@@ -724,14 +730,10 @@ const jsonLd = {
     gap: var(--spacer-lg);
   }
 
-  .story__eyebrow {
-    color: var(--color-accent-ink);
-  }
-
   .story__title {
-    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: var(--font-weight-medium);
-    line-height: 1.05;
+    line-height: 1.02;
     letter-spacing: -0.01em;
   }
 

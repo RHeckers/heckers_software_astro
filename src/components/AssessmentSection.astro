@@ -1,9 +1,11 @@
 ---
 /**
- * The architecture assessment on the home page: why teams ask for one,
- * how it runs, and what they can count on. Sits on a light background
- * between the dark proof band and the contact form, and gives the third
- * service its own section, after the band that argues for an outside read.
+ * The architecture assessment on the home page, told as the first step of
+ * an engagement that can also be bought alone: when teams ask for one and
+ * how it runs. Follows the fact band that argues for an outside read.
+ * Scope, prices and commitments live on the service page and in the
+ * "places to start" block further down, so this stays one chapter of the
+ * page instead of a landing page inside it.
  *
  * The plan panel is the one animated element: its vertical line draws
  * down and each step lights up as the panel scrolls into view (CSS
@@ -11,7 +13,6 @@
  */
 import Accent from "./Accent.astro";
 import ProofQuote from "./ProofQuote.astro";
-import { PRICING, euro } from "../lib/pricing";
 
 const reasons = [
   {
@@ -24,12 +25,9 @@ const reasons = [
   },
   {
     title: "As the first step before we build",
-    copy: "Every forward-deployed engagement starts with an outside read. On its own, the assessment is the cheapest way to find out whether you need one at all.",
+    copy: "Every forward-deployed engagement starts here. On its own, the assessment is the cheapest way to find out whether you need one at all, and nothing is lost if you do: we build on the report.",
   },
 ];
-
-const scope =
-  "Project graph and module boundaries, dependency and bundle analysis, build and CI times, state management, the testing strategy, Angular and Nx versions and the upgrade path, and the workflow around the code: reviews, releases, ownership.";
 
 const phases = [
   {
@@ -63,21 +61,6 @@ const stack = [
   ".NET and Node.js APIs",
   "Azure pipelines",
 ];
-
-const commitments = [
-  {
-    title: "A fixed price, up front",
-    copy: `From ${euro(PRICING.assessment.minimum)} for the one-week scan. Minimum and Standard are fixed prices for workspaces up to roughly fifty projects, and the number does not change during the assessment.`,
-  },
-  {
-    title: "Ranked, not listed",
-    copy: "Not sixty pages of everything that is wrong. Findings sorted by what they cost you, with the fix next to each, so your team starts at the top and the rest can wait.",
-  },
-  {
-    title: "Yours to run",
-    copy: "The roadmap is written so your own developers can execute it, and most teams do. If you would rather have the top findings fixed by us, that is the Advanced tier.",
-  },
-];
 ---
 
 <section class="assessment" id="architecture-assessment">
@@ -85,15 +68,16 @@ const commitments = [
     <div class="assessment__grid">
       <div class="assessment__copy">
         <header class="assessment__header">
-          <h2 class="assessment__title">An outside read of your codebase</h2>
+          <h2 class="assessment__title">Start with the outside read alone</h2>
           <p class="assessment__lede">
-            The architecture assessment is the diagnosis before anyone builds.
-            Senior engineers read your Angular or Nx codebase from the
-            outside, talk to the people who work in it every day, and hand
-            you every finding
+            Not ready to have someone inside your company yet? The first step
+            of every engagement also stands on its own. In an architecture
+            assessment we read your Angular or Nx codebase from the outside,
+            talk to the people who work in it every day, and hand you every
+            finding
             <Accent range="entry 40% cover 35%" wrap>ranked by what it costs you, not by how ugly it looks</Accent>,
-            with the fix and the effort next to each. Fixed scope, two to
-            three weeks, and a roadmap your own team can run.
+            with the fix and the effort next to each. Fixed scope, fixed
+            price, two to three weeks, and a roadmap your own team can run.
           </p>
         </header>
 
@@ -108,11 +92,6 @@ const commitments = [
             ))
           }
         </ul>
-
-        <p class="assessment__scope">
-          <span class="assessment__scope-label">What we read</span>
-          {scope}
-        </p>
 
         <ProofQuote snippet="ferdiDepth" />
       </div>
@@ -167,17 +146,6 @@ const commitments = [
         </a>
       </div>
     </div>
-
-    <ul class="commitments" aria-label="What you can count on">
-      {
-        commitments.map((item) => (
-          <li class="commitment">
-            <h3 class="commitment__title">{item.title}</h3>
-            <p class="commitment__copy">{item.copy}</p>
-          </li>
-        ))
-      }
-    </ul>
   </div>
 </section>
 
@@ -274,22 +242,6 @@ const commitments = [
     line-height: 1.5;
     color: var(--color-ink-muted);
     max-width: 52ch;
-  }
-
-  .assessment__scope {
-    font-family: synonym, sans-serif;
-    font-size: var(--font-md);
-    line-height: 1.5;
-    color: var(--color-ink-muted);
-    max-width: 52ch;
-  }
-
-  .assessment__scope-label {
-    display: block;
-    font-family: chillax, sans-serif;
-    font-weight: var(--font-weight-medium);
-    color: var(--color-ink);
-    margin-bottom: 0.2rem;
   }
 
   .assessment__actions {
@@ -580,49 +532,12 @@ const commitments = [
     }
   }
 
-  /* --- Commitments --- */
-
-  .commitments {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacer-lg);
-    padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid var(--color-stroke-strong);
-  }
-
-  .commitment {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding-left: 1rem;
-    border-left: 3px solid var(--color-success);
-  }
-
-  .commitment__title {
-    font-size: 1.15rem;
-    font-weight: var(--font-weight-semi-bold);
-    color: var(--color-ink);
-  }
-
-  .commitment__copy {
-    font-family: synonym, sans-serif;
-    line-height: 1.5;
-    color: var(--color-ink-muted);
-    max-width: 40ch;
-  }
-
   /* --- Wider screens --- */
 
   @media (min-width: 720px) {
     .assessment__cta {
       padding: 0.95em 2.2em;
       font-size: 1.15rem;
-    }
-
-    .commitments {
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--spacer-xl);
     }
   }
 

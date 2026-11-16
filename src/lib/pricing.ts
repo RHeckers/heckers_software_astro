@@ -18,11 +18,11 @@ export const PRICING = {
   },
   workshops: {
     /** One day, twelve seats included. */
-    oneDay: 2499,
+    oneDay: 1899,
     /** Two days, twelve seats included. */
-    twoDays: 3749,
+    twoDays: 2849,
     /** Each seat above twelve, per workshop day. */
-    extraSeatPerDay: 100,
+    extraSeatPerDay: 50,
   },
   /* Application development is quoted per project and has no fixed
      prices, so nothing for it lives here. */

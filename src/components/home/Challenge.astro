@@ -1,0 +1,245 @@
+---
+/**
+ * Step 2 of the home page, "Do you understand my problem?". Four pains a
+ * visitor recognises, in their own words, next to the one number that says
+ * it is not just them. No solution here: that is the next section's job.
+ *
+ * Laid out like the evidence band on the service pages: from 900px up the
+ * claim on the left stays pinned while the pains scroll past it on the
+ * right, and each pain lights up as it arrives (its red rule draws down,
+ * the text comes to full strength). Scroll-driven CSS, no script; fully
+ * drawn where that is unsupported or motion is reduced.
+ *
+ * Source: MIT NANDA, The GenAI Divide: State of AI in Business 2025 (about
+ * 95% of enterprise generative AI pilots show no measurable P&L return; the
+ * report blames workflow integration, not the models).
+ */
+import CountUp from "../CountUp.astro";
+
+const pains = [
+  {
+    title: "The demo worked. Production never came.",
+    copy: "It was never wired into your systems and your data, so nobody uses it.",
+  },
+  {
+    title: "The backlog grows faster than the team.",
+    copy: "The work that would save the most waits behind the work that keeps the lights on.",
+  },
+  {
+    title: "Nobody owns the outcome.",
+    copy: "The consultant left a report, the vendor left a tool, and the last mile is still yours.",
+  },
+  {
+    title: "Every month of waiting costs more.",
+    copy: "People keep doing by hand what software should do, while others automate it.",
+  },
+];
+---
+
+<section class="challenge" aria-labelledby="challenge-heading">
+  <div class="challenge__inner">
+    <div class="challenge__claim">
+      <h2 class="challenge__title" id="challenge-heading">
+        The pilot impressed everyone. Then nothing changed.
+      </h2>
+      <p class="challenge__value"><CountUp value="95%" /></p>
+      <p class="challenge__lead">
+        of enterprise AI pilots deliver no measurable return. The model is
+        rarely the problem. The last mile is.
+      </p>
+      <p class="challenge__source">
+        MIT NANDA, The GenAI Divide: State of AI in Business 2025
+      </p>
+    </div>
+
+    <div class="challenge__pains">
+      <p class="challenge__ask">Sound familiar?</p>
+      <ol class="pains">
+        {
+          pains.map((pain, index) => (
+            <li class="pain">
+              <span class="pain__index" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3 class="pain__title">{pain.title}</h3>
+              <p class="pain__copy">{pain.copy}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .challenge {
+    /* The colour the hero fades into and its logo strip sits on, so the
+       page is one unbroken ground from the hero down to the dark band. */
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.25rem, 6vw, 5rem)
+      clamp(4rem, 10vw, 7.5rem);
+  }
+
+  .challenge__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  .challenge__claim {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .challenge__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    max-width: 14ch;
+    margin-bottom: var(--spacer-lg);
+  }
+
+  .challenge__value {
+    font-size: clamp(4rem, 9vw, 6.5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--color-danger);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .challenge__lead {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.5;
+    max-width: 34ch;
+  }
+
+  .challenge__source {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .challenge__pains {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-md);
+  }
+
+  .challenge__ask {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .pains {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  /* Tall rows on purpose: the list has to be longer than the pinned claim
+     beside it for the claim to stay put while the pains pass. */
+  .pain {
+    --pad: clamp(1.75rem, 4vw, 3.25rem);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: var(--pad) 0 var(--pad) 1.5rem;
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  /* The red rule, as its own box so it can draw down. */
+  .pain::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--pad);
+    bottom: var(--pad);
+    width: 3px;
+    border-radius: 3px;
+    background: var(--color-danger);
+    transform-origin: top;
+  }
+
+  .pain__index {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.05em;
+    color: var(--color-danger);
+  }
+
+  .pain__title {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.12;
+  }
+
+  .pain__copy {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 44ch;
+  }
+
+  @supports (animation-timeline: view()) {
+    .pain {
+      opacity: 0.3;
+      animation: pain-in linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 38%;
+    }
+
+    .pain::before {
+      transform: scaleY(0);
+      animation: pain-rule linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 45%;
+    }
+  }
+
+  @keyframes pain-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pain-rule {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pain {
+      opacity: 1;
+    }
+
+    .pain::before {
+      transform: scaleY(1);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .challenge__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    /* Pinned under the navigation pill, like the evidence band's heading
+       on the service pages. */
+    .challenge__claim {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+</style>

@@ -1,0 +1,252 @@
+---
+/**
+ * Step 4 of the home page, "What changes for my company?". Each row sets
+ * one pain from the challenge section against what replaces it, so the
+ * reader sees the before and the after on one line. Outcomes only; how we
+ * get there is the next section.
+ *
+ * Source for the closing line: MIT NANDA, The GenAI Divide 2025 (external
+ * partnerships reached deployment about twice as often as internal builds).
+ */
+const changes = [
+  {
+    before: "A pilot nobody uses",
+    after: "Software and AI live in production",
+    detail: "Wired into your systems and used on a Monday morning.",
+  },
+  {
+    before: "A backlog that only grows",
+    after: "The highest-impact work shipped",
+    detail: "Working software to click through every two weeks.",
+  },
+  {
+    before: "Invoices without an end",
+    after: "A fixed price per outcome",
+    detail: "Agreed before we build. The number does not change.",
+  },
+  {
+    before: "Knowledge that walks out the door",
+    after: "A team that keeps the pace",
+    detail: "Code, pipelines and decisions in your repositories, and your developers trained on them.",
+  },
+];
+---
+
+<section class="gains" aria-labelledby="gains-heading">
+  <div class="gains__inner">
+    <h2 class="gains__title" id="gains-heading">
+      What changes for your company
+    </h2>
+
+    <ul class="changes">
+      {
+        changes.map((item) => (
+          <li class="change">
+            <p class="change__before">
+              <span class="sr-only">Before: </span>
+              <span class="change__strike">{item.before}</span>
+            </p>
+            <span class="change__arrow" aria-hidden="true">
+              &rarr;
+            </span>
+            <div class="change__after">
+              <h3 class="change__title">
+                <span class="sr-only">After: </span>
+                {item.after}
+              </h3>
+              <p class="change__detail">{item.detail}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="gains__proof">
+      Companies that bring in an outside partner reach production about twice
+      as often as those that build alone.
+      <span class="gains__source">MIT NANDA, 2025</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  /* A dark band, like the "We come in" and trust sections, so the light
+     ground never runs for more than one section at a stretch. */
+  .gains {
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+    /* The status tones as they are tuned for a dark surface. */
+    --gain: #4fb492;
+    --pain: #e5756e;
+    --rule: rgba(232, 237, 246, 0.16);
+    --muted: rgba(232, 237, 246, 0.72);
+  }
+
+  .gains__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  .gains__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    color: var(--color-light-raised);
+  }
+
+  .changes {
+    list-style: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border-top: 1px solid var(--rule);
+  }
+
+  .change {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: clamp(1.25rem, 2.5vw, 1.75rem) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .change__before {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    line-height: 1.35;
+    color: var(--muted);
+  }
+
+  /* The strike-through is a drawn line rather than a text decoration, so
+     it can cross the words out as the row scrolls in. */
+  .change__strike {
+    background: linear-gradient(var(--pain), var(--pain)) no-repeat 0 58% /
+      100% 2px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .change__arrow {
+    display: none;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: var(--gain);
+  }
+
+  .change__after {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--gain);
+  }
+
+  .change__title {
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+    color: var(--color-light-raised);
+  }
+
+  .change__detail {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+
+  /* As a row scrolls in: the pain is crossed out, then the gain comes up
+     to full strength. Each row is its own timeline. */
+  @supports (animation-timeline: view()) {
+    .change {
+      view-timeline-name: --change;
+    }
+
+    .change__strike {
+      background-size: 0% 2px;
+      animation: change-strike linear both;
+      animation-timeline: --change;
+      animation-range: entry 80% cover 32%;
+    }
+
+    .change__arrow,
+    .change__after {
+      opacity: 0.25;
+      animation: change-gain linear both;
+      animation-timeline: --change;
+      animation-range: cover 28% cover 42%;
+    }
+  }
+
+  @keyframes change-strike {
+    to {
+      background-size: 100% 2px;
+    }
+  }
+
+  @keyframes change-gain {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .change__strike {
+      background-size: 100% 2px;
+    }
+
+    .change__arrow,
+    .change__after {
+      opacity: 1;
+    }
+  }
+
+  .gains__proof {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+
+  .gains__source {
+    display: block;
+    font-size: var(--font-sm);
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  /* Wide screens: the list is one grid and every row borrows its columns,
+     so the right column is as wide as the longest gain and no wider. That
+     pushes all four gains as far right as they can go while they still
+     start on the same vertical line, green rules one under the other. The
+     arrow sits in the middle of the space that is left. */
+  @media (min-width: 760px) {
+    .changes {
+      grid-template-columns: fit-content(40%) minmax(2rem, 1fr) fit-content(55%);
+      column-gap: clamp(1rem, 3vw, 2.5rem);
+    }
+
+    .change {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: center;
+    }
+
+    .change__arrow {
+      display: block;
+      justify-self: center;
+    }
+
+    @supports not (grid-template-columns: subgrid) {
+      .change {
+        grid-template-columns: minmax(0, 1fr) 2rem minmax(0, 1fr);
+        column-gap: clamp(1rem, 3vw, 2.5rem);
+      }
+    }
+  }
+</style>

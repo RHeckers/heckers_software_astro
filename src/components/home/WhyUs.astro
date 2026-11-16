@@ -1,0 +1,256 @@
+---
+/**
+ * Step 6 of the home page, "Why should I trust you?". Three reasons the
+ * risk is small, then three clients, beside a close-up of the founder
+ * mid-talk. A dark band, like ProofRow on the service pages, so it
+ * reads as the place where other people speak. Carries the #testimonials
+ * anchor the hero links to.
+ *
+ * The mirror image of the challenge section: from 900px up the photograph
+ * on the right stays pinned while the reasons and quotes scroll past on
+ * the left.
+ */
+import { Image } from "astro:assets";
+import ProofQuote from "../ProofQuote.astro";
+import speaker from "../../assets/workshop/talk_1.jpg";
+import { AUTHOR } from "../../consts";
+import type { SnippetKey } from "../../lib/testimonials";
+
+const reasons = [
+  {
+    title: "You decide after discovery",
+    copy: "Two weeks in, you hold a ranked list and a fixed price. Go ahead, or keep the list.",
+  },
+  {
+    title: "No lock-in",
+    copy: "Everything is built in your repositories and your cloud account.",
+  },
+  {
+    title: "One accountable owner",
+    copy: "The person you talk to is the person who builds, until it is live.",
+  },
+];
+
+const snippets: SnippetKey[] = [
+  "peterChallenges",
+  "ferdiDelivery",
+  "alexProactive",
+];
+---
+
+<section class="why" id="testimonials" aria-labelledby="why-heading">
+  <div class="why__inner">
+    <div class="why__main">
+      <h2 class="why__title" id="why-heading">
+        Why companies trust us with it
+      </h2>
+
+      <ul class="reasons">
+        {
+          reasons.map((item) => (
+            <li class="reason">
+              <h3 class="reason__title">{item.title}</h3>
+              <p class="reason__copy">{item.copy}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <ul class="quotes" aria-label="What clients say">
+        {
+          snippets.map((snippet) => (
+            <li>
+              <ProofQuote snippet={snippet} tone="dark" class="why__quote" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="why__photo">
+      <Image
+        src={speaker}
+        alt={`${AUTHOR.name} speaking on a conference stage`}
+        widths={[560, 840, 1120]}
+        sizes="(min-width: 900px) 46vw, 92vw"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .why__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .why__main {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  .why__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    color: var(--color-light-raised);
+  }
+
+  /* Shot against black; the frame is the same black, so the portrait
+     reads as a lit figure and not as a rectangle. */
+  .why__photo {
+    border-radius: 18px;
+    overflow: hidden;
+    background: #000000;
+    box-shadow: 0 24px 50px rgba(11, 18, 32, 0.35);
+  }
+
+  .why__photo :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    object-position: 72% center;
+  }
+
+  .reasons,
+  .quotes {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .reason {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-left: 1.1rem;
+  }
+
+  /* The blue rule, as its own box so it can draw down as the reason
+     scrolls in, the way the red rules do in the challenge section. */
+  .reason::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--color-accent);
+    transform-origin: top;
+  }
+
+  .reason__title {
+    font-size: clamp(1.25rem, 1.9vw, 1.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+    color: var(--color-light-raised);
+  }
+
+  .reason__copy {
+    font-family: synonym, sans-serif;
+    line-height: 1.5;
+    color: rgba(232, 237, 246, 0.76);
+    max-width: 44ch;
+  }
+
+  .quotes li {
+    display: flex;
+  }
+
+  .quotes :global(.why__quote) {
+    flex: 1;
+  }
+
+  /* Each reason lights up as it arrives: the rule draws down and the text
+     comes to full strength. Each quote rises into place. */
+  @supports (animation-timeline: view()) {
+    .reason {
+      opacity: 0.3;
+      animation: why-in linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 32%;
+    }
+
+    .reason::before {
+      transform: scaleY(0);
+      animation: why-rule linear both;
+      animation-timeline: view();
+      animation-range: entry 80% cover 38%;
+    }
+
+    .quotes li {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: why-rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 90%;
+    }
+  }
+
+  @keyframes why-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes why-rule {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes why-rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reason {
+      opacity: 1;
+    }
+
+    .reason::before {
+      transform: scaleY(1);
+    }
+
+    .quotes li {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .why__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .why__photo {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+
+    /* Taller in the pinned column, so it holds its side of the band. */
+    .why__photo :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

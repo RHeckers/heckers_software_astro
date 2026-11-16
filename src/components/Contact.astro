@@ -2,6 +2,17 @@
 import { COMPANY } from "../consts";
 import ProofQuote from "./ProofQuote.astro";
 
+interface Props {
+  /** Leave the numbered next steps out, for a page that has just told the
+      reader how getting started works (the home page). */
+  showSteps?: boolean;
+  /** The ground the section sits on. "dark" is the dark band, for a page
+      whose previous section is already on the light ground. */
+  tone?: "light" | "dark";
+}
+
+const { showSteps = true, tone = "light" } = Astro.props;
+
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
 const nextSteps = [
@@ -11,7 +22,11 @@ const nextSteps = [
 ];
 ---
 
-<section class="contact" id="contact" aria-labelledby="contact-heading">
+<section
+  class:list={["contact", `contact--${tone}`]}
+  id="contact"
+  aria-labelledby="contact-heading"
+>
   <div class="contact__inner">
     <div class="contact__intro">
       <h2 class="contact__title" id="contact-heading">
@@ -23,23 +38,25 @@ const nextSteps = [
         codebase that needs rescuing. Describe where you are and we will tell
         you honestly whether we can help.
       </p>
-      <ol class="next-steps">
-        {
-          nextSteps.map((step, index) => (
-            <li class="next-step">
-              <span class="next-step__marker" aria-hidden="true">
-                {index + 1}
-              </span>
-              <span class="next-step__copy">{step}</span>
-            </li>
-          ))
-        }
-      </ol>
+      {
+        showSteps && (
+          <ol class="next-steps">
+            {nextSteps.map((step, index) => (
+              <li class="next-step">
+                <span class="next-step__marker" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <span class="next-step__copy">{step}</span>
+              </li>
+            ))}
+          </ol>
+        )
+      }
       <p class="contact__direct">
         Prefer email? Write to
         <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
       </p>
-      <ProofQuote snippet="nicoTeam" />
+      <ProofQuote snippet="nicoTeam" tone={tone} />
     </div>
 
 <form
@@ -504,6 +521,38 @@ const nextSteps = [
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
 
+  /* Dark band: only the intro column changes; the form stays a light card. */
+  .contact--dark {
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+  }
+
+  .contact--dark .contact__title {
+    color: var(--color-light-raised);
+  }
+
+  .contact--dark .contact__lede,
+  .contact--dark .contact__direct {
+    color: rgba(232, 237, 246, 0.76);
+  }
+
+  .contact--dark .next-step__copy {
+    color: var(--color-ink-light);
+  }
+
+  .contact--dark .next-step__marker {
+    background: var(--color-accent);
+  }
+
+  .contact--dark .contact__direct a {
+    color: #7fb6ef;
+  }
+
+  .contact--dark .contact__direct a:hover,
+  .contact--dark .contact__direct a:focus-visible {
+    color: #a8d0f8;
+  }
+
   .contact__inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -524,9 +573,9 @@ const nextSteps = [
   }
 
   .contact__title {
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: var(--font-weight-medium);
-    line-height: 1.05;
+    line-height: 1.02;
     letter-spacing: -0.01em;
   }
 

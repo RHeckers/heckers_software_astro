@@ -24,6 +24,10 @@ const workshops = WORKSHOPS.map((item) => ({
 
 <section>
   <h2 class="workshops__heading">Workshops</h2>
+  <p class="workshops__lede">
+    The last step of every engagement, or a start of its own: hands-on
+    training on your own codebase, so your team keeps the pace after we leave.
+  </p>
   <div class="workshops">
     <div class="workshops__list">
       {
@@ -82,7 +86,21 @@ const workshops = WORKSHOPS.map((item) => ({
     letter-spacing: 0.06em;
     line-height: 1;
     color: var(--color-ink-light);
-    margin-bottom: clamp(1.5rem, 6vw, 2.5rem);
+    margin-bottom: var(--spacer-md);
+  }
+
+  /* Ties the section to the story above it. Below 900px the fact band
+     that does that job on wide screens is hidden, so this line is the
+     only bridge a phone gets. */
+  .workshops__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    line-height: 1.5;
+    text-align: center;
+    text-wrap: balance;
+    color: rgba(232, 237, 246, 0.74);
+    max-width: 52ch;
+    margin: 0 auto clamp(1.5rem, 6vw, 2.5rem);
   }
 
   .workshops {

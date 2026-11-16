@@ -1,272 +1,156 @@
 ---
+/**
+ * The client logos, as one calm row at the foot of the dark "We come in
+ * and deliver" band: a short title and the seven logos in one light
+ * tone, spread across the page column. They stand under the stage
+ * photograph, so the band reads as one block of proof: this is who does
+ * the work, and these are the companies it was done for.
+ *
+ * No panel and no frame: the logos stand directly on the band, all in
+ * one soft white. Seven brands in seven colours do not sit well on dark
+ * blue, so the row uses the on-dark versions in assets/logos/on-dark: each
+ * logo as a single light shape, with its white details cut out so they
+ * stay readable. Those files are generated; see
+ * scripts/make-on-dark-logos.mjs.
+ *
+ * Not a section of its own and not a moving strip. The logos fade up one
+ * after the other as the row scrolls in (scroll-driven CSS; simply shown
+ * where unsupported or when motion is reduced).
+ */
 import { Image } from "astro:assets";
-import vattenfall from "../assets/logos/vattenfall_logo.svg";
-import marel from "../assets/logos/marel_logo.svg";
-import wgka from "../assets/logos/wgk-antwerpen.svg";
-import spacewell from "../assets/logos/spacewell_logo.png";
-import phitaal from "../assets/logos/phitaal_logo.png";
-import dh_automation from "../assets/logos/dh_automation_logo.svg";
-import ministerie_van_defensie from "../assets/logos/ministerie_van_defensie_logo.png";
-import lamp from "../assets/lamp.png";
+import vattenfall from "../assets/logos/on-dark/vattenfall_logo.png";
+import marel from "../assets/logos/on-dark/marel_logo.png";
+import wgka from "../assets/logos/on-dark/wgk-antwerpen.png";
+import spacewell from "../assets/logos/on-dark/spacewell_logo.png";
+import phitaal from "../assets/logos/on-dark/phitaal_logo.png";
+import dh_automation from "../assets/logos/on-dark/dh_automation_logo.png";
+import ministerie_van_defensie from "../assets/logos/on-dark/ministerie_van_defensie_logo.png";
 
-interface Props {
-  /**
-   * "band" is its own titled section below the hero, which is what wide
-   * screens get. "hero" pins the reel to the bottom of the hero with no
-   * title, the way phones saw it before the band existed: on a small
-   * screen the proof is worth more inside the first screenful than as a
-   * section the reader has to reach.
-   */
-  placement?: "band" | "hero";
-}
-
-const { placement = "band" } = Astro.props;
-
-
-const logosBase = [
-  {
-    src: vattenfall,
-    id: "Vattenfall",
-  },
-  {
-    src: marel,
-    id: "Marel",
-  },
-  {
-    src: spacewell,
-    id: "Spacewell",
-  },
-  {
-    src: ministerie_van_defensie,
-    id: "Ministerie van Defensie",
-  },
-  {
-    src: phitaal,
-    id: "Phitaal",
-  },
-  {
-    src: wgka,
-    id: "Wit-Gele Kruis Antwerpen",
-  },
-  {
-    src: dh_automation,
-    id: "DH Automation",
-  },
+const clients = [
+  { src: vattenfall, name: "Vattenfall" },
+  { src: marel, name: "Marel" },
+  { src: spacewell, name: "Spacewell" },
+  { src: ministerie_van_defensie, name: "Ministerie van Defensie" },
+  { src: phitaal, name: "Phitaal" },
+  { src: wgka, name: "Wit-Gele Kruis Antwerpen" },
+  /* A round mark with two short lines of small type beside it: at the
+     shared height the type is too small to read, so it gets more room. */
+  { src: dh_automation, name: "DH Automation", scale: 1.6 },
 ];
-
-// Three copies so even very wide screens are filled from the first frame;
-// the track shifts by exactly one copy per cycle for a seamless loop.
-const logos = [...logosBase, ...logosBase, ...logosBase];
-
-const isMobile = typeof window !== "undefined" ? window.innerWidth < 600 : true;
-const lampHeight = isMobile ? 150 : 300;
-const logoWidth = isMobile ? 100 : 135;
 ---
 
-<section
-  class:list={["clients", `clients--${placement}`]}
-  aria-labelledby={placement === "band" ? "clients-heading" : undefined}
-  aria-label={placement === "hero" ? "Trusted clients" : undefined}
->
-  {
-    placement === "band" && (
-      <h2 class="clients__title" id="clients-heading">
-        Enterprises we helped before you
-      </h2>
-    )
-  }
+<div class="clients">
+  <p class="clients__title" id="clients-title">
+    We deliver for these companies and more
+  </p>
 
-  <div class="lamp-frame">
-    <Image
-      src={lamp}
-      width={lampHeight}
-      height={lampHeight}
-      alt=""
-      class="lamp-img"
-    />
-  </div>
-  <div class="reel">
-    <div class="track">
-      {
-        logos.map((client, index) => (
-          <div
-            class="logo-container"
-            data-index={index}
-            aria-hidden={index >= logosBase.length ? "true" : undefined}
-          >
-            <Image
-              src={client.src}
-              alt={`Client Logo ${client.id}`}
-              width={logoWidth}
-              densities={[1, 2]}
-              loading="lazy"
-            />
-          </div>
-        ))
-      }
-    </div>
-    <div class="overlay overlay--mute overlay--left"></div>
-    <div class="overlay overlay--mute overlay--right"></div>
-    <div class="overlay overlay--desaturate overlay--left"></div>
-    <div class="overlay overlay--desaturate overlay--right"></div>
-  </div>
-</section>
+  <ul class="clients__row" aria-labelledby="clients-title">
+    {
+      clients.map((client, index) => (
+        <li
+          class="client"
+          style={`--i: ${index}; --scale: ${"scale" in client ? client.scale : 1}`}
+        >
+          <Image
+            src={client.src}
+            alt={client.name}
+            width={170}
+            densities={[1, 2]}
+            loading="lazy"
+          />
+        </li>
+      ))
+    }
+  </ul>
+</div>
 
 <style>
   .clients {
-    max-width: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  /*
-    Its own band below the hero, so the logos are something the reader
-    scrolls to rather than part of the first screen. Wide screens only;
-    phones get the hero placement instead, so this one is off by default
-    and switched on at the breakpoint below.
-
-    The reel's blend panels composite against this section's own opaque
-    background, so it carries the isolation the hero provides for the
-    other placement.
-  */
-  .clients--band {
-    display: none;
-    background: var(--color-light-alt);
-    isolation: isolate;
-    padding-bottom: clamp(3rem, 7vw, 5.5rem);
-  }
-
-  @media (min-width: 769px) {
-    .clients--band {
-      display: flex;
-    }
+    gap: clamp(1.25rem, 2.5vw, 2rem);
   }
 
   .clients__title {
-    font-family: chillax, sans-serif;
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
     font-weight: var(--font-weight-medium);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    text-align: center;
-    text-wrap: balance;
-    color: var(--color-ink);
-    padding: 0 1.5rem;
-    margin-bottom: clamp(0.5rem, 2vw, 1.5rem);
+    line-height: 1.4;
+    color: rgba(232, 237, 246, 0.72);
   }
 
-  .lamp-frame {
-    height: 120px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .lamp-frame :global(img.lamp-img) {
-    height: 120px;
-    object-fit: cover;
-    object-position: top center;
-  }
-
-  .reel {
-    --marquee-duration: 90s;
-    overflow: hidden;
-    width: 100%;
-    position: relative;
-    margin-top: -75px;
-  }
-
-  .track {
-    display: flex;
-    gap: 0;
-    width: max-content;
-    animation: marquee var(--marquee-duration) linear infinite;
-    will-change: transform;
-  }
-
-  /*
-    The lamp "lights" the logos: skewed panels cover the reel and leave a
-    wedge under the lamp where the logos keep their colour. Each side is
-    two opaque blend panels: `lighten` with a mid grey lifts the logos' dark
-    ink to that grey (mutes them), then `saturation` with the page's light
-    colour turns them grey. Both leave the light background exactly as it
-    is, so the reel has no visible edge. (A backdrop-filter or translucent
-    wash would tint the background itself and leave a band with a hard top
-    edge, especially on phones.)
-
-    The panels rely on blending against the hero's opaque background: the
-    hero is `isolation: isolate` and nothing between it and the panels may
-    form a stacking context (see .logo-banner-container in HeroSection).
-  */
-  .overlay {
-    position: absolute;
-    bottom: 0;
-    height: 100px;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .overlay--left {
-    left: -20px;
-    width: calc(50% - 20px);
-    transform: skewX(341deg);
-  }
-
-  .overlay--right {
-    right: -20px;
-    width: calc(50% - 17px);
-    transform: skewX(20deg);
-  }
-
-  .overlay--mute {
-    background: #6e6e6e;
-    mix-blend-mode: lighten;
-  }
-
-  .overlay--desaturate {
-    background: var(--color-light);
-    mix-blend-mode: saturation;
-  }
-
-  .logo-container {
-    display: flex;
-    justify-content: center;
+  /* Phones: three to a line. */
+  .clients__row {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.25rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem);
     align-items: center;
-    height: 85px;
-    width: 225px;
-    flex: 0 0 auto;
+    view-timeline-name: --clients;
   }
 
-  @keyframes marquee {
-    0% {
-      transform: translateX(calc(-100% / 3));
-    }
+  .client {
+    display: flex;
+    align-items: center;
+  }
 
-    100% {
-      transform: translateX(0);
+  /* Each logo keeps its own proportions and is fitted inside the same
+     box, so the image is exactly as wide as the logo: a long wordmark is
+     scaled down as a whole and carries no empty space beside it. */
+  .client :global(img) {
+    display: block;
+    width: auto;
+    height: auto;
+    opacity: 0.9;
+    max-height: calc(clamp(2rem, 3vw, 2.6rem) * var(--scale, 1));
+    max-width: min(
+      100%,
+      calc(clamp(5.5rem, 10vw, 8.5rem) * var(--scale, 1))
+    );
+  }
+
+  @supports (animation-timeline: view()) {
+    .client {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: client-in cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-timeline: --clients;
+      animation-range: entry calc(20% + var(--i) * 12%) entry
+        calc(110% + var(--i) * 12%);
     }
   }
 
-  @media (min-width: 650px) {
-    .lamp-frame {
-      height: 150px;
+  @keyframes client-in {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .client {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Wide screens: all seven on one line, spread across the panel. */
+  @media (min-width: 900px) {
+    .clients__row {
+      display: flex;
+      justify-content: space-between;
+      gap: clamp(1.5rem, 3vw, 3rem);
     }
 
-    .lamp-frame :global(img.lamp-img) {
-      height: 200px;
+    .client {
+      flex: 0 0 auto;
     }
 
-    .overlay--left {
-      width: calc(50% - 34px);
-    }
-
-    .overlay--right {
-      width: calc(50% - 30px);
+    /* A fixed cap, not a percentage: with a percentage the list item is
+       sized from the logo's full natural width and keeps that width after
+       the image has been scaled down, which leaves a gap beside it. */
+    .client :global(img) {
+      max-width: calc(clamp(6rem, 11vw, 10rem) * var(--scale, 1));
     }
   }
 </style>

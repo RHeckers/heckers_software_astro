@@ -1,108 +1,53 @@
 ---
-import { Image } from "astro:assets";
-import logo from "../assets/logos/logo.png";
+/**
+ * One thin bar with what a footer has to carry and nothing else: who the
+ * company is (name, KVK and VAT numbers), how to reach it, and the legal
+ * links, including the cookie settings. Services and the about page are in
+ * the navigation; the pitch is the page above.
+ */
 import { COMPANY, PROFILES } from "../consts";
-import { SERVICES } from "../lib/services";
 
 interface Props {
-  /** One row with the legal links only, for pages that must end on their
-   *  last section rather than on a wall of links. */
+  /** Kept so existing pages keep compiling; the footer is the same thin
+   *  bar everywhere now. */
   compact?: boolean;
 }
 
-const { compact = false } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class:list={["footer", { "footer--compact": compact }]}>
+<footer class="footer">
   <div class="footer__inner">
-    <div class="footer__brand">
-      <div class="footer__mark">
-        <Image
-          class="footer__logo"
-          src={logo}
-          alt="Heckers Software logo"
-          width={220}
-          loading="lazy"
-          densities={[1, 2]}
-        />
-      </div>
-      <p class="footer__tagline">
-        Forward-deployed engineering: one industry expert, amplified by AI,
-        delivering software and AI end to end inside your company. Discovery,
-        development, integration and deployment.
-      </p>
-    </div>
+    <p class="footer__company">
+      <span>© {year} {COMPANY.name}</span>
+      <span>KVK {COMPANY.kvk}</span>
+      <span>BTW {COMPANY.btw}</span>
+    </p>
 
-    <div class="footer__list">
-      <p class="footer__heading">How we help</p>
-      <ul>
-        {
-          SERVICES.map((service) => (
-            <li>
-              <a href={service.href}>{service.name}</a>
-            </li>
-          ))
-        }
-        <li>
-          <a href="/services/forward-deployed-engineering#how-it-works">
-            AI integration and workflow automation
-          </a>
-        </li>
-        <li>
-          <a href="/services/workshops#ai"> AI-native development workshop </a>
-        </li>
-        <li><a href="/about">About Heckers Software</a></li>
-      </ul>
-    </div>
-
-    <div class="footer__contact">
-      <p class="footer__heading">Get in touch</p>
-      <address class="footer__address">
-        {COMPANY.street}<br />
-        {COMPANY.postalCode}
-        {COMPANY.city}<br />
-        {COMPANY.country}
-      </address>
-      <ul class="footer__contact-list">
-        <li>
-          <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a>
-        </li>
-        <li>
-          <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
-        </li>
-        {
-          PROFILES.linkedin && (
-            <li>
-              <a href={PROFILES.linkedin} rel="me noopener noreferrer" target="_blank">
-                LinkedIn
-              </a>
-            </li>
-          )
-        }
-      </ul>
-    </div>
-
-    <div class="footer__legal">
-      <p class="footer__heading">Legal</p>
-      <ul class="footer__links">
-        <li><a href="/legal/terms">Terms of Service</a></li>
-        <li><a href="/legal/privacy">Privacy Policy</a></li>
-        <li><a href="/legal/cookies">Cookie Policy</a></li>
-        <li>
-          <button type="button" class="footer__link-button" id="cookieSettings">
-            Cookie settings
-          </button>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="footer__meta">
-    <span>© {year} {COMPANY.name}</span>
-    <span class="footer__registration">
-      KVK: {COMPANY.kvk} &nbsp;·&nbsp; BTW: {COMPANY.btw}
-    </span>
+    <ul class="footer__links">
+      <li><a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a></li>
+      {
+        PROFILES.linkedin && (
+          <li>
+            <a
+              href={PROFILES.linkedin}
+              rel="me noopener noreferrer"
+              target="_blank"
+            >
+              LinkedIn
+            </a>
+          </li>
+        )
+      }
+      <li><a href="/legal/terms">Terms</a></li>
+      <li><a href="/legal/privacy">Privacy</a></li>
+      <li><a href="/legal/cookies">Cookies</a></li>
+      <li>
+        <button type="button" class="footer__link-button" id="cookieSettings">
+          Cookie settings
+        </button>
+      </li>
+    </ul>
   </div>
 </footer>
 
@@ -114,122 +59,34 @@ const year = new Date().getFullYear();
 
 <style>
   .footer {
-    color: var(--color-ink-light);
-    background: var(--color-dark);
-    border-top: 1px solid var(--color-stroke-strong);
-    box-shadow: 0 -18px 80px rgba(7, 16, 32, 0.6);
-    padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 6vw, 5rem);
-    z-index: 10;
     position: relative;
+    z-index: 10;
+    background: var(--color-dark);
+    color: rgba(249, 251, 255, 0.7);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    padding: 1.1rem clamp(1.25rem, 6vw, 5rem);
   }
 
   .footer__inner {
     max-width: 1200px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: start;
-  }
-
-  .footer__brand {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacer-md);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
   }
 
-  .footer__tagline {
-    max-width: 26ch;
-    color: var(--color-ink-light);
-    opacity: 0.92;
-    line-height: 1.6;
-    font-size: var(--font-md);
-  }
-
-  .footer__logo {
-    display: block;
-    width: 100%;
-    max-width: 240px;
-    height: auto;
-    object-fit: contain;
-    image-rendering: auto;
-  }
-
-  .footer__mark {
-    width: fit-content;
-  }
-
-  .footer__list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-md);
-    color: var(--color-ink-light);
-  }
-
-  .footer__list ul {
-    list-style: none;
-    display: grid;
-    gap: var(--spacer-sm);
-    padding: 0;
-    margin: 0;
-  }
-
-  .footer__list li {
-    position: relative;
-    padding-left: 1.5rem;
-    font-weight: var(--font-weight-medium);
-    color: rgba(249, 251, 255, 0.92);
-  }
-
-  .footer__list a {
-    color: inherit;
-    text-decoration: none;
-    transition: color 180ms ease;
-  }
-
-  .footer__list a:hover,
-  .footer__list a:focus-visible {
-    color: var(--color-accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .footer__list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.45em;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 999px;
-    background: var(--color-accent);
-    box-shadow: 0 0 0 6px rgba(29, 154, 136, 0.18);
-  }
-
-  .footer__contact,
-  .footer__legal {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacer-md);
-    color: var(--color-ink-light);
-  }
-
-  .footer__address {
-    font-style: normal;
-    line-height: 1.7;
-    color: rgba(249, 251, 255, 0.85);
-  }
-
-  .footer__contact-list,
+  .footer__company,
   .footer__links {
     list-style: none;
-    display: grid;
-    gap: var(--spacer-sm);
-    padding: 0;
-    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1.25rem;
   }
 
-  .footer__contact-list a,
   .footer__links a,
   .footer__link-button {
     color: rgba(249, 251, 255, 0.85);
@@ -242,137 +99,15 @@ const year = new Date().getFullYear();
     border: none;
     background: none;
     font: inherit;
-    text-align: left;
     cursor: pointer;
   }
 
-  .footer__contact-list a:hover,
-  .footer__contact-list a:focus-visible,
   .footer__links a:hover,
   .footer__links a:focus-visible,
   .footer__link-button:hover,
   .footer__link-button:focus-visible {
-    color: var(--color-accent);
+    color: var(--color-light-raised);
     text-decoration: underline;
     text-underline-offset: 3px;
-  }
-
-  .footer__heading {
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: var(--font-sm);
-    color: rgba(249, 251, 255, 0.7);
-    font-weight: var(--font-weight-bold);
-  }
-
-  .footer__button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.85rem 1.4rem;
-    margin-top: 0.35rem;
-    border-radius: 999px;
-    background: var(--color-accent);
-    color: var(--color-ink-light);
-    font-weight: var(--font-weight-bold);
-    text-decoration: none;
-    box-shadow: 0 16px 40px rgba(29, 154, 136, 0.35);
-    transition:
-      transform 180ms ease,
-      box-shadow 180ms ease,
-      background-color 180ms ease;
-  }
-
-  .footer__button:hover,
-  .footer__button:focus-visible {
-    background: var(--color-accent-strong);
-    box-shadow: 0 20px 48px rgba(17, 122, 106, 0.42);
-    transform: translateY(-1px);
-  }
-
-  .footer__button:active {
-    transform: translateY(0);
-  }
-
-  /* Compact: brand, legal and meta on one row; the service and contact
-     columns are dropped. */
-  .footer--compact {
-    padding-top: clamp(1.5rem, 3vw, 2rem);
-    padding-bottom: clamp(1.5rem, 3vw, 2rem);
-  }
-
-  .footer--compact .footer__list,
-  .footer--compact .footer__contact,
-  .footer--compact .footer__tagline,
-  .footer--compact .footer__heading {
-    display: none;
-  }
-
-  .footer--compact .footer__inner {
-    grid-template-columns: 1fr;
-    gap: var(--spacer-lg);
-    align-items: center;
-  }
-
-  .footer--compact .footer__logo {
-    max-width: 160px;
-  }
-
-  .footer--compact .footer__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacer-md) var(--spacer-lg);
-  }
-
-  .footer--compact .footer__meta {
-    margin-top: var(--spacer-lg);
-  }
-
-  .footer__meta {
-    max-width: 1200px;
-    margin: clamp(1.75rem, 5vw, 2.5rem) auto 0;
-    padding-top: var(--spacer-md);
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacer-md);
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: flex-start;
-    color: rgba(249, 251, 255, 0.65);
-    font-size: var(--font-sm);
-  }
-
-  @media (min-width: 721px) {
-    .footer__inner {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .footer__mark {
-      width: auto;
-    }
-
-    .footer__meta {
-      flex-direction: row;
-      align-items: stretch;
-    }
-  }
-
-  @media (min-width: 961px) {
-    .footer__inner {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 721px) {
-    .footer--compact .footer__inner {
-      grid-template-columns: auto 1fr;
-      justify-content: space-between;
-    }
-
-    .footer--compact .footer__legal {
-      justify-self: end;
-    }
   }
 </style>

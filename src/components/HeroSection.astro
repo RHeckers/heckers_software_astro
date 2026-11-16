@@ -1,5 +1,4 @@
 ---
-import LogoBanner from "./LogoBanner.astro";
 import PilotToProduction from "./art/PilotToProduction.astro";
 
 /**
@@ -19,11 +18,10 @@ import PilotToProduction from "./art/PilotToProduction.astro";
            screenful. -->
       <p class="hero-lead">
         <span class="hero-lead__full">
-          Most software and AI initiatives stall between a promising pilot and
-          a product people use. Heckers Software comes into your company and
-          closes that gap: we run the discovery, build the software, integrate
-          the AI and ship it into production, at a fixed price per outcome.
-          Hand us the backlog, or let us find the highest-impact work first.
+          Most software and AI projects stall between a promising pilot and a
+          product people use. We come into your company and close that gap:
+          discovery, build, AI integration and deployment, at a fixed price
+          per outcome.
         </span>
         <span class="hero-lead__short">
           Most software and AI initiatives stall between pilot and production.
@@ -41,10 +39,6 @@ import PilotToProduction from "./art/PilotToProduction.astro";
 
     <PilotToProduction class="hero-graph" />
   </div>
-
-  <div class="logo-banner-container">
-    <LogoBanner placement="hero" />
-  </div>
 </section>
 
 <style>
@@ -54,12 +48,8 @@ import PilotToProduction from "./art/PilotToProduction.astro";
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* The logo reel's blend panels must composite against this opaque
-       background, not against a transparent group (see LogoBanner). */
-    isolation: isolate;
-    /* On phones the reel starts 75px above the bottom edge. The gradient
-       must be flat by then, so the stop is in pixels from the bottom
-       rather than a percentage of the viewport-dependent hero height. */
+    /* The gradient is flat for the last stretch, so the hero ends on
+       exactly the colour of the section that follows it. */
     --hero-fade-end: 90px;
     background: linear-gradient(
       to bottom,
@@ -116,7 +106,7 @@ import PilotToProduction from "./art/PilotToProduction.astro";
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.8em 1.7em;
+    padding: 0.85em 1.8em;
     font-size: var(--font-md);
     font-weight: var(--font-weight-medium);
     border-radius: 100px;
@@ -138,6 +128,7 @@ import PilotToProduction from "./art/PilotToProduction.astro";
     background-color: var(--color-accent-strong);
     border-color: var(--color-accent-strong);
     color: var(--color-light-raised);
+    font-weight: var(--font-weight-bold);
   }
 
   .btn-primary:hover {
@@ -159,26 +150,6 @@ import PilotToProduction from "./art/PilotToProduction.astro";
 
   .hero-graph {
     justify-self: center;
-  }
-
-  /* --- Logo banner --- */
-
-  /* No z-index here: that would make this a stacking context, and the
-     banner's mix-blend-mode panels would then blend against a transparent
-     backdrop and leave a grey line along the top of the reel. */
-  /* Phones only: the reel sits in the hero so the client logos are inside
-     the first screenful. Wider screens get the titled band below instead
-     (see LogoBanner). */
-  .logo-banner-container {
-    position: absolute;
-    bottom: -10px;
-    width: 100%;
-  }
-
-  @media (min-width: 769px) {
-    .logo-banner-container {
-      display: none;
-    }
   }
 
   /* --- Layout breakpoints --- */

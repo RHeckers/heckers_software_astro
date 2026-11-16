@@ -13,7 +13,9 @@ interface Item {
 interface Props {
   id?: string;
   title: string;
-  items: Item[];
+  /** Read-only: the component only maps over the list, and the shared
+      FAQ data (lib/faqs) is declared read-only. */
+  items: readonly Item[];
 }
 
 const { id = "faq", title, items } = Astro.props;

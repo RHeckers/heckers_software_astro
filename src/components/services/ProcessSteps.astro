@@ -1,9 +1,9 @@
 ---
 /**
  * How the engagement runs, step by step, next to what the client receives.
- * The stepped panel is the same one the home page uses for application
- * development (rail draws down, phases light up as they scroll into view),
- * so a reader moving between pages meets one idiom.
+ * The stepped panel (rail draws down, phases light up as they scroll into
+ * view) is the one way the site shows a process: the service pages, the
+ * home page and the about page all use it.
  */
 interface Step {
   title: string;
@@ -21,6 +21,9 @@ interface Props {
   deliverables: string[];
   ctaLabel: string;
   subject: string;
+  /** Which light ground the section sits on, so it never repeats the
+      ground of the section above it. */
+  surface?: "light" | "alt";
 }
 
 const {
@@ -32,10 +35,11 @@ const {
   deliverables,
   ctaLabel,
   subject,
+  surface = "light",
 } = Astro.props;
 ---
 
-<section class="process" id={id} aria-labelledby={`${id}-heading`}>
+<section class:list={["process", `process--${surface}`]} id={id} aria-labelledby={`${id}-heading`}>
   <div class="process__inner">
     <div class="process__copy">
       <header class="process__head">
@@ -99,6 +103,10 @@ const {
     background: var(--color-light);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .process--alt {
+    background: var(--color-light-alt);
   }
 
   .process__inner {
