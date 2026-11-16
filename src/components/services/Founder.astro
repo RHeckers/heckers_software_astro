@@ -1,0 +1,290 @@
+---
+/**
+ * "Who will I actually work with?" on a service page, kept to one band:
+ * a portrait, one sentence, and three facts with a tick each that draws
+ * itself as the band scrolls in. With `stage`, a wide photograph of him
+ * on the main stage at ngPoland in front of a full hall closes the band:
+ * the room is the proof. There are three of them, so each service page
+ * shows a different one. The home page has the long version with more
+ * event photographs; the about page has the story.
+ */
+import { Image } from "astro:assets";
+import portrait from "../../assets/pointing.jpg";
+import hallPhoto from "../../assets/workshop/ng-poland-2024.4.jpg";
+import codePhoto from "../../assets/workshop/ng-poland-2024.6.jpg";
+import applausePhoto from "../../assets/workshop/ng-poland-2024.3.jpg";
+import { AUTHOR, COMPANY, PROFILES } from "../../consts";
+
+interface Props {
+  title?: string;
+  /** Close the band with a photograph of the full hall at ngPoland:
+      the whole hall from the stage, the code on the big screen, or the
+      audience applauding. */
+  stage?: "hall" | "code" | "applause";
+}
+
+const {
+  title = "You work with the founder, not an account manager",
+  stage,
+} = Astro.props;
+
+/* `position` keeps both the speaker and the audience in the wide crop. */
+const STAGES = {
+  hall: {
+    src: hallPhoto,
+    alt: `${AUTHOR.name} on the main stage at ngPoland, speaking to a full auditorium`,
+    position: "center 62%",
+  },
+  code: {
+    src: codePhoto,
+    alt: `${AUTHOR.name} walking a full auditorium through code on the main stage at ngPoland`,
+    position: "center 88%",
+  },
+  applause: {
+    src: applausePhoto,
+    alt: `The audience at ngPoland applauding ${AUTHOR.name} on the main stage`,
+    position: "center 70%",
+  },
+};
+const photo = stage ? STAGES[stage] : undefined;
+
+const talks = PROFILES.talks.map((talk) => talk.event.replace(/ \d{4}$/, ""));
+
+const facts = [
+  `Wrote ${PROFILES.book.title} (${PROFILES.book.publisher}, ${PROFILES.book.year})`,
+  `Speaker at ${talks.slice(0, -1).join(", ")} and ${talks.at(-1)}`,
+  "Enterprise code in energy, healthcare, industry and government",
+];
+---
+
+<section class="founder" aria-labelledby="founder-heading">
+  <div class="founder__inner">
+    <div class="founder__photo">
+      <Image
+        src={portrait}
+        alt={`${AUTHOR.name}, founder of ${COMPANY.name}`}
+        widths={[280, 420, 560]}
+        sizes="(min-width: 760px) 280px, 60vw"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="founder__copy">
+      <h2 class="founder__title" id="founder-heading">{title}</h2>
+      <p class="founder__lede">
+        {AUTHOR.name} runs the discovery, writes the code and ships it himself.
+      </p>
+      <ul class="founder__facts">
+        {facts.map((fact) => <li class="founder__fact">{fact}</li>)}
+      </ul>
+      <a class="founder__link" href="/about/">The story behind {COMPANY.name}</a>
+    </div>
+
+    {
+      photo && (
+        <figure class="founder__stage">
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            widths={[640, 960, 1280, 1920]}
+            sizes="(min-width: 1300px) 1200px, 92vw"
+            loading="lazy"
+            style={`object-position: ${photo.position}`}
+          />
+          <figcaption>Main stage, ngPoland</figcaption>
+        </figure>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .founder {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .founder__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+
+  .founder__photo {
+    width: min(60vw, 280px);
+    aspect-ratio: 4 / 5;
+    border-radius: 22px;
+    overflow: hidden;
+    background: var(--color-light-raised);
+    border: 1px solid var(--c-dark);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 14%, transparent);
+  }
+
+  .founder__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 12%;
+  }
+
+  .founder__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacer-lg);
+  }
+
+  .founder__title {
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 18ch;
+  }
+
+  .founder__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.45;
+    color: var(--color-ink-muted);
+  }
+
+  .founder__facts {
+    list-style: none;
+    align-self: stretch;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .founder__fact {
+    position: relative;
+    padding: 0.85rem 0 0.85rem 2rem;
+    border-bottom: 1px solid var(--color-stroke);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.45;
+  }
+
+  .founder__fact::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 1.15rem;
+    width: 0.6rem;
+    height: 0.32rem;
+    border-left: 2px solid var(--color-success);
+    border-bottom: 2px solid var(--color-success);
+    transform: rotate(-45deg);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .founder__fact {
+        view-timeline-name: --fact;
+      }
+
+      .founder__fact::before {
+        animation: tick-draw linear both;
+        animation-timeline: --fact;
+        animation-range: cover 10% cover 24%;
+      }
+    }
+  }
+
+  @keyframes tick-draw {
+    0% {
+      clip-path: inset(-1px calc(100% - 2px) 100% -1px);
+    }
+    40% {
+      clip-path: inset(-1px calc(100% - 2px) -1px -1px);
+    }
+    100% {
+      clip-path: inset(-1px -1px -1px -1px);
+    }
+  }
+
+  .founder__link {
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+  }
+
+  .founder__link:hover {
+    text-decoration-thickness: 3px;
+  }
+
+  /* The full hall, as wide as the band. */
+  .founder__stage {
+    position: relative;
+    margin: 0;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid var(--c-dark);
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 18%, transparent);
+  }
+
+  .founder__stage :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .founder__stage figcaption {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c-dark) 82%, transparent);
+    color: var(--c-light);
+    font-family: synonym, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* It rises into place as it scrolls in. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .founder__stage {
+        animation: founder-stage linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+  }
+
+  @keyframes founder-stage {
+    from {
+      opacity: 0.4;
+      translate: 0 2.5rem;
+    }
+  }
+
+  @media (min-width: 760px) {
+    .founder__inner {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .founder__stage {
+      grid-column: 1 / -1;
+    }
+
+    .founder__stage :global(img) {
+      aspect-ratio: 21 / 9;
+    }
+
+    .founder__photo {
+      width: clamp(220px, 24vw, 300px);
+    }
+  }
+</style>

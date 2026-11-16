@@ -175,7 +175,7 @@ const {
     --ink: var(--color-ink-light);
     --muted: color-mix(in srgb, var(--c-light) 80%, transparent);
     --rule: color-mix(in srgb, var(--c-light) 14%, transparent);
-    background: var(--background-gradient-secondary);
+    background: var(--color-dark);
     border-color: transparent;
     box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
   }
@@ -281,6 +281,34 @@ const {
     border-left: 2px solid var(--color-success);
     border-bottom: 2px solid var(--color-success);
     transform: rotate(-45deg);
+  }
+
+  /* The tick draws itself as its line comes up the screen: the short
+     stroke first, then the long one. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tier__item {
+        view-timeline-name: --tick;
+      }
+
+      .tier__item::before {
+        animation: tick-draw linear both;
+        animation-timeline: --tick;
+        animation-range: cover 10% cover 24%;
+      }
+    }
+  }
+
+  @keyframes tick-draw {
+    0% {
+      clip-path: inset(-1px calc(100% - 2px) 100% -1px);
+    }
+    40% {
+      clip-path: inset(-1px calc(100% - 2px) -1px -1px);
+    }
+    100% {
+      clip-path: inset(-1px -1px -1px -1px);
+    }
   }
 
   .tier__cta {

@@ -3,7 +3,9 @@
  * One finding, shown the way it appears in the assessment report: the
  * impact, the evidence, the fix and the effort. The page sells a document,
  * so the reader gets to see a page of it. Light ground, the finding set on
- * a white "sheet" next to the argument for why it is written this way.
+ * the site's dark panel (the same one the process steps use) next to the
+ * argument for why it is written this way. The fix is the row that stands
+ * out: it is what the reader pays for.
  */
 interface Finding {
   /** Position in the report, e.g. "Finding 1 of 23". */
@@ -59,7 +61,7 @@ const { id = "report", title, intro, points, finding, note } = Astro.props;
             </ul>
           </dd>
         </div>
-        <div class="sheet__field">
+        <div class="sheet__field sheet__field--fix">
           <dt>Fix</dt>
           <dd>{finding.fix}</dd>
         </div>
@@ -119,113 +121,230 @@ const { id = "report", title, intro, points, finding, note } = Astro.props;
     max-width: 48ch;
   }
 
+  /* The ringed ticks of the gains list on the other service pages: a
+     ring, and in it a tick that draws itself. */
   .sample__point {
-    font-family: synonym, sans-serif;
-    line-height: 1.5;
-    padding: 0.85rem 0 0.85rem 1.75rem;
-    border-bottom: 1px solid var(--color-stroke);
     position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    box-sizing: content-box;
+    padding: 1.1rem 0 1.1rem 4rem;
+    border-bottom: 1px solid var(--color-stroke);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.4;
   }
 
   .sample__point::before {
     content: "";
     position: absolute;
-    left: 0.25rem;
-    top: 1.35rem;
-    width: 0.75rem;
-    height: 2px;
-    background: var(--color-accent);
-    border-radius: 2px;
+    left: 0;
+    top: 1.1rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--c-dark) 32%, transparent);
   }
 
-  /* --- The sheet --- */
+  .sample__point::after {
+    content: "";
+    position: absolute;
+    left: 1.375rem;
+    top: calc(1.1rem + 2.75rem * 0.46);
+    width: 1rem;
+    height: 0.5rem;
+    border-left: 2.5px solid var(--c-accent);
+    border-bottom: 2.5px solid var(--c-accent);
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  /* The ring closes in and the tick draws itself as its line comes up the
+     screen, and the panel rises into place. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .sample__point {
+        view-timeline-name: --point;
+      }
+
+      .sample__point::before {
+        animation: point-ring linear both;
+        animation-timeline: --point;
+        animation-range: cover 10% cover 26%;
+      }
+
+      .sample__point::after {
+        animation: tick-draw linear both;
+        animation-timeline: --point;
+        animation-range: cover 18% cover 36%;
+      }
+
+      .sheet {
+        view-timeline-name: --sheet;
+        animation: sheet-in linear both;
+        animation-timeline: --sheet;
+        animation-range: entry 0% entry 55%;
+      }
+
+      /* The accent rule under the title draws across as the panel
+         arrives. */
+      .sheet__title::after {
+        animation: sheet-rule linear both;
+        animation-timeline: --sheet;
+        animation-range: entry 45% cover 42%;
+      }
+    }
+  }
+
+  @keyframes point-ring {
+    from {
+      opacity: 0.2;
+      scale: 0.7;
+    }
+  }
+
+  @keyframes tick-draw {
+    0% {
+      clip-path: inset(-1px calc(100% - 2.5px) 100% -1px);
+    }
+    40% {
+      clip-path: inset(-1px calc(100% - 2.5px) -1px -1px);
+    }
+    100% {
+      clip-path: inset(-1px -1px -1px -1px);
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0.4;
+      translate: 0 2.5rem;
+    }
+  }
+
+  @keyframes sheet-rule {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  /* --- The finding: the site's dark panel --- */
 
   .sheet {
-    background: var(--color-light-raised);
-    border: 1px solid var(--color-stroke);
-    border-radius: 6px;
-    padding: clamp(1.5rem, 3vw, 2.5rem);
-    box-shadow:
-      0 1px 0 color-mix(in srgb, var(--c-dark) 4%, transparent),
-      0 24px 48px color-mix(in srgb, var(--c-dark) 10%, transparent);
+    background: var(--c-dark);
+    color: var(--c-light);
+    border-radius: 22px;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
     font-family: synonym, sans-serif;
+    --rule: color-mix(in srgb, var(--c-light) 14%, transparent);
   }
 
   .sheet__head {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
-    font-size: var(--font-sm);
-    color: var(--color-ink-muted);
+  }
+
+  .sheet__rank {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-accent);
   }
 
   .sheet__severity {
-    font-weight: var(--font-weight-semi-bold);
-    color: var(--color-ink);
-    padding: 0.2rem 0.6rem;
-    border: 1px solid currentColor;
-    border-radius: 100px;
     font-size: var(--font-xs);
-    letter-spacing: 0.06em;
+    font-weight: var(--font-weight-semi-bold);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--color-on-accent);
+    background: var(--c-accent);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
   }
 
   .sheet__title {
+    position: relative;
     font-family: chillax, sans-serif;
-    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
     font-weight: var(--font-weight-medium);
-    line-height: 1.15;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--color-ink);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* A short accent rule on the hairline under the title. */
+  .sheet__title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1.5px;
+    width: 4.5rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--c-accent);
+    transform-origin: left;
   }
 
   .sheet__fields {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
   }
 
   .sheet__field {
     display: grid;
-    grid-template-columns: 5.5rem 1fr;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--color-stroke);
+    grid-template-columns: 1fr;
+    gap: 0.35rem 1.25rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--rule);
   }
 
-  .sheet__field:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
+  .sheet__field:first-child {
+    padding-top: 0;
   }
 
   .sheet__field dt {
-    font-family: chillax, sans-serif;
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-semi-bold);
-    letter-spacing: 0.06em;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--color-accent-ink);
-    padding-top: 0.15rem;
+    color: color-mix(in srgb, var(--c-light) 60%, transparent);
+    padding-top: 0.3rem;
   }
 
   .sheet__field dd {
-    line-height: 1.55;
-    color: var(--color-ink);
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--c-light) 84%, transparent);
+  }
+
+  /* The fix is what the reader pays for: full strength, with the accent. */
+  .sheet__field--fix dt {
+    color: var(--c-accent);
+  }
+
+  .sheet__field--fix dd {
+    color: var(--c-light);
+    font-size: var(--font-lg);
+    line-height: 1.4;
   }
 
   .sheet__evidence {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
 
   .sheet__evidence li {
-    padding-left: 1rem;
+    padding-left: 1.1rem;
     position: relative;
   }
 
@@ -233,18 +352,21 @@ const { id = "report", title, intro, points, finding, note } = Astro.props;
     content: "";
     position: absolute;
     left: 0;
-    top: 0.65em;
-    width: 0.4rem;
-    height: 0.4rem;
-    border-radius: 50%;
-    background: var(--color-stroke-strong);
+    top: 0.6em;
+    width: 0.3rem;
+    height: 0.3rem;
+    background: var(--c-accent);
   }
 
   .sheet__note {
     font-size: var(--font-sm);
-    color: var(--color-ink-muted);
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--color-stroke);
+    color: color-mix(in srgb, var(--c-light) 60%, transparent);
+  }
+
+  @media (min-width: 560px) {
+    .sheet__field {
+      grid-template-columns: 5.5rem 1fr;
+    }
   }
 
   @media (min-width: 900px) {
@@ -252,16 +374,10 @@ const { id = "report", title, intro, points, finding, note } = Astro.props;
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     }
 
-    .sheet {
-      /* A sheet of paper, slightly turned, so it reads as a document and
-         not as another card. */
-      transform: rotate(-0.6deg);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .sheet {
-      transform: none;
+    /* The argument stays pinned while the finding scrolls past it. */
+    .sample__copy {
+      position: sticky;
+      top: calc(56px + 2rem);
     }
   }
 </style>

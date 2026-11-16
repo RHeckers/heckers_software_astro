@@ -19,8 +19,9 @@
 interface Insight {
   title: string;
   copy: string;
-  /** Something the reader can do this week on their own. */
-  takeaway: string;
+  /** Something the reader can do this week on their own. Leave it out
+      where the row is a plain statement rather than a lesson. */
+  takeaway?: string;
   /** Which diagram sits next to it; see FIGURES below. */
   figure: FigureId;
 }
@@ -255,10 +256,12 @@ const FIGURES: Record<FigureId, string> = {
             </div>
             <div class="insight__body">
               <p class="insight__copy">{item.copy}</p>
-              <p class="insight__takeaway">
-                <span class="insight__takeaway-label">Do this today.</span>
-                {item.takeaway}
-              </p>
+              {item.takeaway && (
+                <p class="insight__takeaway">
+                  <span class="insight__takeaway-label">Do this today.</span>
+                  {item.takeaway}
+                </p>
+              )}
             </div>
           </li>
         ))
@@ -430,6 +433,11 @@ const FIGURES: Record<FigureId, string> = {
   .insights--light .insights__title,
   .insights--light .insight__title {
     color: var(--color-ink);
+  }
+
+  .insights--light .insight-list,
+  .insights--light .insight {
+    border-color: var(--color-stroke);
   }
 
   .insights--light .insights__intro {

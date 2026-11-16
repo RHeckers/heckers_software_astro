@@ -1,0 +1,586 @@
+---
+/**
+ * The picture behind the forward-deployed engineering hero: the inside of
+ * a company drawn as a fine lattice, and work finding its way through it.
+ *
+ * A handful of pale lines set off first and stall somewhere in the lattice, each
+ * ending in an empty ring: the pilots and backlog items nobody finished.
+ * Then one line in the accent colour sets off from the same place and does
+ * not stop. It passes Discovery, Development, AI integration and Deployment,
+ * lighting each as it gets there, and ends in Production, where it stays
+ * live: pulses keep running down the finished route. Then the lattice clears
+ * and a new route is drawn. The labels are the scope of the service, so the
+ * hero needs no paragraph to list it.
+ *
+ * The lattice wakes around the moving head and around the pointer, hovering
+ * the call to action speeds everything up, and the picture drifts back as
+ * the page scrolls on. On phones the route is a staircase across the upper
+ * half of the screen.
+ *
+ * Decoration only (aria-hidden). One canvas, cleared and redrawn per frame
+ * with a handful of strokes; the lattice itself is drawn once to an
+ * offscreen canvas. Pauses off screen and in hidden tabs, and draws the
+ * finished route as a still for visitors who prefer reduced motion.
+ */
+const STAGES = ["Discovery", "Development", "AI integration", "Deployment", "Production"];
+---
+
+<div class="route" data-fde-route aria-hidden="true">
+  <canvas class="route__canvas"></canvas>
+  {STAGES.map((stage) => <span class="route__label">{stage}</span>)}
+</div>
+
+<script>
+  type RGB = [number, number, number];
+  type P = [number, number];
+
+  interface Path {
+    pts: P[];
+    cum: number[];
+    len: number;
+    /** Length along the path at which each station sits. */
+    marks: number[];
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-fde-route]");
+  const hero = root?.closest<HTMLElement>("section");
+  const canvas = root?.querySelector<HTMLCanvasElement>("canvas");
+  const ctx = canvas?.getContext("2d");
+
+  if (root && hero && canvas && ctx) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const labels = Array.from(root.querySelectorAll<HTMLElement>(".route__label"));
+    const cta = hero.querySelector<HTMLElement>("[data-hero-cta]");
+
+    const hex = (name: string, fallback: string): RGB => {
+      const v =
+        getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+        fallback;
+      const m = /^#?([0-9a-f]{6})$/i.exec(v);
+      const n = parseInt(m ? m[1] : fallback.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    };
+    const rgba = (c: RGB, a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+
+    const DARK = hex("--c-dark", "#16233a");
+    const LIGHT = hex("--c-light", "#f2eee6");
+    const ACCENT = hex("--c-accent", "#ffbf2e");
+
+    /* Where the stations sit, as fractions of the hero. Wide screens: a
+       zigzag across the right-hand side. Phones: a staircase over the
+       upper half, above the words. */
+    const WIDE: P[] = [
+      [0.53, 0.68],
+      [0.63, 0.36],
+      [0.73, 0.62],
+      [0.83, 0.32],
+      [0.93, 0.5],
+    ];
+    const NARROW: P[] = [
+      [0.14, 0.15],
+      [0.32, 0.22],
+      [0.5, 0.29],
+      [0.68, 0.36],
+      [0.86, 0.43],
+    ];
+
+    /* Timing of one cycle, in seconds. */
+    const STUB_TIME = 1.5;
+    const START = 0.8;
+    const TRAVEL = 5.2;
+    const HOLD = 3.4;
+    const FADE = 0.9;
+    const DONE = START + TRAVEL;
+    const CYCLE = DONE + HOLD + FADE;
+
+    let w = 0;
+    let h = 0;
+    let cell = 40;
+    let narrow = false;
+    let stations: P[] = [];
+    let route: Path = { pts: [], cum: [], len: 0, marks: [] };
+    let stubs: Path[] = [];
+    let fadeIn: CanvasGradient | string = rgba(ACCENT, 1);
+    let lattice: HTMLCanvasElement | null = null;
+    let lit = -1;
+
+    const snap = (v: number) => Math.round(v / cell) * cell;
+
+    /* Turn a list of corners into a polyline with rounded turns, with the
+       length along it at every station. */
+    const build = (corners: P[], stationAt: Set<number>): Path => {
+      const pts: P[] = [];
+      const markIdx: number[] = [];
+      const r = cell * 0.42;
+      for (let i = 0; i < corners.length; i++) {
+        const c = corners[i];
+        const a = corners[i - 1];
+        const b = corners[i + 1];
+        const turns =
+          a && b && (c[0] - a[0]) * (b[1] - c[1]) - (c[1] - a[1]) * (b[0] - c[0]) !== 0;
+        /* Stations keep a square corner: it sits under the station's dot. */
+        if (!turns || stationAt.has(i)) {
+          pts.push(c);
+          if (stationAt.has(i)) markIdx.push(pts.length - 1);
+          continue;
+        }
+        const la = Math.hypot(c[0] - a[0], c[1] - a[1]);
+        const lb = Math.hypot(b[0] - c[0], b[1] - c[1]);
+        const rr = Math.min(r, la / 2, lb / 2);
+        const p0: P = [c[0] + ((a[0] - c[0]) / la) * rr, c[1] + ((a[1] - c[1]) / la) * rr];
+        const p1: P = [c[0] + ((b[0] - c[0]) / lb) * rr, c[1] + ((b[1] - c[1]) / lb) * rr];
+        for (let k = 0; k <= 6; k++) {
+          const t = k / 6;
+          const u = 1 - t;
+          pts.push([
+            u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0],
+            u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1],
+          ]);
+        }
+      }
+      const cum = [0];
+      for (let i = 1; i < pts.length; i++) {
+        cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+      }
+      return { pts, cum, len: cum[cum.length - 1], marks: markIdx.map((i) => cum[i]) };
+    };
+
+    const pointAt = (path: Path, s: number): P => {
+      const { pts, cum } = path;
+      if (s <= 0) return pts[0];
+      if (s >= path.len) return pts[pts.length - 1];
+      let i = 1;
+      while (cum[i] < s) i++;
+      const t = (s - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
+      return [
+        pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * t,
+        pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * t,
+      ];
+    };
+
+    /* Trace the stretch of a path between two lengths along it. */
+    const trace = (path: Path, from: number, to: number) => {
+      const { pts, cum } = path;
+      const a = Math.max(0, from);
+      const b = Math.min(path.len, to);
+      if (b <= a) return false;
+      const start = pointAt(path, a);
+      ctx.beginPath();
+      ctx.moveTo(start[0], start[1]);
+      for (let i = 1; i < pts.length; i++) {
+        if (cum[i] <= a) continue;
+        if (cum[i] >= b) break;
+        ctx.lineTo(pts[i][0], pts[i][1]);
+      }
+      const end = pointAt(path, b);
+      ctx.lineTo(end[0], end[1]);
+      return true;
+    };
+
+    /* A new route through the same stations, and new stalled attempts. */
+    const plan = () => {
+      const origin: P = [stations[0][0] - cell * (narrow ? 3 : 4), stations[0][1]];
+      const corners: P[] = [origin, stations[0]];
+      const at = new Set<number>([1]);
+      for (let i = 0; i < stations.length - 1; i++) {
+        const a = stations[i];
+        const b = stations[i + 1];
+        if (a[1] !== b[1] && a[0] !== b[0]) {
+          const cols = Math.round(Math.abs(b[0] - a[0]) / cell);
+          if (narrow || cols < 2) {
+            /* Down first, then across: keeps the line clear of the labels
+               that sit above each station on phones. */
+            corners.push([a[0], b[1]]);
+          } else {
+            /* Keep the upright two columns clear of both stations where
+               there is room, so it never runs through a label. */
+            const lo = cols >= 4 ? 2 : 1;
+            const hi = cols >= 4 ? cols - 2 : cols - 1;
+            const k = lo + Math.floor(Math.random() * (hi - lo + 1));
+            const xm = a[0] + Math.sign(b[0] - a[0]) * k * cell;
+            corners.push([xm, a[1]], [xm, b[1]]);
+          }
+        }
+        corners.push(b);
+        at.add(corners.length - 1);
+      }
+      route = build(corners, at);
+
+      /* The attempts that stall: short wandering lines from the same start. */
+      const top = h * (narrow ? 0.1 : 0.14);
+      const bottom = h * (narrow ? 0.47 : 0.86);
+      const right = w * (narrow ? 0.92 : 0.9);
+      stubs = [-1, 1, -1, 1, Math.random() < 0.5 ? -1 : 1].map((firstDir, n) => {
+        const c: P[] = [origin];
+        let x = origin[0] + cell * (1 + n);
+        let y = origin[1];
+        c.push([x, y]);
+        let dir = firstDir;
+        const legs = 2 + Math.floor(Math.random() * 2);
+        for (let leg = 0; leg < legs; leg++) {
+          let ny = y + dir * cell * (1 + Math.floor(Math.random() * (narrow ? 3 : 4)));
+          ny = Math.min(snap(bottom), Math.max(snap(top), ny));
+          if (ny !== y) {
+            y = ny;
+            c.push([x, y]);
+          }
+          const nx = Math.min(snap(right), x + cell * (2 + Math.floor(Math.random() * 4)));
+          if (nx !== x) {
+            x = nx;
+            c.push([x, y]);
+          }
+          dir = Math.random() < 0.65 ? -dir : dir;
+        }
+        return build(c, new Set());
+      });
+
+      const g = ctx.createLinearGradient(origin[0], 0, stations[0][0], 0);
+      g.addColorStop(0, rgba(ACCENT, 0));
+      g.addColorStop(1, rgba(ACCENT, 1));
+      fadeIn = g;
+    };
+
+    const setup = () => {
+      const rect = hero.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = rect.width;
+      h = rect.height;
+      narrow = w < 760;
+      cell = narrow ? 28 : w < 1100 ? 34 : 40;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      stations = (narrow ? NARROW : WIDE).map(([fx, fy]) => [snap(w * fx), snap(h * fy)] as P);
+      labels.forEach((label, i) => {
+        label.style.left = stations[i][0] + "px";
+        label.style.top = stations[i][1] + "px";
+        /* The line leaves a station sideways and then turns towards the
+           next one. Where that is downwards, the label goes above. */
+        const next = stations[i + 1];
+        label.classList.toggle("is-above", !!next && next[1] > stations[i][1]);
+      });
+
+      /* The lattice never changes, so it is drawn once and blitted. */
+      lattice = document.createElement("canvas");
+      lattice.width = canvas.width;
+      lattice.height = canvas.height;
+      const lc = lattice.getContext("2d");
+      if (lc) {
+        lc.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const size = narrow ? 1.25 : 1.5;
+        for (let x = 0; x <= w; x += cell) {
+          /* A touch fainter under the words than where the route runs. */
+          const lift = narrow ? 1 : 0.8 + 0.2 * Math.min(1, x / (w * 0.6));
+          lc.fillStyle = rgba(LIGHT, 0.22 * lift);
+          for (let y = 0; y <= h; y += cell) {
+            lc.fillRect(x - size / 2, y - size / 2, size, size);
+          }
+        }
+      }
+      plan();
+    };
+
+    /* Wake the lattice points around a position. */
+    const wake = (cx: number, cy: number, radius: number, colour: RGB, strength: number) => {
+      const x0 = Math.ceil((cx - radius) / cell);
+      const x1 = Math.floor((cx + radius) / cell);
+      const y0 = Math.ceil((cy - radius) / cell);
+      const y1 = Math.floor((cy + radius) / cell);
+      for (let gx = x0; gx <= x1; gx++) {
+        for (let gy = y0; gy <= y1; gy++) {
+          const d = Math.hypot(gx * cell - cx, gy * cell - cy) / radius;
+          if (d >= 1) continue;
+          const k = (1 - d) * (1 - d);
+          const size = 1.5 + 2 * k;
+          ctx.fillStyle = rgba(colour, strength * k);
+          ctx.fillRect(gx * cell - size / 2, gy * cell - size / 2, size, size);
+        }
+      }
+    };
+
+    const halo = (x: number, y: number, radius: number, alpha: number) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, rgba(ACCENT, alpha));
+      g.addColorStop(0.35, rgba(ACCENT, alpha * 0.3));
+      g.addColorStop(1, rgba(ACCENT, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    };
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, on: false, glow: 0 };
+    const litAt: number[] = [];
+
+    const setLit = (count: number) => {
+      if (count === lit) return;
+      lit = count;
+      labels.forEach((label, i) => label.classList.toggle("is-lit", i < count));
+    };
+
+    /* Draw the picture at time t (seconds into the cycle). */
+    const draw = (t: number, gain: number) => {
+      ctx.clearRect(0, 0, w, h);
+      if (lattice) ctx.drawImage(lattice, 0, 0, w, h);
+
+      const out = t > DONE + HOLD ? Math.max(0, 1 - (t - DONE - HOLD) / FADE) : 1;
+      const alpha = gain * out;
+      const progress = Math.min(1, Math.max(0, (t - START) / TRAVEL));
+      const s = route.len * progress;
+      const head = pointAt(route, s);
+
+      if (pointer.glow > 0.01) wake(pointer.x, pointer.y, 130, LIGHT, 0.5 * pointer.glow);
+      if (progress > 0 && progress < 1) wake(head[0], head[1], 120, ACCENT, 0.85 * alpha);
+
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      /* The attempts that stall. */
+      const sp = Math.min(1, t / STUB_TIME);
+      const stubEase = 1 - Math.pow(1 - sp, 3);
+      ctx.lineWidth = 1.1;
+      for (const stub of stubs) {
+        ctx.strokeStyle = rgba(LIGHT, 0.3 * alpha);
+        if (trace(stub, 0, stub.len * stubEase)) ctx.stroke();
+        if (sp >= 1) {
+          const end = stub.pts[stub.pts.length - 1];
+          const settle = Math.min(1, (t - STUB_TIME) / 0.5);
+          ctx.beginPath();
+          ctx.arc(end[0], end[1], 4, 0, Math.PI * 2);
+          ctx.fillStyle = rgba(DARK, alpha);
+          ctx.fill();
+          ctx.strokeStyle = rgba(LIGHT, 0.5 * alpha * settle);
+          ctx.stroke();
+        }
+      }
+
+      /* The route that arrives: a soft glow under a fine bright line. */
+      if (s > 0) {
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = fadeIn;
+        for (const [width, a] of [
+          [9, 0.07],
+          [4.5, 0.16],
+          [1.7, 1],
+        ]) {
+          ctx.lineWidth = width;
+          ctx.globalAlpha = alpha * a;
+          if (trace(route, 0, s)) ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      /* In production: pulses keep running down the finished route. */
+      if (progress >= 1) {
+        const since = t - DONE;
+        ctx.lineWidth = 2.2;
+        for (let n = 0; n < 3; n++) {
+          const at = (((since * 0.42 + n / 3) % 1) + 1) % 1;
+          const edge = Math.sin(at * Math.PI);
+          ctx.strokeStyle = rgba(LIGHT, 0.85 * alpha * edge);
+          if (trace(route, at * route.len - 30, at * route.len)) ctx.stroke();
+        }
+      }
+
+      /* Stations. */
+      let count = 0;
+      stations.forEach((p, i) => {
+        const reached = progress > 0 && s >= route.marks[i] - 0.5;
+        if (reached) {
+          count++;
+          if (litAt[i] === undefined) litAt[i] = t;
+          const age = t - litAt[i];
+          const last = i === stations.length - 1;
+          if (last) {
+            const breathe = 1 + 0.1 * Math.sin((t - DONE) * 1.4);
+            halo(p[0], p[1], (narrow ? 70 : 110) * breathe, 0.42 * alpha * Math.min(1, age / 0.6));
+          }
+          if (age < 1) {
+            ctx.beginPath();
+            ctx.arc(p[0], p[1], 6 + age * 22, 0, Math.PI * 2);
+            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = rgba(ACCENT, 0.6 * (1 - age) * alpha);
+            ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.arc(p[0], p[1], last ? 6.5 : 5, 0, Math.PI * 2);
+          ctx.fillStyle = rgba(ACCENT, alpha);
+          ctx.fill();
+          if (last) {
+            ctx.beginPath();
+            ctx.arc(p[0], p[1], 2.2, 0, Math.PI * 2);
+            ctx.fillStyle = rgba(LIGHT, alpha);
+            ctx.fill();
+          }
+        } else {
+          ctx.beginPath();
+          ctx.arc(p[0], p[1], 5, 0, Math.PI * 2);
+          ctx.fillStyle = rgba(DARK, 1);
+          ctx.fill();
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = rgba(LIGHT, 0.38 * gain);
+          ctx.stroke();
+        }
+      });
+      setLit(out < 1 ? 0 : count);
+
+      /* The head of the line. */
+      if (progress > 0 && progress < 1) {
+        halo(head[0], head[1], 34, 0.55 * alpha);
+        ctx.beginPath();
+        ctx.arc(head[0], head[1], 2.6, 0, Math.PI * 2);
+        ctx.fillStyle = rgba(LIGHT, alpha);
+        ctx.fill();
+      }
+    };
+
+    setup();
+
+    if (reduced) {
+      draw(DONE + 1.2, 1);
+    } else {
+      let raf = 0;
+      let last = 0;
+      let visible = true;
+      let time = 0;
+      let intro = 0;
+      let boost = 0;
+      let boostTarget = 0;
+      let scroll = 0;
+      let scrollTarget = 0;
+
+      const loop = (now: number) => {
+        const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016;
+        last = now;
+        boost += (boostTarget - boost) * Math.min(1, dt * 4);
+        intro = Math.min(1, intro + dt * 1.2);
+        time += dt * (1 + boost * 1.8);
+        if (time >= CYCLE) {
+          time = 0;
+          litAt.length = 0;
+          plan();
+        }
+
+        pointer.x += (pointer.tx - pointer.x) * Math.min(1, dt * 9);
+        pointer.y += (pointer.ty - pointer.y) * Math.min(1, dt * 9);
+        pointer.glow += ((pointer.on ? 1 : 0) - pointer.glow) * Math.min(1, dt * 5);
+
+        const before = scroll;
+        scroll += (scrollTarget - scroll) * Math.min(1, dt * 7);
+        if (Math.abs(scroll - before) > 0.0005) {
+          root.style.setProperty("--drift", (scroll * h * 0.14).toFixed(1) + "px");
+        }
+
+        draw(time, intro);
+        raf = requestAnimationFrame(loop);
+      };
+      const play = () => {
+        if (!raf && visible && !document.hidden) {
+          last = 0;
+          raf = requestAnimationFrame(loop);
+        }
+      };
+      const pause = () => {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      };
+
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        visible ? play() : pause();
+      }).observe(hero);
+      document.addEventListener("visibilitychange", () =>
+        document.hidden ? pause() : play(),
+      );
+
+      hero.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "touch") return;
+        const rect = hero.getBoundingClientRect();
+        pointer.tx = e.clientX - rect.left;
+        pointer.ty = e.clientY - rect.top;
+        if (!pointer.on) {
+          pointer.x = pointer.tx;
+          pointer.y = pointer.ty;
+        }
+        pointer.on = true;
+      });
+      hero.addEventListener("pointerleave", () => (pointer.on = false));
+      window.addEventListener(
+        "scroll",
+        () => (scrollTarget = Math.min(1, Math.max(0, window.scrollY / (h * 0.85)))),
+        { passive: true },
+      );
+
+      const surge = (on: boolean) => () => (boostTarget = on ? 1 : 0);
+      cta?.addEventListener("pointerenter", surge(true));
+      cta?.addEventListener("pointerleave", surge(false));
+      cta?.addEventListener("focus", surge(true));
+      cta?.addEventListener("blur", surge(false));
+
+      play();
+    }
+
+    let resizeTimer = 0;
+    let lastWidth = w;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        /* Phone address bars resize the height constantly; only a real
+           change of width is worth starting the picture over for. */
+        const width = hero.getBoundingClientRect().width;
+        if (Math.abs(width - lastWidth) < 2) return;
+        lastWidth = width;
+        litAt.length = 0;
+        setup();
+        if (reduced) draw(DONE + 1.2, 1);
+      }, 200);
+    });
+  }
+</script>
+
+<style>
+  .route {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform: translate3d(0, var(--drift, 0px), 0);
+  }
+
+  .route__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Placed on its station by the script. Dim until the line gets there. */
+  .route__label {
+    position: absolute;
+    transform: translate(-50%, 1rem);
+    font-family: synonym, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--c-light) 42%, transparent);
+    transition: color 0.6s ease;
+  }
+
+  .route__label:global(.is-lit) {
+    color: var(--c-accent);
+  }
+
+  .route__label:global(.is-above) {
+    transform: translate(-50%, -1.75rem);
+  }
+
+  /* Phones: the line leaves each station downwards, so the label goes
+     above it. */
+  @media (max-width: 759px) {
+    .route__label {
+      transform: translate(-50%, -1.75rem);
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+    }
+  }
+</style>

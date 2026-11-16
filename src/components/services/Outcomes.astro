@@ -1,0 +1,282 @@
+---
+/**
+ * "What changes for my company?" on a service page: the gains as a
+ * checklist, in the service pages' own idiom, on a dark or light ground: from 900px up
+ * the claim on the left stays pinned (with one number that backs it) while
+ * the gains scroll past on the right, and each gain's tick draws itself as
+ * its row arrives, short stroke first, then the long one. One line per
+ * gain, no paragraphs.
+ *
+ * Scroll-driven CSS, no script; fully drawn where that is unsupported or
+ * motion is reduced.
+ */
+import CountUp from "../CountUp.astro";
+
+interface Outcome {
+  title: string;
+  detail: string;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  outcomes: Outcome[];
+  /** One number that backs the claim, shown under the title. */
+  stat?: { value: string; label: string; source: string };
+  /** The ground it sits on, so it never repeats the section above it. */
+  tone?: "dark" | "light";
+}
+
+const { id = "outcomes", title, outcomes, stat, tone = "dark" } = Astro.props;
+---
+
+<section class:list={["outcomes", `outcomes--${tone}`]} id={id} aria-labelledby={`${id}-heading`}>
+  <div class="outcomes__inner">
+    <div class="outcomes__claim">
+      <h2 class="outcomes__title" id={`${id}-heading`}>{title}</h2>
+      {
+        stat && (
+          <div class="outcomes__stat">
+            <p class="outcomes__value">
+              <CountUp value={stat.value} />
+            </p>
+            <p class="outcomes__label">{stat.label}</p>
+            <p class="outcomes__source">{stat.source}</p>
+          </div>
+        )
+      }
+      {
+        Astro.slots.has("aside") && (
+          <div class="outcomes__aside">
+            <slot name="aside" />
+          </div>
+        )
+      }
+    </div>
+
+    <ul class="outcome-list">
+      {
+        outcomes.map((item) => (
+          <li class="outcome">
+            <span class="outcome__tick" aria-hidden="true" />
+            <div class="outcome__body">
+              <h3 class="outcome__title">{item.title}</h3>
+              <p class="outcome__detail">{item.detail}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .outcomes {
+    background: var(--c-dark);
+    color: var(--c-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+    --rule: color-mix(in srgb, var(--c-light) 14%, transparent);
+    --muted: color-mix(in srgb, var(--c-light) 72%, transparent);
+  }
+
+  .outcomes--light {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    --rule: var(--color-stroke);
+    --muted: var(--color-ink-muted);
+  }
+
+  /* The pale accent ring disappears on the light ground. */
+  .outcomes--light .outcome__tick {
+    border-color: color-mix(in srgb, var(--c-dark) 32%, transparent);
+  }
+
+  .outcomes--light .outcomes__value {
+    color: var(--color-ink);
+  }
+
+  .outcomes__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .outcomes__claim {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .outcomes__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    max-width: 12ch;
+  }
+
+  .outcomes__stat {
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--c-accent);
+    max-width: 26rem;
+  }
+
+  .outcomes__value {
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--c-accent);
+  }
+
+  .outcomes__label {
+    margin-top: 0.5rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.4;
+  }
+
+  .outcomes__source {
+    margin-top: 0.35rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--muted);
+  }
+
+  /* Whatever the page shows under the title (photographs, say). Left
+     out on phones, where it would push the gains off the screen. */
+  .outcomes__aside {
+    display: none;
+    max-width: 30rem;
+  }
+
+  @media (min-width: 900px) {
+    .outcomes__aside {
+      display: block;
+    }
+  }
+
+  .outcome-list {
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+
+  .outcome {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+    padding: clamp(1.4rem, 3vw, 2rem) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* The tick: two borders of a turned box, inside a ring. */
+  .outcome__tick {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--c-accent) 45%, transparent);
+  }
+
+  .outcome__tick::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 1rem;
+    height: 0.5rem;
+    border-left: 2.5px solid var(--c-accent);
+    border-bottom: 2.5px solid var(--c-accent);
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .outcome__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.2rem;
+  }
+
+  .outcome__title {
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+  }
+
+  .outcome__detail {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 46ch;
+  }
+
+  /* As a row comes up the screen: the ring closes in, the tick draws, and
+     the words come up to full strength. Each row is its own timeline. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .outcome {
+        view-timeline-name: --outcome;
+      }
+
+      .outcome__tick::before {
+        animation: outcome-tick linear both;
+        animation-timeline: --outcome;
+        animation-range: cover 18% cover 36%;
+      }
+
+      .outcome__tick {
+        animation: outcome-ring linear both;
+        animation-timeline: --outcome;
+        animation-range: cover 10% cover 26%;
+      }
+
+      .outcome__body {
+        animation: outcome-body linear both;
+        animation-timeline: --outcome;
+        animation-range: cover 14% cover 34%;
+      }
+    }
+  }
+
+  @keyframes outcome-tick {
+    0% {
+      clip-path: inset(-1px calc(100% - 2.5px) 100% -1px);
+    }
+    40% {
+      clip-path: inset(-1px calc(100% - 2.5px) -1px -1px);
+    }
+    100% {
+      clip-path: inset(-1px -1px -1px -1px);
+    }
+  }
+
+  @keyframes outcome-ring {
+    from {
+      opacity: 0.2;
+      scale: 0.7;
+    }
+  }
+
+  @keyframes outcome-body {
+    from {
+      opacity: 0.3;
+      translate: 0.75rem 0;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .outcomes__inner {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+
+    .outcomes__claim {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+</style>

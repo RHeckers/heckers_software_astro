@@ -16,34 +16,52 @@ import speaker from "../../assets/workshop/talk_1.jpg";
 import { AUTHOR } from "../../consts";
 import type { SnippetKey } from "../../lib/testimonials";
 
-const reasons = [
+interface Reason {
+  title: string;
+  copy: string;
+}
+
+interface Props {
+  /** The home page's copy is the default; a service page passes its own. */
+  title?: string;
+  reasons?: Reason[];
+  snippets?: SnippetKey[];
+}
+
+const HOME_REASONS: Reason[] = [
+  {
+    title: "Industry experts",
+    copy: "We only work with the best: software engineers, data scientists and DevOps specialists who have shipped products in your sector.",
+  },
+  {
+    title: "Proven delivery",
+    copy: "We have a track record of delivering successful projects on time and within budget.",
+  },
   {
     title: "You decide after discovery",
     copy: "Two weeks in, you hold a ranked list and a fixed price. Go ahead, or keep the list.",
   },
   {
-    title: "No lock-in",
-    copy: "Everything is built in your repositories and your cloud account.",
-  },
-  {
     title: "One accountable owner",
     copy: "The person you talk to is the person who builds, until it is live.",
   },
+  {
+    title: "No lock-in",
+    copy: "Everything is built in your repositories and you keep control.",
+  },
 ];
 
-const snippets: SnippetKey[] = [
-  "peterChallenges",
-  "ferdiDelivery",
-  "alexProactive",
-];
+const {
+  title = "Why companies trust us",
+  reasons = HOME_REASONS,
+  snippets = ["peterChallenges", "ferdiDelivery", "alexProactive"],
+} = Astro.props;
 ---
 
 <section class="why" id="testimonials" aria-labelledby="why-heading">
   <div class="why__inner">
     <div class="why__main">
-      <h2 class="why__title" id="why-heading">
-        Why companies trust us with it
-      </h2>
+      <h2 class="why__title" id="why-heading">{title}</h2>
 
       <ul class="reasons">
         {

@@ -1,26 +1,36 @@
 ---
 /**
  * Service page: the architecture assessment. The page sells a diagnosis,
- * so it is built like one: the project graph untangling in the hero,
- * the market data, the self-check, what we have learned reading other
- * people's code, how the assessment runs, and then a page of the report
- * itself next to what it costs in time. Light ground throughout, with the
- * self-check as the one dark panel. No two sections with a card on the
- * same side follow each other: the hero's graph is separated
- * from the self-check panel by the evidence band, and the report sheet
- * comes after the process steps. The page ends on
- * the three tiers: proof, questions and the other services come before
- * them, the contact form opens in a dialog from every call to action, and
- * the footer is the compact one, so the last thing a reader sees is the
- * price.
+ * so its own elements are the ones a diagnosis produces: a project graph
+ * being read and put in order (the hero), the same graph to hover over
+ * (what we do), and a page of the report itself (what you gain).
+ *
+ * The same eight-step journey as the home page, a line per point, no
+ * paragraphs. Grounds alternate dark and light all the way down (the
+ * self-check counts as dark: it is one dark panel; the client quotes are
+ * the second half of the dark process band).
+ *
+ *   1. The promise      What can you help me achieve?     Hero (ArchScan)
+ *   2. The challenge    Do you understand my problem?     EvidenceBand, SymptomCheck
+ *   3. What we do       How can you help me?              Approach, with the project graph
+ *   4. What you gain    What changes for my company?      ReportSample
+ *   5. How we do it     What is it like to work together? ProcessSteps
+ *   6. Why us + proof   Why should I trust you?           ProofRow
+ *   7. Who we are       Who will I actually work with?    Founder
+ *   8. Take the leap    How do we get started?            Faq, Tiers
+ *
+ * The contact form opens in a dialog from every call to action and the
+ * footer is the compact one, so the last thing a reader sees is the price.
  */
 import PageLayout from "../../layouts/PageLayout.astro";
-import ServiceHero from "../../components/services/ServiceHero.astro";
+import HeroShell from "../../components/services/hero/HeroShell.astro";
+import ArchScan from "../../components/services/hero/ArchScan.astro";
+import Approach from "../../components/services/Approach.astro";
+import Founder from "../../components/services/Founder.astro";
 import NxGraph from "../../components/art/NxGraph.astro";
 import ReportSample from "../../components/services/ReportSample.astro";
 import EvidenceBand from "../../components/services/EvidenceBand.astro";
 import SymptomCheck from "../../components/services/SymptomCheck.astro";
-import Insights from "../../components/services/Insights.astro";
 import ProcessSteps from "../../components/services/ProcessSteps.astro";
 import Tiers from "../../components/services/Tiers.astro";
 import Faq from "../../components/services/Faq.astro";
@@ -119,55 +129,48 @@ const jsonLd = {
   breadcrumbs={[{ name: "Architecture assessment", path: service.href }]}
   compactFooter
 >
-  <ServiceHero
-    eyebrow="Architecture assessment for Angular and Nx"
-    title="Technical debt does not announce itself. It sends the bill later."
-    lead="Senior engineers read your Angular or Nx codebase from the outside, rank every finding by what it costs you, and hand you a roadmap your own team can execute. Fixed scope, two to three weeks. On its own, or as the first step before we come in to build."
+  {/* 1. The promise */}
+  <HeroShell
+    eyebrow="Architecture assessment · Angular & Nx"
     ctaLabel={service.cta}
     subject={service.subject}
-    secondaryLabel="Score your codebase first"
-    secondaryHref="#self-check"
-    asideOnPhones={false}
+    note="Fixed price. Two to three weeks."
   >
-    <NxGraph
-      slot="aside"
-      before="Found"
-      after="After the roadmap"
-      caption="The first thing an assessment draws is your project graph. The first thing it finds is the circular dependencies in it."
-    />
-  </ServiceHero>
+    <ArchScan />
+    <Fragment slot="title">
+      Know what your codebase <em>costs you.</em>
+    </Fragment>
+  </HeroShell>
 
+  {/* 2. The challenge */}
   <EvidenceBand
-    title="What the numbers say about a codebase left alone"
-    intro="None of these figures come from us. They describe the average team, and the average team believes its own situation is better than average."
+    title="What the numbers say"
+    intro="None of them are ours."
     stats={[
       {
         value: "42%",
-        label:
-          "of developer time is spent on maintenance issues such as debugging, refactoring and dealing with bad code.",
+        label: "of developer time goes to maintenance and bad code.",
         source: "Stripe, The Developer Coefficient",
       },
       {
         value: "10–20%",
-        label:
-          "of the technology budget meant for new products is diverted to resolving problems related to technical debt.",
+        label: "of the budget for new products is diverted to technical debt.",
         source: "McKinsey, Tech debt: reclaiming tech equity",
       },
       {
         value: "20–40%",
-        label:
-          "of the value of a company's entire technology estate is technical debt, by the estimate of the CIOs McKinsey surveyed. Most of them could not say where in the code it sat.",
+        label: "of the value of a technology estate is technical debt.",
         source: "McKinsey, Tech debt: reclaiming tech equity",
       },
     ]}
-    meaning="Take a team of eight at a fully loaded cost of ninety thousand euro per engineer. Forty-two percent of their time is over three hundred thousand euro a year that buys no new features. That money is spent whether you measure it or not. The only question is whether you know where it goes."
+    meaning="The money is spent either way. The question is whether you know where."
   >
     <ProofQuote slot="proof" snippet="peterApproach" />
   </EvidenceBand>
 
   <SymptomCheck
     title="Fourteen signs your architecture is quietly costing you"
-    intro="Every statement is ticked, because every one of them is something we have found in a codebase whose owners thought it was fine. Untick only the ones you can honestly rule out for yours. What is left is your score."
+    intro="Untick what you can honestly rule out. What is left is your score."
     items={[
       "A one-line change rebuilds and retests the whole workspace instead of only what it touched.",
       "Nobody can say with confidence which libraries an app depends on without opening the code.",
@@ -188,22 +191,22 @@ const jsonLd = {
       {
         min: 0,
         title: "Healthy, for now.",
-        copy: "Keep the discipline that got you here. An assessment at this stage is preventive: quick, mostly confirmation, and the cheapest one you will ever buy.",
+        copy: "Keep the discipline. An assessment now is the cheapest one you will ever buy.",
       },
       {
         min: 3,
         title: "Early decay.",
-        copy: "The cost is still invisible in your planning, which is exactly when it is cheapest to fix. Most of our assessments happen at this stage, and they are the ones with the highest return.",
+        copy: "The cost is still invisible in your planning. This is when it is cheapest to fix.",
       },
       {
         min: 6,
         title: "Compounding.",
-        copy: "Your team is paying the maintenance tax every sprint. Every quarter you wait, the fix gets larger and the number of people who understand the codebase gets smaller.",
+        copy: "Your team pays the maintenance tax every sprint, and the fix grows every quarter.",
       },
       {
         min: 10,
         title: "Critical.",
-        copy: "Feature work is now mostly archaeology, and every sprint adds to the bill. Teams at this stage usually talk about a rewrite. Almost none of them need one, but all of them need an outside diagnosis before deciding anything.",
+        copy: "Feature work is mostly archaeology. You probably do not need a rewrite. You do need a diagnosis.",
       },
     ]}
     ctaLabel="Talk about your score"
@@ -211,130 +214,116 @@ const jsonLd = {
     preChecked
   />
 
-  <Insights
-    tone="light"
-    layout="grid"
-    title="What we have learned reading other people's code"
-    intro="Years of assessing Angular and Nx codebases come down to four observations. They are yours to use, with or without us."
-    items={[
-      {
-        figure: "blind-spot",
-        title: "The people inside cannot see it.",
-        copy: "A codebase changes one reasonable pull request at a time, and familiarity hides the result. The most experienced developer on the team is often the least able to describe what is wrong with it.",
-        takeaway:
-          "Ask your newest developer which parts of the app they avoid, and why. That is your first finding.",
-      },
-      {
-        figure: "decay",
-        title: "Architecture decays in a fixed order.",
-        copy: "Boundaries blur, then ownership, then knowledge concentrates in two people. Only then does velocity drop, and only after that quality. Most teams notice at step four.",
-        takeaway:
-          "Count the arrows pointing at your shared library in the project graph. More than half means you are past step one.",
-      },
-      {
-        figure: "rewrite",
-        title:
-          "A rewrite is the most expensive way to learn what your code already knows.",
-        copy: "Every rewrite we have assessed rediscovered the same edge cases in its second year. Restructuring in place wins, because releases keep shipping while the structure improves.",
-        takeaway:
-          "List the ten business rules only the old code knows. If nobody can, you are not ready to replace it.",
-      },
-      {
-        figure: "rank",
-        title: "A ranked list beats a long one.",
-        copy: "A sixty-page report of everything that is wrong changes nothing. Five findings with the cost, the fix and the effort next to each move a team.",
-        takeaway:
-          "Sort what you find by what it costs per month, not by how ugly it looks.",
-      },
+  {/* 3. What we do */}
+  <Approach
+    title="We read the code. You get the roadmap."
+    lede="Senior engineers, from the outside, in two to three weeks."
+    verbs={[
+      { verb: "Read", rest: "every project, dependency and boundary" },
+      { verb: "Rank", rest: "each finding by what it costs you" },
+      { verb: "Roadmap", rest: "the fixes for your own team" },
     ]}
   >
-    <ProofQuote slot="proof" snippet="nicoAngular" />
-  </Insights>
+    <NxGraph
+      before="Found"
+      after="After the roadmap"
+      caption="Your project graph, before and after. Hover a project to see what it depends on."
+    />
+  </Approach>
 
-  <ProcessSteps
-    title="How the assessment runs"
-    intro="Fixed scope, fixed duration, and nothing that takes your team out of their sprint for more than a few hours in total."
-    deliverablesTitle="What you receive"
-    deliverables={[
-      "A written report with every finding ranked by impact, each with the concrete fix and an effort estimate",
-      "A dependency and boundary map of your workspace, with the violations marked",
-      "An upgrade path for your Angular and Nx versions",
-      "A roadmap agreed with your team, sized to your capacity and release calendar",
-      "The recorded roadmap session, so people who were not in the room get the same story",
-      "Thirty days of follow-up questions while you start executing",
-    ]}
-    steps={[
-      {
-        title: "Kickoff",
-        when: "Day 1",
-        copy: "A short session with your lead and product owner: what hurts, what is planned, what we may not touch. We get read access to the repository. That is all the access we need.",
-      },
-      {
-        title: "Deep dive",
-        when: "Week 1–2",
-        copy: "We read the code: the architecture patterns, the project graph, the state handling, the tests and where the bottlenecks sit. Then we talk to the people who work in it daily; interviews take about an hour per person. That is where the real problems surface.",
-      },
-      {
-        title: "Report",
-        when: "Week 2–3",
-        copy: "Every finding ranked by what it costs you, with the concrete fix and the effort next to it. No generic advice, nothing you could have read in the documentation.",
-      },
-      {
-        title: "Roadmap with your team",
-        when: "Week 3",
-        copy: "We present the findings to your developers and turn them into an execution plan that fits your goals, timeline and capacity. You can run it yourself from here. Most teams do.",
-      },
-      {
-        title: "Hands-on execution",
-        when: "After the roadmap",
-        optional: true,
-        copy: "Want it done? We implement the improvements inside your codebase ourselves, or guide your developers through every change, pairing and reviewing as we go. The roadmap becomes the first outcome list of a forward-deployed engagement.",
-      },
-    ]}
-    ctaLabel={service.cta}
-    subject={service.subject}
-  >
-    <ProofQuote slot="proof" snippet="alexCollaboration" />
-  </ProcessSteps>
-
+  {/* 4. What you gain */}
   <ReportSample
-    title="What a finding looks like in the report"
-    intro="Not a list of everything that is wrong. Every finding is written so a developer can act on it the same afternoon, and the list is sorted so your team starts with the one that costs most."
+    title="Every finding comes with its cost and its fix"
+    intro="One page per finding. Sorted by what it costs you."
     points={[
-      "Ranked by what it costs you per month, not by how ugly the code looks",
-      "The concrete fix, in your codebase, with the library and file names in it",
+      "Ranked by cost per month, not by how ugly the code looks",
+      "The concrete fix, with your library and file names in it",
       "An effort estimate your team can put in a sprint",
     ]}
     finding={{
       rank: "Finding 1 of 23",
       title: "One shared library is imported by 71% of the workspace",
       impact:
-        "Every change to libs/shared rebuilds and retests 38 of 52 projects. About forty minutes of CI per pull request, and the library has become the place where unrelated code meets.",
+        "Every change to libs/shared rebuilds 38 of 52 projects. About forty minutes of CI per pull request.",
       evidence: [
-        "libs/shared is imported by 37 of 52 projects",
-        "Average CI run: 41 minutes; a change to shared marks 73% of the workspace as affected",
-        "Eleven of the last thirty incidents traced back to a change in shared",
+        "Imported by 37 of 52 projects",
+        "Average CI run: 41 minutes",
+        "11 of the last 30 incidents trace back to it",
       ],
-      fix: "Split libs/shared into domain libraries (orders, customers, billing) and a thin ui-kit. Enforce the split with tags and the module boundary lint rule. Done in place, one library per pull request, while releases keep shipping.",
-      effort: "Three to four developer-days, spread over two sprints",
+      fix: "Split it into domain libraries and a thin ui-kit. Enforce the split with tags and the boundary lint rule.",
+      effort: "Three to four developer-days, over two sprints",
     }}
-    note="Anonymised example from a Standard assessment. Numbers and names changed; the shape of the finding is what every report looks like."
+    note="Anonymised example from a Standard assessment. Names and numbers changed."
   />
 
-  <ProofRow snippets={["ferdiDepth", "peterLasting", "marcChallenges"]} />
+  {/* 5. How we do it */}
+  <ProcessSteps
+    surface="dark"
+    title="How the assessment runs"
+    intro="Fixed scope. Fixed price. A few hours of your team's time."
+    deliverablesTitle="What you receive"
+    deliverables={[
+      "A report with every finding ranked by cost, with fix and effort",
+      "A dependency and boundary map with the violations marked",
+      "An upgrade path for your Angular and Nx versions",
+      "A roadmap sized to your team, and thirty days of follow-up",
+    ]}
+    steps={[
+      {
+        title: "Kickoff",
+        when: "Day 1",
+        copy: "What hurts, what is planned, what we may not touch. Read access to the repository is all we need.",
+      },
+      {
+        title: "Deep dive",
+        when: "Week 1–2",
+        copy: "We read the code and the project graph, then talk to the people who work in it every day.",
+      },
+      {
+        title: "Report",
+        when: "Week 2–3",
+        copy: "Every finding ranked by what it costs you, with the fix and the effort next to it.",
+      },
+      {
+        title: "Roadmap with your team",
+        when: "Week 3",
+        copy: "We turn the findings into a plan that fits your capacity. Most teams run it themselves.",
+      },
+      {
+        title: "Hands-on execution",
+        when: "After the roadmap",
+        optional: true,
+        copy: "Want it done? We implement the fixes inside your codebase, together with your developers.",
+      },
+    ]}
+    ctaLabel={service.cta}
+    subject={service.subject}
+  />
 
+  {/* 6. Why us + proof */}
+  <ProofRow
+    title="Why teams trust us with their code"
+    lede="The words of people who had us inside their codebase."
+    snippets={["ferdiDepth", "peterLasting", "marcChallenges"]}
+  />
+
+  {/* 7. Who we are */}
+  <Founder stage="code" title="The author of the book reads your code himself" />
+
+  {/* 8. Take the leap */}
   <Faq
-    title="Questions we hear before every assessment"
+    tone="dark"
+    title="Questions we hear first"
     items={FAQS["architecture-assessment"]}
   />
 
   <Tiers
-    title="Three ways to do this"
-    intro="Pick by how much certainty you need. The assessment itself is a fixed price you see here; only hands-on execution is quoted, once we know the size of the work."
+    title="Three ways to start"
+    intro="Fixed prices. The number does not change during the assessment."
     serviceName="architecture assessment"
     subject={service.subject}
     tiers={tiers}
-    note={`Minimum and Standard are fixed prices, ${VAT_NOTE}, for workspaces up to roughly fifty projects; larger workspaces get a fixed quote after a thirty-minute call. The number does not change during the assessment. Advanced adds execution in sprints, quoted after the roadmap.`}
+    note={`Minimum and Standard are fixed, ${VAT_NOTE}, for workspaces up to about fifty projects. Larger workspaces get a fixed quote after a thirty-minute call. Advanced adds execution, quoted after the roadmap.`}
     otherLabel="Tell us about your codebase"
   />
 

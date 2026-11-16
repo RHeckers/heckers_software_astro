@@ -1,21 +1,33 @@
 ---
 /**
- * Service page: workshops. A training page, so it opens with rooms and
- * people: photographs in the hero, the catalogue straight after it, and a
- * finder that points a team at the workshop they need first. The argument
- * that training only sticks on the team's own code, ending in written
- * rules, follows once the reader knows what is on offer. The page ends on
- * the three tiers: proof, questions and the other services come before
- * them, the contact form opens in a dialog from every call to action, and
- * the footer is the compact one, so the last thing a reader sees is the
- * price.
+ * Service page: workshops. A training page, so its own elements are rooms
+ * and choices: a team finding one direction (the hero), the catalogue of
+ * workshops, a finder that points a team at the one it needs first, and
+ * photographs from real rooms next to what a team leaves with.
+ *
+ * The same eight-step journey as the home page, a line per point, no
+ * paragraphs. Grounds alternate dark and light all the way down.
+ *
+ *   1. The promise      What can you help me achieve?     Hero (TeamAlign)
+ *   2. The challenge    Do you understand my problem?     EvidenceBand
+ *   3. What we do       How can you help me?              WorkshopCatalog, WorkshopFinder
+ *   4. What you gain    What changes for my company?      Outcomes, with the photographs
+ *   5. How we do it     What is it like to work together? ProcessSteps
+ *   6. Why us + proof   Why should I trust you?           ProofRow
+ *   7. Who we are       Who will I actually work with?    Founder
+ *   8. Take the leap    How do we get started?            Faq, Tiers
+ *
+ * The contact form opens in a dialog from every call to action and the
+ * footer is the compact one, so the last thing a reader sees is the price.
  */
 import PageLayout from "../../layouts/PageLayout.astro";
-import ServiceHero from "../../components/services/ServiceHero.astro";
+import HeroShell from "../../components/services/hero/HeroShell.astro";
+import TeamAlign from "../../components/services/hero/TeamAlign.astro";
+import Outcomes from "../../components/services/Outcomes.astro";
+import Founder from "../../components/services/Founder.astro";
 import WorkshopPhotos from "../../components/services/WorkshopPhotos.astro";
 import WorkshopFinder from "../../components/services/WorkshopFinder.astro";
 import EvidenceBand from "../../components/services/EvidenceBand.astro";
-import Insights from "../../components/services/Insights.astro";
 import WorkshopCatalog from "../../components/services/WorkshopCatalog.astro";
 import ProcessSteps from "../../components/services/ProcessSteps.astro";
 import Tiers from "../../components/services/Tiers.astro";
@@ -116,154 +128,154 @@ const jsonLd = {
   breadcrumbs={[{ name: "Workshops", path: service.href }]}
   compactFooter
 >
-  <ServiceHero
-    eyebrow="Angular and Nx workshops for enterprise teams"
-    title="Your team is not short of talent. It is short of shared rules."
-    lead="Hands-on workshops on automating development with AI agents, AI-driven front-end systems, Nx monorepos and enterprise Angular architecture, run on your own codebase. One or two days that change how your team works, not a slide deck they forget by Friday. On their own, or so your team keeps the pace after we leave."
+  {/* 1. The promise */}
+  <HeroShell
+    eyebrow="Workshops · AI, Nx & Angular"
     ctaLabel={service.cta}
     subject={service.subject}
-    secondaryLabel="See the workshops"
-    secondaryHref="#catalog"
+    note="On your own codebase. One or two days."
   >
-    <WorkshopPhotos slot="aside" />
-  </ServiceHero>
+    <TeamAlign />
+    <Fragment slot="title">
+      One team. One way of <em>working.</em>
+    </Fragment>
+  </HeroShell>
 
-  <WorkshopCatalog
-    title="The workshops"
-    intro="Four fixed topics and one we build around your team, in the order a team usually needs them: how to let AI agents do more of the development work, how to build AI into the front end, and the workspace and architecture that make both safe. One or two days, on site or remote. Twelve seats are included and larger groups are welcome, per seat or as parallel groups. Each workshop is prepared on your own codebase and ends with decisions your build can enforce."
-    subject={service.subject}
-  />
-
-  <WorkshopFinder
-    title="Which workshop first?"
-    intro="Three questions, one answer at a time. They lead to the workshop a team like yours usually needs first, and the one that fills the second day."
-    subject={service.subject}
-  />
-
+  {/* 2. The challenge */}
   <EvidenceBand
-    title="What the numbers say about how teams learn"
-    intro="None of these numbers are ours. They come from the Angular team, from LinkedIn and from Stack Overflow, and together they describe the team that has not trained together in a while."
+    title="What the numbers say"
+    intro="None of them are ours."
     stats={[
       {
+        value: "76%",
+        label: "of developers use AI tools. Fewer than half trust the output.",
+        source: "Stack Overflow Developer Survey 2024",
+      },
+      {
         value: "79%",
-        label:
-          "of Angular developers are on the latest two major versions, which leaves one team in five further behind. Each of those versions carries a year of change: signals, standalone, zoneless, signal forms.",
+        label: "of Angular developers are on the latest two versions. One in five is not.",
         source: "Angular developer survey 2024, close to 10,000 responses",
       },
       {
         value: "94%",
-        label:
-          "of employees say they would stay at a company longer if it invested in their learning. For developers, that investment is training on the stack they use every day, not a course library nobody opens.",
+        label: "of employees stay longer at a company that invests in their learning.",
         source: "LinkedIn Workplace Learning Report, 2018",
       },
-      {
-        value: "76%",
-        label:
-          "of professional developers use or plan to use AI tools in their work, while fewer than half trust the output. Everyone uses them; almost no team has agreed on the rules.",
-        source: "Stack Overflow Developer Survey 2024",
-      },
     ]}
-    meaning="Put those together and you get the state of most Angular teams today: developers who learned different versions of the framework, use AI tools in their own way, and review each other's code against rules that exist only in their heads. The codebase is where those differences land, one pull request at a time. And the developers who notice it first are the ones who leave first."
+    meaning="Everyone uses the tools. Almost no team has agreed on the rules."
   >
     <ProofQuote slot="proof" snippet="ferdiDepth" />
   </EvidenceBand>
 
-  <Insights
-    title="Why most training changes nothing, and what does"
-    intro="Years of workshops at conferences and inside companies. The ones that changed a team had four things in common."
-    items={[
+  {/* 3. What we do */}
+  <WorkshopCatalog
+    tone="dark"
+    title="The workshops"
+    intro="Four topics and one built around your team. Each prepared on your own codebase."
+    subject={service.subject}
+  />
+
+  <WorkshopFinder
+    title="Which workshop fits your team?"
+    intro="Three questions. One recommendation."
+    subject={service.subject}
+  />
+
+  {/* 4. What you gain */}
+  <Outcomes
+    title="What your team leaves with"
+    outcomes={[
       {
-        figure: "slides",
-        title: "Slides do not survive contact with your codebase.",
-        copy: "A course on a demo app teaches how the demo app should be structured. Your app has an ERP integration, a legacy module and a deadline, so every exercise we give is built from your repository.",
-        takeaway:
-          "After any course, have the developer apply one thing to a real module within a week and demo it to the team.",
+        title: "Rules the whole team agreed on",
+        detail: "Written down as decision records, in your repository.",
       },
       {
-        figure: "rules",
-        title: "Knowledge without rules evaporates.",
-        copy: "A team agrees on a pattern on Thursday and drifts by the next sprint, because agreement lives in memory. A written decision and a lint rule that fails the build survive.",
-        takeaway:
-          "Pick the convention your team argues about most. Write it down today, add a lint rule tomorrow.",
+        title: "A build that enforces them",
+        detail: "Lint rules and module boundaries, merged before we leave.",
       },
       {
-        figure: "multiply",
-        title: "AI multiplies your conventions, including the bad ones.",
-        copy: "Coding agents learn from the code in front of them. Three ways of managing state become four; written rules become consistent output.",
-        takeaway:
-          "Put a short instructions file for coding agents in your repository, with your five non-negotiable rules.",
+        title: "Exercises from your own code",
+        detail: "Built from your repository, and yours to keep.",
       },
       {
-        figure: "team",
-        title: "The team is the unit of learning.",
-        copy: "One developer at a conference becomes a translator for people who were not there. The whole team in one room gets a shared vocabulary in two days, and that is what makes review fast.",
-        takeaway:
-          "Book learning per team, not per person. One workshop for eight beats eight conference tickets.",
+        title: "A list of what breaks the rules today",
+        detail: "Ranked, so the team knows where to start on Monday.",
+      },
+      {
+        title: "Thirty days of follow-up",
+        detail: "Questions answered while the team applies what it learned.",
       },
     ]}
   >
-    <ProofQuote slot="proof" snippet="peterLasting" tone="dark" />
-  </Insights>
+    <WorkshopPhotos slot="aside" />
+  </Outcomes>
 
+  {/* 5. How we do it */}
   <ProcessSteps
     title="How a workshop runs"
-    intro="Preparation is where a workshop is won. We spend more time reading your code before the day than we spend in the room."
-    deliverablesTitle="What your team leaves with"
+    intro="We spend more time reading your code than we spend in the room."
+    deliverablesTitle="What you can count on"
     deliverables={[
-      "Exercises and examples built from your own codebase, yours to keep",
-      "A written decision record: the rules the team agreed on and why",
-      "Lint rules and module boundaries that enforce those rules in the build",
-      "A ranked list of the places in your code that break the rules today",
-      "The recording and the material, so new hires get the same story later",
-      "Thirty days of follow-up questions",
+      "Prepared on your own repository, not on a demo app",
+      "Short explanations, long exercises",
+      "Every block ends in a decision the team makes",
+      "On site or remote, twelve seats included",
     ]}
     steps={[
       {
         title: "Intake",
         when: "Two weeks before",
-        copy: "A call with the lead and the people who will attend: what the team struggles with, what has been tried, where the app is going. We get read access to the repository.",
+        copy: "A call with the lead and the attendees: what the team struggles with and where the app is going.",
       },
       {
         title: "Preparation",
         when: "The week before",
-        copy: "We read your code and build the exercises from it: your project graph, your state handling, your CI. The workshop is about your app from the first minute.",
+        copy: "We read your code and build the exercises from it: your project graph, your state, your CI.",
       },
       {
         title: "The workshop",
         when: "One or two days",
-        copy: "Short explanations, long exercises, all in your codebase. Every block ends with a decision: what will we do from now on, and what enforces it.",
+        copy: "All in your codebase. Every block ends with what we do from now on, and what enforces it.",
       },
       {
         title: "Decisions in the build",
         when: "Last afternoon",
-        copy: "The rules the team agreed on are written down and, where possible, enforced with lint rules and module boundaries before we leave. Merged, not planned.",
+        copy: "The agreed rules become lint rules and module boundaries. Merged, not planned.",
       },
       {
         title: "Follow-up",
         when: "The month after",
-        copy: "Questions by email while the team applies what it learned. In the Advanced tier, monthly sessions and pull request reviews until the agreed goal is met.",
+        copy: "Questions by email while the team applies it. In Advanced, monthly sessions until the goal is met.",
       },
     ]}
     ctaLabel={service.cta}
     subject={service.subject}
-  >
-    <ProofQuote slot="proof" snippet="ferdiDelivery" />
-  </ProcessSteps>
+  />
 
-  <ProofRow snippets={["nicoAngular", "alexThinkAlong", "marcChallenges"]} />
+  {/* 6. Why us + proof */}
+  <ProofRow
+    title="Why teams trust us in the room"
+    lede="The words of people who had us working with their developers."
+    snippets={["nicoAngular", "alexThinkAlong", "marcChallenges"]}
+  />
 
+  {/* 7. Who we are */}
+  <Founder stage="applause" title="Taught by the person who wrote the book" />
+
+  {/* 8. Take the leap */}
   <Faq
-    title="Questions we hear before every workshop"
+    tone="dark"
+    title="Questions we hear first"
     items={FAQS["workshops"]}
   />
 
   <Tiers
-    title="Three ways to do this"
-    intro="Pick by how far you want the change to go: agreed, enforced, or measured."
+    title="Three ways to start"
+    intro="Agreed, enforced, or measured. Pick how far the change should go."
     serviceName="workshops"
     subject={service.subject}
     tiers={tiers}
-    note={`Minimum and Standard are fixed prices for twelve seats, ${VAT_NOTE}, on site or remote; travel outside the Netherlands is added at cost. Each extra seat is ${euro(price.extraSeatPerDay)} per workshop day, and larger groups run in parallel. Advanced is quoted per goal and group size. Combining topics across days is common; we will tell you honestly what fits in the time.`}
+    note={`Minimum and Standard are fixed for twelve seats, ${VAT_NOTE}; travel outside the Netherlands at cost. Each extra seat is ${euro(price.extraSeatPerDay)} per workshop day. Advanced is quoted per goal and group size.`}
     otherLabel="Tell us what your team needs"
   />
 

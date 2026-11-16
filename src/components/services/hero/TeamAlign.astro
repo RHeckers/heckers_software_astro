@@ -1,0 +1,361 @@
+---
+/**
+ * The picture behind the workshops hero: a team finding one direction.
+ *
+ * A field of short needles, each pointing its own way and drifting a
+ * little: every developer with their own habits. Then a ring spreads out
+ * from the middle of the field, the workshop, and every needle it reaches
+ * swings round to the same heading and takes the accent colour. Once the
+ * whole field has turned it moves as one, a slow wave running through it.
+ * Then it fades and a new, scattered field is drawn.
+ *
+ * One line of text under the field says which of the two states it is in.
+ *
+ * Before the ring arrives, needles near the pointer turn to look at it;
+ * afterwards they hold their heading. Hovering the call to action speeds
+ * everything up, and the picture drifts back as the page scrolls on. On
+ * phones the field takes the upper half of the screen.
+ *
+ * Decoration only (aria-hidden). One canvas, a few hundred short strokes
+ * per frame in two batches. Pauses off screen and in hidden tabs, and
+ * draws the aligned field as a still for visitors who prefer reduced
+ * motion.
+ */
+---
+
+<div class="align" data-team-align aria-hidden="true">
+  <canvas class="align__canvas"></canvas>
+  <span class="align__state"></span>
+</div>
+
+<script>
+  type RGB = [number, number, number];
+
+  interface Needle {
+    x: number;
+    y: number;
+    /** Its own heading, and how it wanders. */
+    own: number;
+    seed: number;
+    /** Distance from where the ring starts. */
+    reach: number;
+    look: number;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-team-align]");
+  const hero = root?.closest<HTMLElement>("section");
+  const canvas = root?.querySelector<HTMLCanvasElement>("canvas");
+  const ctx = canvas?.getContext("2d");
+
+  if (root && hero && canvas && ctx) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const state = root.querySelector<HTMLElement>(".align__state");
+    const cta = hero.querySelector<HTMLElement>("[data-hero-cta]");
+
+    const hex = (name: string, fallback: string): RGB => {
+      const v =
+        getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+        fallback;
+      const m = /^#?([0-9a-f]{6})$/i.exec(v);
+      const n = parseInt(m ? m[1] : fallback.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    };
+    const rgba = (c: RGB, a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+    const ease = (v: number) => {
+      const t = clamp01(v);
+      return t * t * (3 - 2 * t);
+    };
+
+    const LIGHT = hex("--c-light", "#f2eee6");
+    const ACCENT = hex("--c-accent", "#ffbf2e");
+
+    /* Timing of one cycle, in seconds. */
+    const IDLE = 1.8;
+    const SPREAD = 2.8;
+    const TURN = 0.8;
+    const HOLD = 4.6;
+    const FADE = 0.9;
+    const DONE = IDLE + SPREAD + TURN;
+    const CYCLE = DONE + HOLD + FADE;
+    /* The heading the team ends up on: up and to the right. */
+    const HEADING = -Math.PI / 5;
+
+    let w = 0;
+    let h = 0;
+    let narrow = false;
+    let cell = 40;
+    let len = 16;
+    let origin = { x: 0, y: 0 };
+    let far = 1;
+    let needles: Needle[] = [];
+    let shown = "";
+
+    const say = (text: string, lit: boolean) => {
+      if (!state) return;
+      if (text !== shown) {
+        shown = text;
+        state.textContent = text;
+      }
+      state.classList.toggle("is-lit", lit);
+    };
+
+    const scatter = () => {
+      for (const n of needles) {
+        n.own = Math.random() * Math.PI * 2;
+        n.seed = Math.random() * Math.PI * 2;
+        n.look = 0;
+      }
+    };
+
+    const setup = () => {
+      const rect = hero.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = rect.width;
+      h = rect.height;
+      narrow = w < 760;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const box = narrow
+        ? { x0: w * 0.08, x1: w * 0.92, y0: h * 0.12, y1: h * 0.42 }
+        : { x0: w * 0.56, x1: w * 0.96, y0: h * 0.17, y1: h * 0.8 };
+      cell = narrow ? 30 : w < 1100 ? 36 : 42;
+      len = narrow ? 12 : 17;
+      origin = { x: (box.x0 + box.x1) / 2, y: (box.y0 + box.y1) / 2 };
+
+      const cols = Math.max(2, Math.floor((box.x1 - box.x0) / cell));
+      const rows = Math.max(2, Math.floor((box.y1 - box.y0) / cell));
+      const ox = (box.x0 + box.x1) / 2 - ((cols - 1) * cell) / 2;
+      const oy = (box.y0 + box.y1) / 2 - ((rows - 1) * cell) / 2;
+      needles = [];
+      far = 1;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = ox + c * cell;
+          const y = oy + r * cell;
+          const reach = Math.hypot(x - origin.x, y - origin.y);
+          far = Math.max(far, reach);
+          needles.push({ x, y, own: 0, seed: 0, reach, look: 0 });
+        }
+      }
+      scatter();
+
+      if (state) {
+        state.style.left = origin.x + "px";
+        state.style.top = oy + (rows - 1) * cell + (narrow ? 22 : 34) + "px";
+      }
+    };
+
+    const pointer = { x: 0, y: 0, on: false };
+
+    /* Draw the picture at time t (seconds into the cycle). */
+    const draw = (t: number, gain: number, dt: number) => {
+      ctx.clearRect(0, 0, w, h);
+      const out = t > DONE + HOLD ? Math.max(0, 1 - (t - DONE - HOLD) / FADE) : 1;
+      const alpha = gain * out;
+      const spread = clamp01((t - IDLE) / SPREAD);
+      const radius = spread * (far + cell);
+      const together = clamp01((t - DONE) / 0.8);
+
+      const loose = new Path2D();
+      const turned = new Path2D();
+      const tips = new Path2D();
+
+      for (const n of needles) {
+        /* When the ring got here, and how far the needle has turned. */
+        const hitAt = IDLE + (n.reach / (far + cell)) * SPREAD;
+        const p = t > IDLE ? ease((t - hitAt) / TURN) : 0;
+
+        /* On its own: a slow wander, and a look at the pointer. */
+        let own = n.own + Math.sin(t * 0.6 + n.seed) * 0.5;
+        const near =
+          pointer.on && p < 1
+            ? clamp01(1 - Math.hypot(pointer.x - n.x, pointer.y - n.y) / 170)
+            : 0;
+        n.look += (near - n.look) * Math.min(1, dt * 6);
+        if (n.look > 0.01) {
+          const to = Math.atan2(pointer.y - n.y, pointer.x - n.x);
+          let d = to - own;
+          d = Math.atan2(Math.sin(d), Math.cos(d));
+          own += d * n.look;
+        }
+
+        /* Together: one heading, and one wave through the whole field. */
+        const wave = Math.sin(t * 1.5 - n.x * 0.012 - n.y * 0.008) * 0.22 * together;
+        let d = HEADING - own;
+        d = Math.atan2(Math.sin(d), Math.cos(d));
+        const angle = own + d * p + wave;
+
+        const cx = Math.cos(angle) * (len / 2);
+        const sy = Math.sin(angle) * (len / 2);
+        const path = p > 0.5 ? turned : loose;
+        path.moveTo(n.x - cx, n.y - sy);
+        path.lineTo(n.x + cx, n.y + sy);
+        if (p > 0.5) {
+          tips.moveTo(n.x + cx + 2.2, n.y + sy);
+          tips.arc(n.x + cx, n.y + sy, 2.2, 0, Math.PI * 2);
+        }
+      }
+
+      ctx.lineCap = "round";
+      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = rgba(LIGHT, 0.34 * alpha);
+      ctx.stroke(loose);
+      ctx.lineWidth = 1.8;
+      ctx.strokeStyle = rgba(ACCENT, 0.95 * alpha);
+      ctx.stroke(turned);
+      ctx.fillStyle = rgba(ACCENT, alpha);
+      ctx.fill(tips);
+
+      /* The ring. */
+      if (spread > 0 && spread < 1) {
+        const edge = Math.sin(spread * Math.PI);
+        ctx.beginPath();
+        ctx.arc(origin.x, origin.y, radius, 0, Math.PI * 2);
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = rgba(ACCENT, 0.5 * edge * alpha);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(origin.x, origin.y, Math.max(0, radius - 14), 0, Math.PI * 2);
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = rgba(ACCENT, 0.05 * edge * alpha);
+        ctx.stroke();
+      }
+
+      if (out < 1 || t < IDLE + SPREAD * 0.5) say("Everyone their own way", false);
+      else say("One way of working", t >= DONE - 0.4);
+    };
+
+    setup();
+
+    if (reduced) {
+      draw(DONE + 1.5, 1, 0);
+    } else {
+      let raf = 0;
+      let last = 0;
+      let visible = true;
+      let time = 0;
+      let intro = 0;
+      let boost = 0;
+      let boostTarget = 0;
+      let scroll = 0;
+      let scrollTarget = 0;
+
+      const loop = (now: number) => {
+        const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016;
+        last = now;
+        boost += (boostTarget - boost) * Math.min(1, dt * 4);
+        intro = Math.min(1, intro + dt * 1.2);
+        time += dt * (1 + boost * 1.6);
+        if (time >= CYCLE) {
+          time = 0;
+          scatter();
+        }
+        const before = scroll;
+        scroll += (scrollTarget - scroll) * Math.min(1, dt * 7);
+        if (Math.abs(scroll - before) > 0.0005) {
+          root.style.setProperty("--drift", (scroll * h * 0.14).toFixed(1) + "px");
+        }
+        draw(time, intro, dt);
+        raf = requestAnimationFrame(loop);
+      };
+      const play = () => {
+        if (!raf && visible && !document.hidden) {
+          last = 0;
+          raf = requestAnimationFrame(loop);
+        }
+      };
+      const pause = () => {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      };
+
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        visible ? play() : pause();
+      }).observe(hero);
+      document.addEventListener("visibilitychange", () =>
+        document.hidden ? pause() : play(),
+      );
+
+      hero.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "touch") return;
+        const rect = hero.getBoundingClientRect();
+        pointer.x = e.clientX - rect.left;
+        pointer.y = e.clientY - rect.top;
+        pointer.on = true;
+      });
+      hero.addEventListener("pointerleave", () => (pointer.on = false));
+      window.addEventListener(
+        "scroll",
+        () => (scrollTarget = Math.min(1, Math.max(0, window.scrollY / (h * 0.85)))),
+        { passive: true },
+      );
+
+      const surge = (on: boolean) => () => (boostTarget = on ? 1 : 0);
+      cta?.addEventListener("pointerenter", surge(true));
+      cta?.addEventListener("pointerleave", surge(false));
+      cta?.addEventListener("focus", surge(true));
+      cta?.addEventListener("blur", surge(false));
+
+      play();
+    }
+
+    let resizeTimer = 0;
+    let lastWidth = w;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        /* Phone address bars resize the height constantly; only a real
+           change of width is worth starting the picture over for. */
+        const width = hero.getBoundingClientRect().width;
+        if (Math.abs(width - lastWidth) < 2) return;
+        lastWidth = width;
+        setup();
+        if (reduced) draw(DONE + 1.5, 1, 0);
+      }, 200);
+    });
+  }
+</script>
+
+<style>
+  .align {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform: translate3d(0, var(--drift, 0px), 0);
+  }
+
+  .align__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .align__state {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-family: synonym, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--c-light) 46%, transparent);
+    transition: color 0.6s ease;
+  }
+
+  .align__state:global(.is-lit) {
+    color: var(--c-accent);
+  }
+
+  @media (max-width: 759px) {
+    .align__state {
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+    }
+  }
+</style>

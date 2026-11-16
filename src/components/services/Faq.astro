@@ -1,7 +1,8 @@
 ---
 /**
  * The objections, answered before they are raised. Native details/summary,
- * so it works everywhere and the open state is the browser's. The same
+ * so it works everywhere and the open state is the browser's; a small
+ * script only slides the answer open and shut. The same
  * pairs go out as FAQPage structured data, so search engines and AI
  * assistants can quote an answer with the question it belongs to.
  */
@@ -16,9 +17,11 @@ interface Props {
   /** Read-only: the component only maps over the list, and the shared
       FAQ data (lib/faqs) is declared read-only. */
   items: readonly Item[];
+  /** The ground it sits on, so it never repeats the section above it. */
+  tone?: "light" | "dark";
 }
 
-const { id = "faq", title, items } = Astro.props;
+const { id = "faq", title, items, tone = "light" } = Astro.props;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -31,7 +34,7 @@ const jsonLd = {
 };
 ---
 
-<section class="faq" id={id} aria-labelledby={`${id}-heading`}>
+<section class:list={["faq", `faq--${tone}`]} id={id} aria-labelledby={`${id}-heading`}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <div class="faq__inner">
     <h2 class="faq__title" id={`${id}-heading`}>{title}</h2>
@@ -43,7 +46,9 @@ const jsonLd = {
               <span>{item.question}</span>
               <span class="faq__icon" aria-hidden="true" />
             </summary>
-            <p class="faq__answer">{item.answer}</p>
+            <div class="faq__panel">
+              <p class="faq__answer">{item.answer}</p>
+            </div>
           </details>
         ))
       }
@@ -51,11 +56,71 @@ const jsonLd = {
   </div>
 </section>
 
+<script>
+  // details opens and closes in one frame. Slide the answer instead: open
+  // first and grow the panel, or shrink the panel and close afterwards.
+  // Without this script (or with reduced motion) it is a plain details.
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const EASE = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+
+  document.querySelectorAll<HTMLDetailsElement>(".faq__item").forEach((item) => {
+    const summary = item.querySelector("summary");
+    const panel = item.querySelector<HTMLElement>(".faq__panel");
+    if (!summary || !panel) return;
+    let running: Animation | null = null;
+
+    summary.addEventListener("click", (event) => {
+      if (calm.matches || !panel.animate) return;
+      event.preventDefault();
+
+      const opening = !item.open || item.classList.contains("is-closing");
+      /* Where the panel is right now, so a click halfway reverses from
+         there instead of jumping. */
+      const from = item.open ? panel.getBoundingClientRect().height : 0;
+      running?.cancel();
+      item.classList.toggle("is-closing", !opening);
+      if (opening) item.open = true;
+      const to = opening ? panel.scrollHeight : 0;
+
+      panel.style.overflow = "hidden";
+      running = panel.animate(
+        [
+          { height: from + "px", opacity: opening ? 0 : 1 },
+          { height: to + "px", opacity: opening ? 1 : 0 },
+        ],
+        { duration: 180 + Math.min(240, Math.abs(to - from)), easing: EASE },
+      );
+      const done = running;
+      /* A cancelled run (clicked again halfway) rejects and is ignored. */
+      done.finished.then(
+        () => {
+          if (!opening) item.open = false;
+          item.classList.remove("is-closing");
+          panel.style.overflow = "";
+          if (running === done) running = null;
+        },
+        () => {},
+      );
+    });
+  });
+</script>
+
 <style>
   .faq {
-    background: var(--color-light);
+    background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  /* Dark ground: the same rules, with the ink and hairline tokens
+     repointed for this section only. */
+  .faq--dark {
+    background: var(--c-dark);
+    --color-ink: var(--c-light);
+    --color-ink-muted: color-mix(in srgb, var(--c-light) 74%, transparent);
+    --color-stroke: color-mix(in srgb, var(--c-light) 14%, transparent);
+    --color-stroke-strong: color-mix(in srgb, var(--c-light) 26%, transparent);
+    --color-accent-ink: var(--c-accent);
   }
 
   .faq__inner {
@@ -140,6 +205,11 @@ const jsonLd = {
     transform: translate(-50%, -50%) rotate(0deg);
   }
 
+  /* While it slides shut it is still [open]; turn the icon back at once. */
+  .faq__item.is-closing .faq__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
   .faq__answer {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
@@ -152,6 +222,14 @@ const jsonLd = {
   @media (min-width: 900px) {
     .faq__inner {
       grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    }
+
+    /* The title stays pinned beside the questions while they scroll past,
+       as the headings of the other two-column blocks do. */
+    .faq__title {
+      position: sticky;
+      top: calc(56px + 2rem);
+      align-self: start;
     }
   }
 

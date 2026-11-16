@@ -1,9 +1,10 @@
 ---
 /**
  * The four workshops, each with its own anchor so the home page can link
- * straight to one. Same card idiom as the home carousel (white card, tag,
- * arrow bullets), laid out as a plain stack here so every workshop is
- * readable without scrolling through a wheel.
+ * straight to one, plus the one built around a team. A card says what the
+ * workshop is in one line; what it covers and what the team leaves with
+ * open on request, so the stack can be scanned in a few seconds. Light
+ * cards on a light or a dark ground.
  */
 import { Image } from "astro:assets";
 import effectiveAngular from "../../assets/workshop/effective_angular.jpg";
@@ -21,9 +22,22 @@ interface Props {
   title: string;
   intro: string;
   subject: string;
+  /** The ground it sits on, so it never repeats the section above it. */
+  tone?: "light" | "dark";
 }
 
-const { id = "catalog", title, intro, subject } = Astro.props;
+const { id = "catalog", title, intro, subject, tone = "light" } = Astro.props;
+
+/* What each workshop is, in one line. The long description stays in the
+   catalogue data for search engines and the llms files. */
+const pitches: Record<WorkshopId | "tailored", string> = {
+  ai: "Agents that take a ticket, write the code and the tests, and open the pull request.",
+  "ai-frontend":
+    "Dashboards that answer questions, chats that reply with components, one message that runs a whole task.",
+  "nx-monorepo": "A workspace that shares more code, ships faster and keeps its structure.",
+  "enterprise-angular": "Structure for an Angular app that grew faster than its architecture.",
+  tailored: "One topic, a mix of several, or something nobody has written a course for yet.",
+};
 
 const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
   ai: { src: talk2, position: "center" },
@@ -33,7 +47,7 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
 };
 ---
 
-<section class="catalog" id={id} aria-labelledby={`${id}-heading`}>
+<section class:list={["catalog", `catalog--${tone}`]} id={id} aria-labelledby={`${id}-heading`}>
   <div class="catalog__inner">
     <header class="catalog__head">
       <h2 class="catalog__title" id={`${id}-heading`}>{title}</h2>
@@ -60,16 +74,19 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
             <div class="workshop__body">
               <p class="workshop__tag">{workshop.tag}</p>
               <h3 class="workshop__title">{workshop.title}</h3>
-              <p class="workshop__description">{workshop.description}</p>
-              <ul class="workshop__bullets">
-                {workshop.bullets.map((point) => (
-                  <li>{point}</li>
-                ))}
-              </ul>
-              <p class="workshop__outcome">
-                <span class="workshop__outcome-label">You leave with</span>
-                {workshop.outcome}
-              </p>
+              <p class="workshop__description">{pitches[workshop.id]}</p>
+              <details class="workshop__more">
+                <summary>What we cover</summary>
+                <ul class="workshop__bullets">
+                  {workshop.bullets.map((point) => (
+                    <li>{point}</li>
+                  ))}
+                </ul>
+                <p class="workshop__outcome">
+                  <span class="workshop__outcome-label">You leave with</span>
+                  {workshop.outcome}
+                </p>
+              </details>
               <a
                 class="workshop__cta"
                 href="#contactForm"
@@ -87,16 +104,19 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
         <div class="workshop__body">
           <p class="workshop__tag">{TAILORED_WORKSHOP.tag}</p>
           <h3 class="workshop__title">{TAILORED_WORKSHOP.title}</h3>
-          <p class="workshop__description">{TAILORED_WORKSHOP.description}</p>
+          <p class="workshop__description">{pitches.tailored}</p>
         </div>
         <div class="workshop__body workshop__body--second">
-          <ul class="workshop__bullets">
-            {TAILORED_WORKSHOP.bullets.map((point) => <li>{point}</li>)}
-          </ul>
-          <p class="workshop__outcome">
-            <span class="workshop__outcome-label">You leave with</span>
-            {TAILORED_WORKSHOP.outcome}
-          </p>
+          <details class="workshop__more">
+            <summary>How it works</summary>
+            <ul class="workshop__bullets">
+              {TAILORED_WORKSHOP.bullets.map((point) => <li>{point}</li>)}
+            </ul>
+            <p class="workshop__outcome">
+              <span class="workshop__outcome-label">You leave with</span>
+              {TAILORED_WORKSHOP.outcome}
+            </p>
+          </details>
           <a
             class="workshop__cta"
             href="#contactForm"
@@ -113,9 +133,33 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
 
 <style>
   .catalog {
-    background: var(--color-light);
+    background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  /* Dark ground: the cards stay light, like the client quotes on dark,
+     and the tailored card, dark itself, becomes a glass card. */
+  .catalog--dark {
+    background: var(--c-dark);
+    color: var(--c-light);
+  }
+
+  .catalog--dark .catalog__intro {
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+  }
+
+  .catalog--dark .workshop {
+    color: var(--color-ink);
+    border-color: transparent;
+    box-shadow: 0 24px 50px color-mix(in srgb, var(--c-dark) 40%, transparent);
+  }
+
+  .catalog--dark .workshop--tailored {
+    color: var(--color-ink-light);
+    background: color-mix(in srgb, var(--c-light) 5%, transparent);
+    border-color: color-mix(in srgb, var(--c-light) 14%, transparent);
+    box-shadow: none;
   }
 
   .catalog__inner {
@@ -204,12 +248,73 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
     font-family: synonym, sans-serif;
   }
 
+  /* What it covers, on request. The panel slides open where the browser
+     can animate to a content height, and simply opens where it cannot. */
+  .workshop__more {
+    interpolate-size: allow-keywords;
+    margin-top: 0.4rem;
+  }
+
+  .workshop__more summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+  }
+
+  .workshop__more summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .workshop__more summary::after {
+    content: "+";
+    font-size: 1.25em;
+    line-height: 1;
+    font-weight: var(--font-weight-medium);
+    transition: rotate 0.25s ease;
+  }
+
+  .workshop__more[open] summary::after {
+    rotate: 45deg;
+  }
+
+  .workshop__more summary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .workshop__more::details-content {
+    height: 0;
+    overflow: clip;
+    transition:
+      height 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+      content-visibility 0.4s allow-discrete;
+  }
+
+  .workshop__more[open]::details-content {
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .workshop__more::details-content,
+    .workshop__more summary::after {
+      transition: none;
+    }
+  }
+
   .workshop__bullets {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    margin: 0.6rem 0 0.4rem;
+    margin: 1rem 0 0.4rem;
   }
 
   .workshop__bullets li {
@@ -277,7 +382,7 @@ const images: Record<WorkshopId, { src: ImageMetadata; position: string }> = {
      panel gradient, so it reads as the open-ended option after the fixed
      four. */
   .workshop--tailored {
-    background: var(--background-gradient-secondary);
+    background: var(--color-dark);
     color: var(--color-ink-light);
     border-color: transparent;
     box-shadow: 0 30px 60px color-mix(in srgb, var(--c-dark) 22%, transparent);

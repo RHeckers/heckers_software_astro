@@ -23,7 +23,7 @@ interface Props {
   subject: string;
   /** Which light ground the section sits on, so it never repeats the
       ground of the section above it. */
-  surface?: "light" | "alt";
+  surface?: "light" | "alt" | "dark";
 }
 
 const {
@@ -100,13 +100,42 @@ const {
 
 <style>
   .process {
-    background: var(--color-light);
+    background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
 
   .process--alt {
     background: var(--color-light-alt);
+  }
+
+  /* Dark ground: the ink and hairline tokens are repointed for this
+     section, and the stepped panel, dark itself, becomes a glass card so
+     it still reads as a panel. */
+  .process--dark {
+    background: var(--c-dark);
+    /* Where the next section is dark too, a sub-pixel seam between the
+       two would show the light page behind them as a hairline. One pixel
+       of the ground colour below the section covers it. */
+    box-shadow: 0 1px 0 var(--c-dark);
+    color: var(--c-light);
+    --color-ink: var(--c-light);
+    --color-ink-muted: color-mix(in srgb, var(--c-light) 72%, transparent);
+    --color-stroke: color-mix(in srgb, var(--c-light) 14%, transparent);
+    --color-stroke-strong: color-mix(in srgb, var(--c-light) 26%, transparent);
+  }
+
+  /* A dark band of client quotes straight after the dark process reads
+     as its second half: close most of the gap between the two. */
+  .process--dark + :global(.proof-row--dark) {
+    margin-top: calc(-1 * clamp(3rem, 8vw, 6rem));
+    padding-top: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .process--dark .plan {
+    background: color-mix(in srgb, var(--c-light) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c-light) 12%, transparent);
+    box-shadow: none;
   }
 
   .process__inner {
@@ -184,6 +213,34 @@ const {
     border-left: 2px solid var(--color-success);
     border-bottom: 2px solid var(--color-success);
     transform: rotate(-45deg);
+  }
+
+  /* The tick draws itself as its line comes up the screen: the short
+     stroke first, then the long one. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .deliverable {
+        view-timeline-name: --tick;
+      }
+
+      .deliverable::before {
+        animation: tick-draw linear both;
+        animation-timeline: --tick;
+        animation-range: cover 10% cover 24%;
+      }
+    }
+  }
+
+  @keyframes tick-draw {
+    0% {
+      clip-path: inset(-1px calc(100% - 2px) 100% -1px);
+    }
+    40% {
+      clip-path: inset(-1px calc(100% - 2px) -1px -1px);
+    }
+    100% {
+      clip-path: inset(-1px -1px -1px -1px);
+    }
   }
 
   .process__proof:empty {
@@ -373,6 +430,28 @@ const {
         calc(45% + var(--i) * 12%);
     }
 
+    /* Phones and tablets: the panel is taller than the screen, so timing
+       every step off the panel fills them all before the later ones are
+       even in view. Here each step is its own timeline: its marker lights
+       as that step comes up the screen, and its line then draws down to
+       the next one. */
+    @media (max-width: 959.98px) {
+      .phase {
+        view-timeline-name: --phase;
+      }
+
+      .phase,
+      .phase__marker {
+        animation-timeline: --phase;
+        animation-range: cover 16% cover 30%;
+      }
+
+      .phase:not(:last-child)::after {
+        animation-timeline: --phase;
+        animation-range: cover 24% cover 50%;
+      }
+    }
+
     @media (min-width: 960px) {
       .phase,
       .phase__marker {
@@ -420,6 +499,19 @@ const {
   @media (min-width: 960px) {
     .process__inner {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    }
+
+    /* The copy column runs the full height of the panel beside it and the
+       call to action sits at its foot, so the button's bottom edge lines
+       up with the panel's. The reassurance goes above the button as its
+       lead-in, so nothing hangs below that line. */
+    .process__copy {
+      align-self: stretch;
+    }
+
+    .process__actions {
+      margin-top: auto;
+      flex-direction: column-reverse;
     }
   }
   @media (min-width: 720px) {

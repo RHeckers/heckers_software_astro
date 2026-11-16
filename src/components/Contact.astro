@@ -249,12 +249,15 @@ const nextSteps = [
     turnstileLoaded = true;
     const placeholder = document.getElementById("turnstilePlaceholder");
     if (placeholder) placeholder.hidden = true;
-    // The normal widget is 300px wide and does not shrink. On a narrow
-    // phone the form is not that wide (least of all inside the contact
-    // dialog), so ask for the compact widget before the script renders it.
+    // The normal widget is a fixed 300px. On phones ask for the flexible
+    // one, which fills the width of the form. It still needs 300px, so
+    // where the form is narrower than that (a small phone, inside the
+    // contact dialog) fall back to the compact widget. Both have to be set
+    // before the script renders it.
     const widget = document.getElementById("turnstileWidget");
-    if (widget && window.matchMedia("(max-width: 399px)").matches) {
-      widget.dataset.size = "compact";
+    if (widget && window.matchMedia("(max-width: 640px)").matches) {
+      const room = widget.clientWidth || window.innerWidth - 48;
+      widget.dataset.size = room >= 300 ? "flexible" : "compact";
     }
     const script = document.createElement("script");
     script.src = TURNSTILE_SRC;

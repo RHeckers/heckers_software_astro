@@ -1,9 +1,9 @@
 ---
 /**
  * The market data the reader needs whether or not they ever hire us. Three
- * numbers with their sources, then one paragraph that translates them into
- * the reader's own situation. Light ground, editorial layout: heading on
- * the left, numbers on the right.
+ * numbers with their sources, then at most a line or two that says what
+ * they mean for the reader. Light ground, editorial layout: heading on the
+ * left, numbers on the right.
  */
 import CountUp from "../CountUp.astro";
 
@@ -17,8 +17,8 @@ interface Props {
   title: string;
   intro: string;
   stats: Stat[];
-  /** What the numbers mean for the reader, in plain words. */
-  meaning: string;
+  /** What the numbers mean for the reader, in a line or two. */
+  meaning?: string;
 }
 
 const { title, intro, stats, meaning } = Astro.props;
@@ -45,7 +45,7 @@ const { title, intro, stats, meaning } = Astro.props;
       }
     </ol>
 
-    <p class="evidence__meaning">{meaning}</p>
+    {meaning && <p class="evidence__meaning">{meaning}</p>}
 
     {
       Astro.slots.has("proof") && (
@@ -59,7 +59,7 @@ const { title, intro, stats, meaning } = Astro.props;
 
 <style>
   .evidence {
-    background: var(--color-light);
+    background: var(--color-light-alt);
     color: var(--color-ink);
     padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
@@ -164,11 +164,11 @@ const { title, intro, stats, meaning } = Astro.props;
   }
 
   .evidence__meaning {
-    font-family: synonym, sans-serif;
-    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
-    line-height: 1.6;
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
     color: var(--color-ink);
-    max-width: 62ch;
+    max-width: 30ch;
     padding-left: 1.25rem;
     border-left: 3px solid var(--color-accent);
   }

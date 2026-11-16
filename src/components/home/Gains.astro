@@ -8,7 +8,21 @@
  * Source for the closing line: MIT NANDA, The GenAI Divide 2025 (external
  * partnerships reached deployment about twice as often as internal builds).
  */
-const changes = [
+interface Change {
+  before: string;
+  after: string;
+  detail: string;
+}
+
+interface Props {
+  /** The home page's copy is the default; a service page passes its own. */
+  title?: string;
+  changes?: Change[];
+  /** The ground it sits on, so it never repeats the section above it. */
+  tone?: "dark" | "light";
+}
+
+const HOME_CHANGES: Change[] = [
   {
     before: "A pilot nobody uses",
     after: "Software and AI live in production",
@@ -26,17 +40,21 @@ const changes = [
   },
   {
     before: "Knowledge that walks out the door",
-    after: "A team that keeps the pace",
+    after: "A team that learns and grows",
     detail: "Code, pipelines and decisions in your repositories, and your developers trained on them.",
   },
 ];
+
+const {
+  title = "How your company improves",
+  changes = HOME_CHANGES,
+  tone = "dark",
+} = Astro.props;
 ---
 
-<section class="gains" aria-labelledby="gains-heading">
+<section class:list={["gains", `gains--${tone}`]} aria-labelledby="gains-heading">
   <div class="gains__inner">
-    <h2 class="gains__title" id="gains-heading">
-      What changes for your company
-    </h2>
+    <h2 class="gains__title" id="gains-heading">{title}</h2>
 
     <ul class="changes">
       {
@@ -82,6 +100,25 @@ const changes = [
     --pain: var(--c-light);
     --rule: color-mix(in srgb, var(--c-light) 16%, transparent);
     --muted: color-mix(in srgb, var(--c-light) 72%, transparent);
+  }
+
+  /* The same rows on the light ground: the crossed-out pain in the dark
+     colour, the gain still marked by the accent rule. */
+  .gains--light {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    --pain: var(--c-dark);
+    --rule: var(--color-stroke);
+    --muted: var(--color-ink-muted);
+  }
+
+  .gains--light .gains__title,
+  .gains--light .change__title {
+    color: var(--color-ink);
+  }
+
+  .gains--light .change__arrow {
+    color: var(--color-accent-text);
   }
 
   .gains__inner {

@@ -873,6 +873,28 @@ const jsonLd = {
         calc(45% + var(--i) * 12%);
     }
 
+    /* Phones and tablets: the panel is taller than the screen, so timing
+       every step off the panel fills them all before the later ones are
+       even in view. Here each step is its own timeline: its marker lights
+       as that step comes up the screen, and its line then draws down to
+       the next one. */
+    @media (max-width: 959.98px) {
+      .phase {
+        view-timeline-name: --phase;
+      }
+
+      .phase,
+      .phase__marker {
+        animation-timeline: --phase;
+        animation-range: cover 16% cover 30%;
+      }
+
+      .phase:not(:last-child)::after {
+        animation-timeline: --phase;
+        animation-range: cover 24% cover 50%;
+      }
+    }
+
     @media (min-width: 960px) {
       .phase,
       .phase__marker {

@@ -1,0 +1,218 @@
+---
+/**
+ * Opening of a service page, in the idiom of the home hero: full-bleed dark
+ * ground, the service named in one short line, one headline, one call to
+ * action and one line of reassurance. No paragraph: what the service covers
+ * is told by the picture behind the words, which each page supplies in the
+ * default slot (a decorative, aria-hidden layer that fills the section).
+ *
+ * The headline comes in through the `title` slot so a page can mark the
+ * word that carries it with <em>. The call to action carries
+ * data-hero-cta, so a picture can react when it is hovered.
+ */
+interface Props {
+  /** Short name of the service, shown above the headline. */
+  eyebrow: string;
+  ctaLabel: string;
+  /** Contact form subject preselected when the call to action is followed. */
+  subject: string;
+  /** One line under the button that takes the risk out of clicking it. */
+  note: string;
+}
+
+const { eyebrow, ctaLabel, subject, note } = Astro.props;
+---
+
+<section class="shero">
+  <slot />
+
+  <div class="shero__inner">
+    <p class="shero__eyebrow">{eyebrow}</p>
+    <h1 class="shero__title"><slot name="title" /></h1>
+    <a href="#contactForm" class="shero__cta" data-subject={subject} data-hero-cta>
+      {ctaLabel}
+      <span class="shero__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+    <p class="shero__note">{note}</p>
+  </div>
+</section>
+
+<style>
+  .shero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--c-light);
+    background: var(--c-dark);
+  }
+
+  /* Fine static grain, as on the home hero. */
+  .shero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.14;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* A shade of the ground colour behind the words, so the picture never
+     competes with the headline. */
+  .shero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--c-dark) 45%, transparent) 0%,
+      color-mix(in srgb, var(--c-dark) 25%, transparent) 34%,
+      transparent 58%
+    );
+  }
+
+  .shero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 7rem clamp(1.25rem, 6vw, 5rem) 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shero__eyebrow {
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+    font-family: synonym, sans-serif;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    animation: shero-in 0.9s 0.1s both;
+  }
+
+  .shero__title {
+    font-family: "chillax", sans-serif;
+    font-weight: var(--font-weight-light);
+    font-size: clamp(2.5rem, 6.4vw, 6.75rem);
+    line-height: 0.99;
+    letter-spacing: -0.025em;
+    max-width: 12ch;
+    margin: 0 0 clamp(2rem, 4.5vw, 3.5rem);
+    text-wrap: balance;
+  }
+
+  .shero__title :global(em) {
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
+    color: var(--c-accent);
+  }
+
+  .shero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9em;
+    padding: 1.05em 2.1em;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: var(--c-dark);
+    font-size: clamp(1.05rem, 1.35vw, 1.3rem);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--c-light) 45%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--c-accent) 45%, transparent),
+      0 12px 36px color-mix(in srgb, var(--c-accent) 24%, transparent);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+      box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation: shero-in 0.9s 0.35s both;
+  }
+
+  .shero__arrow {
+    transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .shero__cta:hover,
+  .shero__cta:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--c-light) 45%, transparent),
+      0 0 0 6px color-mix(in srgb, var(--c-accent) 22%, transparent),
+      0 18px 56px color-mix(in srgb, var(--c-accent) 42%, transparent);
+  }
+
+  .shero__cta:hover .shero__arrow,
+  .shero__cta:focus-visible .shero__arrow {
+    transform: translateX(6px);
+  }
+
+  .shero__cta:focus-visible {
+    outline: 2px solid var(--c-light);
+    outline-offset: 4px;
+  }
+
+  .shero__note {
+    margin-top: 1.1rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+    animation: shero-in 0.9s 0.55s both;
+  }
+
+  @keyframes shero-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  /* Phones: the picture takes the upper half and the copy sits at the foot
+     of the screen, with the button in reach of a thumb. */
+  @media (max-width: 759px) {
+    .shero {
+      justify-content: flex-end;
+    }
+
+    .shero::after {
+      background: linear-gradient(
+        0deg,
+        color-mix(in srgb, var(--c-dark) 92%, transparent) 0%,
+        color-mix(in srgb, var(--c-dark) 70%, transparent) 42%,
+        transparent 62%
+      );
+    }
+
+    .shero__inner {
+      padding-top: 6rem;
+      padding-bottom: 3.5rem;
+    }
+
+    .shero__eyebrow {
+      font-size: 0.6875rem;
+      letter-spacing: 0.2em;
+    }
+
+    .shero__cta {
+      align-self: stretch;
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shero__eyebrow,
+    .shero__cta,
+    .shero__note {
+      animation: none;
+    }
+  }
+</style>

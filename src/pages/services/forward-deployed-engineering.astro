@@ -3,30 +3,42 @@
  * Service page: forward-deployed engineering, the main offer. One
  * industry expert, amplified by AI, who comes into a company and delivers
  * outcomes end to end: discovery, development, AI integration and
- * deployment, with a team built around him when an outcome needs it.
+ * deployment.
  *
- * The lesson is that software and AI initiatives fail in the last mile,
- * where nobody owns the outcome, so the page teaches the reader how to
- * recognise that in their own company before it explains how we work. It
- * also answers the obvious question up front: why an engagement rather
- * than one forward-deployed engineer on the payroll.
+ * The same eight-step journey as the home page, told for this one service
+ * in the service pages' own blocks: diagram rows, pinned left and right
+ * columns, the stepped rail, ticks that draw themselves. Every section is
+ * short on purpose: a line per point, no paragraphs. Grounds alternate
+ * dark and light all the way down (the self-check counts as dark: it is
+ * one dark panel).
  *
- * The page ends on the three tiers: the proof, the questions and the other
- * services come before them, the contact form opens in a dialog from every
- * call to action, and the footer is the compact one, so the last thing a
- * reader scrolls to is the offer.
+ *   1. The promise      What can you help me achieve?     Hero
+ *   2. The challenge    Do you understand my problem?     EvidenceBand, SymptomCheck
+ *   3. What we do       How can you help me?              Insights (diagram rows)
+ *   4. What you gain    What changes for my company?      Outcomes
+ *   5. How we do it     What is it like to work together? ProcessSteps
+ *   6. Why us + proof   Why should I trust you?           ProofRow
+ *   7. Who we are       Who will I actually work with?    Founder
+ *   8. Take the leap    How do we get started?            Faq, Tiers
+ *
+ * The contact form opens in a dialog from every call to action and the
+ * footer is the compact one, so the last thing a reader scrolls to is the
+ * offer.
  */
 import PageLayout from "../../layouts/PageLayout.astro";
-import ServiceHero from "../../components/services/ServiceHero.astro";
+import HeroShell from "../../components/services/hero/HeroShell.astro";
+import FdeRoute from "../../components/services/hero/FdeRoute.astro";
 import EvidenceBand from "../../components/services/EvidenceBand.astro";
 import SymptomCheck from "../../components/services/SymptomCheck.astro";
 import Insights from "../../components/services/Insights.astro";
+import Outcomes from "../../components/services/Outcomes.astro";
+import Founder from "../../components/services/Founder.astro";
+import ProofRow from "../../components/ProofRow.astro";
 import ProcessSteps from "../../components/services/ProcessSteps.astro";
 import Tiers from "../../components/services/Tiers.astro";
 import Faq from "../../components/services/Faq.astro";
 import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
-import ProofRow from "../../components/ProofRow.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
 import { COMPANY } from "../../consts";
 import { getService } from "../../lib/services";
@@ -41,7 +53,7 @@ const tiers = [
   {
     name: "Minimum",
     tagline: "One outcome you can already describe, delivered end to end.",
-    duration: "One outcome, from three weeks",
+    duration: "One outcome, delivered in 4 weeks or less",
     price: {
       amount: "Fixed price",
       detail: "per outcome, set after a few days of scoping",
@@ -50,7 +62,7 @@ const tiers = [
       "A few days of scoping, then a fixed price",
       "Front end, API, data and integrations, in your repositories",
       "Tests and a deployment pipeline from the first week",
-      "Working software to click through every two weeks",
+      "New working software every two weeks",
       "Documentation and a handover session",
     ],
   },
@@ -58,7 +70,7 @@ const tiers = [
     name: "Standard",
     badge: "Most companies choose this",
     recommended: true,
-    tagline: "Discovery first, then the highest-impact outcomes, owned rather than staffed.",
+    tagline: "Discovery first, we find the highest-impact outcomes and deliver them.",
     duration: "Two-week discovery, then two-week increments",
     price: {
       amount: "Fixed price",
@@ -67,6 +79,7 @@ const tiers = [
     includes: [
       "Everything in Minimum",
       "Two-week discovery: a ranked list and a scoped plan",
+      "Solutions delivered in two-week increments",
       "AI wired in where it earns its place, with guardrails",
       "A demo every two weeks with your stakeholders",
       "More hands brought in when the scope needs them",
@@ -84,8 +97,9 @@ const tiers = [
       "Everything in Standard",
       "Roadmap refreshed every quarter with the people who do the work",
       "A team assembled when one person is not enough",
+      "AI integration and deployment, with guardrails and a person in the loop",
       "AI enablement for your own developers",
-      "Monthly steering with leadership",
+      "Bi-weekly steering with leadership",
     ],
   },
 ];
@@ -130,52 +144,48 @@ const jsonLd = {
   breadcrumbs={[{ name: "Forward-deployed engineering", path: service.href }]}
   compactFooter
 >
-  <ServiceHero
-    eyebrow="Forward-deployed engineering for companies that need outcomes, not another hire"
-    title="Software and AI rarely fail at the idea. They fail in the last mile."
-    lead="The last mile is where nobody owns the outcome. An industry expert who comes into your company and delivers end to end: discovery, development, AI integration and deployment. With AI, one senior engineer now ships what a whole team did before. Hand over a set of tasks, or let us find the highest-impact improvements first. Either way, we stay until it runs in production."
+  {/* 1. The promise */}
+  <HeroShell
+    eyebrow="Forward-deployed engineering"
     ctaLabel={service.cta}
     subject={service.subject}
-    secondaryLabel="Check your next initiative"
-    secondaryHref="#self-check"
-    fact={{
-      value: "95%",
-      copy: "of enterprise generative AI pilots deliver no measurable return. The researchers do not blame the models: they blame integration into real workflows, data readiness, and nobody owning the outcome.",
-      source: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
-    }}
-  />
+    note="Fixed price per outcome. No obligation."
+  >
+    <FdeRoute />
+    <Fragment slot="title">
+      One senior engineer. Idea to <em>production.</em>
+    </Fragment>
+  </HeroShell>
 
+  {/* 2. The challenge */}
   <EvidenceBand
-    title="What the numbers say about getting software and AI into production"
-    intro="None of these numbers are ours. They come from MIT, IDC and RAND, and together they describe the company that starts more than it finishes."
+    title="What the numbers say about AI"
+    intro="We break the cycle of failed AI initiatives."
     stats={[
       {
         value: "95%",
-        label:
-          "of enterprise generative AI pilots show no measurable profit-and-loss impact. The demo worked; the integration into the daily workflow never got finished.",
+        label: "of enterprise AI pilots return nothing measurable.",
         source: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
       },
       {
         value: "88%",
-        label:
-          "of AI proofs of concept never reach production. For every thirty-three a company starts, four make it. The rest stall at the ERP, the data, security, or the team that was supposed to use it.",
+        label: "of AI proofs of concept never reach production.",
         source: "IDC, 2025",
       },
       {
         value: "2×",
-        label:
-          "as often: the rate at which tools built with an outside partner reached deployment, compared with tools built alone. About two in three against one in three.",
+        label: "as many reach production when built with an outside partner.",
         source: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
       },
     ]}
-    meaning="The pattern is the same whether the initiative is an AI assistant or a customer portal: the demo is the easy part. What is missing is the last mile, which is the integration with the ERP, the data that has to be cleaned first, the pipeline, the monitoring, and the people trained to use it. That is engineering, and it needs an owner. It is why the AI labs invented the forward-deployed engineer: someone who goes to the customer and builds until it works. We do the same for companies that cannot hire one. And because coding agents now do the typing, one industry expert delivers what used to take a team, with one person accountable for the whole outcome."
+    meaning="The demo is the easy part. The last mile needs an owner."
   >
     <ProofQuote slot="proof" snippet="ferdiFullStack" />
   </EvidenceBand>
 
   <SymptomCheck
     title="Twelve signs your company is behind on AI automation"
-    intro="Every statement is ticked, because at most companies most of them are still true. Walk through your own departments and untick only what you can honestly rule out. What is left is your score, and someone else's head start."
+    intro="Untick what you can honestly rule out. What is left is your score."
     items={[
       "Someone retypes data from PDFs, emails or one system into another every week.",
       "Customer questions with a standard answer still wait for a person to type it.",
@@ -194,22 +204,22 @@ const jsonLd = {
       {
         min: 0,
         title: "Ahead of the pack.",
-        copy: "Models already do the first draft of real work in your company, and your developers ship with agents. We add the next outcome, not the first.",
+        copy: "Models already do real work in your company. We add the next outcome, not the first.",
       },
       {
         min: 2,
         title: "Typical.",
-        copy: "This is where most companies are: a subscription here, a pilot there, and the real work still done by hand. Each ticked item is a process where a model could do the first draft tomorrow, with a person checking it.",
+        copy: "A subscription here, a pilot there, the real work still by hand. Every tick is a step a model could draft tomorrow.",
       },
       {
         min: 5,
         title: "Falling behind.",
-        copy: "The manual work is spread across departments, so nobody sees the total. Add up the hours behind the ticked items and the number is usually a few salaries a year. A two-week discovery puts that number on paper, ranked by what is cheapest to automate first.",
+        copy: "The hours behind these ticks usually add up to a few salaries a year. A two-week discovery puts that number on paper.",
       },
       {
         min: 8,
         title: "The gap is growing.",
-        copy: "Companies that automated these steps a year ago now do them at a fraction of the cost, and the gap widens every quarter you wait. This is not fixed by a policy, a tool licence or another pilot. It is fixed by someone coming in, picking the highest-impact process, automating it into production, and then the next one.",
+        copy: "Others automated these steps a year ago. Another pilot will not close the gap. Shipping to production will.",
       },
     ]}
     ctaLabel="Talk about your score"
@@ -217,116 +227,140 @@ const jsonLd = {
     preChecked
   />
 
+  {/* 3. What we do */}
   <Insights
-    title="What we have learned delivering inside other people's companies"
-    intro="Utilities, healthcare, industry, government, and companies with no developers yet. The engagements that landed shared five habits."
+    id="what-we-do"
+    title="One engineer owns discovery to deployment"
+    intro="Inside your company, amplified by AI, accountable until it is live."
     items={[
       {
-        figure: "last-mile",
-        title: "The last mile is the project.",
-        copy: "Screens and models are the easy part. The identity provider nobody owns, the ERP with no documented API and the security review planned for the end decide the timeline.",
-        takeaway:
-          "List every system the initiative touches and who owns its credentials. A missing name is your first risk.",
+        figure: "discovery",
+        title: "Discover what saves the most.",
+        copy: "We sit with the people who do the work and rank what software and AI would save.",
       },
       {
-        figure: "discovery",
-        title: "Discovery beats a wishlist.",
-        copy: "A backlog written by IT describes what IT can see. The highest-impact work is the export someone cleans up by hand every Monday, and you only find it by sitting with the people who do it.",
-        takeaway:
-          "Spend one day next to the team with the most tickets. Write down the three things they do by hand.",
+        figure: "last-mile",
+        title: "Build the last mile.",
+        copy: "The ERP, the data, the identity provider, the pipeline. In your repositories.",
       },
       {
         figure: "feature",
-        title: "AI is a feature, not a project.",
-        copy: "The initiatives that returned money started with one slow workflow step and used a model for exactly that step, with a person checking the output. The ones that started with the technology produced a demo and a steering committee.",
-        takeaway:
-          "For every AI idea, name the step it replaces and the person who checks it. If either is blank, it is not ready.",
-      },
-      {
-        figure: "amplified",
-        title: "One expert with AI outdelivers a team without it.",
-        copy: "Most of what a team costs is keeping it aligned. With agents doing the typing, one engineer who understands the whole stack ships what the team shipped, as long as what they learn lands in your repositories and not in their head.",
-        takeaway:
-          "Ask every external engineer where what they know lives. Insist on written decisions in your repository.",
+        title: "Integrate AI where it earns its place.",
+        copy: "One workflow step, a model, guardrails, and a person checking the output.",
       },
       {
         figure: "owner",
-        title: "Outcomes need an owner with hands.",
-        copy: "A report changes nothing unless someone builds, and a team that only builds what it is told ships the wrong thing faster. One party accountable for the outcome in production is the whole idea, and why we price per outcome.",
-        takeaway:
-          "Before signing with anyone, ask who is accountable for this running in production, and what happens to the price if it does not.",
+        title: "Deploy it, and own it until it runs.",
+        copy: "One accountable owner in production. That is why we price per outcome.",
       },
     ]}
-  >
-    <ProofQuote slot="proof" snippet="alexProactive" tone="dark" />
-  </Insights>
+  />
 
+  {/* 4. What you gain */}
+  <Outcomes
+    tone="light"
+    title="What changes for your company"
+    stat={{
+      value: "2×",
+      label: "as many initiatives reach production with an outside partner.",
+      source: "MIT NANDA, 2025",
+    }}
+    outcomes={[
+      {
+        title: "Software and AI live in production",
+        detail: "Wired into your systems, your data and your Monday morning.",
+      },
+      {
+        title: "One owner instead of a team to align",
+        detail: "Coding agents do the typing. One senior engineer owns the outcome.",
+      },
+      {
+        title: "A fixed price per outcome",
+        detail: "Agreed before we build. The number does not change.",
+      },
+      {
+        title: "Everything in your repositories",
+        detail: "Code, pipelines and decisions are yours from the first commit.",
+      },
+      {
+        title: "A team that keeps the pace",
+        detail: "Your developers get a working session, not just a document.",
+      },
+    ]}
+  />
+
+  {/* 5. How we do it */}
   <ProcessSteps
+    surface="dark"
     title="How an engagement runs"
-    intro="Fixed steps, short feedback loops, no long silences. The same structure whether you hand us a backlog or ask us to find the work."
+    intro="Fixed steps. Short loops. No long silences."
     deliverablesTitle="What you can count on"
     deliverables={[
-      "A ranked list of high-impact work and a scoped plan with a realistic estimate before you commit to anything",
-      "Code, documentation and infrastructure in your repositories and accounts from day one",
-      "Automated tests and deployment through a pipeline from the first sprint",
-      "Working software you can click through every two weeks",
-      "AI features with evaluation, guardrails and a person in the loop, never a black box",
-      "Your coding guidelines, security and compliance requirements, and release process, followed; or set up with you if you have none yet",
-      "Written decisions and lint rules at handover, so your own team can keep the pace",
-      "The people you talk to are the people who build; no handoff to a junior team",
+      "A scoped plan and a fixed price before you commit",
+      "Everything in your repositories and accounts from day one",
+      "Working software to click through every two weeks",
+      "The person you talk to is the person who builds",
     ]}
     steps={[
       {
         title: "Discovery",
         when: "Week 1–2",
-        copy: "We sit with the people who do the work, read the systems and the code, and map every integration the outcome depends on. For a backlog you hand us, this is a few days of scoping. For a company that wants us to find the work, it is two weeks that end in a ranked list of what software and AI would save the most time or money.",
+        copy: "We sit with the people who do the work. It ends in a ranked list of what saves the most.",
       },
       {
         title: "Scope and commit",
         when: "End of week 2",
-        copy: "The top of the list becomes a scoped outcome with a fixed price and a timeline. You decide whether to go ahead knowing exactly what you buy. Most companies do; some take the list and run part of it themselves.",
+        copy: "The top of the list gets a fixed price and a timeline. You decide.",
       },
       {
         title: "Foundation",
         when: "Week 3",
-        copy: "Data model, integrations, pipeline and code structure designed to fit your landscape and standards, so what we build slots into your suite instead of beside it. Security and compliance are involved here, not at sign-off.",
+        copy: "Data model, integrations and pipeline, fitted to your landscape. Security is in the room from the start.",
       },
       {
         title: "Build in short cycles",
         when: "Every 2 weeks",
-        copy: "Working software you and the people who will use it can click through, reviewed together. Automated tests and deployments through the pipeline from the first sprint, so every demo is a release candidate.",
+        copy: "Working software, reviewed with the people who will use it. Every demo is a release candidate.",
       },
       {
         title: "AI integration",
         when: "Where it earns its place",
-        copy: "The workflow step a model replaces is wired in with evaluation on your own data, guardrails, and a person checking the output until the numbers say they do not have to. If a model does not earn its place, we build the plain software version and tell you why.",
+        copy: "A model takes over one workflow step, with guardrails and a person checking. If it does not earn its place, we say so.",
       },
       {
-        title: "Ship, hand over, stay or leave",
+        title: "Ship and hand over",
         when: "Per outcome",
-        copy: "Go-live, monitoring, documentation and a working session with your developers. Then you choose: we take the next outcome from the list with you, or we leave with everything already in your hands.",
+        copy: "Live, monitored and documented. Then we take the next outcome, or leave it all in your hands.",
       },
     ]}
     ctaLabel={service.cta}
     subject={service.subject}
-  >
-    <ProofQuote slot="proof" snippet="peterApproach" />
-  </ProcessSteps>
+  />
 
-  <ProofRow snippets={["ferdiBeyondScope", "peterMentoring", "nicoTeam"]} />
+  {/* 6. Why us + proof */}
+  <ProofRow
+    title="Why companies trust us with it"
+    lede="The words of people who had us inside their team."
+    snippets={["ferdiBeyondScope", "peterMentoring", "nicoTeam"]}
+  />
 
+  {/* 7. Who we are */}
+  <Founder stage="hall" />
+
+  {/* 8. Take the leap */}
   <Faq
-    title="Questions we hear before every engagement"
+    tone="dark"
+    title="Questions we hear first"
     items={FAQS["forward-deployed-engineering"]}
   />
 
   <Tiers
-    title="Three ways to bring us in"
-    intro="Every tier is a fixed price per outcome. Pick by how much you want us to find for you: one outcome you hand us, discovery plus the outcomes it turns up, or a roadmap of them."
+    title="Three ways to start"
+    intro="Every tier is a fixed price per outcome."
     serviceName="forward-deployed engineering"
     subject={service.subject}
     tiers={tiers}
-    note="Every outcome is priced on its own, before we build it. Scoping and discovery are short and priced separately, and end in a scoped plan, so you commit to delivery knowing scope and price. Our default stack is Angular, TypeScript, .NET, Node.js, SQL and Azure, with the Claude and OpenAI APIs for AI features; where your platform requires another, we work in yours."
+    note="Each outcome is priced before we build it. Default stack: Angular, TypeScript, .NET, Node.js, SQL and Azure, with the Claude and OpenAI APIs. Or yours."
     otherLabel="Tell us what you need"
   />
 

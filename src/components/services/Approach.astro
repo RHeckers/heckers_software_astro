@@ -1,0 +1,148 @@
+---
+/**
+ * "How can you help me?" on the architecture assessment page: what we do,
+ * in three verbs, beside the thing an assessment draws first. A dark band.
+ *
+ * The verbs take the accent wipe as they scroll in, as on the home page;
+ * the picture is whatever the page puts in the default slot (here the
+ * project graph that tangles and untangles, and lights up a project's
+ * dependencies on hover). From 900px up the picture stays pinned while
+ * the verbs scroll past it. Below 650px a graph cannot be read, so the
+ * picture is left out and the words carry the section.
+ */
+import Accent from "../Accent.astro";
+
+interface Verb {
+  /** The word that takes the accent wipe. */
+  verb: string;
+  rest: string;
+}
+
+interface Props {
+  id?: string;
+  title: string;
+  lede: string;
+  verbs: Verb[];
+}
+
+const { id = "approach", title, lede, verbs } = Astro.props;
+---
+
+<section class="approach" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="approach__inner">
+    <div class="approach__copy">
+      <h2 class="approach__title" id={`${id}-heading`}>{title}</h2>
+      <p class="approach__lede">{lede}</p>
+      <ol class="approach__verbs">
+        {
+          verbs.map((item, index) => (
+            <li class="approach__verb">
+              <span class="approach__index" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span>
+                <Accent range="cover 30% cover 70%" mobileRange="cover 30% cover 75%">
+                  {item.verb}
+                </Accent>
+                {item.rest}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="approach__picture">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .approach {
+    background: var(--c-dark);
+    color: var(--c-light);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
+  }
+
+  .approach__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  .approach__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .approach__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    max-width: 13ch;
+  }
+
+  .approach__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--c-light) 74%, transparent);
+    max-width: 40ch;
+  }
+
+  .approach__verbs {
+    list-style: none;
+    margin-top: var(--spacer-base);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
+  }
+
+  .approach__verb {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    align-items: baseline;
+    padding: clamp(1.4rem, 3vw, 2.25rem) 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--c-light) 12%, transparent);
+    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1.15;
+  }
+
+  .approach__index {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.12em;
+    color: var(--c-accent);
+  }
+
+  .approach__picture {
+    display: none;
+    justify-self: center;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  @media (min-width: 650px) {
+    .approach__picture {
+      display: block;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .approach__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .approach__picture {
+      position: sticky;
+      top: calc(56px + 3rem);
+      justify-self: end;
+    }
+  }
+</style>
