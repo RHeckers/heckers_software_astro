@@ -6,10 +6,11 @@
  * other clients follow in one quiet line of logos underneath. One row of
  * four from 900px up, two by two below that.
  *
- * As the block scrolls in, the results arrive one after the other: the
- * accent rule draws down, the logo and the figure rise into place, the
- * figure counts up, and the label and the link follow. Scroll-driven CSS,
- * simply shown where that is unsupported or when motion is reduced.
+ * As the block scrolls in, the four results are revealed together from
+ * top to bottom: the accent lines draw down and the logo, the figure
+ * (which counts up), the label and the link are uncovered behind them.
+ * Scroll-driven CSS, simply shown where that is unsupported or when
+ * motion is reduced.
  *
  * The logos are the on-dark versions in assets/logos/on-dark: each one a
  * single light shape, so seven brands in seven colours do not fight the
@@ -185,6 +186,12 @@ const others = [
     row-gap: 0.75rem;
     align-content: start;
     padding-left: clamp(1rem, 2vw, 1.5rem);
+    /* The accent line is the block's own left border, not a separate
+       layer: a border is always painted on whole screen pixels, so the
+       yellow is the full accent colour on every screen. A line that is
+       moved or scaled can land between pixels and mix with the dark
+       ground, which made it look duller than the underlines. */
+    border-left: 2px solid var(--c-accent);
   }
 
   /* Without subgrid: a column with the link on the bottom line. */
@@ -198,20 +205,6 @@ const others = [
     .result__more {
       margin-top: auto;
     }
-  }
-
-  /* The accent line: the same colour and the same two pixels as the
-     underlines of the links in this block, so the yellow reads the same
-     everywhere in it. */
-  .result::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--c-accent);
-    transform-origin: top;
   }
 
   /* Each logo keeps its own proportions inside the same box, left
@@ -284,51 +277,26 @@ const others = [
     max-width: clamp(6rem, 10vw, 9rem);
   }
 
-  /* One block after the other, left to right: the rule draws down, then
-     the logo and the figure rise and the two lines under them follow.
-     Unhurried: the first block starts as the row comes onto the screen
-     and the last one settles when the row is around the middle of it. */
+  /* All four results are revealed together, from top to bottom: the
+     yellow lines draw down and each block is uncovered behind its line as
+     the row scrolls up the screen. Unhurried: it starts as the row comes
+     onto the screen and is complete when the row is near the middle. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      .result::before {
-        animation: result-rule cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      .result {
+        animation: result-reveal linear both;
         animation-timeline: --results;
-        animation-range: cover calc(4% + var(--i) * 7%) cover calc(24% + var(--i) * 7%);
-      }
-
-      .result__logo,
-      .result__value {
-        animation: result-rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
-        animation-timeline: --results;
-        animation-range: cover calc(9% + var(--i) * 7%) cover calc(31% + var(--i) * 7%);
-      }
-
-      .result__label,
-      .result__more {
-        animation: result-fade linear both;
-        animation-timeline: --results;
-        animation-range: cover calc(16% + var(--i) * 7%) cover calc(38% + var(--i) * 7%);
+        animation-range: cover 5% cover 42%;
       }
     }
   }
 
-  @keyframes result-rule {
+  @keyframes result-reveal {
     from {
-      transform: scaleY(0);
+      clip-path: inset(0 0 100% 0);
     }
-  }
-
-  @keyframes result-rise {
-    from {
-      opacity: 0;
-      translate: 0 1.5rem;
-    }
-  }
-
-  @keyframes result-fade {
-    from {
-      opacity: 0;
-      translate: 0 0.75rem;
+    to {
+      clip-path: inset(0 0 0 0);
     }
   }
 
