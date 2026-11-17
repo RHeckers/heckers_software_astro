@@ -9,11 +9,6 @@ order: 4
 services: ["forward-deployed-engineering"]
 stack: ["Angular", "Node.js", "Express", "MongoDB", "Cypress", "Jest", "GitHub Actions"]
 short: true
-draft: true
-toConfirm:
-  - "Client approval to publish this case study and to name DH Automation."
-  - "The description of the application (orders from Exact, batches, PLCs) comes from your LinkedIn profile. May that level of detail be public?"
-  - "Sector label: I wrote 'Industrial automation'. Correct it if needed."
 ---
 
 ## Situation

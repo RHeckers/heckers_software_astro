@@ -32,8 +32,8 @@ import LatestArticles from "../components/home/LatestArticles.astro";
  *   4. What you gain    What changes for my company?      Gains
  *   5. How we do it     What is it like to work together? ProcessSteps
  *   6. Why us + proof   Why should I trust you?           WhyUs
- *   7. Who we are       Who will I actually work with?    WhoWeAre, latest articles
- *   8. Take the leap    How do we get started?            Contact
+ *   7. Who we are       Who will I actually work with?    WhoWeAre
+ *   8. Take the leap    How do we get started?            Contact, then the latest articles
  *
  * One look, shared with the service pages: full-width sections on a 1200px
  * column, one heading scale, rows divided by hairlines, a coloured rule
@@ -132,10 +132,12 @@ const jsonLd = {
 
   {/* 7. Who we are */}
   <WhoWeAre />
-  <LatestArticles />
 
   {/* 8. Take the leap */}
-  <Contact />
+  <Contact tone="dark" />
+
+  {/* For the visitor who is not ready to talk yet */}
+  <LatestArticles />
   </div>
 </PageLayout>
 

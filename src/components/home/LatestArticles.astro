@@ -1,12 +1,12 @@
 ---
 /**
- * The three newest blog posts, between "who we are" and the contact form,
- * so a visitor who is not ready to talk yet has somewhere to go that
- * still shows the work.
+ * The three newest blog posts, below the contact form: nothing stands
+ * between a ready visitor and the form, and a visitor who is not ready to
+ * talk yet still has somewhere to go that shows the work.
  *
- * A dark band with the same rows as "The work behind it" on the service
- * pages: a small label above, then one hairline row per post with the
- * date in the accent colour, the title and an arrow.
+ * A light band after the dark contact section, with the same rows as
+ * "The work behind it" on the service pages: a small label above, then
+ * one hairline row per post with the date, the title and an arrow.
  */
 import { formatDate, getSortedPosts, postHref } from "../../lib/blog";
 
@@ -48,8 +48,8 @@ const posts = (await getSortedPosts()).slice(0, 3);
 
 <style>
   .articles {
-    background: var(--color-dark-soft);
-    color: var(--color-ink-light);
+    background: var(--color-light-alt);
+    color: var(--color-ink);
     padding: clamp(3.5rem, 8vw, 6rem) clamp(1.25rem, 6vw, 5rem);
   }
 
@@ -88,7 +88,7 @@ const posts = (await getSortedPosts()).slice(0, 3);
     grid-column: 1 / -1;
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
-    color: var(--c-accent);
+    color: var(--color-ink-muted);
   }
 
   .article__title {

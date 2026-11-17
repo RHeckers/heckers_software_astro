@@ -14,12 +14,6 @@ results:
   - value: "2M+"
     label: "customers use the product"
 quote: "ferdiDelivery"
-draft: true
-toConfirm:
-  - "Client approval to publish this case study and to name Vattenfall. You confirmed the NPS figure; does Vattenfall agree to it being public?"
-  - "The period over which the NPS moved from 3.4 to 4.2."
-  - "Your CV says you improved the usage and cost components; you told me your team redeveloped the whole section and migrated it from Swift and Kotlin. The draft follows what you told me. Check the wording."
-  - "The quote is Ferdi Havenaar's recommendation, which is already on the site. May it be used here?"
 ---
 
 ## Situation

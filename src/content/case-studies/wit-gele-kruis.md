@@ -14,13 +14,6 @@ results:
   - value: "90 → 10 min"
     label: "for a full Cypress test run"
 quote: "peterApproach"
-draft: true
-toConfirm:
-  - "Client approval to publish this case study and to name Wit-Gele Kruis."
-  - "Which entity to name. Your LinkedIn profile and the client logo say Wit-Gele Kruis van Antwerpen; the testimonial on the site says Wit-Gele Kruis West-Vlaanderen."
-  - "How the 20% productivity gain was measured, and whether it may be stated publicly."
-  - "Role title: your CV says lead front-end platform engineer, LinkedIn says freelance platform engineer and 'one of the lead platform engineers'."
-  - "The quote is Peter Nieuwenhuyse's recommendation, which is already on the site. Is it about this engagement, and may it be used here?"
 ---
 
 ## Situation

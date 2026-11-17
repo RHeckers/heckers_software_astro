@@ -9,12 +9,6 @@ order: 3
 services: ["architecture-assessment"]
 stack: ["Angular", "Nx", "Nx Cloud", ".NET", "GraphQL", "MSSQL", "SignalR", "Docker", "Cypress", "Selenium", "Azure DevOps"]
 quote: "marcFramework"
-draft: true
-toConfirm:
-  - "Client approval to publish this case study and to name Marel."
-  - "There is no number in this case study. Is there a figure for the build, test or lint times, or for the compute costs, that may be used?"
-  - "How many apps and developers were part of the migration?"
-  - "The quote is Marc Caessens's recommendation, which is already on the site. May it be used here?"
 ---
 
 ## Situation
