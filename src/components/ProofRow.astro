@@ -10,6 +10,8 @@
  */
 import ProofQuote from "./ProofQuote.astro";
 import type { SnippetKey } from "../lib/testimonials";
+import { caseStudiesForService, caseStudyHref } from "../lib/case-studies";
+import type { ServiceSlug } from "../lib/services";
 
 interface Props {
   title?: string;
@@ -18,6 +20,8 @@ interface Props {
   lede?: string;
   snippets: SnippetKey[];
   tone?: "light" | "dark";
+  /** Lists the published case studies for this service under the quotes. */
+  service?: ServiceSlug;
 }
 
 const {
@@ -25,7 +29,10 @@ const {
   lede = "I deliver every engagement myself. These are the words of people who had me inside their team.",
   snippets,
   tone = "dark",
+  service,
 } = Astro.props;
+
+const cases = service ? await caseStudiesForService(service) : [];
 ---
 
 <section
@@ -47,6 +54,24 @@ const {
         ))
       }
     </ul>
+    {
+      cases.length > 0 && (
+        <div class="proof-row__cases">
+          <h3 class="proof-row__cases-title">The work behind it</h3>
+          <ul>
+            {cases.map((study) => (
+              <li>
+                <a href={caseStudyHref(study)} target="_blank" rel="noopener">
+                  <span class="proof-row__case-client">{study.data.client}</span>
+                  <span class="proof-row__case-title">{study.data.title}</span>
+                  <span aria-hidden="true">&rarr;</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
   </div>
 </section>
 
@@ -97,6 +122,68 @@ const {
 
   .proof-row--light .proof-row__lede {
     color: var(--color-ink-muted);
+  }
+
+  /* The case studies for this service: hairline rows, client first. */
+  .proof-row__cases-title {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .proof-row__cases ul {
+    list-style: none;
+    border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  }
+
+  .proof-row__cases a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1.5rem;
+    align-items: baseline;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .proof-row__case-client {
+    grid-column: 1 / -1;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--c-accent);
+  }
+
+  .proof-row--light .proof-row__case-client {
+    color: var(--color-ink-muted);
+  }
+
+  .proof-row__case-title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.25;
+  }
+
+  .proof-row__cases a:hover .proof-row__case-title,
+  .proof-row__cases a:focus-visible .proof-row__case-title {
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 760px) {
+    .proof-row__cases a {
+      grid-template-columns: 14rem 1fr auto;
+    }
+
+    .proof-row__case-client {
+      grid-column: auto;
+    }
   }
 
   .proof-row__list {

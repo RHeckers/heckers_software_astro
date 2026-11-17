@@ -1,0 +1,570 @@
+---
+/**
+ * Case studies: the listing at /case-studies/ and one page per case study
+ * under it, from the same file so both disappear together. With nothing
+ * published, a production build has no case study pages at all, and no
+ * page links to them; drafts are built in development only.
+ *
+ * A case study page has a fixed order: who, when and in what role; the
+ * figures; then Situation, What I did and Result from the markdown body;
+ * the stack; an optional client quote; and the services it belongs to.
+ */
+import { render } from "astro:content";
+import PageLayout from "../../layouts/PageLayout.astro";
+import ContactDialog from "../../components/ContactDialog.astro";
+import ProofQuote from "../../components/ProofQuote.astro";
+import {
+  caseStudyHref,
+  getCaseStudies,
+  type CaseStudy,
+} from "../../lib/case-studies";
+import { getService } from "../../lib/services";
+import { SNIPPETS, type SnippetKey } from "../../lib/testimonials";
+
+interface Props {
+  study?: CaseStudy;
+  studies: CaseStudy[];
+}
+
+export async function getStaticPaths() {
+  const studies = await getCaseStudies();
+  if (studies.length === 0) return [];
+  return [
+    { params: { slug: undefined }, props: { studies } satisfies Props },
+    ...studies.map((study) => ({
+      params: { slug: study.id },
+      props: { study, studies } satisfies Props,
+    })),
+  ];
+}
+
+const { study, studies } = Astro.props;
+const rendered = study ? await render(study) : undefined;
+const Content = rendered?.Content;
+const data = study?.data;
+const hasBody = Boolean(study?.body?.trim());
+const quote =
+  data?.quote && data.quote in SNIPPETS && !data.short
+    ? (data.quote as SnippetKey)
+    : undefined;
+const meta = data ? [data.sector, data.period, data.role].filter(Boolean) : [];
+const drafts = studies.some((item) => item.data.draft);
+
+const title = data
+  ? `${data.client}: ${data.title} | Heckers Software`
+  : "Case studies | Heckers Software";
+const description =
+  data?.summary ??
+  "What I delivered inside client teams: the situation, the work, the result and the stack.";
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  noindex={drafts && (!data || data.draft)}
+  breadcrumbs={
+    data
+      ? [
+          { name: "Case studies", path: "/case-studies/" },
+          { name: data.client, path: caseStudyHref(study!) },
+        ]
+      : [{ name: "Case studies", path: "/case-studies/" }]
+  }
+  compactFooter
+>
+  {
+    data && study ? (
+      <article class="case">
+        <header class="case__head">
+          <div class="case__inner">
+            <a class="case__back" href="/case-studies/">
+              <span aria-hidden="true">&larr;</span> All case studies
+            </a>
+            <p class="case__client">{data.client}</p>
+            <h1 class="case__title">{data.title}</h1>
+            {meta.length > 0 && (
+              <ul class="case__meta">
+                {meta.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </header>
+
+        {data.draft && (
+          <aside class="confirm" aria-labelledby="confirm-heading">
+            <div class="case__inner">
+              <h2 class="confirm__title" id="confirm-heading">
+                Draft. To confirm before publishing
+              </h2>
+              <ul class="confirm__list">
+                {data.toConfirm.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        )}
+
+        {data.results.length > 0 && !data.short && (
+          <div class="case__band">
+            <ul class="case__inner figures">
+              {data.results.map((result) => (
+                <li class="figure">
+                  <p class="figure__value">{result.value}</p>
+                  <p class="figure__label">{result.label}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {hasBody && Content && (
+          <div class="case__band">
+            <div class="case__inner case__body">
+              <div class="case__text">
+                <Content />
+              </div>
+
+              <aside class="case__side">
+                {data.stack.length > 0 && (
+                  <section aria-labelledby="stack-heading">
+                    <h2 class="side__title" id="stack-heading">
+                      Stack
+                    </h2>
+                    <ul class="stack">
+                      {data.stack.map((item) => (
+                        <li>{item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+                {data.services.length > 0 && (
+                  <section aria-labelledby="service-heading">
+                    <h2 class="side__title" id="service-heading">
+                      The service behind it
+                    </h2>
+                    <ul class="side__links">
+                      {data.services.map((slug) => {
+                        const service = getService(slug);
+                        return (
+                          <li>
+                            <a href={service.href}>{service.name}</a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                )}
+              </aside>
+            </div>
+          </div>
+        )}
+
+        {quote && (
+          <div class="case__band case__band--quote">
+            <div class="case__inner">
+              <h2 class="side__title">Client quote</h2>
+              <ProofQuote snippet={quote} tone="dark" />
+            </div>
+          </div>
+        )}
+
+        <div class="case__band case__band--cta">
+          <div class="case__inner">
+            <p class="case__ask">A similar problem in your team?</p>
+            <a class="case__cta" href="#contactForm">
+              Book a discovery call
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+      </article>
+    ) : (
+      <section class="cases">
+        <div class="case__inner">
+          <h1 class="case__title">Case studies</h1>
+          <p class="cases__lede">
+            What I delivered inside client teams: the situation, the work,
+            the result and the stack.
+          </p>
+          <ol class="cases__list">
+            {studies.map((item) => (
+              <li class="cases__item">
+                <p class="case__client">
+                  {item.data.client}
+                  {item.data.draft && <span class="badge">Draft</span>}
+                </p>
+                <h2 class="cases__title">
+                  <a href={caseStudyHref(item)} target="_blank" rel="noopener">{item.data.title}</a>
+                </h2>
+                {item.data.summary && (
+                  <p class="cases__copy">{item.data.summary}</p>
+                )}
+                {item.data.results.length > 0 && (
+                  <ul class="cases__figures">
+                    {item.data.results.map((result) => (
+                      <li>
+                        <strong>{result.value}</strong> {result.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  <ContactDialog />
+</PageLayout>
+
+<style>
+  .case,
+  .cases {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+  }
+
+  .case__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* The opening: dark, like the heroes of the service pages, but only as
+     tall as its text. Room at the top for the floating navigation. */
+  .case__head {
+    background: var(--c-dark);
+    color: var(--c-light);
+    padding: clamp(7rem, 14vw, 10rem) clamp(1.25rem, 6vw, 5rem)
+      clamp(3rem, 7vw, 5rem);
+  }
+
+  .case__back {
+    display: inline-block;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+    text-decoration: none;
+  }
+
+  .case__back:hover,
+  .case__back:focus-visible {
+    color: var(--c-light);
+  }
+
+  .case__client {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .case__head .case__client {
+    color: var(--c-accent);
+  }
+
+  .case__title {
+    margin-top: 0.75rem;
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    max-width: 18ch;
+  }
+
+  .case__meta {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    color: color-mix(in srgb, var(--c-light) 78%, transparent);
+  }
+
+  /* The list of open points on a draft. Never part of a production page:
+     drafts are not built there. */
+  .confirm {
+    padding: 1.5rem clamp(1.25rem, 6vw, 5rem);
+    background: var(--c-accent);
+    color: var(--c-dark);
+  }
+
+  .confirm__title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .confirm__list {
+    margin-top: 0.75rem;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.35rem;
+    font-family: synonym, sans-serif;
+    line-height: 1.45;
+    max-width: 90ch;
+  }
+
+  .case__band {
+    padding: clamp(3rem, 7vw, 5rem) clamp(1.25rem, 6vw, 5rem) 0;
+  }
+
+  .figures {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: clamp(1.75rem, 4vw, 3rem);
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .figure {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--c-accent);
+  }
+
+  .figure__value {
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .figure__label {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.4;
+    max-width: 26ch;
+  }
+
+  .case__body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .case__text {
+    max-width: 68ch;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.6;
+  }
+
+  .case__text :global(h2) {
+    font-family: chillax, sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+    margin: clamp(2.25rem, 5vw, 3.5rem) 0 1rem;
+  }
+
+  .case__text :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .case__text :global(p) {
+    color: var(--color-ink-muted);
+  }
+
+  .case__text :global(ul) {
+    list-style: none;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .case__text :global(li) {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .case__side {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .side__title {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-bottom: 1rem;
+  }
+
+  .stack {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-family: synonym, sans-serif;
+  }
+
+  .stack li {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--color-stroke-strong);
+    border-radius: 999px;
+  }
+
+  .side__links {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+  }
+
+  .side__links a,
+  .cases__title a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .case__band--quote {
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    background: var(--c-dark);
+    color: var(--c-light);
+  }
+
+  .case__band--quote .side__title {
+    color: color-mix(in srgb, var(--c-light) 70%, transparent);
+  }
+
+  .case__band--quote :global(.proof) {
+    max-width: 56rem;
+  }
+
+  .case__band--cta {
+    padding-bottom: clamp(4rem, 10vw, 7.5rem);
+  }
+
+  .case__band--cta .case__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-top: clamp(2rem, 5vw, 3rem);
+    border-top: 1px solid var(--color-stroke);
+  }
+
+  .case__band--quote + .case__band--cta .case__inner {
+    border-top: 0;
+  }
+
+  .case__ask {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+  }
+
+  .case__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.75rem;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: var(--c-dark);
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: none;
+  }
+
+  /* The listing. */
+  .cases {
+    padding: clamp(7rem, 14vw, 10rem) clamp(1.25rem, 6vw, 5rem)
+      clamp(4rem, 10vw, 7.5rem);
+  }
+
+  .cases__lede {
+    margin-top: 1.25rem;
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 48ch;
+  }
+
+  .cases__list {
+    list-style: none;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .cases__item {
+    display: grid;
+    gap: 0.75rem;
+    padding: clamp(1.75rem, 4vw, 2.5rem) 0;
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .cases .case__client {
+    color: var(--color-ink-muted);
+  }
+
+  .badge {
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: var(--c-dark);
+    letter-spacing: 0.04em;
+  }
+
+  .cases__title {
+    font-size: clamp(1.6rem, 3.2vw, 2.5rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+  }
+
+  .cases__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 62ch;
+  }
+
+  .cases__figures {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    font-family: synonym, sans-serif;
+  }
+
+  .cases__figures strong {
+    font-family: chillax, sans-serif;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+  }
+
+  @media (min-width: 900px) {
+    .case__body {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.7fr);
+      align-items: start;
+    }
+
+    .case__side {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+</style>

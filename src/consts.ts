@@ -36,8 +36,7 @@ export const AUTHOR = {
  */
 export const PROFILES = {
   github: "https://github.com/RHeckers",
-  /** TODO: the public LinkedIn profile URL. */
-  linkedin: "",
+  linkedin: "https://www.linkedin.com/in/roberto-heckers-2313453b/",
   book: {
     title: "Effective Angular",
     subtitle:

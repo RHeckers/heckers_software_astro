@@ -1,16 +1,22 @@
 ---
 /**
- * The results strip, directly under the hero: four figures from client
- * work, each with what it measures and where it was measured. One row of
+ * The results strip, directly under the hero: one result per client, four
+ * clients, each with what it measures and where it was measured. One row of
  * four from 900px up, two by two below that. No heading on screen; the
  * numbers are the heading.
  *
  * Each figure sits behind a short accent rule that draws down as the strip
  * scrolls in, the same mark the mission block on the about page uses.
- * The figures come from lib/results.ts and nowhere else.
+ * The figures come from lib/results.ts and nowhere else. A figure links to
+ * its case study as soon as that case study is published.
  */
 import CountUp from "../CountUp.astro";
 import { RESULTS } from "../../lib/results";
+import { getCaseStudies } from "../../lib/case-studies";
+
+/* Only case studies a visitor may see are linked: none while they are
+   all drafts in a production build. */
+const published = new Set((await getCaseStudies()).map((study) => study.id));
 ---
 
 <section class="results" aria-labelledby="results-heading">
@@ -24,7 +30,15 @@ import { RESULTS } from "../../lib/results";
               <CountUp value={result.value} />
             </p>
             <p class="result__label">{result.label}</p>
-            <p class="result__client">{result.client}</p>
+            <p class="result__client">
+              {published.has(result.caseStudy) ? (
+                <a href={`/case-studies/${result.caseStudy}/`} target="_blank" rel="noopener">
+                  {result.client} case study <span aria-hidden="true">&rarr;</span>
+                </a>
+              ) : (
+                result.client
+              )}
+            </p>
           </li>
         ))
       }
@@ -103,6 +117,14 @@ import { RESULTS } from "../../lib/results";
     font-family: synonym, sans-serif;
     font-size: var(--font-sm);
     color: var(--color-ink-muted);
+  }
+
+  .result__client a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
   }
 
   @supports (animation-timeline: view()) {

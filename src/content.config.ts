@@ -39,4 +39,51 @@ const blog = defineCollection({
     }),
 });
 
-export const collections = { blog };
+/**
+ * Case studies: one client engagement each. The markdown body carries the
+ * three written sections (Situation, What I did, Result) as h2 headings;
+ * the stack, the figures and the optional client quote are frontmatter, so
+ * the template lays them out the same way on every page.
+ *
+ * A draft is built in development only. It never reaches the production
+ * build, the listing, the sitemap or any link from another page.
+ */
+const caseStudies = defineCollection({
+  loader: glob({ base: "./src/content/case-studies", pattern: "**/*.md" }),
+  schema: z.object({
+    title: z.string(),
+    client: z.string(),
+    sector: z.string().optional(),
+    /** As shown: "Jan 2025 to present". */
+    period: z.string().optional(),
+    role: z.string().optional(),
+    /** One or two sentences for the listing and the meta description. */
+    summary: z.string().optional(),
+    /** Listing order, lowest first. */
+    order: z.number().default(100),
+    /** Service pages that link to this case study. */
+    services: z
+      .array(
+        z.enum([
+          "forward-deployed-engineering",
+          "architecture-assessment",
+          "workshops",
+        ]),
+      )
+      .default([]),
+    stack: z.array(z.string()).default([]),
+    /** The headline figures, shown above the text. */
+    results: z
+      .array(z.object({ value: z.string(), label: z.string() }))
+      .default([]),
+    /** Key of a snippet in lib/testimonials.ts. Optional. */
+    quote: z.string().optional(),
+    /** Short format: no figures row, no quote. */
+    short: z.boolean().default(false),
+    draft: z.boolean().default(false),
+    /** What has to be verified or approved before the draft flag comes off. */
+    toConfirm: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { blog, caseStudies };
