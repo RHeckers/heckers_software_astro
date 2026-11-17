@@ -47,8 +47,8 @@ const cases = service ? await caseStudiesForService(service) : [];
     </header>
     <ul class="proof-row__list">
       {
-        snippets.map((snippet) => (
-          <li>
+        snippets.map((snippet, index) => (
+          <li style={`--i: ${index}`}>
             <ProofQuote snippet={snippet} tone={tone} class="proof-row__item" />
           </li>
         ))
@@ -202,9 +202,36 @@ const cases = service ? await caseStudiesForService(service) : [];
     flex: 1;
   }
 
+  /* Each quote rises into place as it scrolls in, one by one, the same
+     way the quotes on the home page do. Stacked (phones), every quote
+     follows its own position on screen. Side by side (900px and up) they
+     enter together, so each one starts a little after the one before. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .proof-row__list > li {
+        opacity: 0;
+        transform: translateY(28px);
+        animation: proof-rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 90%;
+      }
+    }
+  }
+
+  @keyframes proof-rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   @media (min-width: 900px) {
     .proof-row__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .proof-row__list > li {
+      animation-range: entry calc(10% + var(--i) * 25%) entry calc(90% + var(--i) * 25%);
     }
   }
 </style>
