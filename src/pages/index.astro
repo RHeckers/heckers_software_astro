@@ -19,7 +19,6 @@ import Gains from "../components/home/Gains.astro";
 import WhyUs from "../components/home/WhyUs.astro";
 import WhoWeAre from "../components/home/WhoWeAre.astro";
 import Results from "../components/home/Results.astro";
-import LatestArticles from "../components/home/LatestArticles.astro";
 
 /**
  * The page is one visitor's journey, eight steps, each answering the
@@ -33,7 +32,7 @@ import LatestArticles from "../components/home/LatestArticles.astro";
  *   5. How we do it     What is it like to work together? ProcessSteps
  *   6. Why us + proof   Why should I trust you?           WhyUs
  *   7. Who we are       Who will I actually work with?    WhoWeAre
- *   8. Take the leap    How do we get started?            Contact, then the latest articles
+ *   8. Take the leap    How do we get started?            Contact
  *
  * One look, shared with the service pages: full-width sections on a 1200px
  * column, one heading scale, rows divided by hairlines, a coloured rule
@@ -135,9 +134,6 @@ const jsonLd = {
 
   {/* 8. Take the leap */}
   <Contact tone="dark" />
-
-  {/* For the visitor who is not ready to talk yet */}
-  <LatestArticles />
   </div>
 </PageLayout>
 
