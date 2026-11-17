@@ -111,5 +111,12 @@ import Contact from "./Contact.astro";
     .contact-dialog :global(.contact-form) {
       padding: 1rem;
     }
+
+    /* Only the form on a phone: the heading, the pitch, the next steps,
+       the email line and the quote are left out. The heading stays in the
+       markup, so the form keeps its accessible name. */
+    .contact-dialog :global(.contact__intro) {
+      display: none;
+    }
   }
 </style>
