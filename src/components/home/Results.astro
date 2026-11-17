@@ -11,9 +11,9 @@
  * figure counts up, and the label and the link follow. Scroll-driven CSS,
  * simply shown where that is unsupported or when motion is reduced.
  *
- * The logos are shown in their own colours. Most of them are drawn for a
- * white page and would disappear on the dark blue, so each one sits on a
- * small tile in the light colour of the palette.
+ * The logos are the on-dark versions in assets/logos/on-dark: each one a
+ * single light shape, so seven brands in seven colours do not fight the
+ * dark blue. Those files are generated; see scripts/make-on-dark-logos.mjs.
  *
  * The results come from lib/results.ts and nowhere else. A result links to
  * its case study as soon as that case study is published.
@@ -22,13 +22,13 @@ import { Image } from "astro:assets";
 import CountUp from "../CountUp.astro";
 import { RESULTS, type Result } from "../../lib/results";
 import { getCaseStudies } from "../../lib/case-studies";
-import vattenfall from "../../assets/logos/vattenfall_logo.svg";
-import marel from "../../assets/logos/marel_logo.svg";
-import wgk from "../../assets/logos/wgk-antwerpen.svg";
-import dhAutomation from "../../assets/logos/dh_automation_logo.svg";
-import spacewell from "../../assets/logos/spacewell_logo.png";
-import phitaal from "../../assets/logos/phitaal_logo.png";
-import defensie from "../../assets/logos/ministerie_van_defensie_logo.png";
+import vattenfall from "../../assets/logos/on-dark/vattenfall_logo.png";
+import marel from "../../assets/logos/on-dark/marel_logo.png";
+import wgk from "../../assets/logos/on-dark/wgk-antwerpen.png";
+import dhAutomation from "../../assets/logos/on-dark/dh_automation_logo.png";
+import spacewell from "../../assets/logos/on-dark/spacewell_logo.png";
+import phitaal from "../../assets/logos/on-dark/phitaal_logo.png";
+import defensie from "../../assets/logos/on-dark/ministerie_van_defensie_logo.png";
 
 /* Only case studies a visitor may see are linked: none while they are
    all drafts in a production build. */
@@ -38,9 +38,9 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
    type is too small to read at the shared height. */
 const LOGOS: Record<Result["id"], { src: ImageMetadata; scale?: number }> = {
   vattenfall: { src: vattenfall },
-  "wit-gele-kruis": { src: wgk, scale: 1.2 },
+  "wit-gele-kruis": { src: wgk, scale: 1.25 },
   marel: { src: marel },
-  "dh-automation": { src: dhAutomation, scale: 1.3 },
+  "dh-automation": { src: dhAutomation, scale: 1.5 },
 };
 
 /* Clients without a result on the page yet. */
@@ -68,7 +68,6 @@ const others = [
       RESULTS.map((result, index) => (
         <li class="result" style={`--i: ${index}; --scale: ${LOGOS[result.id].scale ?? 1}`}>
           <p class="result__logo">
-            <span class="logo-tile">
             <Image
               src={LOGOS[result.id].src}
               alt={result.client}
@@ -76,7 +75,6 @@ const others = [
               densities={[1, 2]}
               loading="lazy"
             />
-            </span>
           </p>
           <p class="result__value">
             <CountUp value={result.value} />
@@ -101,7 +99,7 @@ const others = [
     <ul aria-labelledby="others-title">
       {
         others.map((client) => (
-          <li class="logo-tile">
+          <li>
             <Image
               src={client.src}
               alt={client.name}
@@ -218,29 +216,22 @@ const others = [
 
   /* Each logo keeps its own proportions inside the same box, left
      aligned, and the box has one height so the results below line up. */
+  /* Each logo keeps its own proportions inside the same box, left
+     aligned, and the box has one height so the results below line up. */
   .result__logo {
     display: flex;
     align-items: center;
+    height: calc(clamp(2rem, 3vw, 2.6rem) * 1.5);
   }
 
-  /* A logo in its own colours, on a tile of the palette's light colour.
-     Every tile has the same height; its width follows the logo. */
-  .logo-tile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: clamp(3.25rem, 4.8vw, 4.25rem);
-    padding: 0 clamp(0.75rem, 1.4vw, 1.1rem);
-    border-radius: 12px;
-    background: var(--c-light);
-  }
-
-  .logo-tile :global(img) {
+  .result__logo :global(img),
+  .results__others :global(img) {
     display: block;
     width: auto;
     height: auto;
-    max-height: calc(clamp(1.7rem, 2.6vw, 2.3rem) * var(--scale, 1));
-    max-width: calc(clamp(6rem, 10vw, 9.5rem) * var(--scale, 1));
+    opacity: 0.92;
+    max-height: calc(clamp(1.9rem, 2.8vw, 2.4rem) * var(--scale, 1));
+    max-width: min(100%, calc(clamp(6rem, 10vw, 9rem) * var(--scale, 1)));
   }
 
   .result__value {
@@ -287,8 +278,10 @@ const others = [
     gap: 1rem clamp(1.5rem, 4vw, 3rem);
   }
 
-  .results__others .logo-tile {
-    height: clamp(2.6rem, 3.8vw, 3.2rem);
+  .results__others :global(img) {
+    opacity: 0.75;
+    max-height: clamp(1.8rem, 2.6vw, 2.3rem);
+    max-width: clamp(6rem, 10vw, 9rem);
   }
 
   /* One block after the other, left to right: the rule draws down, then
