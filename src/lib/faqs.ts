@@ -22,7 +22,7 @@ export const FAQS: Record<ServiceSlug, readonly FaqItem[]> = {
         question:
           "What is a forward-deployed engineer, and why an engagement rather than hiring one?",
         answer:
-          "A forward-deployed engineer is the role the AI labs and Palantir use for an engineer who goes to the customer, works inside their company and builds until the product delivers. The good ones are rare, expensive and in demand, and most companies will not find one in a six-month search. I offer the same way of working as an engagement: one senior engineer who joins your team and owns the outcome, with AI as one of the tools, at a fixed price per outcome instead of a salary, with everything written into your repositories so nothing leaves in one head, and with senior engineers from my network when an assignment needs more hands. You get the outcome ownership of the role without the hiring, the payroll or the search.",
+          "A forward-deployed engineer is the role the AI labs and Palantir use for an engineer who goes to the customer, works inside their company and builds until the product delivers. The good ones are rare, expensive and in demand, and most companies will not find one in a six-month search. I offer the same way of working as an engagement: one senior engineer who owns the outcome, with AI as one of the tools, at a fixed price per outcome instead of a salary, with everything written into your repositories so nothing leaves in one head, and with senior engineers from my network when an assignment needs more hands. You get the outcome ownership of the role without the hiring, the payroll or the search.",
       },
       {
         question:
@@ -60,6 +60,11 @@ export const FAQS: Record<ServiceSlug, readonly FaqItem[]> = {
         question: "Can you work inside our existing Angular or Nx workspace?",
         answer:
           "That is the most common case. I build inside your workspace, respect its module boundaries and, where they are missing, help put them in. If the codebase itself is the problem, the architecture assessment is the place to start: a fixed-scope outside read that becomes the first part of discovery.",
+      },
+      {
+        question: "Do you work on site or remote?",
+        answer:
+          "Remote, mostly. I build on my own where that is possible, and I join your team when the work needs it.",
       },
       {
         question: "Who actually does the work?",

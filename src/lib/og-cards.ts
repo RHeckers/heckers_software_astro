@@ -17,13 +17,13 @@ export const OG_CARDS: readonly OgCard[] = [
     key: "home",
     path: "/",
     eyebrow: "Forward-deployed engineering",
-    headline: "Software and AI, delivered into production inside your company",
+    headline: "Software that reaches production",
   },
   {
     key: "about",
     path: "/about/",
     eyebrow: "About Heckers Software",
-    headline: "One senior engineer in your team, accountable end to end",
+    headline: "One senior engineer, accountable end to end",
   },
   {
     key: "forward-deployed-engineering",

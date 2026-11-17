@@ -117,7 +117,7 @@ export function llmsFull(site: URL, posts: PostSummary[]): string {
 
   lines.push("# About", "", `URL: ${abs(site, "/about/")}`, "", ABOUT_SUMMARY, "", AUTHOR.bio, "");
   lines.push(
-    `How the work is done: one senior engineer who joins the client's team and owns the outcome, with AI as one of the tools and senior engineers from his network on larger assignments; a fixed price per outcome; everything built in the client's own repositories to the client's standards, with decisions written down and handed over.`,
+    `How the work is done: one senior engineer who owns the outcome, working remotely, on his own where possible and with the client's team where needed, with AI as one of the tools and senior engineers from his network on larger assignments; a fixed price per outcome; everything built in the client's own repositories to the client's standards, with decisions written down and handed over.`,
     "",
   );
 

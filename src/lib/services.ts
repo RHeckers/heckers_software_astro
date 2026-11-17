@@ -36,7 +36,7 @@ export const SERVICES: readonly Service[] = [
     navLabel: "Forward-Deployed Engineering",
     name: "Forward-Deployed Engineering",
     summary:
-      "A senior engineer who joins your team and delivers outcomes end to end: discovery, development, AI integration and deployment. AI is one of the tools, used where it earns its place. Hand over a backlog, or let me find the highest-impact work first.",
+      "A senior engineer who takes an outcome off your hands and delivers it end to end: discovery, development, AI integration and deployment. AI is one of the tools, used where it earns its place. Hand over a backlog, or let me find the highest-impact work first.",
     subject: "Development",
     cta: "Book a discovery call",
   },
