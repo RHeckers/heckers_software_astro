@@ -19,6 +19,7 @@ export const BLOG_CATEGORIES = [
   "Error Handling",
   "Testing",
   "AI",
+  "AI in Production",
   "Workshops",
 ] as const;
 
