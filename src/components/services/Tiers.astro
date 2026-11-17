@@ -120,9 +120,16 @@ const {
 </section>
 
 <style>
-  /* On dark the recommended card is the light one; it needs no shadow. */
-  .tiers.ground-dark :global(.tier) {
+  /* On dark the recommended card is the light one; it needs no shadow.
+     The other two are lifted off the ground: a lighter panel with a
+     clearer edge, so they read as cards and not as outlines. */
+  .tiers.ground-dark .tier {
     box-shadow: none;
+  }
+
+  .tiers.ground-dark .tier:not(.tier--recommended) {
+    background: color-mix(in srgb, var(--base-light) 9%, var(--base-dark));
+    border-color: color-mix(in srgb, var(--base-light) 26%, var(--base-dark));
   }
 
   .tiers {
