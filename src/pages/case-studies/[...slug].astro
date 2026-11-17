@@ -437,11 +437,17 @@ const description =
     text-underline-offset: 4px;
   }
 
-  .case__band--quote {
-    margin-top: clamp(3rem, 7vw, 5rem);
-    padding-bottom: clamp(3rem, 7vw, 5rem);
+  /* The close of the page: the client's words and the call to action
+     on one dark ground, the quote first, a hairline, then the ask. */
+  .case__band--quote,
+  .case__band--cta {
     background: var(--c-dark);
     color: var(--c-light);
+  }
+
+  .case__band--quote {
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding-bottom: clamp(2rem, 5vw, 3rem);
   }
 
   .case__band--quote .side__title {
@@ -453,7 +459,8 @@ const description =
   }
 
   .case__band--cta {
-    padding-bottom: clamp(4rem, 10vw, 7.5rem);
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding-bottom: clamp(3rem, 7vw, 5rem);
   }
 
   .case__band--cta .case__inner {
@@ -462,12 +469,16 @@ const description =
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    padding-top: clamp(2rem, 5vw, 3rem);
-    border-top: 1px solid var(--color-stroke);
+  }
+
+  .case__band--quote + .case__band--cta {
+    margin-top: 0;
+    padding-top: 0;
   }
 
   .case__band--quote + .case__band--cta .case__inner {
-    border-top: 0;
+    padding-top: clamp(2rem, 5vw, 3rem);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 18%, transparent);
   }
 
   .case__ask {

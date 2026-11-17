@@ -1,12 +1,12 @@
 ---
 /**
- * The three newest blog posts, as hairline rows: date, title, one line of
- * description. Sits between "who we are" and the contact form, so a
- * visitor who is not ready to talk yet has somewhere to go that still
- * shows the work.
+ * The three newest blog posts, between "who we are" and the contact form,
+ * so a visitor who is not ready to talk yet has somewhere to go that
+ * still shows the work.
  *
- * The heading is pinned on the left from 900px up while the rows scroll
- * past, the same idiom as the other left/right sections.
+ * A dark band with the same rows as "The work behind it" on the service
+ * pages: a small label above, then one hairline row per post with the
+ * date in the accent colour, the title and an arrow.
  */
 import { formatDate, getSortedPosts, postHref } from "../../lib/blog";
 
@@ -17,28 +17,30 @@ const posts = (await getSortedPosts()).slice(0, 3);
   posts.length > 0 && (
     <section class="articles" aria-labelledby="articles-heading">
       <div class="articles__inner">
-        <header class="articles__head">
-          <h2 class="articles__title" id="articles-heading">
-            Latest articles
-          </h2>
-          <a class="articles__all" href="/blog/">
-            All articles <span aria-hidden="true">&rarr;</span>
-          </a>
-        </header>
+        <h2 class="articles__title" id="articles-heading">
+          Latest articles
+        </h2>
 
-        <ol class="articles__list">
+        <ul class="articles__list">
           {posts.map((post) => (
-            <li class="article">
-              <time datetime={post.data.pubDate.toISOString()}>
-                {formatDate(post.data.pubDate)}
-              </time>
-              <h3 class="article__title">
-                <a href={postHref(post)}>{post.data.title}</a>
-              </h3>
-              <p class="article__copy">{post.data.description}</p>
+            <li>
+              <a href={postHref(post)}>
+                <time
+                  class="article__date"
+                  datetime={post.data.pubDate.toISOString()}
+                >
+                  {formatDate(post.data.pubDate)}
+                </time>
+                <span class="article__title">{post.data.title}</span>
+                <span aria-hidden="true">&rarr;</span>
+              </a>
             </li>
           ))}
-        </ol>
+        </ul>
+
+        <a class="articles__all" href="/blog/">
+          All articles <span aria-hidden="true">&rarr;</span>
+        </a>
       </div>
     </section>
   )
@@ -46,105 +48,78 @@ const posts = (await getSortedPosts()).slice(0, 3);
 
 <style>
   .articles {
-    background: var(--color-light-alt);
-    color: var(--color-ink);
-    padding: 0 clamp(1.25rem, 6vw, 5rem) clamp(4rem, 10vw, 7.5rem);
+    background: var(--color-dark-soft);
+    color: var(--color-ink-light);
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.25rem, 6vw, 5rem);
   }
 
   .articles__inner {
     max-width: 1200px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(2rem, 5vw, 4rem);
-    padding-top: clamp(4rem, 10vw, 7.5rem);
-    border-top: 1px solid var(--color-stroke);
-  }
-
-  .articles__head {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacer-lg);
   }
 
   .articles__title {
-    font-size: clamp(2.25rem, 5vw, 4rem);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-  }
-
-  .articles__all {
     font-family: synonym, sans-serif;
-    font-size: var(--font-lg);
-    color: var(--color-ink);
-    text-decoration: underline;
-    text-decoration-color: var(--color-accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
   }
 
   .articles__list {
     list-style: none;
-    border-top: 1px solid var(--color-stroke-strong);
+    border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
   }
 
-  .article {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.5rem 0;
-    border-bottom: 1px solid var(--color-stroke);
-  }
-
-  .article time {
-    font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
-    color: var(--color-ink-muted);
-  }
-
-  .article__title {
-    font-size: clamp(1.25rem, 2vw, 1.6rem);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.2;
-  }
-
-  .article__title a {
+  .articles__list a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 1.5rem;
+    align-items: baseline;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
     color: inherit;
     text-decoration: none;
   }
 
-  .article__title a:hover,
-  .article__title a:focus-visible {
-    text-decoration: underline;
-    text-decoration-color: var(--color-accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
-
-  .article__copy {
+  .article__date {
+    grid-column: 1 / -1;
     font-family: synonym, sans-serif;
-    font-size: var(--font-md);
-    line-height: 1.55;
-    color: var(--color-ink-muted);
-    max-width: 62ch;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: var(--font-sm);
+    color: var(--c-accent);
   }
 
-  @media (min-width: 900px) {
-    .articles__inner {
-      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-      align-items: start;
+  .article__title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.25;
+  }
+
+  .articles__list a:hover .article__title,
+  .articles__list a:focus-visible .article__title,
+  .articles__all {
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .articles__all {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: synonym, sans-serif;
+    color: inherit;
+  }
+
+  @media (min-width: 760px) {
+    .articles__list a {
+      grid-template-columns: 14rem 1fr auto;
     }
 
-    .articles__head {
-      position: sticky;
-      top: calc(56px + 2rem);
+    .article__date {
+      grid-column: auto;
     }
   }
 </style>
