@@ -50,7 +50,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
     id: "nico",
     name: "Nico Vandenbroucke",
     title: "IT-Directeur",
-    company: "Wit-Gele Kruis West-Vlaanderen",
+    company: "Wit-Gele Kruis",
     image: nico,
     content:
       "It was a pleasure working with Heckers Software and having Roberto on our team. He knows Angular very well, and no task was too difficult for him. I would highly recommend him for your Angular project.",
