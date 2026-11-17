@@ -1,0 +1,257 @@
+---
+/**
+ * "See it working" on the forward-deployed engineering page: proof you
+ * can read and run, next to the words of clients above it. Two pieces of
+ * published work: the CopilotKit and Angular series, part by part, and
+ * the software dark factory article.
+ *
+ * Titles and links come from the posts themselves, so a renamed or
+ * removed post never leaves a dead card: a card without its posts is
+ * left out, and with no cards the section is not rendered.
+ *
+ * Same idiom as the other left/right blocks: the claim pinned on the
+ * left from 900px up, the work scrolling past on the right, each card
+ * behind an accent rule that draws down as it scrolls in.
+ */
+import { getSortedPosts, postHref } from "../../lib/blog";
+
+const posts = await getSortedPosts();
+
+/* The series, in reading order. */
+const series = posts
+  .filter((post) => post.id.startsWith("copilotkit-angular-"))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const factory = posts.find(
+  (post) => post.id === "lights-out-guard-rails-on-dark-factory",
+);
+
+/* "CopilotKit and Angular, Part 1: A Dashboard ..." -> ["Part 1", "A Dashboard ..."] */
+const parts = series.map((post) => {
+  const match = /(Part \d+):\s*(.+)$/.exec(post.data.title);
+  return {
+    href: postHref(post),
+    part: match?.[1] ?? "",
+    title: match?.[2] ?? post.data.title,
+  };
+});
+---
+
+{
+  (parts.length > 0 || factory) && (
+    <section class="working" aria-labelledby="working-heading">
+      <div class="working__inner">
+        <header class="working__head">
+          <h2 class="working__title" id="working-heading">
+            See it working
+          </h2>
+          <p class="working__lede">
+            Working code, written up step by step. Read it before you call.
+          </p>
+        </header>
+
+        <ul class="working__list">
+          {parts.length > 0 && (
+            <li class="work" style="--i: 0">
+              <p class="work__kind">Article series, {parts.length} parts</p>
+              <h3 class="work__title">CopilotKit and Angular</h3>
+              <p class="work__copy">
+                An Angular dashboard with a chat next to it, where the agent
+                reads what is on screen and changes it through functions you
+                control.
+              </p>
+              <ol class="work__parts">
+                {parts.map((item) => (
+                  <li>
+                    <a href={item.href}>
+                      <span class="work__part">{item.part}</span>
+                      <span class="work__part-title">{item.title}</span>
+                      <span aria-hidden="true">&rarr;</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </li>
+          )}
+          {factory && (
+            <li class="work" style="--i: 1">
+              <p class="work__kind">Article</p>
+              <h3 class="work__title">The software dark factory</h3>
+              <p class="work__copy">
+                Coding agents pick up tickets and open pull requests while
+                nobody watches. A tour of the guard rails that decide what
+                you wake up to.
+              </p>
+              <a class="work__link" href={postHref(factory)}>
+                Read the article <span aria-hidden="true">&rarr;</span>
+              </a>
+            </li>
+          )}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .working {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem) 0;
+  }
+
+  /* The founder section below shares this ground: a hairline at the
+     column's width keeps the two apart. */
+  .working__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-bottom: clamp(4rem, 10vw, 7.5rem);
+    border-bottom: 1px solid var(--color-stroke);
+  }
+
+  .working__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-lg);
+  }
+
+  .working__title {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .working__lede {
+    font-family: synonym, sans-serif;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+    max-width: 30ch;
+  }
+
+  .working__list {
+    list-style: none;
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .work {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-left: 1.5rem;
+    view-timeline-name: --work;
+  }
+
+  .work::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--c-accent);
+    transform-origin: top;
+  }
+
+  .work__kind {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .work__title {
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.1;
+  }
+
+  .work__copy {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    max-width: 46ch;
+  }
+
+  .work__parts {
+    list-style: none;
+    align-self: stretch;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--color-stroke-strong);
+  }
+
+  .work__parts a {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.95rem 0;
+    border-bottom: 1px solid var(--color-stroke);
+    color: inherit;
+    text-decoration: none;
+    font-family: synonym, sans-serif;
+  }
+
+  .work__part {
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .work__part-title {
+    font-size: var(--font-lg);
+    line-height: 1.3;
+  }
+
+  .work__parts a:hover .work__part-title,
+  .work__parts a:focus-visible .work__part-title,
+  .work__link {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .work__link {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-lg);
+    color: inherit;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .work::before {
+        animation: work-rule linear both;
+        animation-timeline: --work;
+        animation-range: cover 10% cover 45%;
+      }
+    }
+  }
+
+  @keyframes work-rule {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .working__inner {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      align-items: start;
+    }
+
+    .working__head {
+      position: sticky;
+      top: calc(56px + 2rem);
+    }
+  }
+</style>

@@ -17,7 +17,7 @@
  *   3. What we do       How can you help me?              Insights (diagram rows)
  *   4. What you gain    What changes for my company?      Outcomes
  *   5. How we do it     What is it like to work together? ProcessSteps
- *   6. Why us + proof   Why should I trust you?           ProofRow
+ *   6. Why us + proof   Why should I trust you?           ProofRow, SeeItWorking
  *   7. Who we are       Who will I actually work with?    Founder
  *   8. Take the leap    How do we get started?            Faq, Tiers
  *
@@ -33,6 +33,7 @@ import SymptomCheck from "../../components/services/SymptomCheck.astro";
 import Insights from "../../components/services/Insights.astro";
 import Outcomes from "../../components/services/Outcomes.astro";
 import Founder from "../../components/services/Founder.astro";
+import SeeItWorking from "../../components/services/SeeItWorking.astro";
 import ProofRow from "../../components/ProofRow.astro";
 import ProcessSteps from "../../components/services/ProcessSteps.astro";
 import Tiers from "../../components/services/Tiers.astro";
@@ -344,6 +345,8 @@ const jsonLd = {
     snippets={["ferdiBeyondScope", "peterMentoring", "nicoTeam"]}
     service="forward-deployed-engineering"
   />
+
+  <SeeItWorking />
 
   {/* 7. Who we are */}
   <Founder stage="hall" note={CAPACITY_STATEMENT} />
