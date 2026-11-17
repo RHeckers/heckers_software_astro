@@ -4,13 +4,13 @@ client: "Vattenfall"
 sector: "Energy"
 period: "Aug 2023 to Jan 2025"
 role: "Senior full-stack engineer"
-summary: "My team rebuilt the usage and costs section of the Vattenfall app, the heart of the consumer app, and moved it from Swift and Kotlin to Angular, Capacitor and Ionic. NPS for the section rose from 3.4 to 4.2."
+summary: "My team rebuilt the usage and costs section of the Vattenfall app, the heart of the consumer app, and moved it from Swift and Kotlin to Angular, Capacitor and Ionic. The app store rating rose from 3.4 to 4.2 out of 5."
 order: 2
 services: ["forward-deployed-engineering"]
 stack: ["Angular", "Nx", "Nx Cloud", "Ionic", "Capacitor", "NGXS", ".NET 8", "SQL", "CosmosDB", "Azure", "Cypress", "Jest", "Azure DevOps"]
 results:
   - value: "3.4 → 4.2"
-    label: "NPS of the usage and costs section"
+    label: "app store rating, out of 5"
   - value: "2M+"
     label: "customers use the product"
 quote: "ferdiDelivery"
@@ -31,4 +31,4 @@ Vattenfall gives more than two million customers insight into what they use and 
 
 ## Result
 
-NPS for the usage and costs section rose from 3.4 to 4.2. Campaigns and prize draws in the loyalty programme can be rolled out at scale. The pipelines run more in parallel, with fewer regressions and a clearer view of what fails.
+The rating of the app in the app stores rose from 3.4 to 4.2 out of 5. Campaigns and prize draws in the loyalty programme can be rolled out at scale. The pipelines run more in parallel, with fewer regressions and a clearer view of what fails.

@@ -20,7 +20,7 @@ export const RESULTS: readonly Result[] = [
   {
     id: "vattenfall",
     value: "3.4 → 4.2",
-    label: "NPS improvement for 2M+ customers",
+    label: "app store rating, out of 5, for 2M+ customers",
     client: "Vattenfall",
     caseStudy: "vattenfall",
   },
