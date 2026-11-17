@@ -40,8 +40,8 @@ export const RESULTS: readonly Result[] = [
   },
   {
     id: "dh-automation",
-    value: "Timely launch",
-    label: "delivered as the only software engineer on the product",
+    value: "Production",
+    label: "ready in 3 months with 1 developer",
     client: "DH Automation",
     caseStudy: "dh-automation",
   },
