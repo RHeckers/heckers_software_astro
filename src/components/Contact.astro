@@ -395,7 +395,9 @@ const nextSteps = [
             ).value.trim()
           : "";
       let error = "";
-      if (field.required && !value) {
+      const required =
+        field.required || (!!input && "required" in input && input.required);
+      if (required && !value) {
         error = `${field.label} is required.`;
       } else if (field.type === "email" && value) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -929,25 +931,18 @@ const nextSteps = [
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     }
 
-    /* The two columns are one height and line up top and bottom,
-       whichever of them has more in it. The copy column spreads: heading
-       and pitch at the top, the email line and the quote at the foot,
-       level with the bottom of the form. When the copy is the taller one,
-       the form grows to match and the message field takes the room. */
+    /* The copy column keeps its own height and stays pinned while the
+       form scrolls past. The form is at least as tall as the copy: when
+       it has less in it, it grows to the same height and the message
+       field takes the room. A taller form is left as it is. */
     .contact__inner {
       align-items: stretch;
     }
 
     .contact__intro {
-      height: 100%;
-    }
-
-    .contact__intro .contact__direct {
-      margin-top: auto;
-    }
-
-    .contact-form {
-      height: 100%;
+      align-self: start;
+      position: sticky;
+      top: calc(56px + 2rem);
     }
 
     .contact-form .form-group:has(textarea) {

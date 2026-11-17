@@ -3,7 +3,9 @@
  * A time picker for a call, inside the contact form: three weeks of
  * working days as a small calendar, then the half-hour slots of the day
  * that is picked. Optional, and closed until the visitor opens it or
- * arrives through a "Book ..." call to action, which opens it for them.
+ * arrives through a "Book ..." call to action. Such a call to action
+ * opens it, puts a first line in the message field when that is still
+ * empty, and makes the phone number required, since a call needs one.
  *
  * It is a request, not a reservation system: there is no store of taken
  * slots behind it. The chosen time travels with the form (the hidden
@@ -194,7 +196,32 @@
 
     document.getElementById("bookingClear")?.addEventListener("click", clear);
 
-    /* A "Book ..." call to action opens the picker, also when it leads
+    /* Booking a call: the picker opens, the message gets a first line
+       when it is still empty, and the phone number becomes required. */
+    const MESSAGE = "I would like to book a discovery call.\n\nWhat I want to talk about: ";
+    const phone = document.getElementById("phone") as HTMLInputElement | null;
+    const phoneLabel = document.querySelector<HTMLLabelElement>('label[for="phone"]');
+    const message = document.getElementById("content") as HTMLTextAreaElement | null;
+
+    const setPhoneRequired = (required: boolean) => {
+      if (!phone) return;
+      phone.required = required;
+      phone.placeholder = required ? "For the call" : "Optional";
+      if (phoneLabel) phoneLabel.textContent = required ? "Phone*" : "Phone";
+    };
+
+    const startBooking = () => {
+      root.open = true;
+      setPhoneRequired(true);
+      if (message) {
+        if (message.value.trim() === "") message.value = MESSAGE;
+        /* The form checks itself again on input, now with the phone
+           number as a required field. */
+        message.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    };
+
+    /* A "Book ..." call to action starts a booking, also when it leads
        here from another page. */
     const FLAG = "open-booking";
     const isBooking = (link: HTMLAnchorElement) => /^\s*book\b/i.test(link.textContent ?? "");
@@ -203,7 +230,7 @@
       .forEach((link) => {
         link.addEventListener("click", () => {
           if (!isBooking(link)) return;
-          root.open = true;
+          startBooking();
           try {
             sessionStorage.setItem(FLAG, "1");
           } catch {
@@ -214,7 +241,7 @@
     try {
       if (sessionStorage.getItem(FLAG)) {
         sessionStorage.removeItem(FLAG);
-        if (location.hash === "#contactForm") root.open = true;
+        if (location.hash === "#contactForm") startBooking();
       }
     } catch {
       /* no stored flag */
@@ -231,6 +258,7 @@
       });
       pickedDay = "";
       root.open = false;
+      setPhoneRequired(false);
       if (sentEl) sentEl.hidden = !requested;
     });
   }
