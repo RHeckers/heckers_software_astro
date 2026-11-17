@@ -78,12 +78,31 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     view-timeline-name: --results;
   }
 
+  /* Every block is three rows (figure, what it measures, client) laid on
+     the rows of the list itself, so across one line of blocks the figures,
+     the labels and the client names each start at the same height and
+     the accent rules are equally tall, however the labels wrap. */
   .result {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0.4rem;
+    align-content: start;
     padding-left: 1.25rem;
+  }
+
+  /* Without subgrid: a column with the client name on the bottom line. */
+  @supports not (grid-template-rows: subgrid) {
+    .result {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .result__client {
+      margin-top: auto;
+    }
   }
 
   .result::before {
