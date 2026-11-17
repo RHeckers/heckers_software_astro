@@ -151,9 +151,20 @@ const offers = services.map((service, index) => ({
   ...service,
   ...lines[index],
 }));
+
+interface Props {
+  /** Written for the light ground; "dark" shows it on the dark one. */
+  tone?: "light" | "dark";
+}
+
+const { tone = "light" } = Astro.props;
 ---
 
-<section class="services" id="services" aria-labelledby="services-heading">
+<section
+  class:list={["services", { "ground-dark": tone === "dark" }]}
+  id="services"
+  aria-labelledby="services-heading"
+>
   <div class="services__inner">
     <h2 class="services__title" id="services-heading">
       Which one sounds like you?

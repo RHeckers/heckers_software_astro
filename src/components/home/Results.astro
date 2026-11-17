@@ -1,27 +1,54 @@
 ---
 /**
- * Results at clients: one result per client, four clients, each with
- * what it measures and a link to the case study behind it. Not a section
- * of its own: it closes the dark "I come in and deliver" band, directly
- * under the client logos, so the names and what was delivered for them
- * read as one block of proof. One row of four from 900px up, two by two
- * below that.
+ * Results at clients: the proof at the foot of the dark "I come in and
+ * deliver" band, as one block. Four clients, each with its logo, the
+ * result, what it measures and a link to the case study behind it. The
+ * other clients follow in one quiet line of logos underneath. One row of
+ * four from 900px up, two by two below that.
  *
  * As the block scrolls in, the results arrive one after the other: the
- * accent rule draws down, the figure rises into place and counts up, and
- * the label and the client follow. Scroll-driven CSS, simply shown where
- * that is unsupported or when motion is reduced.
+ * accent rule draws down, the logo and the figure rise into place, the
+ * figure counts up, and the label and the link follow. Scroll-driven CSS,
+ * simply shown where that is unsupported or when motion is reduced.
+ *
+ * The logos are shown in their own colours. Most of them are drawn for a
+ * white page and would disappear on the dark blue, so each one sits on a
+ * small tile in the light colour of the palette.
  *
  * The results come from lib/results.ts and nowhere else. A result links to
  * its case study as soon as that case study is published.
  */
+import { Image } from "astro:assets";
 import CountUp from "../CountUp.astro";
-import { RESULTS } from "../../lib/results";
+import { RESULTS, type Result } from "../../lib/results";
 import { getCaseStudies } from "../../lib/case-studies";
+import vattenfall from "../../assets/logos/vattenfall_logo.svg";
+import marel from "../../assets/logos/marel_logo.svg";
+import wgk from "../../assets/logos/wgk-antwerpen.svg";
+import dhAutomation from "../../assets/logos/dh_automation_logo.svg";
+import spacewell from "../../assets/logos/spacewell_logo.png";
+import phitaal from "../../assets/logos/phitaal_logo.png";
+import defensie from "../../assets/logos/ministerie_van_defensie_logo.png";
 
 /* Only case studies a visitor may see are linked: none while they are
    all drafts in a production build. */
 const published = new Set((await getCaseStudies()).map((study) => study.id));
+
+/* The logo of each client with a result. `scale` enlarges a logo whose
+   type is too small to read at the shared height. */
+const LOGOS: Record<Result["id"], { src: ImageMetadata; scale?: number }> = {
+  vattenfall: { src: vattenfall },
+  "wit-gele-kruis": { src: wgk, scale: 1.2 },
+  marel: { src: marel },
+  "dh-automation": { src: dhAutomation, scale: 1.3 },
+};
+
+/* Clients without a result on the page yet. */
+const others = [
+  { src: spacewell, name: "Spacewell" },
+  { src: defensie, name: "Ministerie van Defensie" },
+  { src: phitaal, name: "Phitaal" },
+];
 ---
 
 <div class="results">
@@ -29,7 +56,7 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     <h3 class="results__title" id="results-heading">Results at clients</h3>
     {
       published.size > 0 && (
-        <a class="results__all" href="/case-studies/">
+        <a class="results__all" href="/case-studies/" target="_blank" rel="noopener">
           All case studies <span aria-hidden="true">&rarr;</span>
         </a>
       )
@@ -37,37 +64,64 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
   </header>
 
   <ul class="results__list" aria-labelledby="results-heading">
+    {
+      RESULTS.map((result, index) => (
+        <li class="result" style={`--i: ${index}; --scale: ${LOGOS[result.id].scale ?? 1}`}>
+          <p class="result__logo">
+            <span class="logo-tile">
+            <Image
+              src={LOGOS[result.id].src}
+              alt={result.client}
+              width={170}
+              densities={[1, 2]}
+              loading="lazy"
+            />
+            </span>
+          </p>
+          <p class="result__value">
+            <CountUp value={result.value} />
+          </p>
+          <p class="result__label">{result.label}</p>
+          {published.has(result.caseStudy) ? (
+            <p class="result__more">
+              <a href={`/case-studies/${result.caseStudy}/`} target="_blank" rel="noopener">
+                Read the case study <span aria-hidden="true">&rarr;</span>
+              </a>
+            </p>
+          ) : (
+            <p class="result__more" />
+          )}
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="results__others">
+    <p class="results__others-title" id="others-title">Also delivered for</p>
+    <ul aria-labelledby="others-title">
       {
-        RESULTS.map((result, index) => (
-          <li class="result" style={`--i: ${index}`}>
-            <p class="result__value">
-              <CountUp value={result.value} />
-            </p>
-            <p class="result__label">{result.label}</p>
-            <p class="result__client">
-              {published.has(result.caseStudy) ? (
-                <a href={`/case-studies/${result.caseStudy}/`} target="_blank" rel="noopener">
-                  {result.client} case study <span aria-hidden="true">&rarr;</span>
-                </a>
-              ) : (
-                result.client
-              )}
-            </p>
+        others.map((client) => (
+          <li class="logo-tile">
+            <Image
+              src={client.src}
+              alt={client.name}
+              width={170}
+              densities={[1, 2]}
+              loading="lazy"
+            />
           </li>
         ))
       }
-  </ul>
+    </ul>
+  </div>
 </div>
 
 <style>
   /* Stands on the dark band it is placed in: its colours are the band's
-     light colour and tints of it. A hairline sets it apart from the logos
-     above. */
+     light colour and tints of it, and the one accent. */
   .results {
     display: grid;
-    gap: clamp(1.5rem, 3vw, 2.25rem);
-    padding-top: clamp(2rem, 4vw, 3rem);
-    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
+    gap: clamp(2rem, 4vw, 3rem);
   }
 
   .results__head {
@@ -78,9 +132,15 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     gap: 0.5rem 2rem;
   }
 
-  /* The same quiet line as the title above the logos. */
-  .results__title,
-  .results__all {
+  .results__title {
+    font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+    font-weight: var(--font-weight-light);
+    line-height: 1.15;
+    color: var(--color-light-raised);
+  }
+
+  .results__all,
+  .results__others-title {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
     font-weight: var(--font-weight-medium);
@@ -89,21 +149,21 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
   }
 
   .results__all,
-  .result__client a {
+  .result__more a {
     text-decoration: underline;
     text-decoration-color: var(--c-accent);
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
   }
 
-  .result__client a {
+  .result__more a {
     color: inherit;
   }
 
   .results__all:hover,
   .results__all:focus-visible,
-  .result__client a:hover,
-  .result__client a:focus-visible {
+  .result__more a:hover,
+  .result__more a:focus-visible {
     color: var(--c-light);
   }
 
@@ -115,43 +175,72 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     view-timeline-name: --results;
   }
 
-  /* Every block is three rows (figure, what it measures, client) laid on
-     the rows of the list itself, so across one line of blocks the figures,
-     the labels and the client names each start at the same height and
-     the accent rules are equally tall, however the labels wrap. */
+  /* Every block is four rows (logo, result, what it measures, link) laid
+     on the rows of the list itself, so across one line of blocks each of
+     them starts at the same height and the accent rules are equally tall,
+     however the text wraps. */
   .result {
     position: relative;
     display: grid;
-    grid-row: span 3;
+    grid-row: span 4;
     grid-template-rows: subgrid;
-    row-gap: 0.6rem;
+    row-gap: 0.75rem;
     align-content: start;
     padding-left: clamp(1rem, 2vw, 1.5rem);
   }
 
-  /* Without subgrid: a column with the client name on the bottom line. */
+  /* Without subgrid: a column with the link on the bottom line. */
   @supports not (grid-template-rows: subgrid) {
     .result {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.75rem;
     }
 
-    .result__client {
+    .result__more {
       margin-top: auto;
     }
   }
 
+  /* The accent line: the same colour and the same two pixels as the
+     underlines of the links in this block, so the yellow reads the same
+     everywhere in it. */
   .result::before {
     content: "";
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
-    border-radius: 4px;
+    width: 2px;
     background: var(--c-accent);
     transform-origin: top;
+  }
+
+  /* Each logo keeps its own proportions inside the same box, left
+     aligned, and the box has one height so the results below line up. */
+  .result__logo {
+    display: flex;
+    align-items: center;
+  }
+
+  /* A logo in its own colours, on a tile of the palette's light colour.
+     Every tile has the same height; its width follows the logo. */
+  .logo-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: clamp(3.25rem, 4.8vw, 4.25rem);
+    padding: 0 clamp(0.75rem, 1.4vw, 1.1rem);
+    border-radius: 12px;
+    background: var(--c-light);
+  }
+
+  .logo-tile :global(img) {
+    display: block;
+    width: auto;
+    height: auto;
+    max-height: calc(clamp(1.7rem, 2.6vw, 2.3rem) * var(--scale, 1));
+    max-width: calc(clamp(6rem, 10vw, 9.5rem) * var(--scale, 1));
   }
 
   .result__value {
@@ -173,35 +262,59 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     color: color-mix(in srgb, var(--c-light) 88%, transparent);
   }
 
-  .result__client {
+  .result__more {
     font-family: synonym, sans-serif;
     font-size: var(--font-md);
     color: color-mix(in srgb, var(--c-light) 72%, transparent);
-    padding-top: 0.4rem;
+    padding-top: 0.25rem;
+  }
+
+  /* The clients without a result here: one quiet line of logos. */
+  .results__others {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem clamp(1.5rem, 4vw, 3rem);
+    padding-top: clamp(1.5rem, 3vw, 2rem);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
+  }
+
+  .results__others ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .results__others .logo-tile {
+    height: clamp(2.6rem, 3.8vw, 3.2rem);
   }
 
   /* One block after the other, left to right: the rule draws down, then
-     the figure rises and the two lines under it follow, all while the
-     row comes onto the screen. */
+     the logo and the figure rise and the two lines under them follow.
+     Unhurried: the first block starts as the row comes onto the screen
+     and the last one settles when the row is around the middle of it. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .result::before {
         animation: result-rule cubic-bezier(0.22, 0.61, 0.36, 1) both;
         animation-timeline: --results;
-        animation-range: entry calc(20% + var(--i) * 14%) entry calc(80% + var(--i) * 14%);
+        animation-range: cover calc(4% + var(--i) * 7%) cover calc(24% + var(--i) * 7%);
       }
 
+      .result__logo,
       .result__value {
         animation: result-rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
         animation-timeline: --results;
-        animation-range: entry calc(35% + var(--i) * 14%) entry calc(95% + var(--i) * 14%);
+        animation-range: cover calc(9% + var(--i) * 7%) cover calc(31% + var(--i) * 7%);
       }
 
       .result__label,
-      .result__client {
+      .result__more {
         animation: result-fade linear both;
         animation-timeline: --results;
-        animation-range: entry calc(50% + var(--i) * 14%) entry calc(110% + var(--i) * 14%);
+        animation-range: cover calc(16% + var(--i) * 7%) cover calc(38% + var(--i) * 7%);
       }
     }
   }

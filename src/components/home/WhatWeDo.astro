@@ -2,8 +2,7 @@
 /**
  * Step 3 of the home page, "How can you help me?", in one sentence and
  * three verbs, next to a photograph of the founder on stage in front of a
- * full hall, with the client logos and the results at those clients under
- * both. A
+ * full hall, with the results at clients, logo by logo, under both. A
  * full-screen dark band: the turn of the page from problem to answer, and
  * the first piece of social proof below the logos.
  *
@@ -15,7 +14,6 @@
  */
 import { Image } from "astro:assets";
 import Accent from "../Accent.astro";
-import LogoBanner from "../LogoBanner.astro";
 import Results from "./Results.astro";
 import stage from "../../assets/workshop/ng-poland-2024.5.jpg";
 import { AUTHOR } from "../../consts";
@@ -76,7 +74,6 @@ const {
   </div>
 
   <div class="what__clients">
-    <LogoBanner />
     <Results />
   </div>
 </section>

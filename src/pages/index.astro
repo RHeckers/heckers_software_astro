@@ -26,9 +26,9 @@ import WhoWeAre from "../components/home/WhoWeAre.astro";
  *
  *   1. The promise      What can you help me achieve?     Hero
  *   2. The challenge    Do you understand my problem?     Challenge
- *   3. What we do       How can you help me?              WhatWeDo (logos, results), three ways to start
+ *   3. What we do       How can you help me?              WhatWeDo, with the results at clients
  *   4. What you gain    What changes for my company?      Gains
- *   5. How we do it     What is it like to work together? ProcessSteps
+ *   5. How we do it     What is it like to work together? Three ways to start, ProcessSteps
  *   6. Why us + proof   Why should I trust you?           WhyUs
  *   7. Who we are       Who will I actually work with?    WhoWeAre
  *   8. Take the leap    How do we get started?            Contact
@@ -82,10 +82,12 @@ const jsonLd = {
 
   {/* 3. What we do */}
   <WhatWeDo />
-  <ServicesOverview />
 
   {/* 4. What you gain */}
-  <Gains />
+  <Gains tone="light" />
+
+  {/* The three ways to start, leading into how the work goes */}
+  <ServicesOverview tone="dark" />
 
   {/* 5. How we do it */}
   <ProcessSteps

@@ -515,3 +515,42 @@ main > .home > section:not(:first-child, .contact),
   content-visibility: auto;
   contain-intrinsic-size: auto 8rem;
 }
+
+/* ==========================================================================
+   Ground
+   A section written for the light ground can be shown on the dark one
+   without a second set of styles: give its root .ground-dark. Inside it
+   the palette's light and dark colours change places and every colour
+   token is worked out again from them. The accent stays what it is, and
+   is used as it is for large text, since it reads on dark.
+   ========================================================================== */
+:root {
+  --base-light: var(--c-light);
+  --base-dark: var(--c-dark);
+}
+
+.ground-dark {
+  --c-light: var(--base-dark);
+  --c-dark: var(--base-light);
+  --color-dark: var(--c-dark);
+  --color-dark-alt: var(--c-dark);
+  --color-dark-strong: color-mix(in srgb, var(--c-light) 10%, var(--c-dark));
+  --color-dark-soft: var(--c-dark);
+  --color-light: var(--c-light);
+  /* The same ground the other dark sections stand on. */
+  --color-light-alt: var(--c-light);
+  --color-light-raised: var(--c-light);
+  --color-ink: var(--c-dark);
+  --color-ink-muted: color-mix(in srgb, var(--c-dark) 85%, var(--c-light));
+  --color-ink-light: var(--c-light);
+  --color-stroke: color-mix(in srgb, var(--c-dark) 14%, var(--c-light));
+  --color-stroke-strong: color-mix(in srgb, var(--c-dark) 26%, var(--c-light));
+  --color-accent-strong: var(--c-dark);
+  --color-accent-ink: var(--c-dark);
+  --color-accent-text: var(--c-accent);
+  --color-highlight: var(--c-accent);
+  --color-link: var(--c-dark);
+  --color-link-hover: var(--c-accent);
+  /* Text on an accent fill is always the real dark colour. */
+  --color-on-accent: var(--base-dark);
+}
