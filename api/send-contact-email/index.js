@@ -6,10 +6,66 @@ const ContactSchema = z.object({
     email: z.string().email(),
     phone: z.string().optional(),
     subject: z.string().optional(),
-    message: z.string().min(10)
+    message: z.string().min(10),
+    // A requested time for a call, in Amsterdam time. Empty when none was picked.
+    appointment: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
+        .or(z.literal(""))
+        .optional()
 });
 
-module.exports = async function (context, req) {
+const CALL_MINUTES = 30;
+
+/** The moment a wall-clock time in Amsterdam is, as a Date. */
+function amsterdamTime(day, time) {
+    const [y, m, d] = day.split("-").map(Number);
+    const [hh, mm] = time.split(":").map(Number);
+    const guess = Date.UTC(y, m - 1, d, hh, mm);
+    const parts = Object.fromEntries(
+        new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Europe/Amsterdam",
+            hourCycle: "h23",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+            .formatToParts(new Date(guess))
+            .map((part) => [part.type, part.value])
+    );
+    const shown = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute);
+    return new Date(guess - (shown - guess));
+}
+
+const stamp = (date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+const icsText = (text) => text.replace(/[\\;,]/g, (c) => "\\" + c).replace(/\r?\n/g, "\\n");
+
+/** A calendar file for the requested call. */
+function callInvite({ start, name, email, phone, subject, message }) {
+    const end = new Date(start.getTime() + CALL_MINUTES * 60000);
+    return [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Heckers Software//Website//EN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        `UID:${stamp(start)}-${Date.now()}@heckerssoftware.com`,
+        `DTSTAMP:${stamp(new Date())}`,
+        `DTSTART:${stamp(start)}`,
+        `DTEND:${stamp(end)}`,
+        `SUMMARY:${icsText(`Call with ${name} (requested, to confirm)`)}`,
+        `DESCRIPTION:${icsText(`${name} <${email}>\nPhone: ${phone}\nSubject: ${subject}\n\n${message}`)}`,
+        "STATUS:TENTATIVE",
+        "END:VEVENT",
+        "END:VCALENDAR"
+    ].join("\r\n");
+}
+
+
+
+const handler = async function (context, req) {
     try {
         if (req.method !== "POST") {
             context.res = { status: 405 };
@@ -55,8 +111,29 @@ module.exports = async function (context, req) {
             email,
             phone = "Not provided",
             subject = "General",
-            message
+            message,
+            appointment = ""
         } = parsed.data;
+
+        // The requested call, when a time was picked in the form.
+        let call = null;
+        if (appointment) {
+            const [day, time] = appointment.split(" ");
+            const start = amsterdamTime(day, time);
+            if (!Number.isNaN(start.valueOf())) {
+                const when = new Intl.DateTimeFormat("en-GB", {
+                    timeZone: "Europe/Amsterdam",
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hourCycle: "h23"
+                }).format(start);
+                call = { start, when };
+            }
+        }
 
         const transporter = nodemailer.createTransport({
             host: "smtp.zoho.eu",
@@ -74,6 +151,7 @@ module.exports = async function (context, req) {
             Email: ${email}
             Phone: ${phone}
             Subject: ${subject}
+            Requested call: ${call ? `${call.when} (Amsterdam time), ${CALL_MINUTES} minutes. Not confirmed yet: reply to confirm.` : "none"}
             Message:
             ${message}
         `;
@@ -82,8 +160,18 @@ module.exports = async function (context, req) {
             from: `"Website Contact" <info@heckerssoftware.com>`,
             to: "info@heckerssoftware.com",
             replyTo: email,
-            subject: `New contact form: ${subject} - ${name}`,
-            text: emailText
+            subject: call
+                ? `Call request: ${call.when} - ${name}`
+                : `New contact form: ${subject} - ${name}`,
+            text: emailText,
+            // Opens as an event in a mail client, to add to the calendar.
+            ...(call && {
+                icalEvent: {
+                    filename: "call-request.ics",
+                    method: "PUBLISH",
+                    content: callInvite({ start: call.start, name, email, phone, subject, message })
+                }
+            })
         });
 
         context.res = {
@@ -98,3 +186,5 @@ module.exports = async function (context, req) {
         };
     }
 };
+
+module.exports = Object.assign(handler, { amsterdamTime, callInvite });

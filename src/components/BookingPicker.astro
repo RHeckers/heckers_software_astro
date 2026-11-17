@@ -1,0 +1,444 @@
+---
+/**
+ * A time picker for a call, inside the contact form: three weeks of
+ * working days as a small calendar, then the half-hour slots of the day
+ * that is picked. Optional, and closed until the visitor opens it or
+ * arrives through a "Book ..." call to action, which opens it for them.
+ *
+ * It is a request, not a reservation system: there is no store of taken
+ * slots behind it. The chosen time travels with the form (the hidden
+ * `appointment` field, "YYYY-MM-DD HH:MM" in Amsterdam time) to the same
+ * mail function, which puts it in the subject and the text of the email
+ * and attaches a calendar file. The time is confirmed by email.
+ *
+ * Which slots are offered is decided here, not by a calendar: OPEN_SHARE
+ * of the slots of a day are offered and one day in DAY_OFF is not offered
+ * at all. The choice is worked out from the date and the time, so it is
+ * the same for every visitor and after every reload. Change the two
+ * numbers below to offer more or fewer times.
+ */
+---
+
+<details class="booking" id="booking">
+  <summary>
+    <span class="booking__summary-title">Pick a time for a call</span>
+    <span class="booking__summary-note" id="bookingChosen">Optional</span>
+  </summary>
+
+  <div class="booking__body">
+    <p class="booking__hint">
+      30 minutes, by video. Times are Amsterdam time. I confirm by email.
+    </p>
+
+    <div class="booking__days" id="bookingDays" role="group" aria-label="Day">
+    </div>
+
+    <div class="booking__slots" id="bookingSlots" role="group" aria-label="Time" hidden>
+    </div>
+
+    <p class="booking__picked" id="bookingPicked" aria-live="polite" hidden>
+      <span id="bookingPickedText"></span>
+      <button type="button" class="booking__clear" id="bookingClear">Clear</button>
+    </p>
+  </div>
+
+  <input type="hidden" id="appointment" name="appointment" value="" />
+</details>
+
+<p class="booking__sent" id="bookingSent" role="status" hidden>
+  Request sent. I confirm the time by email.
+</p>
+
+<script>
+  /* Share of a day's slots that is offered, and one day in how many is
+     not offered at all. */
+  const OPEN_SHARE = 0.42;
+  const DAY_OFF = 6;
+  /* Days ahead before the first day that can be picked, and how many
+     weeks are shown. */
+  const LEAD_DAYS = 2;
+  const WEEKS = 3;
+  /* 09:00 to 16:30, every half hour. */
+  const SLOTS = Array.from({ length: 16 }, (_, i) => {
+    const minutes = 9 * 60 + i * 30;
+    return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+  });
+
+  const root = document.getElementById("booking") as HTMLDetailsElement | null;
+  const daysEl = document.getElementById("bookingDays");
+  const slotsEl = document.getElementById("bookingSlots");
+  const pickedEl = document.getElementById("bookingPicked");
+  const pickedText = document.getElementById("bookingPickedText");
+  const chosenNote = document.getElementById("bookingChosen");
+  const sentEl = document.getElementById("bookingSent");
+  const input = document.getElementById("appointment") as HTMLInputElement | null;
+
+  if (root && daysEl && slotsEl && pickedEl && pickedText && chosenNote && input) {
+    /* A stable number from a string, so the same day and time is offered
+       or not for everyone. */
+    const hash = (text: string): number => {
+      let h = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    };
+
+    const iso = (date: Date): string =>
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+    const dayOffered = (day: string): boolean => hash(`day:${day}`) % DAY_OFF !== 0;
+
+    /** The slots of a day that are offered: always at least two. */
+    const offeredSlots = (day: string): Set<string> => {
+      const ranked = SLOTS.map((slot) => ({ slot, n: hash(`${day}T${slot}`) % 1000 })).sort(
+        (a, b) => a.n - b.n,
+      );
+      const count = Math.max(2, ranked.filter((item) => item.n < OPEN_SHARE * 1000).length);
+      return new Set(ranked.slice(0, count).map((item) => item.slot));
+    };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const first = new Date(today);
+    first.setDate(first.getDate() + LEAD_DAYS);
+    /* Start the grid on the Monday of the week the first day is in; a
+       weekend start moves on to the next Monday. */
+    const monday = new Date(first);
+    const weekday = monday.getDay();
+    monday.setDate(monday.getDate() + (weekday === 0 ? 1 : weekday === 6 ? 2 : 1 - weekday));
+
+    const dayName = new Intl.DateTimeFormat("en-GB", { weekday: "short" });
+    const monthName = new Intl.DateTimeFormat("en-GB", { month: "short" });
+    const longDate = new Intl.DateTimeFormat("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
+
+    let pickedDay = "";
+
+    const select = (day: string, slot: string) => {
+      input.value = `${day} ${slot}`;
+      const [y, m, d] = day.split("-").map(Number);
+      const label = `${longDate.format(new Date(y, m - 1, d))}, ${slot}`;
+      pickedText.textContent = `${label} (Amsterdam time)`;
+      chosenNote.textContent = label;
+      pickedEl.hidden = false;
+      if (sentEl) sentEl.hidden = true;
+      slotsEl.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.slot === slot));
+      });
+    };
+
+    const clear = () => {
+      input.value = "";
+      pickedEl.hidden = true;
+      chosenNote.textContent = "Optional";
+      slotsEl.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
+        button.setAttribute("aria-pressed", "false");
+      });
+    };
+
+    const showSlots = (day: string) => {
+      pickedDay = day;
+      if (input.value && !input.value.startsWith(day)) clear();
+      daysEl.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.day === day));
+      });
+      const offered = offeredSlots(day);
+      slotsEl.replaceChildren(
+        ...SLOTS.map((slot) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "booking__slot";
+          button.textContent = slot;
+          button.dataset.slot = slot;
+          button.disabled = !offered.has(slot);
+          button.setAttribute("aria-pressed", String(input.value === `${day} ${slot}`));
+          button.addEventListener("click", () => select(day, slot));
+          return button;
+        }),
+      );
+      slotsEl.hidden = false;
+    };
+
+    /* Three weeks, Monday to Friday. */
+    for (let week = 0; week < WEEKS; week++) {
+      for (let offset = 0; offset < 5; offset++) {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + week * 7 + offset);
+        const day = iso(date);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "booking__day";
+        button.dataset.day = day;
+        button.disabled = date < first || !dayOffered(day);
+        button.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-label", longDate.format(date));
+        const name = document.createElement("span");
+        name.className = "booking__day-name";
+        name.textContent = dayName.format(date);
+        const number = document.createElement("span");
+        number.className = "booking__day-number";
+        number.textContent = String(date.getDate());
+        const month = document.createElement("span");
+        month.className = "booking__day-month";
+        month.textContent = monthName.format(date);
+        button.append(name, number, month);
+        button.addEventListener("click", () => showSlots(day));
+        daysEl.append(button);
+      }
+    }
+
+    document.getElementById("bookingClear")?.addEventListener("click", clear);
+
+    /* A "Book ..." call to action opens the picker, also when it leads
+       here from another page. */
+    const FLAG = "open-booking";
+    const isBooking = (link: HTMLAnchorElement) => /^\s*book\b/i.test(link.textContent ?? "");
+    document
+      .querySelectorAll<HTMLAnchorElement>('a[href$="#contactForm"]')
+      .forEach((link) => {
+        link.addEventListener("click", () => {
+          if (!isBooking(link)) return;
+          root.open = true;
+          try {
+            sessionStorage.setItem(FLAG, "1");
+          } catch {
+            /* opens on this page only */
+          }
+        });
+      });
+    try {
+      if (sessionStorage.getItem(FLAG)) {
+        sessionStorage.removeItem(FLAG);
+        if (location.hash === "#contactForm") root.open = true;
+      }
+    } catch {
+      /* no stored flag */
+    }
+
+    /* The form says when it was sent: confirm a requested time and start
+       clean. */
+    window.addEventListener("contact-sent", (event) => {
+      const requested = (event as CustomEvent<{ appointment?: string }>).detail?.appointment;
+      clear();
+      slotsEl.hidden = true;
+      daysEl.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
+        button.setAttribute("aria-pressed", "false");
+      });
+      pickedDay = "";
+      root.open = false;
+      if (sentEl) sentEl.hidden = !requested;
+    });
+  }
+</script>
+
+<style>
+  .booking {
+    border: 1px solid var(--color-stroke-strong);
+    border-radius: 14px;
+    font-family: synonym, sans-serif;
+    color: var(--color-ink);
+  }
+
+  .booking summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    flex-wrap: wrap;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 14px;
+  }
+
+  .booking summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .booking summary:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* A plus that turns into a minus when the picker is open. */
+  .booking__summary-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .booking__summary-title::before {
+    content: "+";
+    display: grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1;
+  }
+
+  .booking[open] .booking__summary-title::before {
+    content: "\2212";
+  }
+
+  .booking__summary-note {
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .booking__body {
+    display: grid;
+    gap: 1rem;
+    padding: 0 1rem 1rem;
+  }
+
+  .booking__hint {
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .booking__days {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .booking__slots {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-stroke);
+  }
+
+  .booking__slots[hidden],
+  .booking__picked[hidden],
+  .booking__sent[hidden] {
+    display: none;
+  }
+
+  .booking :global(.booking__day),
+  .booking :global(.booking__slot) {
+    font: inherit;
+    color: var(--color-ink);
+    background: transparent;
+    border: 1px solid var(--color-stroke-strong);
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+      background 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .booking :global(.booking__day) {
+    display: grid;
+    justify-items: center;
+    gap: 0.05rem;
+    padding: 0.45rem 0.2rem;
+    line-height: 1.15;
+  }
+
+  .booking :global(.booking__day-name),
+  .booking :global(.booking__day-month) {
+    font-size: var(--font-xs);
+    color: var(--color-ink-muted);
+  }
+
+  .booking :global(.booking__day-number) {
+    font-family: chillax, sans-serif;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .booking :global(.booking__slot) {
+    padding: 0.5rem 0.25rem;
+    font-size: var(--font-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .booking :global(.booking__day:hover:not(:disabled)),
+  .booking :global(.booking__slot:hover:not(:disabled)) {
+    border-color: var(--color-ink);
+  }
+
+  .booking :global(.booking__day:focus-visible),
+  .booking :global(.booking__slot:focus-visible) {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .booking :global(.booking__day[aria-pressed="true"]),
+  .booking :global(.booking__slot[aria-pressed="true"]) {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .booking :global(.booking__day[aria-pressed="true"] span) {
+    color: var(--color-on-accent);
+  }
+
+  /* Not on offer: faded, and a time is struck through. */
+  .booking :global(.booking__day:disabled),
+  .booking :global(.booking__slot:disabled) {
+    cursor: default;
+    border-color: var(--color-stroke);
+    opacity: 0.4;
+  }
+
+  .booking :global(.booking__slot:disabled) {
+    text-decoration: line-through;
+  }
+
+  .booking__picked {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .booking__clear {
+    font: inherit;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-ink-muted);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .booking__sent {
+    font-family: synonym, sans-serif;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-ink);
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-accent);
+  }
+
+  @media (min-width: 480px) {
+    .booking__slots {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .booking :global(.booking__day),
+    .booking :global(.booking__slot) {
+      transition: none;
+    }
+  }
+</style>

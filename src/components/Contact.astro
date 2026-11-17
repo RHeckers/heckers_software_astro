@@ -1,6 +1,7 @@
 ---
 import { COMPANY } from "../consts";
 import ProofQuote from "./ProofQuote.astro";
+import BookingPicker from "./BookingPicker.astro";
 
 interface Props {
   /** Leave the numbered next steps out, for a page that has just told the
@@ -141,6 +142,8 @@ const nextSteps = [
       placeholder="What are you building, and where does it hurt?"></textarea>
     <div class="error-message" id="contentError"></div>
   </div>
+
+  <BookingPicker />
 
   <div class="turnstile-group">
     <div
@@ -477,6 +480,8 @@ const nextSteps = [
         const subject = getValue("subject");
         const message = getValue("content");
         const website = getValue("website"); // Honeypot
+        // "YYYY-MM-DD HH:MM" when a time for a call was picked, else "".
+        const appointment = getValue("appointment");
 
         try {
           const res = await fetch("/api/send-contact-email", {
@@ -489,6 +494,7 @@ const nextSteps = [
               subject,
               message,
               website,
+              appointment,
               turnstileToken,
             }),
           });
@@ -501,6 +507,10 @@ const nextSteps = [
               if (submitText) submitText.style.display = "inline";
             }, 1500);
             if (typeof form.reset === "function") form.reset();
+            // Lets the time picker confirm the request and start clean.
+            window.dispatchEvent(
+              new CustomEvent("contact-sent", { detail: { appointment } }),
+            );
             fields.forEach((f) => {
               const errDiv = document.getElementById(
                 f.errorId,
@@ -919,9 +929,33 @@ const nextSteps = [
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     }
 
+    /* The two columns are one height and line up top and bottom,
+       whichever of them has more in it. The copy column spreads: heading
+       and pitch at the top, the email line and the quote at the foot,
+       level with the bottom of the form. When the copy is the taller one,
+       the form grows to match and the message field takes the room. */
+    .contact__inner {
+      align-items: stretch;
+    }
+
     .contact__intro {
-      position: sticky;
-      top: calc(56px + 2rem);
+      height: 100%;
+    }
+
+    .contact__intro .contact__direct {
+      margin-top: auto;
+    }
+
+    .contact-form {
+      height: 100%;
+    }
+
+    .contact-form .form-group:has(textarea) {
+      flex: 1 1 auto;
+    }
+
+    .contact-form textarea {
+      flex: 1 1 auto;
     }
   }
 </style>
