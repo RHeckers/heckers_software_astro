@@ -4,9 +4,12 @@
  * actually read: it slides in after they scroll past half of the article
  * and goes away again as soon as the full signup card scrolls into view.
  *
- * It is never shown to someone who already subscribed, to someone who
- * dismissed it in the last 30 days, or while the cookie banner is open, so
- * two bars never stack. On narrow screens the form drops under the text
+ * It shows on every visit to a post, once per page view, and takes itself
+ * away again after the reader has scrolled on for a while (about two and a
+ * half screens), so it asks once and does not ride along for the rest of
+ * the article. Closing it hides it for that page view only. It is never
+ * shown to someone who already subscribed, or while the cookie banner is
+ * open, so two bars never stack. On narrow screens the form drops under the text
  * so the reader can subscribe without leaving their place in the article.
  */
 import NewsletterForm from "./NewsletterForm.astro";
@@ -163,9 +166,8 @@ const { watch, target } = Astro.props;
 
 <script>
   const SUBSCRIBED_KEY = "newsletter-subscribed";
-  const DISMISSED_KEY = "newsletter-bar-dismissed";
-  const DISMISS_DAYS = 30;
   const SHOW_AFTER = 0.5; // fraction of the article scrolled past
+  const STAY_FOR = 2.5; // screens of scrolling the bar stays for
 
   const bar = document.getElementById("newsletter-bar");
 
@@ -177,24 +179,21 @@ const { watch, target } = Astro.props;
     }
   }
 
-  function dismissedRecently(): boolean {
-    const stamp = Number(read(DISMISSED_KEY));
-    return stamp > 0 && Date.now() - stamp < DISMISS_DAYS * 86_400_000;
-  }
-
   function cookieBannerOpen(): boolean {
     const cc = document.getElementById("cookie-consent");
     return !!cc && !cc.hidden;
   }
 
-  if (bar && !read(SUBSCRIBED_KEY) && !dismissedRecently()) {
+  if (bar && !read(SUBSCRIBED_KEY)) {
     const article = document.querySelector<HTMLElement>(
       bar.dataset.watch ?? "",
     );
     const target = document.getElementById(bar.dataset.target ?? "");
 
     let earned = false; // reader scrolled far enough
-    let done = false; // dismissed, subscribed, or reached the card
+    let done = false; // closed, subscribed, scrolled on, or reached the card
+    let travelled = 0; // distance scrolled since, in either direction
+    let lastY = 0;
 
     const visible = () => earned && !done && !cookieBannerOpen();
 
@@ -219,13 +218,28 @@ const { watch, target } = Astro.props;
     }
 
     function onScroll() {
-      if (!article) return;
-      const rect = article.getBoundingClientRect();
-      const progress = (window.innerHeight - rect.top) / rect.height;
-      if (progress >= SHOW_AFTER) {
-        earned = true;
+      if (!article || !bar) return;
+
+      if (!earned) {
+        const rect = article.getBoundingClientRect();
+        const progress = (window.innerHeight - rect.top) / rect.height;
+        if (progress >= SHOW_AFTER) {
+          earned = true;
+          lastY = window.scrollY;
+          sync();
+        }
+        return;
+      }
+
+      /* Shown: count the scrolling since, and leave after a while. The
+         count only runs while the bar is really on screen, so a reader
+         who had the cookie banner open still gets the full interval. */
+      const y = window.scrollY;
+      if (!bar.hidden) travelled += Math.abs(y - lastY);
+      lastY = y;
+      if (travelled >= STAY_FOR * window.innerHeight) {
         window.removeEventListener("scroll", onScroll);
-        sync();
+        finish();
       }
     }
 
@@ -247,14 +261,8 @@ const { watch, target } = Astro.props;
       io.observe(target);
     }
 
-    bar.querySelector(".nl-bar__close")?.addEventListener("click", () => {
-      try {
-        localStorage.setItem(DISMISSED_KEY, String(Date.now()));
-      } catch {
-        /* session-only dismissal */
-      }
-      finish();
-    });
+    /* Closing it is for this page view; the next post shows it again. */
+    bar.querySelector(".nl-bar__close")?.addEventListener("click", finish);
 
     window.addEventListener("newsletter-subscribed", () => {
       // Let the "You're in" message sit for a moment before leaving.
