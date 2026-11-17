@@ -18,19 +18,21 @@ import WhatWeDo from "../components/home/WhatWeDo.astro";
 import Gains from "../components/home/Gains.astro";
 import WhyUs from "../components/home/WhyUs.astro";
 import WhoWeAre from "../components/home/WhoWeAre.astro";
+import Results from "../components/home/Results.astro";
+import LatestArticles from "../components/home/LatestArticles.astro";
 
 /**
  * The page is one visitor's journey, eight steps, each answering the
  * question the step before it raises. Every section is short on purpose:
  * a pain or a solution per line, and the service pages carry the detail.
  *
- *   1. The promise      What can you help me achieve?     Hero, client logos
+ *   1. The promise      What can you help me achieve?     Hero, results strip
  *   2. The challenge    Do you understand my problem?     Challenge
  *   3. What we do       How can you help me?              WhatWeDo, three ways to start
  *   4. What you gain    What changes for my company?      Gains
  *   5. How we do it     What is it like to work together? ProcessSteps
  *   6. Why us + proof   Why should I trust you?           WhyUs
- *   7. Who we are       Who will I actually work with?    WhoWeAre
+ *   7. Who we are       Who will I actually work with?    WhoWeAre, latest articles
  *   8. Take the leap    How do we get started?            Contact
  *
  * One look, shared with the service pages: full-width sections on a 1200px
@@ -76,6 +78,7 @@ const jsonLd = {
   <div class="home">
   {/* 1. The promise */}
   <HeroSection />
+  <Results />
 
   {/* 2. The challenge */}
   <Challenge />
@@ -129,6 +132,7 @@ const jsonLd = {
 
   {/* 7. Who we are */}
   <WhoWeAre />
+  <LatestArticles />
 
   {/* 8. Take the leap */}
   <Contact tone="dark" />

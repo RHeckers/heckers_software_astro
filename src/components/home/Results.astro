@@ -1,0 +1,135 @@
+---
+/**
+ * The results strip, directly under the hero: four figures from client
+ * work, each with what it measures and where it was measured. One row of
+ * four from 900px up, two by two below that. No heading on screen; the
+ * numbers are the heading.
+ *
+ * Each figure sits behind a short accent rule that draws down as the strip
+ * scrolls in, the same mark the mission block on the about page uses.
+ * The figures come from lib/results.ts and nowhere else.
+ */
+import CountUp from "../CountUp.astro";
+import { RESULTS } from "../../lib/results";
+---
+
+<section class="results" aria-labelledby="results-heading">
+  <div class="results__inner">
+    <h2 class="results__title" id="results-heading">Results at clients</h2>
+    <ul class="results__list">
+      {
+        RESULTS.map((result, index) => (
+          <li class="result" style={`--i: ${index}`}>
+            <p class="result__value">
+              <CountUp value={result.value} />
+            </p>
+            <p class="result__label">{result.label}</p>
+            <p class="result__client">{result.client}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .results {
+    background: var(--color-light-alt);
+    color: var(--color-ink);
+    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 6vw, 5rem) 0;
+  }
+
+  .results__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .results__title {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .results__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.75rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+    border-bottom: 1px solid var(--color-stroke);
+    view-timeline-name: --results;
+  }
+
+  .result {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-left: 1.25rem;
+  }
+
+  .result::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--c-accent);
+    transform-origin: top;
+  }
+
+  .result__value {
+    font-size: clamp(1.75rem, 3vw, 2.4rem);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+  }
+
+  .result__label {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-md);
+    line-height: 1.4;
+    max-width: 24ch;
+  }
+
+  .result__client {
+    font-family: synonym, sans-serif;
+    font-size: var(--font-sm);
+    color: var(--color-ink-muted);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .result::before {
+        animation: result-rule linear both;
+        animation-timeline: --results;
+        animation-range: entry calc(10% + var(--i) * 12%) entry calc(60% + var(--i) * 12%);
+      }
+    }
+  }
+
+  @keyframes result-rule {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .result__value {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .results__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>
