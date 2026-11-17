@@ -1,23 +1,22 @@
 ---
 /**
- * A slim opt-in bar for blog posts that only appears once a reader has
- * actually read: it slides in after they scroll past half of the article
- * and goes away again as soon as the full signup card scrolls into view.
+ * A slim opt-in bar for blog posts, shown while the reader is in the
+ * second half of the article: it slides in once half of it is read and
+ * out again at 85%, and does the same in reverse when they scroll back
+ * up. Before and after that stretch it is out of the way.
  *
- * It shows on every visit to a post, once per page view, and takes itself
- * away again after the reader has scrolled on for a while (about two and a
- * half screens), so it asks once and does not ride along for the rest of
- * the article. Closing it hides it for that page view only. It is never
- * shown to someone who already subscribed, or while the cookie banner is
- * open, so two bars never stack. On narrow screens the form drops under the text
- * so the reader can subscribe without leaving their place in the article.
+ * It shows on every visit to a post. Closing it hides it for that page
+ * view only. It is never shown to someone who already subscribed, or
+ * while the cookie banner is open, so two bars never stack. On narrow
+ * screens the form drops under the text so the reader can subscribe
+ * without leaving their place in the article.
  */
 import NewsletterForm from "./NewsletterForm.astro";
 
 interface Props {
-  /** Selector of the article body; the bar appears halfway through it. */
+  /** Selector of the article body; the bar follows how far it is read. */
   watch: string;
-  /** Id of the full signup card; the bar hides when it is in view. */
+  /** Id of the full signup card under the article. */
   target: string;
 }
 
@@ -166,8 +165,9 @@ const { watch, target } = Astro.props;
 
 <script>
   const SUBSCRIBED_KEY = "newsletter-subscribed";
-  const SHOW_AFTER = 0.5; // fraction of the article scrolled past
-  const STAY_FOR = 2.5; // screens of scrolling the bar stays for
+  /* The stretch of the article the bar is shown for, as fractions read. */
+  const SHOW_FROM = 0.5;
+  const SHOW_UNTIL = 0.85;
 
   const bar = document.getElementById("newsletter-bar");
 
@@ -184,81 +184,63 @@ const { watch, target } = Astro.props;
     return !!cc && !cc.hidden;
   }
 
-  if (bar && !read(SUBSCRIBED_KEY)) {
-    const article = document.querySelector<HTMLElement>(
-      bar.dataset.watch ?? "",
-    );
-    const target = document.getElementById(bar.dataset.target ?? "");
+  const article = bar
+    ? document.querySelector<HTMLElement>(bar.dataset.watch ?? "")
+    : null;
 
-    let earned = false; // reader scrolled far enough
-    let done = false; // closed, subscribed, scrolled on, or reached the card
-    let travelled = 0; // distance scrolled since, in either direction
-    let lastY = 0;
+  if (bar && article && !read(SUBSCRIBED_KEY)) {
+    let done = false; // closed or subscribed, for this page view
+    let leaving = 0; // timer of the slide-out in progress
 
-    const visible = () => earned && !done && !cookieBannerOpen();
+    /** How much of the article has passed the bottom of the screen. */
+    function progress(): number {
+      const rect = article!.getBoundingClientRect();
+      return (window.innerHeight - rect.top) / rect.height;
+    }
+
+    function wanted(): boolean {
+      if (done || cookieBannerOpen()) return false;
+      const read = progress();
+      return read >= SHOW_FROM && read < SHOW_UNTIL;
+    }
+
+    function show() {
+      window.clearTimeout(leaving);
+      leaving = 0;
+      const wasHidden = bar!.hidden;
+      bar!.hidden = false;
+      bar!.classList.remove("is-leaving");
+      if (wasHidden) bar!.classList.add("is-entering");
+    }
+
+    function hide() {
+      if (bar!.hidden || leaving) return;
+      bar!.classList.remove("is-entering");
+      bar!.classList.add("is-leaving");
+      leaving = window.setTimeout(() => {
+        leaving = 0;
+        bar!.hidden = true;
+        bar!.classList.remove("is-leaving");
+      }, 260);
+    }
 
     function sync() {
-      if (!bar) return;
-      if (visible() && bar.hidden) {
-        bar.hidden = false;
-        bar.classList.add("is-entering");
-      } else if (!visible() && !bar.hidden) {
-        bar.hidden = true;
-        bar.classList.remove("is-entering", "is-leaving");
-      }
+      if (wanted()) show();
+      else hide();
     }
+
+    /* One measurement per scroll event; cheap enough to run directly. */
+    const onScroll = sync;
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    sync();
 
     function finish() {
-      if (!bar || done) return;
       done = true;
-      if (bar.hidden) return;
-      bar.classList.add("is-leaving");
-      bar.addEventListener("transitionend", sync, { once: true });
-      setTimeout(sync, 300);
-    }
-
-    function onScroll() {
-      if (!article || !bar) return;
-
-      if (!earned) {
-        const rect = article.getBoundingClientRect();
-        const progress = (window.innerHeight - rect.top) / rect.height;
-        if (progress >= SHOW_AFTER) {
-          earned = true;
-          lastY = window.scrollY;
-          sync();
-        }
-        return;
-      }
-
-      /* Shown: count the scrolling since, and leave after a while. The
-         count only runs while the bar is really on screen, so a reader
-         who had the cookie banner open still gets the full interval. */
-      const y = window.scrollY;
-      if (!bar.hidden) travelled += Math.abs(y - lastY);
-      lastY = y;
-      if (travelled >= STAY_FOR * window.innerHeight) {
-        window.removeEventListener("scroll", onScroll);
-        finish();
-      }
-    }
-
-    if (article) {
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
-    }
-
-    if (target && "IntersectionObserver" in window) {
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) {
-            finish();
-            io.disconnect();
-          }
-        },
-        { threshold: 0.2 },
-      );
-      io.observe(target);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      hide();
     }
 
     /* Closing it is for this page view; the next post shows it again. */

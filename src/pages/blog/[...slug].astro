@@ -98,6 +98,9 @@ const jsonLd = {
   ]}
   themeToggle
 >
+  {/* How far down the page the reader is. Decoration: CSS only. */}
+  <div class="read-progress" aria-hidden="true"></div>
+
   <article class="post">
     <header>
       <div class="header-meta">
@@ -193,6 +196,37 @@ const jsonLd = {
 </PageLayout>
 
 <style>
+  /* Reading progress: a thin accent line along the top edge that fills
+     from left to right as the page is scrolled. Driven by the page's own
+     scroll position, no script. Browsers without scroll-driven
+     animations do not show it at all. */
+  .read-progress {
+    display: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .read-progress {
+      display: block;
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 2px;
+      z-index: 1200;
+      background: var(--c-accent);
+      opacity: 0.8;
+      transform-origin: left;
+      transform: scaleX(0);
+      animation: read-progress linear both;
+      animation-timeline: scroll(root block);
+      pointer-events: none;
+    }
+  }
+
+  @keyframes read-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
   /* Base: synonym for body text, ink color — children inherit */
   .post {
     max-width: 960px;
