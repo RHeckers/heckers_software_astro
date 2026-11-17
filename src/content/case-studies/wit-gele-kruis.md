@@ -6,7 +6,7 @@ period: "Jan 2025 to Dec 2025"
 role: "Lead front-end platform engineer"
 summary: "I led the front-end platform team at Wit-Gele Kruis. Nx generators, simpler component APIs and shared abstractions raised productivity by 20% for more than 40 front-end developers, and a full Cypress run went from 90 minutes to 10."
 order: 1
-services: ["architecture-assessment", "workshops"]
+services: ["architecture-assessment", "workshops", "forward-deployed-engineering"]
 stack: ["Angular", "Nx", "NgRx", "Capacitor", "Electron", "Node.js", "SQLite", "Cypress", "Jest", "Storybook", "SonarQube", "GitLab CI/CD"]
 results:
   - value: "20%"
@@ -27,6 +27,7 @@ More than 40 front-end developers at Wit-Gele Kruis build on one shared front-en
 - Implemented the WCAG 2.1 standards in the component library.
 - Built the complex components (charts, pivot tables, matrix grids) and made them available through simple APIs.
 - Implemented encryption for SQLite, so offline use is safe.
+- Introduced shared AI skills and instructions for the developers, and implemented the BMAD method.
 - Improved the CI/CD pipelines with custom lint rules and SonarQube rules, wrote the Storybook documentation, and raised the coverage of the Cypress end-to-end and component tests.
 
 ## Result

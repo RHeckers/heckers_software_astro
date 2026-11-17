@@ -2,7 +2,8 @@
 /**
  * Step 3 of the home page, "How can you help me?", in one sentence and
  * three verbs, next to a photograph of the founder on stage in front of a
- * full hall, with the client logos in one row under both. A
+ * full hall, with the client logos and the results at those clients under
+ * both. A
  * full-screen dark band: the turn of the page from problem to answer, and
  * the first piece of social proof below the logos.
  *
@@ -15,6 +16,7 @@
 import { Image } from "astro:assets";
 import Accent from "../Accent.astro";
 import LogoBanner from "../LogoBanner.astro";
+import Results from "./Results.astro";
 import stage from "../../assets/workshop/ng-poland-2024.5.jpg";
 import { AUTHOR } from "../../consts";
 
@@ -75,6 +77,7 @@ const {
 
   <div class="what__clients">
     <LogoBanner />
+    <Results />
   </div>
 </section>
 
@@ -105,12 +108,16 @@ const {
   /* Outside the two-column grid on purpose. The photograph is pinned
      within that grid only, so it has left the screen's pinned spot before
      the logos arrive and can never end up underneath them. */
+  /* The proof at the foot of the band: the client logos, then what was
+     delivered for them. */
   .what__clients {
     position: relative;
     z-index: 1;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
   }
 
   .what__copy {

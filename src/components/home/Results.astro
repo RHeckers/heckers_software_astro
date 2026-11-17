@@ -1,13 +1,18 @@
 ---
 /**
- * The results strip, directly under the hero: one result per client, four
- * clients, each with what it measures and where it was measured. One row of
- * four from 900px up, two by two below that. No heading on screen; the
- * numbers are the heading.
+ * Results at clients: one result per client, four clients, each with
+ * what it measures and a link to the case study behind it. Not a section
+ * of its own: it closes the dark "I come in and deliver" band, directly
+ * under the client logos, so the names and what was delivered for them
+ * read as one block of proof. One row of four from 900px up, two by two
+ * below that.
  *
- * Each figure sits behind a short accent rule that draws down as the strip
- * scrolls in, the same mark the mission block on the about page uses.
- * The figures come from lib/results.ts and nowhere else. A figure links to
+ * As the block scrolls in, the results arrive one after the other: the
+ * accent rule draws down, the figure rises into place and counts up, and
+ * the label and the client follow. Scroll-driven CSS, simply shown where
+ * that is unsupported or when motion is reduced.
+ *
+ * The results come from lib/results.ts and nowhere else. A result links to
  * its case study as soon as that case study is published.
  */
 import CountUp from "../CountUp.astro";
@@ -19,10 +24,19 @@ import { getCaseStudies } from "../../lib/case-studies";
 const published = new Set((await getCaseStudies()).map((study) => study.id));
 ---
 
-<section class="results" aria-labelledby="results-heading">
-  <div class="results__inner">
-    <h2 class="results__title" id="results-heading">Results at clients</h2>
-    <ul class="results__list">
+<div class="results">
+  <header class="results__head">
+    <h3 class="results__title" id="results-heading">Results at clients</h3>
+    {
+      published.size > 0 && (
+        <a class="results__all" href="/case-studies/">
+          All case studies <span aria-hidden="true">&rarr;</span>
+        </a>
+      )
+    }
+  </header>
+
+  <ul class="results__list" aria-labelledby="results-heading">
       {
         RESULTS.map((result, index) => (
           <li class="result" style={`--i: ${index}`}>
@@ -42,39 +56,62 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
           </li>
         ))
       }
-    </ul>
-  </div>
-</section>
+  </ul>
+</div>
 
 <style>
+  /* Stands on the dark band it is placed in: its colours are the band's
+     light colour and tints of it. A hairline sets it apart from the logos
+     above. */
   .results {
-    background: var(--color-light-alt);
-    color: var(--color-ink);
-    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 6vw, 5rem) 0;
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid color-mix(in srgb, var(--c-light) 16%, transparent);
   }
 
-  .results__inner {
-    max-width: 1200px;
-    margin: 0 auto;
+  .results__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
   }
 
-  .results__title {
+  /* The same quiet line as the title above the logos. */
+  .results__title,
+  .results__all {
     font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
+    font-size: var(--font-md);
     font-weight: var(--font-weight-medium);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+  }
+
+  .results__all,
+  .result__client a {
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .result__client a {
+    color: inherit;
+  }
+
+  .results__all:hover,
+  .results__all:focus-visible,
+  .result__client a:hover,
+  .result__client a:focus-visible {
+    color: var(--c-light);
   }
 
   .results__list {
     list-style: none;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(1.75rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.5rem);
-    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
-    border-bottom: 1px solid var(--color-stroke);
+    gap: clamp(2.25rem, 5vw, 3.5rem) clamp(1.25rem, 3vw, 2.5rem);
     view-timeline-name: --results;
   }
 
@@ -87,9 +124,9 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     display: grid;
     grid-row: span 3;
     grid-template-rows: subgrid;
-    row-gap: 0.4rem;
+    row-gap: 0.6rem;
     align-content: start;
-    padding-left: 1.25rem;
+    padding-left: clamp(1rem, 2vw, 1.5rem);
   }
 
   /* Without subgrid: a column with the client name on the bottom line. */
@@ -97,7 +134,7 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     .result {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.6rem;
     }
 
     .result__client {
@@ -111,47 +148,60 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3px;
-    border-radius: 3px;
+    width: 4px;
+    border-radius: 4px;
     background: var(--c-accent);
     transform-origin: top;
   }
 
   .result__value {
-    font-size: clamp(1.75rem, 3vw, 2.4rem);
+    font-size: clamp(1.6rem, 2.9vw, 2.5rem);
     font-weight: var(--font-weight-medium);
-    line-height: 1;
-    letter-spacing: -0.015em;
-    white-space: nowrap;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-light-raised);
+    /* A result in words may take two lines; the rows of the list keep
+       the labels under it level across the blocks. */
+    text-wrap: balance;
   }
 
   .result__label {
     font-family: synonym, sans-serif;
-    font-size: var(--font-md);
-    line-height: 1.4;
-    max-width: 24ch;
+    font-size: var(--font-lg);
+    line-height: 1.35;
+    max-width: 22ch;
+    color: color-mix(in srgb, var(--c-light) 88%, transparent);
   }
 
   .result__client {
     font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
-    color: var(--color-ink-muted);
+    font-size: var(--font-md);
+    color: color-mix(in srgb, var(--c-light) 72%, transparent);
+    padding-top: 0.4rem;
   }
 
-  .result__client a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-color: var(--color-accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
-
+  /* One block after the other, left to right: the rule draws down, then
+     the figure rises and the two lines under it follow, all while the
+     row comes onto the screen. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .result::before {
-        animation: result-rule linear both;
+        animation: result-rule cubic-bezier(0.22, 0.61, 0.36, 1) both;
         animation-timeline: --results;
-        animation-range: entry calc(10% + var(--i) * 12%) entry calc(60% + var(--i) * 12%);
+        animation-range: entry calc(20% + var(--i) * 14%) entry calc(80% + var(--i) * 14%);
+      }
+
+      .result__value {
+        animation: result-rise cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        animation-timeline: --results;
+        animation-range: entry calc(35% + var(--i) * 14%) entry calc(95% + var(--i) * 14%);
+      }
+
+      .result__label,
+      .result__client {
+        animation: result-fade linear both;
+        animation-timeline: --results;
+        animation-range: entry calc(50% + var(--i) * 14%) entry calc(110% + var(--i) * 14%);
       }
     }
   }
@@ -162,9 +212,27 @@ const published = new Set((await getCaseStudies()).map((study) => study.id));
     }
   }
 
+  @keyframes result-rise {
+    from {
+      opacity: 0;
+      translate: 0 1.5rem;
+    }
+  }
+
+  @keyframes result-fade {
+    from {
+      opacity: 0;
+      translate: 0 0.75rem;
+    }
+  }
+
   @media (max-width: 420px) {
     .result__value {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
+    }
+
+    .result__label {
+      font-size: var(--font-md);
     }
   }
 
