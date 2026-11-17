@@ -1,7 +1,7 @@
 export const SITE_TITLE = "Heckers Software - Angular, Nx and AI engineering for enterprises";
 export const SITE_DESCRIPTION = "Forward-deployed engineering: a senior engineer who joins your team, owns the outcome and ships software to production, with AI where it earns its place.";
 /** The homepage <title>: the main offer first, the brand last, under 60 characters. */
-export const HOME_TITLE = "Forward-Deployed Engineering & AI | Heckers Software";
+export const HOME_TITLE = "Forward-Deployed Engineering | Heckers Software";
 
 export const COMPANY = {
   name: "Heckers Software",

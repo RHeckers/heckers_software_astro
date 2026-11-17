@@ -1,8 +1,11 @@
 ---
 /**
  * Step 2 of the home page, "Do you understand my problem?". Four pains a
- * visitor recognises, in their own words, next to the one number that says
- * it is not just them. No solution here: that is the next section's job.
+ * visitor recognises, in their own words, next to the one claim they all
+ * come down to: the work that matters does not reach production. It is
+ * about delivery in general; the stalled AI pilot is one of the four, and
+ * the figures about AI pilots are on the forward-deployed engineering
+ * page. No solution here: that is the next section's job.
  *
  * Laid out like the evidence band on the service pages: from 900px up the
  * claim on the left stays pinned while the pains scroll past it on the
@@ -10,21 +13,16 @@
  * the row settles into place; the text is always at full strength so it
  * stays readable). Scroll-driven CSS, no script; fully
  * drawn where that is unsupported or motion is reduced.
- *
- * Source: MIT NANDA, The GenAI Divide: State of AI in Business 2025 (about
- * 95% of enterprise generative AI pilots show no measurable P&L return; the
- * report blames workflow integration, not the models).
  */
-import CountUp from "../CountUp.astro";
 
 const pains = [
   {
-    title: "The demo worked. Production never came.",
-    copy: "It was never wired into your systems and your data, so nobody uses it.",
-  },
-  {
     title: "The backlog grows faster than the team.",
     copy: "The work that would save the most waits behind the work that keeps the lights on.",
+  },
+  {
+    title: "The pilot worked. Production never came.",
+    copy: "It was never wired into your systems and your data, so nobody uses it.",
   },
   {
     title: "Nobody owns the outcome.",
@@ -41,15 +39,11 @@ const pains = [
   <div class="challenge__inner">
     <div class="challenge__claim">
       <h2 class="challenge__title" id="challenge-heading">
-        The pilot impressed everyone. Then nothing changed.
+        The work that would change the most never ships.
       </h2>
-      <p class="challenge__value"><CountUp value="95%" /></p>
       <p class="challenge__lead">
-        of enterprise AI pilots deliver no measurable return. The model is
-        rarely the problem. The last mile is.
-      </p>
-      <p class="challenge__source">
-        MIT NANDA, The GenAI Divide: State of AI in Business 2025
+        The idea is rarely the problem. The last mile is: getting it into
+        your systems, your data and the hands of the people who use it.
       </p>
     </div>
 
@@ -106,26 +100,11 @@ const pains = [
     margin-bottom: var(--spacer-lg);
   }
 
-  .challenge__value {
-    font-size: clamp(4rem, 9vw, 6.5rem);
-    font-weight: var(--font-weight-light);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    color: var(--color-ink);
-    font-variant-numeric: tabular-nums;
-  }
-
   .challenge__lead {
     font-family: synonym, sans-serif;
     font-size: clamp(1.1rem, 1.6vw, 1.35rem);
     line-height: 1.5;
     max-width: 34ch;
-  }
-
-  .challenge__source {
-    font-family: synonym, sans-serif;
-    font-size: var(--font-sm);
-    color: var(--color-ink-muted);
   }
 
   .challenge__pains {
