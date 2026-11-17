@@ -23,12 +23,15 @@ interface Props {
   stage?: "hall" | "code" | "applause";
   /** One more line under the lede, such as how larger work is staffed. */
   note?: string;
+  /** Written for the light ground; "dark" shows it on the dark one. */
+  tone?: "light" | "dark";
 }
 
 const {
   title = "You work with the founder, not an account manager",
   stage,
   note,
+  tone = "light",
 } = Astro.props;
 
 /* `position` keeps both the speaker and the audience in the wide crop. */
@@ -60,7 +63,10 @@ const facts = [
 ];
 ---
 
-<section class="founder" aria-labelledby="founder-heading">
+<section
+  class:list={["founder", { "ground-dark": tone === "dark" }]}
+  aria-labelledby="founder-heading"
+>
   <div class="founder__inner">
     <div class="founder__photo">
       <Image
@@ -103,6 +109,13 @@ const facts = [
 </section>
 
 <style>
+  /* On dark the soft shadows would turn into pale halos. */
+  .founder.ground-dark .founder__photo,
+  .founder.ground-dark .founder__stage,
+  .founder.ground-dark .founder__stage :global(img) {
+    box-shadow: none;
+  }
+
   .founder {
     background: var(--color-light-alt);
     color: var(--color-ink);

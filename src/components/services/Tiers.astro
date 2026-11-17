@@ -38,6 +38,8 @@ interface Props {
   /** Shown under the note: for readers whose situation fits none of the
    *  tiers. Links to the contact form with the page's subject. */
   otherLabel?: string;
+  /** Written for the light ground; "dark" shows it on the dark one. */
+  tone?: "light" | "dark";
 }
 
 const {
@@ -49,10 +51,15 @@ const {
   tiers,
   note,
   otherLabel,
+  tone = "light",
 } = Astro.props;
 ---
 
-<section class="tiers" id={id} aria-labelledby={`${id}-heading`}>
+<section
+  class:list={["tiers", { "ground-dark": tone === "dark" }]}
+  id={id}
+  aria-labelledby={`${id}-heading`}
+>
   <div class="tiers__inner">
     <header class="tiers__head">
       <h2 class="tiers__title" id={`${id}-heading`}>{title}</h2>
@@ -113,6 +120,11 @@ const {
 </section>
 
 <style>
+  /* On dark the recommended card is the light one; it needs no shadow. */
+  .tiers.ground-dark :global(.tier) {
+    box-shadow: none;
+  }
+
   .tiers {
     background: var(--color-light-alt);
     color: var(--color-ink);

@@ -549,6 +549,9 @@ main > .home > section:not(:first-child, .contact),
   --color-accent-ink: var(--c-dark);
   --color-accent-text: var(--c-accent);
   --color-highlight: var(--c-accent);
+  /* A panel written as dark inside such a section turns light, so its
+     highlight is the accent deepened until it reads on the light colour. */
+  --color-highlight-on-dark: color-mix(in srgb, var(--c-accent) 55%, var(--base-dark));
   --color-link: var(--c-dark);
   --color-link-hover: var(--c-accent);
   /* Text on an accent fill is always the real dark colour. */

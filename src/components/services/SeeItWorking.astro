@@ -42,7 +42,7 @@ const parts = series.map((post) => {
       <div class="working__inner">
         <header class="working__head">
           <h2 class="working__title" id="working-heading">
-            See it working
+            AI driven systems, built and explained
           </h2>
           <p class="working__lede">
             Working code, written up step by step. Read it before you call.
@@ -96,19 +96,15 @@ const parts = series.map((post) => {
   .working {
     background: var(--color-light-alt);
     color: var(--color-ink);
-    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem) 0;
+    padding: clamp(4rem, 10vw, 7.5rem) clamp(1.25rem, 6vw, 5rem);
   }
 
-  /* The founder section below shares this ground: a hairline at the
-     column's width keeps the two apart. */
   .working__inner {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr;
     gap: clamp(2rem, 5vw, 4rem);
-    padding-bottom: clamp(4rem, 10vw, 7.5rem);
-    border-bottom: 1px solid var(--color-stroke);
   }
 
   .working__head {
