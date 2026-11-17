@@ -65,7 +65,7 @@ const tiers = [
     name: "Standard",
     badge: "Most teams choose this",
     recommended: true,
-    tagline: "The rules agreed, and enforced before we leave.",
+    tagline: "The rules agreed, and enforced before I leave.",
     duration: "Two days, twelve seats included",
     price: { amount: euro(price.twoDays), detail: `fixed, ${VAT_NOTE}` },
     includes: [
@@ -144,7 +144,7 @@ const jsonLd = {
   {/* 2. The challenge */}
   <EvidenceBand
     title="What the numbers say"
-    intro="None of them are ours."
+    intro="None of them are mine."
     stats={[
       {
         value: "76%",
@@ -191,7 +191,7 @@ const jsonLd = {
       },
       {
         title: "A build that enforces them",
-        detail: "Lint rules and module boundaries, merged before we leave.",
+        detail: "Lint rules and module boundaries, merged before I leave.",
       },
       {
         title: "Exercises from your own code",
@@ -213,7 +213,7 @@ const jsonLd = {
   {/* 5. How we do it */}
   <ProcessSteps
     title="How a workshop runs"
-    intro="We spend more time reading your code than we spend in the room."
+    intro="I spend more time reading your code than I spend in the room."
     deliverablesTitle="What you can count on"
     deliverables={[
       "Prepared on your own repository, not on a demo app",
@@ -230,7 +230,7 @@ const jsonLd = {
       {
         title: "Preparation",
         when: "The week before",
-        copy: "We read your code and build the exercises from it: your project graph, your state, your CI.",
+        copy: "I read your code and build the exercises from it: your project graph, your state, your CI.",
       },
       {
         title: "The workshop",
@@ -254,8 +254,8 @@ const jsonLd = {
 
   {/* 6. Why us + proof */}
   <ProofRow
-    title="Why teams trust us in the room"
-    lede="The words of people who had us working with their developers."
+    title="Why teams trust me in the room"
+    lede="The words of people who had me working with their developers."
     snippets={["nicoAngular", "alexThinkAlong", "marcChallenges"]}
   />
 
@@ -265,7 +265,7 @@ const jsonLd = {
   {/* 8. Take the leap */}
   <Faq
     tone="dark"
-    title="Questions we hear first"
+    title="Questions I hear first"
     items={FAQS["workshops"]}
   />
 
@@ -276,7 +276,7 @@ const jsonLd = {
     subject={service.subject}
     tiers={tiers}
     note={`Minimum and Standard are fixed for twelve seats, ${VAT_NOTE}; travel outside the Netherlands at cost. Each extra seat is ${euro(price.extraSeatPerDay)} per workshop day. Advanced is quoted per goal and group size.`}
-    otherLabel="Tell us what your team needs"
+    otherLabel="Tell me what your team needs"
   />
 
   <ContactDialog />

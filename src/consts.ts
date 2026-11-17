@@ -1,5 +1,5 @@
 export const SITE_TITLE = "Heckers Software - Angular, Nx and AI engineering for enterprises";
-export const SITE_DESCRIPTION = "Forward-deployed engineering: one industry expert, amplified by AI, who comes into your company and delivers software and AI end to end, into production.";
+export const SITE_DESCRIPTION = "Forward-deployed engineering: a senior engineer who joins your team, owns the outcome and ships software to production, with AI where it earns its place.";
 /** The homepage <title>: the main offer first, the brand last, under 60 characters. */
 export const HOME_TITLE = "Forward-Deployed Engineering & AI | Heckers Software";
 
@@ -14,6 +14,10 @@ export const COMPANY = {
   kvk: "90652479",
   btw: "NL0048.32.507.B79",
 } as const;
+
+/** How bigger assignments are staffed. Said the same way everywhere. */
+export const CAPACITY_STATEMENT =
+  "For larger assignments I bring in senior engineers from my network. I stay the lead and your single point of contact.";
 
 export const AUTHOR = {
   name: "Roberto Heckers",

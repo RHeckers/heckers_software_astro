@@ -47,7 +47,7 @@ const price = PRICING.assessment;
 
 const title = "Angular & Nx Architecture Assessment | Heckers Software";
 const description =
-  "A fixed-scope assessment of your Angular or Nx codebase by senior engineers: every finding ranked by cost, with the fix, and a roadmap your team can execute.";
+  "A fixed-scope assessment of your Angular or Nx codebase by a senior engineer: every finding ranked by cost, with the fix, and a roadmap your team can execute.";
 
 const tiers = [
   {
@@ -79,14 +79,14 @@ const tiers = [
   },
   {
     name: "Advanced",
-    tagline: "The top findings fixed by us, not just found.",
+    tagline: "The top findings fixed by me, not just found.",
     duration: "Three weeks, then execution in sprints",
     price: {
       amount: "On quote",
     },
     includes: [
       "Everything in Standard",
-      "We implement the top findings with your developers",
+      "I implement the top findings with your developers",
       "Module boundaries enforced in lint and build",
       "Review of the first pull requests after the roadmap",
       "Monthly check-in for one quarter",
@@ -145,7 +145,7 @@ const jsonLd = {
   {/* 2. The challenge */}
   <EvidenceBand
     title="What the numbers say"
-    intro="None of them are ours."
+    intro="None of them are mine."
     stats={[
       {
         value: "42%",
@@ -216,8 +216,8 @@ const jsonLd = {
 
   {/* 3. What we do */}
   <Approach
-    title="We read the code. You get the roadmap."
-    lede="Senior engineers, from the outside, in two to three weeks."
+    title="I read the code. You get the roadmap."
+    lede="A senior engineer, from the outside, in two to three weeks."
     verbs={[
       { verb: "Read", rest: "every project, dependency and boundary" },
       { verb: "Rank", rest: "each finding by what it costs you" },
@@ -272,12 +272,12 @@ const jsonLd = {
       {
         title: "Kickoff",
         when: "Day 1",
-        copy: "What hurts, what is planned, what we may not touch. Read access to the repository is all we need.",
+        copy: "What hurts, what is planned, what I may not touch. Read access to the repository is all I need.",
       },
       {
         title: "Deep dive",
         when: "Week 1–2",
-        copy: "We read the code and the project graph, then talk to the people who work in it every day.",
+        copy: "I read the code and the project graph, then talk to the people who work in it every day.",
       },
       {
         title: "Report",
@@ -287,13 +287,13 @@ const jsonLd = {
       {
         title: "Roadmap with your team",
         when: "Week 3",
-        copy: "We turn the findings into a plan that fits your capacity. Most teams run it themselves.",
+        copy: "I turn the findings into a plan that fits your capacity. Most teams run it themselves.",
       },
       {
         title: "Hands-on execution",
         when: "After the roadmap",
         optional: true,
-        copy: "Want it done? We implement the fixes inside your codebase, together with your developers.",
+        copy: "Want it done? I implement the fixes inside your codebase, together with your developers.",
       },
     ]}
     ctaLabel={service.cta}
@@ -302,18 +302,18 @@ const jsonLd = {
 
   {/* 6. Why us + proof */}
   <ProofRow
-    title="Why teams trust us with their code"
-    lede="The words of people who had us inside their codebase."
+    title="Why teams trust me with their code"
+    lede="The words of people who had me inside their codebase."
     snippets={["ferdiDepth", "peterLasting", "marcChallenges"]}
   />
 
   {/* 7. Who we are */}
-  <Founder stage="code" title="The author of the book reads your code himself" />
+  <Founder stage="code" title="I wrote the book, and I read your code myself" />
 
   {/* 8. Take the leap */}
   <Faq
     tone="dark"
-    title="Questions we hear first"
+    title="Questions I hear first"
     items={FAQS["architecture-assessment"]}
   />
 
@@ -324,7 +324,7 @@ const jsonLd = {
     subject={service.subject}
     tiers={tiers}
     note={`Minimum and Standard are fixed, ${VAT_NOTE}, for workspaces up to about fifty projects. Larger workspaces get a fixed quote after a thirty-minute call. Advanced adds execution, quoted after the roadmap.`}
-    otherLabel="Tell us about your codebase"
+    otherLabel="Tell me about your codebase"
   />
 
   <ContactDialog />

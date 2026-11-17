@@ -21,11 +21,14 @@ interface Props {
       the whole hall from the stage, the code on the big screen, or the
       audience applauding. */
   stage?: "hall" | "code" | "applause";
+  /** One more line under the lede, such as how larger work is staffed. */
+  note?: string;
 }
 
 const {
   title = "You work with the founder, not an account manager",
   stage,
+  note,
 } = Astro.props;
 
 /* `position` keeps both the speaker and the audience in the wide crop. */
@@ -72,8 +75,9 @@ const facts = [
     <div class="founder__copy">
       <h2 class="founder__title" id="founder-heading">{title}</h2>
       <p class="founder__lede">
-        {AUTHOR.name} runs the discovery, writes the code and ships it himself.
+        I am {AUTHOR.name}. I run the discovery, write the code and ship it myself.
       </p>
+      {note && <p class="founder__note">{note}</p>}
       <ul class="founder__facts">
         {facts.map((fact) => <li class="founder__fact">{fact}</li>)}
       </ul>
@@ -146,7 +150,8 @@ const facts = [
     max-width: 18ch;
   }
 
-  .founder__lede {
+  .founder__lede,
+  .founder__note {
     font-family: synonym, sans-serif;
     font-size: clamp(1.1rem, 1.6vw, 1.35rem);
     line-height: 1.45;

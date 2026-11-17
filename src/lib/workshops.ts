@@ -31,7 +31,7 @@ export const WORKSHOPS: readonly Workshop[] = [
     title: "AI-Native Development: From Autocomplete to Automation",
     tag: "AI • Delivery",
     description:
-      "Agents that pick up a ticket, write the code and the tests, and open a pull request for a person to review. We show how to set up the agents, how to keep quality up, and how to automate the chain from ticket to pull request.",
+      "Agents that pick up a ticket, write the code and the tests, and open a pull request for a person to review. I show how to set up the agents, how to keep quality up, and how to automate the chain from ticket to pull request.",
     bullets: [
       "Where your team stands today and what is realistic next: from suggestions in the editor to agents that finish whole tasks while a person checks the result",
       "Setting up coding agents such as Claude Code or Copilot so they know your codebase: the project structure, your conventions, and how to build and test",
@@ -82,7 +82,7 @@ export const WORKSHOPS: readonly Workshop[] = [
     title: "Enterprise Angular Architecture",
     tag: "Architecture • Angular",
     description:
-      "For teams whose Angular app has grown faster than its structure, and who are about to build AI features on top of it. We find where it hurts, including the places you have stopped noticing, and show the way out.",
+      "For teams whose Angular app has grown faster than its structure, and who are about to build AI features on top of it. I find where it hurts, including the places you have stopped noticing, and show the way out.",
     bullets: [
       "Every change breaks something else: bringing dependency rules to a grown codebase",
       "State scattered everywhere, and the bugs nobody can reproduce",
@@ -107,7 +107,7 @@ export const TAILORED_WORKSHOP = {
   title: "A workshop built around your team",
   tag: "Tailored • Your topic",
   description:
-    "For teams whose problem does not fit a catalogue entry. We start from a call about what is actually slowing you down, read your codebase, and build the workshop around that: one topic from the list, a mix of several, or something nobody has written a course for yet.",
+    "For teams whose problem does not fit a catalogue entry. I start from a call about what is actually slowing you down, read your codebase, and build the workshop around that: one topic from the list, a mix of several, or something nobody has written a course for yet.",
   bullets: [
     "An intake call to find the real problem, not the one in the ticket",
     "Topics combined from the catalogue or built from scratch: AI features, state, performance, testing, migrations, tooling, UI libraries, whatever your code needs",

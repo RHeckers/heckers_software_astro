@@ -40,14 +40,14 @@ import Faq from "../../components/services/Faq.astro";
 import { FAQS } from "../../lib/faqs";
 import ProofQuote from "../../components/ProofQuote.astro";
 import ContactDialog from "../../components/ContactDialog.astro";
-import { COMPANY } from "../../consts";
+import { CAPACITY_STATEMENT, COMPANY } from "../../consts";
 import { getService } from "../../lib/services";
 
 const service = getService("forward-deployed-engineering");
 
 const title = "Forward-Deployed Engineering: Software & AI, End to End";
 const description =
-  "An industry expert inside your company who delivers end to end: discovery, development, AI integration and deployment. One senior engineer, amplified by AI.";
+  "A senior engineer inside your team who delivers end to end: discovery, development, AI integration and deployment. AI is one of the tools, used where it earns its place.";
 
 const tiers = [
   {
@@ -70,7 +70,7 @@ const tiers = [
     name: "Standard",
     badge: "Most companies choose this",
     recommended: true,
-    tagline: "Discovery first, we find the highest-impact outcomes and deliver them.",
+    tagline: "Discovery first, I find the highest-impact outcomes and deliver them.",
     duration: "Two-week discovery, then two-week increments",
     price: {
       amount: "Fixed price",
@@ -160,7 +160,7 @@ const jsonLd = {
   {/* 2. The challenge */}
   <EvidenceBand
     title="What the numbers say about AI"
-    intro="We break the cycle of failed AI initiatives."
+    intro="I break the cycle of failed AI initiatives."
     stats={[
       {
         value: "95%",
@@ -204,7 +204,7 @@ const jsonLd = {
       {
         min: 0,
         title: "Ahead of the pack.",
-        copy: "Models already do real work in your company. We add the next outcome, not the first.",
+        copy: "Models already do real work in your company. I add the next outcome, not the first.",
       },
       {
         min: 2,
@@ -231,12 +231,12 @@ const jsonLd = {
   <Insights
     id="what-we-do"
     title="One engineer owns discovery to deployment"
-    intro="Inside your company, amplified by AI, accountable until it is live."
+    intro="Inside your team, accountable until it is live, with AI where it earns its place."
     items={[
       {
         figure: "discovery",
         title: "Discover what saves the most.",
-        copy: "We sit with the people who do the work and rank what software and AI would save.",
+        copy: "I sit with the people who do the work and rank what software and AI would save.",
       },
       {
         figure: "last-mile",
@@ -251,7 +251,7 @@ const jsonLd = {
       {
         figure: "owner",
         title: "Deploy it, and own it until it runs.",
-        copy: "One accountable owner in production. That is why we price per outcome.",
+        copy: "One accountable owner in production. That is why I price per outcome.",
       },
     ]}
   />
@@ -276,7 +276,7 @@ const jsonLd = {
       },
       {
         title: "A fixed price per outcome",
-        detail: "Agreed before we build. The number does not change.",
+        detail: "Agreed before I build. The number does not change.",
       },
       {
         title: "Everything in your repositories",
@@ -305,7 +305,7 @@ const jsonLd = {
       {
         title: "Discovery",
         when: "Week 1–2",
-        copy: "We sit with the people who do the work. It ends in a ranked list of what saves the most.",
+        copy: "I sit with the people who do the work. It ends in a ranked list of what saves the most.",
       },
       {
         title: "Scope and commit",
@@ -325,12 +325,12 @@ const jsonLd = {
       {
         title: "AI integration",
         when: "Where it earns its place",
-        copy: "A model takes over one workflow step, with guardrails and a person checking. If it does not earn its place, we say so.",
+        copy: "A model takes over one workflow step, with guardrails and a person checking. If it does not earn its place, I say so.",
       },
       {
         title: "Ship and hand over",
         when: "Per outcome",
-        copy: "Live, monitored and documented. Then we take the next outcome, or leave it all in your hands.",
+        copy: "Live, monitored and documented. Then I take the next outcome, or leave it all in your hands.",
       },
     ]}
     ctaLabel={service.cta}
@@ -339,18 +339,18 @@ const jsonLd = {
 
   {/* 6. Why us + proof */}
   <ProofRow
-    title="Why companies trust us with it"
-    lede="The words of people who had us inside their team."
+    title="Why companies trust me with it"
+    lede="The words of people who had me inside their team."
     snippets={["ferdiBeyondScope", "peterMentoring", "nicoTeam"]}
   />
 
   {/* 7. Who we are */}
-  <Founder stage="hall" />
+  <Founder stage="hall" note={CAPACITY_STATEMENT} />
 
   {/* 8. Take the leap */}
   <Faq
     tone="dark"
-    title="Questions we hear first"
+    title="Questions I hear first"
     items={FAQS["forward-deployed-engineering"]}
   />
 
@@ -360,8 +360,8 @@ const jsonLd = {
     serviceName="forward-deployed engineering"
     subject={service.subject}
     tiers={tiers}
-    note="Each outcome is priced before we build it. Default stack: Angular, TypeScript, .NET, Node.js, SQL and Azure, with the Claude and OpenAI APIs. Or yours."
-    otherLabel="Tell us what you need"
+    note="Each outcome is priced before I build it. Default stack: Angular, TypeScript, .NET, Node.js, SQL and Azure, with the Claude and OpenAI APIs. Or yours."
+    otherLabel="Tell me what you need"
   />
 
   <ContactDialog />

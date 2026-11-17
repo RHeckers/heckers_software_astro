@@ -23,7 +23,7 @@ export const OG_CARDS: readonly OgCard[] = [
     key: "about",
     path: "/about/",
     eyebrow: "About Heckers Software",
-    headline: "One industry expert, amplified by AI, accountable end to end",
+    headline: "One senior engineer in your team, accountable end to end",
   },
   {
     key: "forward-deployed-engineering",

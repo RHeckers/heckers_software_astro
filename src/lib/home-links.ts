@@ -45,11 +45,11 @@ export async function resolveHomeLink(
   if (posts.length === 1) {
     return {
       href: postHref(posts[0]),
-      label: `Read our ${target.topic} article`,
+      label: `Read my ${target.topic} article`,
     };
   }
   return {
     href: categoryHref(target.category),
-    label: `Read our ${target.topic} articles`,
+    label: `Read my ${target.topic} articles`,
   };
 }

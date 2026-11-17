@@ -36,7 +36,7 @@ export const SERVICES: readonly Service[] = [
     navLabel: "Forward-Deployed Engineering",
     name: "Forward-Deployed Engineering",
     summary:
-      "An industry expert who comes into your company and delivers outcomes end to end: discovery, development, AI integration and deployment. With AI, one senior engineer ships what a team did before. Hand over a backlog, or let us find the highest-impact work first.",
+      "A senior engineer who joins your team and delivers outcomes end to end: discovery, development, AI integration and deployment. AI is one of the tools, used where it earns its place. Hand over a backlog, or let me find the highest-impact work first.",
     subject: "Development",
     cta: "Book a discovery call",
   },
@@ -46,7 +46,7 @@ export const SERVICES: readonly Service[] = [
     navLabel: "Architecture Assessment",
     name: "Architecture assessment",
     summary:
-      "Senior engineers read your Angular or Nx codebase from the outside and hand you a ranked report and a roadmap. Fixed scope, two to three weeks. The diagnosis before any team starts building.",
+      "I read your Angular or Nx codebase from the outside and hand you a ranked report and a roadmap. Fixed scope, two to three weeks. The diagnosis before any team starts building.",
     subject: "Code Review",
     cta: "Book assessment",
   },
@@ -56,7 +56,7 @@ export const SERVICES: readonly Service[] = [
     navLabel: "Workshops",
     name: "Angular and Nx workshops",
     summary:
-      "Hands-on training on your own codebase: AI-native development, AI-driven front ends, Nx monorepos and enterprise Angular architecture. So your team keeps the pace after we leave.",
+      "Hands-on training on your own codebase: AI-native development, AI-driven front ends, Nx monorepos and enterprise Angular architecture. So your team keeps the pace after I leave.",
     subject: "Workshop",
     cta: "Book workshop",
   },

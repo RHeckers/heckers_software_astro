@@ -13,7 +13,7 @@
 import { Image } from "astro:assets";
 import ProofQuote from "../ProofQuote.astro";
 import speaker from "../../assets/workshop/talk_1.jpg";
-import { AUTHOR } from "../../consts";
+import { AUTHOR, CAPACITY_STATEMENT } from "../../consts";
 import type { SnippetKey } from "../../lib/testimonials";
 
 interface Reason {
@@ -30,12 +30,12 @@ interface Props {
 
 const HOME_REASONS: Reason[] = [
   {
-    title: "Industry experts",
-    copy: "We only work with the best: software engineers, data scientists and DevOps specialists who have shipped products in your sector.",
+    title: "More hands when the work needs them",
+    copy: CAPACITY_STATEMENT,
   },
   {
     title: "Proven delivery",
-    copy: "We have a track record of delivering successful projects on time and within budget.",
+    copy: "I have a track record of delivering projects on time and within budget.",
   },
   {
     title: "You decide after discovery",
@@ -52,7 +52,7 @@ const HOME_REASONS: Reason[] = [
 ];
 
 const {
-  title = "Why companies trust us",
+  title = "Why companies trust me",
   reasons = HOME_REASONS,
   snippets = ["peterChallenges", "ferdiDelivery", "alexProactive"],
 } = Astro.props;
