@@ -1,0 +1,202 @@
+---
+/**
+ * The call to action at the end of every blog post: two or three plain
+ * sentences and one button, chosen by what the post is about.
+ *
+ *   AI posts                          forward-deployed engineering, with a
+ *                                     discovery call as the action
+ *   Angular, Nx, Architecture,        the architecture assessment, with the
+ *   Forms, Error Handling             workshops as a second, quieter link
+ *   A post with both                  the AI variant
+ *
+ * A post can choose for itself with `cta` in its frontmatter:
+ * assessment, workshop, fde, or none to leave the block out.
+ *
+ * The proof line under the assessment variant names a client result. It
+ * links to the case study as soon as that case study is published.
+ */
+import { categoryToSlug } from "../lib/categories";
+import { findCaseStudy } from "../lib/case-studies";
+import { PRICING, euro } from "../lib/pricing";
+import { getService } from "../lib/services";
+
+type Variant = "assessment" | "workshop" | "fde";
+
+interface Props {
+  categories: readonly string[];
+  /** The post's own choice, from its frontmatter. */
+  override?: Variant | "none";
+}
+
+const { categories, override } = Astro.props;
+
+/** Categories that make a post an AI post. */
+const AI = ["ai", "ai-in-production"];
+/** Categories that make a post an Angular and Nx architecture post. */
+const ARCHITECTURE = ["angular", "nx", "architecture", "forms", "error-handling"];
+
+const slugs = categories.map(categoryToSlug);
+const variant: Variant | "none" =
+  override ??
+  (slugs.some((slug) => AI.includes(slug))
+    ? "fde"
+    : slugs.some((slug) => ARCHITECTURE.includes(slug))
+      ? "assessment"
+      : "fde");
+
+const assessment = getService("architecture-assessment");
+const workshops = getService("workshops");
+const proofCase = await findCaseStudy("wit-gele-kruis");
+
+const COPY = {
+  assessment: {
+    title: "Is this slowing your team down too?",
+    text: `I read your Angular or Nx codebase from the outside and rank what costs your team the most, with the fix for every finding. Fixed scope, from ${euro(PRICING.assessment.minimum)}.`,
+    button: "See the architecture assessment",
+    href: assessment.href,
+  },
+  workshop: {
+    title: "Want your team to work this way?",
+    text: `I teach this on your own codebase, with exercises built from your code. From ${euro(PRICING.workshops.oneDay)} per day.`,
+    button: "See the workshops",
+    href: workshops.href,
+  },
+  fde: {
+    title: "Want this in the application you already run?",
+    text: "I build AI features inside the enterprise applications clients already run: Angular, .NET and Azure. I join your team, own the outcome and ship it to production, at a fixed price per outcome.",
+    button: "Book a discovery call",
+    href: "/#contactForm",
+  },
+} as const;
+
+const copy = variant === "none" ? undefined : COPY[variant];
+---
+
+{
+  copy && (
+    <aside class="post-cta" aria-labelledby="post-cta-heading">
+      <h2 class="post-cta__title" id="post-cta-heading">
+        {copy.title}
+      </h2>
+      <p class="post-cta__text">{copy.text}</p>
+      {variant === "assessment" && (
+        <p class="post-cta__proof">
+          {proofCase ? (
+            <a href={`/case-studies/${proofCase.id}/`} target="_blank" rel="noopener">
+              Productivity up 20% for 40+ developers at Wit-Gele Kruis
+            </a>
+          ) : (
+            "Productivity up 20% for 40+ developers at Wit-Gele Kruis"
+          )}
+        </p>
+      )}
+      <div class="post-cta__actions">
+        <a class="post-cta__button" href={copy.href}>
+          {copy.button}
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+        {variant === "assessment" && (
+          <a class="post-cta__second" href={workshops.href}>
+            Or train your team: workshops
+          </a>
+        )}
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  /* The brand-dark panel in both themes, with the accent rule the site
+     uses for a claim down its left edge. */
+  .post-cta {
+    margin-top: 3rem;
+    padding: clamp(1.75rem, 5vw, 2.5rem);
+    padding-left: calc(clamp(1.75rem, 5vw, 2.5rem) + 3px);
+    position: relative;
+    background: var(--c-dark);
+    color: var(--c-light);
+    border-radius: 12px;
+    font-family: synonym, sans-serif;
+  }
+
+  .post-cta::before {
+    content: "";
+    position: absolute;
+    left: clamp(1rem, 3vw, 1.5rem);
+    top: clamp(1.75rem, 5vw, 2.5rem);
+    bottom: clamp(1.75rem, 5vw, 2.5rem);
+    width: 3px;
+    border-radius: 3px;
+    background: var(--c-accent);
+  }
+
+  :global(:root[data-theme="dark"]) .post-cta {
+    border: 1px solid var(--color-stroke);
+  }
+
+  .post-cta__title {
+    font-family: chillax, sans-serif;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+
+  .post-cta__text {
+    line-height: 1.6;
+    max-width: 58ch;
+    margin: 0;
+    color: color-mix(in srgb, var(--c-light) 86%, transparent);
+  }
+
+  .post-cta__proof {
+    margin: 1rem 0 0;
+    font-weight: var(--font-weight-medium);
+    color: var(--c-accent);
+  }
+
+  .post-cta__proof a {
+    color: inherit;
+    text-underline-offset: 3px;
+  }
+
+  .post-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .post-cta__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: var(--c-dark);
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: none;
+    transition: transform 200ms ease;
+  }
+
+  .post-cta__button:hover,
+  .post-cta__button:focus-visible {
+    transform: translateY(-1px);
+  }
+
+  .post-cta__second {
+    color: var(--c-light);
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-cta__button {
+      transition: none;
+    }
+  }
+</style>

@@ -4,6 +4,7 @@ import { render } from "astro:content";
 import CategoryChips from "../../components/CategoryChips.astro";
 import NewsletterBar from "../../components/NewsletterBar.astro";
 import NewsletterForm from "../../components/NewsletterForm.astro";
+import PostCta from "../../components/PostCta.astro";
 import PageLayout from "../../layouts/PageLayout.astro";
 import logo from "../../assets/logos/logo.png";
 import { AUTHOR, COMPANY, PROFILES, profileLinks } from "../../consts";
@@ -39,6 +40,7 @@ const {
   updatedDate,
   heroImage,
   categories,
+  cta,
 } = post.data;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -129,6 +131,8 @@ const jsonLd = {
       <Content />
     </div>
 
+    <PostCta categories={categories} override={cta} />
+
     <NewsletterForm
       id="newsletter"
       variant="card"
@@ -160,17 +164,6 @@ const jsonLd = {
           </a>
         </li>
       </ul>
-    </aside>
-
-    <aside class="cta">
-      <h2>Ready to level up your Angular&nbsp;or&nbsp;Nx project?</h2>
-      <p>
-        Our engineers help teams ship faster with clean architecture, scalable
-        Nx monorepos, and battle-tested Angular patterns. Whether you need a
-        code review, hands-on support, or a full architecture overhaul, we've
-        got you covered!
-      </p>
-      <a href="/#contactForm" class="cta-button">Get in touch</a>
     </aside>
 
     {
@@ -213,9 +206,7 @@ const jsonLd = {
   h1,
   .prose :global(h2),
   .prose :global(h3),
-  .prose :global(th),
-  .cta h2,
-  .cta-button {
+  .prose :global(th) {
     font-family: "chillax", sans-serif;
   }
 
@@ -414,53 +405,6 @@ const jsonLd = {
 
   /* --- CTA --- */
 
-  .cta {
-    margin-top: 3rem;
-    padding: 2.5rem;
-    background: var(--color-dark);
-    border-radius: 12px;
-    text-align: center;
-  }
-
-  .cta h2 {
-    font-size: var(--font-xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-ink-light);
-    margin: 0 0 0.75rem;
-    line-height: 1.2;
-  }
-
-  .cta p {
-    color: var(--color-ink-light);
-    opacity: 0.85;
-    line-height: 1.7;
-    max-width: 560px;
-    margin: 0 auto 1.5rem;
-  }
-
-  .cta-button {
-    display: inline-block;
-    font-weight: var(--font-weight-semi-bold);
-    color: var(--color-on-accent);
-    background: var(--color-accent);
-    padding: 0.75rem 2rem;
-    border-radius: 8px;
-    text-decoration: none;
-    transition:
-      background 200ms ease,
-      transform 200ms ease;
-  }
-
-  .cta-button:hover {
-    box-shadow: 0 0 0 4px var(--color-accent-glow);
-    transform: translateY(-1px);
-  }
-
-  /* The CTA keeps its brand-dark panel in both themes, so only the pill
-     inside it needs help: --color-light is the dark page now. */
-  :global(:root[data-theme="dark"]) .cta {
-    border: 1px solid var(--color-stroke);
-  }
 
 
   /* --- More posts --- */

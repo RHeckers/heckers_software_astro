@@ -36,6 +36,11 @@ const blog = defineCollection({
             }),
         )
         .default([]),
+      /**
+       * The call to action under the post. Left out, it follows from the
+       * categories (see PostCta); "none" leaves the block out.
+       */
+      cta: z.enum(["assessment", "workshop", "fde", "none"]).optional(),
     }),
 });
 
