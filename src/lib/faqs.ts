@@ -62,11 +62,6 @@ export const FAQS: Record<ServiceSlug, readonly FaqItem[]> = {
           "That is the most common case. I build inside your workspace, respect its module boundaries and, where they are missing, help put them in. If the codebase itself is the problem, the architecture assessment is the place to start: a fixed-scope outside read that becomes the first part of discovery.",
       },
       {
-        question: "Do you work on site or remote?",
-        answer:
-          "Remote, mostly. I build on my own where that is possible, and I join your team when the work needs it.",
-      },
-      {
         question: "Who actually does the work?",
         answer:
           `I do: Roberto Heckers, the person you talk to first. One senior engineer who knows the whole stack, with coding agents handling the typing, keeps communication direct and the decisions consistent. ${CAPACITY_STATEMENT}`,
