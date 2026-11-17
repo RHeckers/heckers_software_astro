@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
 import { SERVICES } from "../lib/services";
+import { getCaseStudies } from "../lib/case-studies";
 
 interface Props {
   /** Show the light/dark switch. Set by PageLayout on themed pages. */
@@ -8,6 +9,10 @@ interface Props {
 }
 
 const { themeToggle = false } = Astro.props;
+
+/* The case studies page only exists when there is one a visitor may see
+   (drafts count in development only), so the link follows the same rule. */
+const hasCaseStudies = (await getCaseStudies()).length > 0;
 ---
 
 <nav class="nav" aria-label="Main Navigation">
@@ -33,6 +38,13 @@ const { themeToggle = false } = Astro.props;
               <a href={service.href}>{service.navLabel}</a>
             </li>
           ))
+        }
+        {
+          hasCaseStudies && (
+            <li>
+              <a href="/case-studies/">Case studies</a>
+            </li>
+          )
         }
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/about/">About</a></li>
