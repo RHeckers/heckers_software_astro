@@ -20,7 +20,7 @@ export const RESULTS: readonly Result[] = [
   {
     id: "vattenfall",
     value: "3.4 → 4.2",
-    label: "NPS of usage and costs, for 2M+ customers",
+    label: "NPS improvement for 2M+ customers",
     client: "Vattenfall",
     caseStudy: "vattenfall",
   },
@@ -40,8 +40,8 @@ export const RESULTS: readonly Result[] = [
   },
   {
     id: "dh-automation",
-    value: "On time",
-    label: "launch, as the only software engineer on the product",
+    value: "Timely launch",
+    label: "delivered as the only software engineer on the product",
     client: "DH Automation",
     caseStudy: "dh-automation",
   },
